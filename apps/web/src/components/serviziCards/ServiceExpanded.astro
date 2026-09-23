@@ -1,21 +1,22 @@
 ---
 // Blocco servizio "espanso" con trattamento grafico: badge-icona, numero
 // indice fantasma, mini-equalizer (firma musicale) all'hover e reveal allo
-// scroll. Dati reali da serviziHero (target, sub, outcomes) + serviziCards.
-import { serviziHero } from '../../data/serviziHero';
-import { serviziCards } from '../../data/serviziCards';
+// scroll. Testi dal documento servizio: card (titolo) e hero (target, sub,
+// esiti).
+import type { CollectionEntry } from 'astro:content';
 import ArrowLink from '@butik/ui/ArrowLink';
 
 interface Props {
-  slug: string;
+  servizio: CollectionEntry<'servizi'>;
+  /** Posizione nell'elenco (da 1): numero fantasma e accento a rotazione. */
+  index: number;
 }
-const { slug } = Astro.props;
-const hero = serviziHero[slug];
-const card = serviziCards.find((c) => c.slug === slug);
-const title = card?.title ?? slug;
-const href = card?.href ?? `/servizi/${slug}`;
+const { servizio, index } = Astro.props;
+const slug = servizio.id;
+const { hero, card } = servizio.data;
+const title = card.title;
+const href = `/servizi/${slug}`;
 
-const index = serviziCards.findIndex((c) => c.slug === slug) + 1;
 const idx = String(index).padStart(2, '0');
 
 // Accento cromatico a rotazione (contrasto sicuro su sfondo chiaro).
@@ -58,17 +59,17 @@ const icons: Record<string, string> = {
   </div>
 
   <p class="svc-exp__eyebrow">
-    {hero.eyebrow}
+    {hero?.eyebrow}
   </p>
   <h3 class="svc-exp__title">
     {title}
   </h3>
   <p class="svc-exp__desc">
-    {hero.sub}
+    {hero?.sub ?? servizio.data.subtitle}
   </p>
 
   <ul class="svc-exp__outcomes">
-    {hero.outcomes.map((o) => (
+    {(hero?.outcomes ?? []).map((o) => (
       <li class="svc-exp__outcome">
         <span class="svc-exp__check" aria-hidden="true">✓</span>
         <span>{o}</span>

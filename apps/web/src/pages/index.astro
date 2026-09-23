@@ -48,6 +48,18 @@ if (!testimonialsEntry || testimonialsEntry.data.type !== 'testimonials') {
   throw new Error('Contenuto pagina "testimonials" mancante o non valido (collezione pagine).');
 }
 const testimonials = testimonialsEntry.data;
+
+// Card dei servizi nell'hero: i testi vivono nel documento servizio (Sanity),
+// nello stesso ordine della pagina /servizi.
+const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    title: s.data.card.title,
+    href: `/servizi/${s.id}`,
+    description: s.data.card.desc,
+    statValue: s.data.card.statValue,
+    statLabel: s.data.card.statLabel,
+  }));
 ---
 
 <BaseLayout
@@ -61,7 +73,7 @@ const testimonials = testimonialsEntry.data;
     ctaHref={c.heroCtaHref}
     exploreLabel={c.heroExploreLabel}
     exploreHref={c.heroExploreHref}
-    servizi={c.heroServizi}
+    servizi={serviziCards}
   />
   <PartnerLogos partners={partners} />
   <Numbers
