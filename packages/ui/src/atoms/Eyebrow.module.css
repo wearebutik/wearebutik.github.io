@@ -5,7 +5,15 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+/* Su fondo scuro l'accent non va: il rosso pieno fa 4.03:1 su --color-bg-invert
+   e la variante scurita ancora meno. A 12px bold serve 4.5:1, quindi qui si usa
+   l'highlight, che e' gia' l'accento su fondo scuro nel resto del sistema
+   (ServiceLauncher.onDark, FlowDivider.onDark, Marquee.onDark). */
+.invert {
+  color: var(--color-highlight);
 }
 
 .center {

@@ -47,7 +47,7 @@ const isLocalImage = typeof image !== 'string';
   <!-- PANNELLO SCURO — contenuto -->
   <div class="order-2 lg:order-1 bg-butik-dark flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-20">
     <div class="max-w-xl">
-      <Eyebrow>{content.eyebrow}</Eyebrow>
+      <Eyebrow tone="invert">{content.eyebrow}</Eyebrow>
 
       <h1 class="hero-headline mt-5 font-display font-bold leading-[1.05] text-4xl md:text-5xl lg:text-6xl">
         {content.headline}
@@ -88,6 +88,6 @@ const isLocalImage = typeof image !== 'string';
 <style>
   /* lo stile globale di h1 forza color butik-dark: qui serve bianco su scuro */
   .hero-headline {
-    color: #fff;
+    color: var(--color-fg-invert);
   }
 </style>

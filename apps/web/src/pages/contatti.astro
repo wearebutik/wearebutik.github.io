@@ -112,12 +112,12 @@ const inputClass =
         <div class="space-y-6 font-sans text-base text-butik-body">
           <div>
             <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-dark mb-1">{c.emailLabel}</p>
-            <a href={`mailto:${c.emailValue}`} class="text-butik-dark underline hover:text-butik-red transition-colors">{c.emailValue}</a>
+            <a href={`mailto:${c.emailValue}`} class="text-butik-dark underline hover:text-butik-red-ink transition-colors">{c.emailValue}</a>
           </div>
 
           <div>
             <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-dark mb-1">{c.pecLabel}</p>
-            <a href={`mailto:${c.pecValue}`} class="text-butik-dark underline hover:text-butik-red transition-colors">{c.pecValue}</a>
+            <a href={`mailto:${c.pecValue}`} class="text-butik-dark underline hover:text-butik-red-ink transition-colors">{c.pecValue}</a>
           </div>
 
           <div>
@@ -159,7 +159,7 @@ const inputClass =
     const showMessage = (text: string, ok: boolean) => {
       result.textContent = text;
       result.classList.remove('hidden');
-      result.classList.toggle('text-butik-red', !ok);
+      result.classList.toggle('text-butik-red-ink', !ok);
       result.classList.toggle('text-butik-dark', ok);
     };
 

@@ -107,7 +107,7 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
                 <span class="font-display text-lg font-bold leading-none mt-1">{o.num}</span>
               </span>
               <div>
-                <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red">
+                <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink">
                   {c.sdgObiettivoLabel} {o.num}
                 </p>
                 <p class="font-heading text-base md:text-lg font-bold text-butik-dark leading-snug mt-1">
@@ -148,12 +148,12 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
             )}
           </div>
           <h2 class="font-heading text-xl font-bold text-butik-dark leading-tight">{f.name}</h2>
-          <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red mt-1">{f.role}</p>
+          <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mt-1">{f.role}</p>
           <p class="font-sans text-sm text-butik-body leading-relaxed mt-4 flex-1">{f.bio}</p>
           <div class="flex items-center gap-4 mt-5">
             <a
               href={f.linkedin}
-              class="inline-flex items-center gap-2 font-display text-xs font-bold tracking-widest uppercase text-butik-dark hover:text-butik-red transition-colors"
+              class="inline-flex items-center gap-2 font-display text-xs font-bold tracking-widest uppercase text-butik-dark hover:text-butik-red-ink transition-colors"
               aria-label={`Profilo LinkedIn di ${f.name}`}
             >
               <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -163,7 +163,7 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
             </a>
             <a
               href={`mailto:${f.email}`}
-              class="font-sans text-sm text-butik-dark/70 underline hover:text-butik-red transition-colors break-all"
+              class="font-sans text-sm text-butik-dark/70 underline hover:text-butik-red-ink transition-colors break-all"
             >
               {f.email}
             </a>

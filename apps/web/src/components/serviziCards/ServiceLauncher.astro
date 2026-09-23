@@ -102,7 +102,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     outline-offset: 2px;
   }
   .row:hover .row-title {
-    color: var(--accent);
+    color: var(--accent-text, var(--accent));
   }
 
   /* ── Tone tokens ───────────────────────────────────────────────────── */
@@ -111,6 +111,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     --muted: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
     --rule: color-mix(in srgb, var(--color-butik-dark) 15%, transparent);
     --accent: var(--color-butik-red);
+    --accent-text: var(--color-butik-red-ink);
     --row-hover: color-mix(in srgb, var(--color-butik-dark) 6%, transparent);
   }
   .onDark {

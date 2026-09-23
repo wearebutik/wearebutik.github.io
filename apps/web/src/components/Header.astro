@@ -78,8 +78,8 @@ function isActive(href: string) {
             href={link.href}
             class={`nav-link font-display text-xs font-bold tracking-widest uppercase transition-colors ${
               isActive(link.href)
-                ? 'text-butik-red'
-                : 'text-butik-dark hover:text-butik-red'
+                ? 'text-butik-red-ink'
+                : 'text-butik-dark hover:text-butik-red-ink'
             }`}
           >
             {link.label}
@@ -106,7 +106,7 @@ function isActive(href: string) {
             <a
               href={link.href}
               class={`font-display text-xs font-bold tracking-widest uppercase py-3 ${
-                isActive(link.href) ? 'text-butik-red' : 'text-butik-dark'
+                isActive(link.href) ? 'text-butik-red-ink' : 'text-butik-dark'
               }`}
             >
               {link.label}
@@ -202,8 +202,15 @@ function isActive(href: string) {
     );
     transition: color 300ms ease, text-shadow 300ms ease;
   }
+  /* Come le regole sorelle qui sopra, interpola fra i due stati invece di
+     fissare un colore: da solido serve l'accent scurito (5.20:1 su --color-bg),
+     sopra l'hero scuro serve l'highlight, perche' li' il rosso non arriva al
+     4.5:1 che questo testo da 12px bold richiede. */
   .site-header[data-overlay='true'] .nav-link:hover {
-    color: var(--color-accent);
+    color: color-mix(
+      in srgb, var(--color-accent-text) calc(var(--header-solid) * 100%), var(--color-highlight)
+    );
+    transition: color 300ms ease;
   }
 
   .site-header[data-overlay='true'] .mobile-toggle {

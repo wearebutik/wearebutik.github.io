@@ -18,6 +18,11 @@ const meta = {
       options: ['md', 'sm'],
       description: 'Spaziatura sotto al testo.',
     },
+    tone: {
+      control: 'inline-radio',
+      options: ['accent', 'invert'],
+      description: 'Tonalità: "accent" (default) o "invert" per sfondi scuri.',
+    },
     children: {
       control: 'text',
       description: 'Testo del titoletto.',
@@ -41,4 +46,17 @@ export const Center: Story = {
 
 export const SmallSpacing: Story = {
   args: { spacing: 'sm', children: 'Adatto a' },
+};
+
+// tone="invert": usa var(--color-highlight) per rispettare il contrasto AA
+// su fondo scuro. Il decorator simula lo sfondo scuro reale.
+export const InvertTone: Story = {
+  args: { tone: 'invert', children: 'Il nostro metodo' },
+  decorators: [
+    (Story) => (
+      <div style={{ background: 'var(--color-bg-invert)', padding: 'var(--space-8)' }}>
+        <Story />
+      </div>
+    ),
+  ],
 };

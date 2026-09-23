@@ -49,7 +49,7 @@ const gruppi: LabGroup[] = [
 
 <BaseLayout title="Lab — Butik" description="Indice interno dei prototipi e delle varianti in valutazione.">
   <section class="max-w-5xl mx-auto px-6 pt-24 pb-10">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red mb-3">Interno · non indicizzato dal menu</p>
+    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-3">Interno · non indicizzato dal menu</p>
     <h1 class="font-heading text-4xl md:text-5xl font-bold text-butik-dark mb-4">Lab — pagine di servizio</h1>
     <p class="font-sans text-base md:text-lg text-butik-body max-w-2xl leading-relaxed">
       Quel che resta non raggiungibile dal menu: il workshop dei componenti, la verifica delle card
@@ -60,18 +60,18 @@ const gruppi: LabGroup[] = [
 
   {gruppi.map((g) => (
     <section class="max-w-5xl mx-auto px-6 py-8 border-t border-butik-dark/10">
-      <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red mb-2">{g.eyebrow}</p>
+      <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-2">{g.eyebrow}</p>
       <h2 class="font-heading text-2xl md:text-3xl font-bold text-butik-dark mb-2">{g.titolo}</h2>
       <p class="font-sans text-sm text-butik-dark/60 max-w-2xl leading-relaxed mb-6">{g.intro}</p>
       <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {g.links.map((l) => (
           <li>
             <a href={l.href} class="group block border border-butik-dark/15 bg-white p-5 hover:border-butik-red transition-colors">
-              <span class="block font-heading text-base font-bold text-butik-dark group-hover:text-butik-red transition-colors">
+              <span class="block font-heading text-base font-bold text-butik-dark group-hover:text-butik-red-ink transition-colors">
                 {l.title}
               </span>
               <span class="block font-sans text-sm text-butik-dark/60 mt-1 leading-relaxed">{l.desc}</span>
-              <span class="block font-display text-xs font-bold tracking-widest uppercase text-butik-red mt-3">{l.href}</span>
+              <span class="block font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mt-3">{l.href}</span>
             </a>
           </li>
         ))}

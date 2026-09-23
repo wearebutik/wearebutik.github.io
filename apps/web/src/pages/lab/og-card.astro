@@ -27,7 +27,7 @@ const cardLinks = [...ogCards.entries()]
 
 <BaseLayout title="Card OG — verifica — Butik" description="Helper interno: le card Open Graph generate e come controllarle.">
   <section class="max-w-5xl mx-auto px-6 pt-24 pb-8">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red mb-3">Interno · helper</p>
+    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-3">Interno · helper</p>
     <h1 class="font-heading text-4xl md:text-5xl font-bold text-butik-dark mb-4">Card Open Graph — verifica</h1>
     <p class="font-sans text-base md:text-lg text-butik-body max-w-3xl leading-relaxed">
       Una PNG per pagina, generata alla build dal generatore in produzione. Qui sotto
@@ -38,7 +38,7 @@ const cardLinks = [...ogCards.entries()]
   </section>
 
   <section class="max-w-5xl mx-auto px-6 py-8 border-t border-butik-dark/10">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red mb-2">
+    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-2">
       Card generate · in produzione
     </p>
     <h2 class="font-heading text-2xl md:text-3xl font-bold text-butik-dark mb-2">
@@ -53,11 +53,11 @@ const cardLinks = [...ogCards.entries()]
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="border-b border-butik-dark/15">
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red py-2 pr-4">Pagina</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red py-2 pr-4">Layout</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red py-2 pr-4">Immagine</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red py-2 pr-4">URL pagina</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red py-2">Test</th>
+            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Pagina</th>
+            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Layout</th>
+            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Immagine</th>
+            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">URL pagina</th>
+            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2">Test</th>
           </tr>
         </thead>
         <tbody>
@@ -66,15 +66,15 @@ const cardLinks = [...ogCards.entries()]
               <td class="font-sans text-sm text-butik-dark py-3 pr-4 whitespace-nowrap">{c.route}</td>
               <td class="font-sans text-xs text-butik-dark/60 py-3 pr-4 whitespace-nowrap">{c.layout}</td>
               <td class="py-3 pr-4 whitespace-nowrap">
-                <a href={c.png} target="_blank" class="font-sans text-sm text-butik-red underline">PNG ↗</a>
+                <a href={c.png} target="_blank" class="font-sans text-sm text-butik-red-ink underline">PNG ↗</a>
               </td>
               <td class="py-3 pr-4">
                 <a href={c.pageUrl} target="_blank" class="font-sans text-sm text-butik-dark/70 underline break-all">{c.pageUrl}</a>
               </td>
               <td class="py-3 whitespace-nowrap">
-                <a href={c.opengraph} target="_blank" class="font-sans text-sm text-butik-red underline">opengraph.xyz</a>
+                <a href={c.opengraph} target="_blank" class="font-sans text-sm text-butik-red-ink underline">opengraph.xyz</a>
                 <span class="text-butik-dark/30"> · </span>
-                <a href={c.linkedin} target="_blank" class="font-sans text-sm text-butik-red underline">LinkedIn</a>
+                <a href={c.linkedin} target="_blank" class="font-sans text-sm text-butik-red-ink underline">LinkedIn</a>
               </td>
             </tr>
           ))}

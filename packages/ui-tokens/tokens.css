@@ -26,6 +26,13 @@
   --color-fg: var(--color-dark);
   --color-fg-invert: var(--color-white);
   --color-accent: var(--color-red);
+  /* Variante scurita dell'accent per il TESTO su fondo chiaro. `--color-accent`
+     puro fa 4.36:1 su `--color-bg`, sotto la soglia AA di 4.5:1 per il testo
+     normale: va bene per superfici, bordi e glifi decorativi (soglia 3:1), non
+     per parole. Questa fa 5.20:1 su `--color-bg` e 5.68:1 su bianco.
+     NON usarla su fondo scuro, dove peggiora il contrasto invece di migliorarlo:
+     lì il testo va in `--color-fg-invert` o `--color-highlight`. */
+  --color-accent-text: #cc1523;
   --color-accent-2: var(--color-purple);
   --color-highlight: var(--color-green);
 

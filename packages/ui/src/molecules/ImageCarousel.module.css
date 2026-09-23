@@ -77,7 +77,7 @@
 }
 
 .navButton:hover {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
 }
 
 .navButton:focus-visible {

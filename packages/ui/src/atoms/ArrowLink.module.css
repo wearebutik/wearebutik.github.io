@@ -10,14 +10,21 @@
   text-decoration: none;
   color: var(--color-fg);
   /* Catena di fallback: hook del componente → accento ereditato dal contesto
-     (le card dei servizi ne impostano uno per categoria) → accento globale. */
+     (le card dei servizi ne impostano uno per categoria) → accento globale.
+     Bordo e outline restano sull'accent pieno: sono elementi non testuali,
+     soglia 3:1, che il rosso passa. Il `color` dell'hover no — vedi sotto. */
   border-bottom: 2px solid var(--arrow-link-accent, var(--accent, var(--color-accent)));
   padding-bottom: var(--space-1);
   transition: color var(--duration-fast) var(--ease-out);
 }
 
+/* Catena PARALLELA per il colore del testo. Non basta scurire l'ultimo anello:
+   quando il contesto imposta `--accent` (le card dei servizi lo fanno) vince
+   quello e il fallback non viene mai consultato. Serve che ogni anello abbia la
+   sua variante "ink", cosi' un contesto che definisce un accento per il testo
+   passa `--accent-ink` accanto a `--accent`. */
 .link:hover {
-  color: var(--arrow-link-accent, var(--accent, var(--color-accent)));
+  color: var(--arrow-link-accent-ink, var(--accent-ink, var(--color-accent-text)));
 }
 
 .link:focus-visible {

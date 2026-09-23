@@ -24,7 +24,7 @@ sdgObiettivoLabel: "Obiettivo"
 teamEyebrow: "Il nostro team"
 teamP1: "Siamo un piccolo team con una grande rete. La nostra visione è human first: partiamo dalle persone, dai loro bisogni e dal loro contesto. Ogni progetto è costruito su misura, attraverso ascolto, partecipazione attiva e coinvolgimento dal basso, includendo comunità e operatori del territorio."
 teamP2: "Con 8 anni di esperienza sul campo, offriamo un esteso <strong class='font-bold text-butik-dark'> network</strong> di rapporti consolidati con Pubbliche Amministrazioni, professionisti della musica e del turismo, e la capacità di intercettare finanziamenti per rendere i progetti sostenibili."
-teamP3: "Siamo un'impresa guidata da donne, e crediamo che questo si rifletta nel nostro modo di lavorare: con cura e attenzione alle relazioni. <a href='#' class='text-butik-red underline hover:no-underline'>Scopri il nostro Impegno con KeyChange →</a>"
+teamP3: "Siamo un'impresa guidata da donne, e crediamo che questo si rifletta nel nostro modo di lavorare: con cura e attenzione alle relazioni. <a href='#' class='text-butik-red-ink underline hover:no-underline'>Scopri il nostro Impegno con KeyChange →</a>"
 founders:
   - name: "Alessandra Di Caro"
     role: "Co-founder & Project Manager"

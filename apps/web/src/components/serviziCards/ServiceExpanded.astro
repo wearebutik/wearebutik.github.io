@@ -28,6 +28,16 @@ const accents = [
 ];
 const accent = accents[(index - 1) % accents.length];
 
+// Variante "ink" dello stesso accento, per il testo piccolo su fondo chiaro.
+const accentsInk = [
+  'var(--color-butik-red-ink)',
+  'var(--color-butik-dark)',
+  'var(--color-butik-purple)',
+  'var(--color-butik-red-ink)',
+  'var(--color-butik-dark)',
+];
+const accentInk = accentsInk[(index - 1) % accentsInk.length];
+
 // Icone monolinea per servizio (geometriche, niente clip-art).
 const icons: Record<string, string> = {
   'progettazione-culturale': '<path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/>',
@@ -38,7 +48,7 @@ const icons: Record<string, string> = {
 };
 ---
 
-<article class="svc-exp" id={slug} data-reveal style={`--accent:${accent}`}>
+<article class="svc-exp" id={slug} data-reveal style={`--accent:${accent};--accent-ink:${accentInk}`}>
   <div class="svc-exp__head">
     <span class="svc-exp__badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[slug]} />
@@ -154,7 +164,7 @@ const icons: Record<string, string> = {
   }
 
   .svc-exp__eyebrow {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
   .svc-exp__check {
     color: var(--accent);
