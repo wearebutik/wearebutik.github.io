@@ -18,6 +18,7 @@ relate to the [`../guidances/`](../guidances/README.md) recommendations).
 | [0007](./0007-monorepo-and-workspace-layout.md) | Monorepo and workspace layout | accepted |
 | [0008](./0008-component-authoring-and-storybook.md) | Component authoring and Storybook workshop | accepted |
 | [0009](./0009-sitepins-media-paths.md) | Sitepins media path convention | accepted |
+| [0010](./0010-motion-in-the-catalogue.md) | Motion lives in the component catalogue | accepted |
 
 ## Writing a new ADR
 

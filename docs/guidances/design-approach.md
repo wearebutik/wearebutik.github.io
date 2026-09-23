@@ -32,12 +32,17 @@
 ## Motion
 
 - Always respect `prefers-reduced-motion`.
-- Animation logic stays in `src/lib/motion` / `src/components/motion`, not
-  scattered across components ([ADR-0005](../adr/0005-design-system.md#motion)).
-  Exception: motion that belongs to a shared component lives with it — in the
-  component's CSS Module under `packages/ui`, or in the `.astro` that owns the
-  behaviour. Co-location is the point of CSS Modules; `lib/motion` is for
-  motion shared across unrelated components.
+- Reusable motion accents are atoms of `@butik/ui`
+  (`packages/ui/src/atoms/motion/`), and motion logic shared across unrelated
+  components lives in `packages/ui/src/lib/`
+  ([ADR-0010](../adr/0010-motion-in-the-catalogue.md), superseding
+  [ADR-0005 #motion](../adr/0005-design-system.md#motion)). Motion that belongs to
+  one component lives with it — in the component's CSS Module under
+  `packages/ui`, or in the `.astro` that owns the behaviour. Co-location is the
+  point of CSS Modules; the shared `lib` is for what genuinely crosses components.
+- A motion atom that observes the viewport (`Underline`, `CountUp`) needs
+  `client:visible` in Astro; without a directive it renders frozen at its initial
+  state.
 
 ## Browser support
 

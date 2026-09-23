@@ -7,7 +7,9 @@ tags: [design-system, css-modules, tokens, storybook, motion]
 # ADR-0005: Design system
 
 Thematic: covers styling (CSS Modules + tokens), the component workshop, and
-motion. The *workshop* decision is partially open — see its section.
+motion. The *workshop* section is superseded by
+[ADR-0008](./0008-component-authoring-and-storybook.md), the *motion* section by
+[ADR-0010](./0010-motion-in-the-catalogue.md) — see each section.
 
 ## Context
 
@@ -44,7 +46,14 @@ Modules migration, `@butik/ui-tokens` coexists with the Tailwind `@theme` in
 `apps/web/src/styles/global.css`; once the migration lands, the package is the only
 token source.
 
-### Motion {#motion}
+### Motion {#motion} — superseded by ADR-0010
+
+> **Superseded by [ADR-0010](./0010-motion-in-the-catalogue.md).** The two
+> directories named below no longer exist: the motion accents are atoms of
+> `@butik/ui` and the shared scratch logic lives in `packages/ui/src/lib`. The
+> constraint the text encoded — motion logic isolated, not scattered across
+> components — still holds, and so does `prefers-reduced-motion`; only the
+> address changed. The text below is kept as written.
 
 Animations respect `prefers-reduced-motion`. Motion logic stays isolated in
 `src/lib/motion` / `src/components/motion`, not scattered across components.
