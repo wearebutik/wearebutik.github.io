@@ -20,11 +20,25 @@ const { Content } = await render(entry);
   title={c.metaTitle}
   description={c.metaDescription}
 >
-  <article class="max-w-3xl mx-auto px-6 py-16 md:py-24">
-    <div class="prose prose-lg max-w-none">
+  <article class="privacy-article">
+    <div class="prose prose-full">
       <h1>{c.pageTitle}</h1>
       <p><em>Ultimo aggiornamento: {c.updatedDate}.</em></p>
       <Content />
     </div>
   </article>
 </BaseLayout>
+
+<style>
+  .privacy-article {
+    max-width: 48rem; /* max-w-3xl, nessun token (stesso letterale di lab/ui-kit.astro) */
+    margin-inline: auto;
+    padding-inline: var(--space-6); /* px-6 = 1.5rem */
+    padding-block: var(--space-16); /* py-16 = 4rem */
+  }
+  @media (min-width: 768px) {
+    .privacy-article {
+      padding-block: var(--space-24); /* py-24 = 6rem */
+    }
+  }
+</style>

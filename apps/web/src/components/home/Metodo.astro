@@ -56,9 +56,9 @@ for (let y = 0; y < H; y += SEGV) {
 }
 ---
 
-<section class="bg-white py-12 md:py-20 overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="mb-12 md:mb-16">
+<section class="metodo-section">
+  <div class="metodo-container">
+    <div class="metodo-heading">
       <SectionHeading eyebrow={eyebrow} title={title} />
     </div>
 
@@ -79,7 +79,7 @@ for (let y = 0; y < H; y += SEGV) {
               <span class="vino-label">
                 <MetodoIcon name={icons[i % icons.length]} size={26} class="vino-icon" />
               </span>
-              <span class="vino-num font-display">{String(i + 1).padStart(2, '0')}</span>
+              <span class="vino-num">{String(i + 1).padStart(2, '0')}</span>
             </div>
             {i < tappe.length - 1 && (
               <span class="vino-link" aria-hidden="true">
@@ -89,10 +89,10 @@ for (let y = 0; y < H; y += SEGV) {
               </span>
             )}
             <div class="vino-content">
-              <h3 class="vino-title font-heading text-lg font-bold text-butik-dark">
+              <h3 class="vino-title">
                 {tappa.title}
               </h3>
-              <p class="font-sans text-sm text-butik-dark/70 leading-relaxed mt-1">
+              <p class="vino-description">
                 {tappa.description}
               </p>
             </div>
@@ -104,6 +104,32 @@ for (let y = 0; y < H; y += SEGV) {
 </section>
 
 <style>
+  .metodo-section {
+    background: var(--color-white);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+    overflow: hidden;
+  }
+  .metodo-container {
+    max-width: 80rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+  .metodo-heading {
+    margin-bottom: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .metodo-section {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+    .metodo-heading {
+      margin-bottom: var(--space-16);
+    }
+  }
+
   .vino {
     list-style: none;
     margin: 0;
@@ -186,15 +212,29 @@ for (let y = 0; y < H; y += SEGV) {
     display: flex;
     align-items: center;
     justify-content: center;
+    font-family: var(--font-display);
     font-weight: 700;
     font-size: 0.85rem;
     box-shadow: 0 0 0 4px #fff;
     pointer-events: none;
   }
   .vino-title {
+    font-family: var(--font-heading);
+    font-size: 1.125rem;
+    line-height: calc(1.75 / 1.125);
+    font-weight: 700;
     text-transform: none !important;
     letter-spacing: -0.005em !important;
     color: var(--color-butik-dark) !important;
+  }
+  .vino-description {
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    /* leading-relaxed vince su text-sm: line-height esplicito, non quello che
+       la utility text-sm porterebbe con sé */
+    line-height: 1.625;
+    color: color-mix(in srgb, var(--color-butik-dark) 70%, transparent);
+    margin-top: var(--space-1);
   }
 
   @keyframes vino-spin {

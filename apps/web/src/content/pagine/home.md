@@ -74,6 +74,6 @@ newsletterTitle: "Non perderti nessuna novità"
 newsletterBody: "Progetti, bandi, opportunità e approfondimenti sul turismo musicale e la progettazione culturale: iscriviti per non perderti nulla"
 newsletterPlaceholder: "La tua email"
 newsletterButton: "Iscriviti"
-newsletterPrivacy: "Iscrivendoti accetti la nostra <a href=\"/privacy\" class=\"text-butik-red-ink underline\">privacy policy</a>"
+newsletterPrivacy: "Iscrivendoti accetti la nostra <a href=\"/privacy\" class=\"copy-link\">privacy policy</a>"
 newsletterSuccess: "Grazie, ti scriveremo a breve!"
 ---

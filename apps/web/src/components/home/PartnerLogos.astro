@@ -19,22 +19,13 @@ const trackA = [...mobileRowA, ...mobileRowA];
 const trackB = [...mobileRowB, ...mobileRowB];
 ---
 
-<section
-  class="partner-strip relative bg-butik-light pt-10 md:pt-12 pb-14 md:pb-16 overflow-hidden"
-  data-partner-strip
->
+<section class="partner-strip" data-partner-strip>
   {/* ---------- Desktop: marquee a riga singola ---------- */}
-  <div class="hidden md:block">
-    <div
-      class="partner-track is-autoscroll flex w-max items-center gap-8 will-change-transform cursor-grab select-none"
-      data-partner-track
-    >
+  <div class="partner-desktop">
+    <div class="partner-track partner-track-row is-autoscroll" data-partner-track>
       {
         desktopTrack.map((partner) => (
-          <div
-            class="shrink-0 flex items-center justify-center bg-white rounded-xl ring-1 ring-butik-dark/5 px-8 h-20"
-            data-name={partner.name}
-          >
+          <div class="partner-card" data-name={partner.name}>
             <Image
               src={partner.logo}
               alt=""
@@ -43,32 +34,27 @@ const trackB = [...mobileRowB, ...mobileRowB];
               loading="eager"
               decoding="async"
               draggable={false}
-              class="max-h-10 w-auto pointer-events-none"
+              class="partner-card-logo"
             />
           </div>
         ))
       }
     </div>
 
-    <p
-      class="pointer-events-none absolute inset-x-0 bottom-4 text-center font-display text-xs font-bold tracking-widest uppercase text-butik-dark/60 opacity-0 transition-opacity duration-200"
-      data-partner-label
-      aria-hidden="true"
-    >
-    </p>
+    <p class="partner-label" data-partner-label aria-hidden="true"></p>
   </div>
 
   {/* ---------- Mobile: due righe trascinabili, nome sotto il logo ---------- */}
-  <div class="md:hidden flex flex-col gap-5">
+  <div class="partner-mobile">
     <div
-      class="partner-track is-autoscroll flex w-max items-start gap-5 will-change-transform cursor-grab select-none"
+      class="partner-track partner-track-row-mobile is-autoscroll"
       data-partner-track
       style="--marquee-dur: 40s"
     >
       {
         trackA.map((partner) => (
-          <div class="shrink-0 flex flex-col items-center gap-2 w-28">
-            <div class="flex w-full items-center justify-center bg-white rounded-xl ring-1 ring-butik-dark/5 px-5 h-16">
+          <div class="partner-item">
+            <div class="partner-item-frame">
               <Image
                 src={partner.logo}
                 alt=""
@@ -77,26 +63,24 @@ const trackB = [...mobileRowB, ...mobileRowB];
                 loading="lazy"
                 decoding="async"
                 draggable={false}
-                class="max-h-8 w-auto pointer-events-none"
+                class="partner-item-logo"
               />
             </div>
-            <span class="text-center font-display text-[10px] font-bold leading-tight tracking-wide uppercase text-butik-dark/55">
-              {partner.name}
-            </span>
+            <span class="partner-item-name">{partner.name}</span>
           </div>
         ))
       }
     </div>
 
     <div
-      class="partner-track is-autoscroll is-reverse flex w-max items-start gap-5 will-change-transform cursor-grab select-none"
+      class="partner-track partner-track-row-mobile is-autoscroll is-reverse"
       data-partner-track
       style="--marquee-dur: 48s"
     >
       {
         trackB.map((partner) => (
-          <div class="shrink-0 flex flex-col items-center gap-2 w-28">
-            <div class="flex w-full items-center justify-center bg-white rounded-xl ring-1 ring-butik-dark/5 px-5 h-16">
+          <div class="partner-item">
+            <div class="partner-item-frame">
               <Image
                 src={partner.logo}
                 alt=""
@@ -105,12 +89,10 @@ const trackB = [...mobileRowB, ...mobileRowB];
                 loading="lazy"
                 decoding="async"
                 draggable={false}
-                class="max-h-8 w-auto pointer-events-none"
+                class="partner-item-logo"
               />
             </div>
-            <span class="text-center font-display text-[10px] font-bold leading-tight tracking-wide uppercase text-butik-dark/55">
-              {partner.name}
-            </span>
+            <span class="partner-item-name">{partner.name}</span>
           </div>
         ))
       }
@@ -119,6 +101,138 @@ const trackB = [...mobileRowB, ...mobileRowB];
 </section>
 
 <style is:global>
+  /* ── Layout della strip (utility Tailwind risolte) ──────────────────── */
+  .partner-strip {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-bg);
+    padding-top: 2.5rem; /* pt-10: nessun token combacia (tra --space-8 e --space-12) */
+    padding-bottom: 3.5rem; /* pb-14: nessun token combacia (tra --space-12 e --space-16) */
+  }
+
+  @media (min-width: 768px) {
+    .partner-strip {
+      padding-top: var(--space-12);
+      padding-bottom: var(--space-16);
+    }
+  }
+
+  /* Desktop: marquee a riga singola, nascosto sotto i 768px. */
+  .partner-desktop {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .partner-desktop {
+      display: block;
+    }
+  }
+
+  /* Mobile: due righe impilate, nascoste da 768px in su. */
+  .partner-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem; /* gap-5: nessun token combacia (tra --space-4 e --space-6) */
+  }
+
+  @media (min-width: 768px) {
+    .partner-mobile {
+      display: none;
+    }
+  }
+
+  .partner-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .partner-track-row {
+    align-items: center;
+    gap: var(--space-8);
+  }
+
+  .partner-track-row-mobile {
+    align-items: flex-start;
+    gap: 1.25rem; /* gap-5: nessun token combacia (tra --space-4 e --space-6) */
+  }
+
+  .partner-card {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 5rem; /* h-20: nessun token combacia (tra --space-16 e --space-24) */
+    padding-inline: var(--space-8);
+    background-color: var(--color-white);
+    border-radius: 0.75rem; /* rounded-xl: nessun token combacia (--radius-md .5rem / --radius-lg 1rem) */
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg) 5%, transparent);
+  }
+
+  .partner-card-logo {
+    max-height: 2.5rem; /* max-h-10: nessun token combacia (tra --space-8 e --space-12) */
+    width: auto;
+    pointer-events: none;
+  }
+
+  /* Nome del partner in basso, mostrato su hover della card (vedi script). */
+  .partner-label {
+    position: absolute;
+    inset-inline: 0;
+    bottom: var(--space-4);
+    pointer-events: none;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-fg) 60%, transparent);
+    opacity: 0;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1); /* duration-200: nessun --duration-* combacia */
+  }
+
+  .partner-item {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    width: 7rem; /* w-28: nessun token combacia (tra --space-16 e --space-24) */
+  }
+
+  .partner-item-frame {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    height: var(--space-16);
+    padding-inline: 1.25rem; /* px-5: nessun token combacia (tra --space-4 e --space-6) */
+    background-color: var(--color-white);
+    border-radius: 0.75rem; /* rounded-xl: nessun token combacia (--radius-md .5rem / --radius-lg 1rem) */
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg) 5%, transparent);
+  }
+
+  .partner-item-logo {
+    max-height: var(--space-8);
+    width: auto;
+    pointer-events: none;
+  }
+
+  .partner-item-name {
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 10px; /* text-[10px]: arbitrary, non porta line-height implicito */
+    font-weight: 700;
+    line-height: 1.25; /* leading-tight, presente sullo stesso elemento: vince su text-* */
+    letter-spacing: 0.025em; /* tracking-wide */
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-fg) 55%, transparent);
+  }
+
   @keyframes butik-marquee {
     from {
       transform: translateX(0);

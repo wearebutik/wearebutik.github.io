@@ -11,7 +11,19 @@ interface Props {
 const { eyebrow = 'Cosa facciamo' } = Astro.props;
 ---
 
-<section class="mt-10 mb-8 first:mt-0">
+<section class="section-intro">
   <Eyebrow>{eyebrow}</Eyebrow>
   <slot />
 </section>
+
+<style>
+  .section-intro {
+    /* 2.5rem non ha un token corrispondente in ui-tokens */
+    margin-top: 2.5rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .section-intro:first-child {
+    margin-top: 0;
+  }
+</style>

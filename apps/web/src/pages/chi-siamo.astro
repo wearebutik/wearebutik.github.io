@@ -70,9 +70,9 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   />
 
   <!-- Chi siamo -->
-  <section class="max-w-3xl mx-auto px-6 py-16 md:py-20">
+  <section class="intro-section">
     <Eyebrow align="left">{c.introEyebrow}</Eyebrow>
-    <div class="space-y-5 font-sans text-base md:text-lg text-butik-body leading-relaxed">
+    <div class="intro-copy">
       <p set:html={c.introP1}></p>
       <p set:html={c.introP2}></p>
       <p set:html={c.introP3}></p>
@@ -81,36 +81,36 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   </section>
 
   <!-- La nostra missione + SDG -->
-  <section class="bg-white py-16 md:py-20">
-    <div class="max-w-5xl mx-auto px-6">
-      <div class="max-w-3xl">
+  <section class="mission-section">
+    <div class="mission-container">
+      <div class="mission-lead">
         <Eyebrow align="left">{c.missionEyebrow}</Eyebrow>
-        <p class="font-heading text-2xl md:text-3xl font-bold text-butik-dark leading-snug">
+        <p class="mission-statement">
           {c.missionStatement}
         </p>
       </div>
 
-      <div class="mt-12 md:mt-16">
+      <div class="sdg-block">
         <Eyebrow align="left">{c.sdgEyebrow}</Eyebrow>
-        <p class="font-sans text-base text-butik-body leading-relaxed max-w-3xl">
+        <p class="sdg-intro">
           {c.sdgIntro}
         </p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-8">
+        <div class="sdg-grid">
           {sdg.map((o) => (
-            <div class="flex items-center gap-5 border border-butik-dark/15 bg-butik-light/50 p-5 md:p-6">
+            <div class="sdg-card">
               <span
-                class="flex h-16 w-16 flex-shrink-0 flex-col items-center justify-center text-white"
+                class="sdg-icon"
                 style={`background-color: ${o.color}`}
                 aria-hidden="true"
               >
-                <span class="text-xl leading-none">{o.icon}</span>
-                <span class="font-display text-lg font-bold leading-none mt-1">{o.num}</span>
+                <span class="sdg-emoji">{o.icon}</span>
+                <span class="sdg-num">{o.num}</span>
               </span>
               <div>
-                <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink">
+                <p class="sdg-label">
                   {c.sdgObiettivoLabel} {o.num}
                 </p>
-                <p class="font-heading text-base md:text-lg font-bold text-butik-dark leading-snug mt-1">
+                <p class="sdg-title">
                   {o.title}
                 </p>
               </div>
@@ -122,20 +122,20 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   </section>
 
   <!-- Il nostro team -->
-  <section class="max-w-6xl mx-auto px-6 py-16 md:py-20">
-    <div class="max-w-3xl">
+  <section class="team-section">
+    <div class="team-lead">
       <Eyebrow align="left">{c.teamEyebrow}</Eyebrow>
-      <div class="space-y-5 font-sans text-base md:text-lg text-butik-body leading-relaxed">
+      <div class="team-copy">
         <p set:html={c.teamP1}></p>
         <p set:html={c.teamP2}></p>
         <p set:html={c.teamP3}></p>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10 mt-12 md:mt-16">
+    <div class="founders-grid">
       {founders.map((f) => (
-        <article class="flex flex-col">
-          <div class="overflow-hidden mb-5 aspect-[4/5] bg-butik-light">
+        <article class="founder-card">
+          <div class="founder-photo">
             {f.photo && (
               <Image
                 src={f.photo}
@@ -143,27 +143,27 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
                 widths={[300, 500]}
                 sizes="(max-width: 768px) 100vw, 33vw"
                 quality={72}
-                class="w-full h-full object-cover"
+                class="founder-photo-img"
               />
             )}
           </div>
-          <h2 class="font-heading text-xl font-bold text-butik-dark leading-tight">{f.name}</h2>
-          <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mt-1">{f.role}</p>
-          <p class="font-sans text-sm text-butik-body leading-relaxed mt-4 flex-1">{f.bio}</p>
-          <div class="flex items-center gap-4 mt-5">
+          <h2 class="founder-name">{f.name}</h2>
+          <p class="founder-role">{f.role}</p>
+          <p class="founder-bio">{f.bio}</p>
+          <div class="founder-links">
             <a
               href={f.linkedin}
-              class="inline-flex items-center gap-2 font-display text-xs font-bold tracking-widest uppercase text-butik-dark hover:text-butik-red-ink transition-colors"
+              class="founder-linkedin"
               aria-label={`Profilo LinkedIn di ${f.name}`}
             >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg class="founder-linkedin-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
               </svg>
               {c.linkedinLabel}
             </a>
             <a
               href={`mailto:${f.email}`}
-              class="font-sans text-sm text-butik-dark/70 underline hover:text-butik-red-ink transition-colors break-all"
+              class="founder-email"
             >
               {f.email}
             </a>
@@ -174,15 +174,15 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   </section>
 
   <!-- Testimonianza in evidenza (Cult Funding) -->
-  <section class="bg-butik-dark text-white py-16 md:py-20">
-    <figure class="max-w-3xl mx-auto px-6 text-center">
-      <svg class="w-10 h-10 mx-auto text-butik-red mb-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+  <section class="quote-section">
+    <figure class="quote-figure">
+      <svg class="quote-mark" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
       </svg>
-      <blockquote class="font-heading text-xl md:text-2xl font-bold leading-snug">
+      <blockquote class="quote-text">
         {c.testimonialQuote}
       </blockquote>
-      <figcaption class="font-sans text-sm text-white/70 mt-6">
+      <figcaption class="quote-author">
         {c.testimonialAuthor}
       </figcaption>
     </figure>
@@ -202,3 +202,323 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
     primaryCta={{ label: c.ctaLabel, href: c.ctaHref }}
   />
 </BaseLayout>
+
+<style>
+  /* ── Chi siamo (intro) ──────────────────────────────────────────────── */
+  .intro-section {
+    max-width: 48rem; /* max-w-3xl, nessun token max-width in ui-tokens */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .intro-section {
+      padding-block: 5rem; /* py-20, nessun token */
+    }
+  }
+
+  .intro-copy {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed vince su text-base/lg */
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .intro-copy {
+      font-size: var(--font-size-lg);
+    }
+  }
+  .intro-copy > p:not(:last-child) {
+    margin-bottom: 1.25rem; /* space-y-5, nessun token */
+  }
+
+  /* ── Missione + SDG ───────────────────────────────────────────────────
+     Colori: --color-fg/--color-bg/--color-white sono i token semantici di
+     @butik/ui-tokens che coincidono coi valori reali di butik-dark/butik-light/
+     white; --color-accent-text è il rosso scurito per il testo (già usato per
+     text-butik-red-ink), --color-accent quello pieno per superfici/glifi. */
+  .mission-section {
+    background-color: var(--color-white);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .mission-section {
+      padding-block: 5rem; /* py-20, nessun token */
+    }
+  }
+  .mission-container {
+    max-width: 64rem; /* max-w-5xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+  .mission-lead {
+    max-width: 48rem; /* max-w-3xl, nessun token */
+  }
+  .mission-statement {
+    font-family: var(--font-heading);
+    font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+    line-height: 1.375; /* leading-snug vince su text-2xl/3xl */
+    font-weight: 700;
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .mission-statement {
+      /* text-3xl, sovrascritto dal @theme del sito con questo clamp() */
+      font-size: clamp(1.6rem, 1.25rem + 1.5vw, 1.875rem);
+    }
+  }
+
+  .sdg-block {
+    margin-top: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .sdg-block {
+      margin-top: var(--space-16);
+    }
+  }
+  .sdg-intro {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed */
+    color: var(--color-fg);
+    max-width: 48rem; /* max-w-3xl, nessun token */
+  }
+  .sdg-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 1.25rem; /* gap-5, nessun token */
+    margin-top: var(--space-8);
+  }
+  @media (min-width: 640px) {
+    .sdg-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .sdg-card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem; /* gap-5, nessun token */
+    /* border-butik-dark/15: scuro, oklab e srgb danno lo stesso pixel */
+    border: 1px solid color-mix(in srgb, var(--color-fg) 15%, transparent);
+    /* bg-butik-light/50: chiaro, qui oklab e srgb NON coincidono */
+    background-color: color-mix(in oklab, var(--color-bg) 50%, transparent);
+    padding: 1.25rem; /* p-5, nessun token */
+  }
+  @media (min-width: 768px) {
+    .sdg-card {
+      padding: var(--space-6);
+    }
+  }
+  .sdg-icon {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-16);
+    height: var(--space-16);
+    color: var(--color-white);
+  }
+  .sdg-emoji {
+    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    line-height: 1; /* leading-none */
+  }
+  .sdg-num {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    line-height: 1; /* leading-none */
+    font-weight: 700;
+    margin-top: var(--space-1);
+  }
+  .sdg-label {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+  }
+  .sdg-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    line-height: 1.375; /* leading-snug */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-top: var(--space-1);
+  }
+  @media (min-width: 768px) {
+    .sdg-title {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  /* ── Il nostro team ───────────────────────────────────────────────────── */
+  .team-section {
+    max-width: 72rem; /* max-w-6xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .team-section {
+      padding-block: 5rem; /* py-20, nessun token */
+    }
+  }
+  .team-lead {
+    max-width: 48rem; /* max-w-3xl, nessun token */
+  }
+  .team-copy {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed */
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .team-copy {
+      font-size: var(--font-size-lg);
+    }
+  }
+  .team-copy > p:not(:last-child) {
+    margin-bottom: 1.25rem; /* space-y-5, nessun token */
+  }
+
+  .founders-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .founders-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 2.5rem; /* gap-10, nessun token */
+      margin-top: var(--space-16);
+    }
+  }
+
+  .founder-card {
+    display: flex;
+    flex-direction: column;
+  }
+  .founder-photo {
+    overflow: hidden;
+    margin-bottom: 1.25rem; /* mb-5, nessun token */
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-bg);
+  }
+  .founder-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .founder-name {
+    font-family: var(--font-heading);
+    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    line-height: 1.25; /* leading-tight vince su text-xl */
+    font-weight: 700;
+    color: var(--color-fg);
+  }
+  .founder-role {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    margin-top: var(--space-1);
+  }
+  .founder-bio {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.625; /* leading-relaxed vince su text-sm */
+    color: var(--color-fg);
+    margin-top: var(--space-4);
+    flex: 1 1 0%;
+  }
+  .founder-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: 1.25rem; /* mt-5, nessun token */
+  }
+  .founder-linkedin {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    color: var(--color-fg);
+    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .founder-linkedin:hover {
+    color: var(--color-accent-text);
+  }
+  .founder-linkedin-icon {
+    width: var(--space-4);
+    height: var(--space-4);
+  }
+  .founder-email {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    /* text-butik-dark/70: scuro, oklab e srgb danno lo stesso pixel — pattern
+       già usato a mano nel repo */
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+    text-decoration: underline;
+    word-break: break-all;
+    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .founder-email:hover {
+    color: var(--color-accent-text);
+  }
+
+  /* ── Testimonianza in evidenza ────────────────────────────────────────── */
+  .quote-section {
+    background-color: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .quote-section {
+      padding-block: 5rem; /* py-20, nessun token */
+    }
+  }
+  .quote-figure {
+    max-width: 48rem; /* max-w-3xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    text-align: center;
+  }
+  .quote-mark {
+    width: 2.5rem; /* w-10, nessun token */
+    height: 2.5rem; /* h-10, nessun token */
+    margin-inline: auto;
+    margin-bottom: var(--space-6);
+    color: var(--color-accent);
+  }
+  .quote-text {
+    font-family: var(--font-heading);
+    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    line-height: 1.375; /* leading-snug */
+    font-weight: 700;
+  }
+  @media (min-width: 768px) {
+    .quote-text {
+      font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+    }
+  }
+  .quote-author {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    /* text-white/70: chiaro, qui oklab e srgb NON coincidono */
+    color: color-mix(in oklab, var(--color-fg-invert) 70%, transparent);
+    margin-top: var(--space-6);
+  }
+</style>

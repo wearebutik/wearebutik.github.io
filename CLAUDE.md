@@ -46,7 +46,10 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
   the Sitepins editor (ADR-0009); Sitepins Media Folder is set to `apps/web/src`.
 - **CSS Modules + tokens** (ADR-0005): style in `*.module.css` co-located with the
   component, values from tokens in `@butik/ui-tokens`. Shared components go in
-  `@butik/ui`. Tailwind is being removed — don't add new Tailwind.
+  `@butik/ui`. **Tailwind is gone** — app-level styling is Astro scoped
+  `<style>` on tokens. `reset.css` and `prose.css` are the plugin's own output,
+  frozen: don't hand-edit them, and don't reintroduce a utility framework.
+  Verify styling changes with `tools/visual-diff` (see its README).
   `apps/web/src/pages/lab/**` stays (experimental gallery).
 - **Component model = React islands + Storybook** (ADR-0008, supersedes ADR-0005
   #workshop): `@butik/ui` components are authored as **React islands** (`.tsx`,

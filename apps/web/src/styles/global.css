@@ -1,5 +1,7 @@
-@import "tailwindcss";
-@plugin "@tailwindcss/typography";
+/* Stili globali del sito. Tailwind e' stato rimosso (ADR-0005 #css-modules,
+   issue #46): i valori vengono dai token di @butik/ui-tokens, caricati da
+   BaseLayout prima di questo file. Qui restano solo i @font-face, gli stili
+   di elemento e un reset minimo. */
 
 /* Font locali — nessuna dipendenza esterna */
 @font-face {
@@ -35,79 +37,66 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-@theme {
-  /* Fonts */
-  --font-sans: "Clear Sans", sans-serif;
-  --font-heading: "League Spartan", sans-serif;
-  --font-display: "League Spartan", sans-serif;
+/* ── Alias di compatibilita' ──────────────────────────────────────────────
+   Nomi che venivano dal blocco `@theme` di Tailwind e che i CSS scoped dei
+   componenti usano ancora in 74 punti. Sono ALIAS: puntano ai token semantici
+   di @butik/ui-tokens, non ridefiniscono valori. Restano finche' i riferimenti
+   non sono rinominati — vedi issue #46. ADR-0005 vuole un'unica sorgente, e
+   questa lo e': qui non c'e' nessun colore nuovo, solo un secondo nome. */
+:root {
+  --color-butik-red: var(--color-accent);
+  --color-butik-red-ink: var(--color-accent-text);
+  --color-butik-purple: var(--color-accent-2);
+  --color-butik-dark: var(--color-fg);
+  --color-butik-darker: var(--color-fg);
+  --color-butik-body: var(--color-fg);
+  --color-butik-light: var(--color-bg);
+  --color-butik-green: var(--color-highlight);
 
-  /* Scala tipografica fluida (display) ──────────────────────────────────
-     Solo le taglie display/heading (3xl–7xl) usano clamp() e scalano in
-     modo continuo con la larghezza, eliminando i salti tra breakpoint.
-     I minimi restano sopra la taglia body/UI più grande (text-2xl = 1.5rem)
-     così la gerarchia titolo > testo è garantita a ogni viewport.
-     Le taglie body/UI (xs–2xl) restano i default fissi di Tailwind. */
+  /* Scala tipografica fluida dei titoli: le taglie display scalano con la
+     larghezza senza salti fra breakpoint. I minimi restano sopra 1.5rem, cosi'
+     la gerarchia titolo > testo regge a ogni viewport. */
   --text-3xl: clamp(1.6rem, 1.25rem + 1.5vw, 1.875rem);
   --text-4xl: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
   --text-5xl: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
   --text-6xl: clamp(2.5rem, 1.5rem + 4.5vw, 3.75rem);
   --text-7xl: clamp(2.8rem, 1.6rem + 5.4vw, 4.5rem);
-
-  /* Colors */
-  --color-butik-red: #e21929;
-  /* Variante scurita per il TESTO su fondo chiaro (AA 5.20:1). Specchia
-     --color-accent-text di @butik/ui-tokens; il rosso pieno resta per
-     superfici, bordi e decorazioni. Classe: text-butik-red-ink. */
-  --color-butik-red-ink: #cc1523;
-  --color-butik-purple: #62109f;
-  --color-butik-dark: #071108;
-  --color-butik-darker: #071108;
-  --color-butik-body: #071108;
-  --color-butik-light: #fff2f1;
-  --color-butik-green: #d2ff28;
 }
 
 /* Base typography */
 body {
   font-family: var(--font-sans);
-  color: var(--color-butik-body);
-  background-color: var(--color-butik-light);
+  color: var(--color-fg);
+  background-color: var(--color-bg);
 }
 
 h1, h2 {
   font-family: var(--font-heading);
-  color: var(--color-butik-dark);
+  color: var(--color-fg);
 }
 
 h3, h4, h5, h6 {
   font-family: var(--font-display);
-  color: var(--color-butik-red-ink);
+  color: var(--color-accent-text);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
 
-/* Prose customization */
-.prose h1,
-.prose h2 {
-  font-family: var(--font-heading);
-  color: var(--color-butik-dark);
-}
-
-.prose h3,
-.prose h4 {
-  font-family: var(--font-display);
-  color: var(--color-butik-red-ink);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.prose p,
-.prose li {
-  color: var(--color-butik-body);
-  font-family: var(--font-sans);
-}
-
-.prose a {
-  color: var(--color-butik-red-ink);
+/* ── Classi per il copy editoriale ────────────────────────────────────────
+   Il testo delle collection contiene HTML inline scritto dalla redazione via
+   CMS (link, parole in evidenza). Prima usava le utility di Tailwind; ora ha
+   due classi stabili, che sono anche piu' chiare di `text-butik-red-ink
+   underline` per chi scrive. Sono global perche' quel markup arriva da
+   `set:html` e non porta con se' lo scoping di Astro. */
+.copy-link {
+  color: var(--color-accent-text);
   text-decoration: underline;
+}
+.copy-link:hover {
+  text-decoration: none;
+}
+
+.copy-strong {
+  font-weight: 700;
+  color: var(--color-fg);
 }

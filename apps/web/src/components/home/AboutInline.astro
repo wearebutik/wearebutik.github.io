@@ -18,46 +18,158 @@ interface Props {
 const { title, p1, p2, p3, ctaLabel, ctaHref, imageAlt } = Astro.props;
 ---
 
-<section class="py-12 md:py-16">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-      <div class="order-2 md:order-1">
-        <h2
-          class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-butik-dark leading-tight mb-6"
-        >
+<section class="about-inline">
+  <div class="about-container">
+    <div class="about-grid">
+      <div class="about-copy">
+        <h2 class="about-title">
           {title}
         </h2>
 
-        <p class="font-sans text-base text-butik-dark/80 leading-relaxed mb-4">
+        <p class="about-paragraph">
           {p1}
         </p>
 
-        <p class="font-sans text-base text-butik-dark/80 leading-relaxed mb-4">
+        <p class="about-paragraph">
           {p2}
         </p>
 
-        <p class="font-sans text-base text-butik-dark/80 leading-relaxed">
+        <p class="about-paragraph">
           {p3}
         </p>
 
-        <a
-          href={ctaHref}
-          class="inline-block bg-butik-dark text-white px-8 py-4 font-display text-xs font-bold tracking-widest uppercase hover:bg-butik-red transition-colors w-full md:w-auto text-center mt-8"
-        >
+        <a href={ctaHref} class="about-cta">
           {ctaLabel}
         </a>
       </div>
 
-      <div class="order-1 md:order-2">
+      <div class="about-media">
         <Image
           src={heroHome}
           alt={imageAlt}
           widths={[400, 700, 1000]}
           sizes="(max-width: 768px) 100vw, 50vw"
           quality={75}
-          class="w-full aspect-[4/3] md:aspect-square object-cover"
+          class="about-image"
         />
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .about-inline {
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .about-inline {
+      padding-top: var(--space-16);
+      padding-bottom: var(--space-16);
+    }
+  }
+
+  .about-container {
+    max-width: 80rem; /* max-w-7xl, nessun token con questo valore */
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+
+  .about-grid {
+    display: grid;
+    align-items: center;
+    gap: var(--space-8);
+  }
+  @media (min-width: 768px) {
+    .about-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-12);
+    }
+  }
+
+  .about-copy {
+    order: 2;
+  }
+  @media (min-width: 768px) {
+    .about-copy {
+      order: 1;
+    }
+  }
+
+  .about-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-fg);
+    line-height: 1.25; /* leading-tight */
+    margin-bottom: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .about-title {
+      font-size: var(--text-4xl);
+    }
+  }
+  @media (min-width: 1024px) {
+    .about-title {
+      font-size: var(--text-5xl);
+    }
+  }
+
+  .about-paragraph {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    color: color-mix(in srgb, var(--color-fg) 80%, transparent);
+    line-height: 1.625; /* leading-relaxed vince su text-base */
+    margin-bottom: var(--space-4);
+  }
+  .about-paragraph:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .about-cta {
+    display: inline-block;
+    width: 100%;
+    margin-top: var(--space-8);
+    padding: var(--space-4) var(--space-8);
+    background: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    text-align: center;
+    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .about-cta:hover {
+    background: var(--color-accent);
+  }
+  @media (min-width: 768px) {
+    .about-cta {
+      width: auto;
+    }
+  }
+
+  .about-media {
+    order: 1;
+  }
+  @media (min-width: 768px) {
+    .about-media {
+      order: 2;
+    }
+  }
+
+  .about-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+  }
+  @media (min-width: 768px) {
+    .about-image {
+      aspect-ratio: 1 / 1;
+    }
+  }
+</style>

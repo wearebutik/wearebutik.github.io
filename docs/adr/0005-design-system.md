@@ -24,6 +24,17 @@ visual vocabulary. A motion library already exists (`src/lib/motion`,
 
 ### CSS Modules {#css-modules}
 
+> **Done (2026-08-28).** The sweep landed: Tailwind, `@tailwindcss/vite` and
+> `@tailwindcss/typography` are gone from `apps/web`, and the `@theme` block no
+> longer exists. What the plugin used to generate — the preflight and the
+> `prose` typography — was **extracted from a build made while Tailwind was
+> still installed** and frozen into `apps/web/src/styles/reset.css` and
+> `prose.css`, rather than rewritten: see the note in each file. App-level
+> styling is now Astro scoped `<style>` blocks on tokens; `packages/ui`
+> islands keep their `*.module.css`. Two aliases survive in `global.css`
+> (`--color-butik-*`, `--text-3xl…7xl`) pointing at the semantic tokens, until
+> the ~74 references to them are renamed.
+
 Component styling is in **CSS Modules** (`*.module.css`, natively supported by
 Astro), co-located with the component. **Tailwind is removed** via a full
 migration (dedicated branch, folder by folder). The only allowance during the
@@ -44,7 +55,9 @@ Shared components live in the **`@butik/ui`** package (CSS Modules + tokens), gr
 from `apps/web/src/components` as they are migrated. During the Tailwind→CSS
 Modules migration, `@butik/ui-tokens` coexists with the Tailwind `@theme` in
 `apps/web/src/styles/global.css`; once the migration lands, the package is the only
-token source.
+token source. *(The migration landed: the `@theme` is gone and the package is
+the only source of values. The `--color-butik-*` / `--text-*` names still exist
+in `global.css`, but purely as aliases of the semantic tokens.)*
 
 ### Motion {#motion} — superseded by ADR-0010
 

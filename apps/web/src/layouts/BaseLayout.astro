@@ -3,7 +3,9 @@ import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import '@butik/ui-tokens/tokens.css';
+import '../styles/reset.css';
 import '../styles/global.css';
+import '../styles/prose.css';
 // Stili del cookie banner (ADR-0006). L'inizializzazione avviene lato client
 // nello <script> in fondo al layout.
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
@@ -121,7 +123,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta property="twitter:image" content={ogImageURL} />
     <ClientRouter />
   </head>
-  <body class="flex flex-col min-h-screen">
+  <body class="page-body">
     {/* GTM fallback per client senza JS (ADR-0006). */}
     {gtmId && (
       <noscript
@@ -129,7 +131,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       />
     )}
     <Header />
-    <main class="flex-1">
+    <main class="page-main">
       <slot />
     </main>
     <Footer />
@@ -149,3 +151,15 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     </script>
   </body>
 </html>
+
+<style>
+  .page-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .page-main {
+    flex: 1 1 0%;
+  }
+</style>

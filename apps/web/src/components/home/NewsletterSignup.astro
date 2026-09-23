@@ -14,26 +14,19 @@ interface Props {
 const { title, body, placeholder, button, privacy, success } = Astro.props;
 ---
 
-<section class="py-12 md:py-16 bg-butik-light">
-  <div class="max-w-2xl mx-auto px-6 text-center">
-    <h2
-      class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-butik-dark mb-6"
-    >
+<section class="newsletter">
+  <div class="newsletter-inner">
+    <h2 class="newsletter-title">
       {title}
     </h2>
 
-    <p class="font-sans text-base text-butik-dark/70 mb-10">
+    <p class="newsletter-body">
       {body}
     </p>
 
     <div id="newsletter-container">
-      <form
-        id="newsletter-form"
-        action="#"
-        method="post"
-        class="flex flex-col md:flex-row gap-3"
-      >
-        <label class="sr-only" for="newsletter-email">Email</label>
+      <form id="newsletter-form" action="#" method="post" class="newsletter-form">
+        <label class="visually-hidden" for="newsletter-email">Email</label>
         <input
           id="newsletter-email"
           type="email"
@@ -41,7 +34,7 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
           required
           placeholder={placeholder}
           autocomplete="email"
-          class="flex-1 px-5 py-3 md:py-4 border border-butik-dark/30 bg-white font-sans text-base focus:outline-none focus:border-butik-red"
+          class="newsletter-input"
         />
 
         <input
@@ -53,20 +46,17 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
           aria-hidden="true"
         />
 
-        <button
-          type="submit"
-          class="bg-butik-dark text-white px-8 py-3 md:py-4 font-display text-xs font-bold tracking-widest uppercase hover:bg-butik-red transition-colors w-full md:w-auto"
-        >
+        <button type="submit" class="newsletter-submit">
           {button}
         </button>
       </form>
 
-      <p class="font-sans text-xs text-butik-dark/50 mt-4" set:html={privacy}></p>
+      <p class="newsletter-privacy" set:html={privacy}></p>
     </div>
 
     <p
       id="newsletter-status"
-      class="font-sans text-base text-butik-dark hidden"
+      class="newsletter-status hidden"
       role="status"
       aria-live="polite"
       data-success={success}
@@ -111,3 +101,149 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
 
   document.addEventListener('astro:page-load', initNewsletter);
 </script>
+
+<style>
+  .newsletter {
+    padding-block: var(--space-12);
+    background: var(--color-bg);
+  }
+  @media (min-width: 768px) {
+    .newsletter {
+      padding-block: var(--space-16);
+    }
+  }
+
+  .newsletter-inner {
+    /* max-w-2xl: nessun token per i max-width in ui-tokens. */
+    max-width: 42rem;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    text-align: center;
+  }
+
+  .newsletter-title {
+    font-family: var(--font-heading);
+    /* Il @theme del sito sovrascrive --text-3xl/4xl/5xl con dei clamp(), ma non
+       i rispettivi --text-*--line-height: Tailwind continua ad applicare i
+       suoi, che quindi vanno riportati insieme alla dimensione. Nessun token
+       combacia con questi clamp(). */
+    font-size: clamp(1.6rem, 1.25rem + 1.5vw, 1.875rem);
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .newsletter-title {
+      font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+      line-height: calc(2.5 / 2.25);
+    }
+  }
+  @media (min-width: 1024px) {
+    .newsletter-title {
+      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+      line-height: 1;
+    }
+  }
+
+  .newsletter-body {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: calc(1.5 / 1);
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+    /* mb-10 = 2.5rem: nessun token di spacing combacia (space-8=2rem, space-12=3rem). */
+    margin-bottom: 2.5rem;
+  }
+
+  .newsletter-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  @media (min-width: 768px) {
+    .newsletter-form {
+      flex-direction: row;
+    }
+  }
+
+  /* Annuncio del campo per le tecnologie assistive, fuori dal flusso visivo. */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .newsletter-input {
+    flex: 1 1 0%;
+    /* px-5 = 1.25rem: nessun token combacia (space-4=1rem, space-6=1.5rem). */
+    padding-inline: 1.25rem;
+    padding-block: var(--space-3);
+    border: 1px solid color-mix(in srgb, var(--color-fg) 30%, transparent);
+    background: var(--color-white);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: calc(1.5 / 1);
+  }
+  @media (min-width: 768px) {
+    .newsletter-input {
+      padding-block: var(--space-4);
+    }
+  }
+  .newsletter-input:focus {
+    outline: none;
+    border-color: var(--color-accent);
+  }
+
+  /* Nome mantenuto uguale allo script: initNewsletter fa classList.add/remove
+     su 'hidden' sia sull'honeypot che su container e status. */
+  .hidden {
+    display: none;
+  }
+
+  .newsletter-submit {
+    background: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    padding-inline: var(--space-8);
+    padding-block: var(--space-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    /* transition-colors: durata = --duration-fast, ma l'easing
+       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
+    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .newsletter-submit {
+      padding-block: var(--space-4);
+      width: auto;
+    }
+  }
+  .newsletter-submit:hover {
+    background: var(--color-accent);
+  }
+
+  .newsletter-privacy {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    color: color-mix(in srgb, var(--color-fg) 50%, transparent);
+    margin-top: var(--space-4);
+  }
+
+  .newsletter-status {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: calc(1.5 / 1);
+    color: var(--color-fg);
+  }
+</style>

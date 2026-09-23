@@ -11,20 +11,20 @@ const { progetti } = Astro.props;
 ---
 
 {progetti.length > 0 && (
-  <section class="py-12 md:py-16">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="mb-8 md:mb-10">
+  <section class="portfolio-section">
+    <div class="portfolio-container">
+      <div class="portfolio-header">
         <SectionHeading eyebrow="Progetti" title="Storie di trasformazione territoriale" />
-        <p class="font-sans text-sm md:text-base text-butik-dark/70 max-w-2xl mt-4">
+        <p class="portfolio-intro">
           Quello che abbiamo costruito insieme ai nostri partner
         </p>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-12">
+      <div class="portfolio-grid">
         {progetti.map((p) => (
           <a
             href={`/progetti/${p.id}`}
-            class="group relative overflow-hidden block aspect-[4/3] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-butik-red"
+            class="portfolio-card"
             aria-label={p.data.title}
           >
             <Image
@@ -34,22 +34,22 @@ const { progetti } = Astro.props;
               sizes="(max-width: 640px) 100vw, 50vw"
               quality={72}
               loading="lazy"
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              class="portfolio-card-image"
               transition:name={`progetto-${p.id}`}
             />
-            <div class="absolute inset-x-0 bottom-0 p-5 md:p-6 bg-gradient-to-t from-butik-dark/90 via-butik-dark/60 to-transparent">
+            <div class="portfolio-card-overlay">
               {p.data.category && (
-                <span class="inline-block text-xs font-display tracking-widest uppercase bg-butik-light text-butik-dark px-3 py-1 mb-3">
+                <span class="portfolio-card-category">
                   {p.data.category}
                 </span>
               )}
               <h3
-                class="portfolio-card-title font-heading text-xl md:text-2xl font-bold leading-tight"
+                class="portfolio-card-title"
                 transition:name={`progetto-${p.id}-title`}
               >
                 {p.data.title}
               </h3>
-              <p class="font-sans text-sm text-white/80 mt-2 line-clamp-2">
+              <p class="portfolio-card-subtitle">
                 {p.data.subtitle}
               </p>
             </div>
@@ -57,10 +57,10 @@ const { progetti } = Astro.props;
         ))}
       </div>
 
-      <div class="mt-12 text-center">
+      <div class="portfolio-cta">
         <a
           href="/progetti"
-          class="block md:inline-block border-2 border-butik-red text-butik-red-ink hover:bg-butik-red hover:text-white font-display text-xs font-bold tracking-widest uppercase px-8 py-4 transition-colors"
+          class="portfolio-cta-link"
         >
           Vedi tutti i progetti
         </a>
@@ -70,11 +70,172 @@ const { progetti } = Astro.props;
 )}
 
 <style>
+  .portfolio-section {
+    padding-top: var(--space-12); /* py-12 = 3rem */
+    padding-bottom: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .portfolio-section {
+      padding-top: var(--space-16); /* py-16 = 4rem */
+      padding-bottom: var(--space-16);
+    }
+  }
+
+  .portfolio-container {
+    /* Tailwind max-w-7xl: nessun token con questo valore (stesso letterale
+       già usato da Header.astro). */
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .portfolio-header {
+    margin-bottom: var(--space-8); /* mb-8 = 2rem */
+  }
+  @media (min-width: 768px) {
+    .portfolio-header {
+      margin-bottom: 2.5rem; /* mb-10 = 2.5rem, nessun token */
+    }
+  }
+
+  .portfolio-intro {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm); /* text-sm = 0.875rem */
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+    max-width: 42rem; /* max-w-2xl, nessun token */
+    margin-top: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .portfolio-intro {
+      font-size: var(--font-size-base); /* text-base = 1rem */
+      line-height: calc(1.5 / 1); /* line-height che text-base porta con sé */
+    }
+  }
+
+  .portfolio-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-top: var(--space-12);
+  }
+  @media (min-width: 640px) {
+    .portfolio-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .portfolio-card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+  }
+  .portfolio-card:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .portfolio-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* duration-500 con l'easing di default di Tailwind: nessun --duration-*
+       token vale 500ms e --ease-out ha una curva diversa da quella di default. */
+    transition: transform 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .portfolio-card:hover .portfolio-card-image {
+    transform: scale(1.05);
+  }
+
+  .portfolio-card-overlay {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-fg) 90%, transparent),
+      color-mix(in srgb, var(--color-fg) 60%, transparent),
+      transparent
+    );
+  }
+  @media (min-width: 768px) {
+    .portfolio-card-overlay {
+      padding: var(--space-6); /* p-6 = 1.5rem */
+    }
+  }
+
+  .portfolio-card-category {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs); /* text-xs = 0.75rem */
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    padding-inline: var(--space-3);
+    padding-block: var(--space-1);
+    margin-bottom: var(--space-3);
+  }
+
   /* Override dello stile globale h3 (uppercase + tracking + rosso): i titoli
      progetto sono bianchi e in sentence-case sopra il gradiente scuro. */
   .portfolio-card-title {
     color: #ffffff;
     text-transform: none;
     letter-spacing: -0.005em;
+    font-family: var(--font-heading);
+    font-size: 1.25rem; /* text-xl = 1.25rem, nessun token (--font-size-xl è 1.5rem) */
+    font-weight: 700;
+    /* leading-tight vince sul line-height implicito di text-xl/text-2xl */
+    line-height: 1.25;
+  }
+  @media (min-width: 768px) {
+    .portfolio-card-title {
+      font-size: var(--font-size-xl); /* text-2xl = 1.5rem, combacia con questo token */
+    }
+  }
+
+  .portfolio-card-subtitle {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm); /* text-sm = 0.875rem */
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    color: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
+    margin-top: var(--space-2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .portfolio-cta {
+    margin-top: var(--space-12);
+    text-align: center;
+  }
+
+  .portfolio-cta-link {
+    display: block;
+    border: 2px solid var(--color-accent);
+    color: var(--color-accent-text);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs); /* text-xs = 0.75rem */
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding-inline: var(--space-8);
+    padding-block: var(--space-4);
+    transition: background-color var(--duration-fast) ease, color var(--duration-fast) ease;
+  }
+  @media (min-width: 768px) {
+    .portfolio-cta-link {
+      display: inline-block;
+    }
+  }
+  .portfolio-cta-link:hover {
+    background-color: var(--color-accent);
+    color: var(--color-fg-invert);
   }
 </style>

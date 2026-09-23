@@ -18,7 +18,10 @@
 
 - One `*.module.css` co-located with the component. Semantic class names
   (`.card`, `.cardTitle`), not utility ones.
-- No Tailwind in components once the migration is done
+- No Tailwind, full stop: the migration is done (ADR-0005 #css-modules). App
+  styling is Astro scoped `<style>` on tokens; `packages/ui` uses CSS Modules.
+  Before landing a change that touches styling, check it renders identically
+  with `tools/visual-diff`.
   ([ADR-0005](../adr/0005-design-system.md#css-modules)).
 
 ## Accessibility

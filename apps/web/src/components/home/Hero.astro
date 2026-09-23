@@ -89,15 +89,15 @@ const serviziItems = servizi.map((s) => ({
 ---
 
 <section
-  class="hero hero-minh relative bg-butik-dark overflow-hidden -mt-20"
+  class="hero hero-minh"
   data-hero-section
 >
 
   <!-- ── DESKTOP: mosaico full-bleed di immagini con parallax ────────── -->
-  <div class="absolute inset-0 hidden md:block" aria-hidden="true">
+  <div class="hero-bg-desktop" aria-hidden="true">
     {bgTiles.map((tile, i) => (
       <div
-        class="hero-tile absolute will-change-transform overflow-hidden"
+        class="hero-tile"
         style={tile.pos}
         data-tile-vy={tile.vy}
         data-tile-vx={tile.vx}
@@ -110,18 +110,18 @@ const serviziItems = servizi.map((s) => ({
           sizes="(max-width: 768px) 0px, 40vw"
           quality={72}
           loading="eager"
-          class="w-full h-full object-cover"
+          class="hero-tile-img"
         />
       </div>
     ))}
   </div>
 
   <!-- ── MOBILE: slideshow di sfondo single-image ────────────────────── -->
-  <div class="absolute inset-0 md:hidden" aria-hidden="true">
+  <div class="hero-bg-mobile-wrap" aria-hidden="true">
     {mobileBackgrounds.map((tile, i) => (
       <div
         class:list={[
-          'hero-bg-mobile absolute inset-0 transition-opacity duration-1000 ease-in-out',
+          'hero-bg-mobile',
           i === 0 ? 'opacity-100' : 'opacity-0',
         ]}
         data-hero-bg-mobile={i}
@@ -133,49 +133,49 @@ const serviziItems = servizi.map((s) => ({
           sizes="100vw"
           quality={70}
           loading={i === 0 ? 'eager' : 'lazy'}
-          class="w-full h-full object-cover"
+          class="hero-bg-mobile-img"
         />
       </div>
     ))}
   </div>
 
   <!-- ── Overlay scuro per leggibilità ───────────────────────────────── -->
-  <div class="absolute inset-0 bg-butik-dark/55 md:bg-butik-dark/35" aria-hidden="true"></div>
-  <div class="absolute inset-0 bg-gradient-to-b from-butik-dark/30 via-transparent to-butik-dark/60" aria-hidden="true"></div>
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-gradient" aria-hidden="true"></div>
 
   <!-- ── Contenuto hero ──────────────────────────────────────────────── -->
-  <div class="hero-minh relative h-full flex flex-col">
+  <div class="hero-minh hero-content">
 
-    <div class="hero-lead flex-1 flex flex-col justify-center max-w-7xl mx-auto px-6 md:px-8 pt-28 md:pt-28 pb-4 md:pb-6 w-full">
+    <div class="hero-lead">
 
       <!-- Titolo + subtitle + CTA primario -->
-      <div class="hero-textcol relative text-center max-w-4xl mx-auto">
-        <h1 class="hero-title relative font-heading text-4xl md:text-5xl lg:text-6xl font-bold leading-[1.05]">
+      <div class="hero-textcol">
+        <h1 class="hero-title">
           {title}
         </h1>
-        <p class="hero-subtitle relative font-sans text-base md:text-lg mt-5 max-w-2xl mx-auto">
+        <p class="hero-subtitle">
           {subtitle}
         </p>
 
-        <div class="hero-cta relative mt-8">
+        <div class="hero-cta">
           <Button href={ctaHref}>{ctaLabel}</Button>
         </div>
       </div>
     </div>
 
     <!-- 5 card servizi in basso (1 col mobile, 2 col tablet, 5 col desktop) -->
-    <div class="relative max-w-7xl mx-auto px-6 md:px-8 pb-6 md:pb-8 w-full">
+    <div class="hero-svc-wrap">
       <!-- Da tablet in su: card con icona, una per servizio. -->
-      <div class="hero-svc-cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+      <div class="hero-svc-cards">
         {serviziItems.map((s) => <ServiceCard data={s} />)}
       </div>
 
       <!-- Da mobile: lista compatta, tutti i servizi sopra la piega. -->
-      <div class="hero-svc-list bg-white/5 backdrop-blur-sm border border-white/15 px-4 py-1 rounded-lg">
+      <div class="hero-svc-list">
         <ServiceLauncher items={serviziItems} tone="onDark" />
       </div>
 
-      <div class="text-center mt-4 md:mt-5">
+      <div class="hero-explore">
         <ArrowLink href={exploreHref} tone="invert">{exploreLabel}</ArrowLink>
       </div>
     </div>
@@ -183,6 +183,136 @@ const serviziItems = servizi.map((s) => ({
 </section>
 
 <style>
+  /* Sezione: sfondo scuro fuori dal flusso normale; -mt-20 recupera lo
+     spazio dell'header sticky sopra l'hero. */
+  .hero {
+    position: relative;
+    background-color: var(--color-fg);
+    overflow: hidden;
+    margin-top: -5rem; /* -mt-20, nessun token spacing a 5rem */
+  }
+
+  .hero-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hero-bg-desktop {
+    position: absolute;
+    inset: 0;
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .hero-bg-desktop {
+      display: block;
+    }
+  }
+
+  .hero-bg-mobile-wrap {
+    position: absolute;
+    inset: 0;
+  }
+  @media (min-width: 768px) {
+    .hero-bg-mobile-wrap {
+      display: none;
+    }
+  }
+
+  .hero-tile-img,
+  .hero-bg-mobile-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-scrim {
+    position: absolute;
+    inset: 0;
+    background-color: color-mix(in srgb, var(--color-fg) 55%, transparent);
+  }
+  @media (min-width: 768px) {
+    .hero-scrim {
+      background-color: color-mix(in srgb, var(--color-fg) 35%, transparent);
+    }
+  }
+  .hero-gradient {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--color-fg) 30%, transparent),
+      transparent,
+      color-mix(in srgb, var(--color-fg) 60%, transparent)
+    );
+  }
+
+  .hero-lead {
+    flex: 1 1 0%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 80rem; /* max-w-7xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-top: 7rem; /* pt-28, nessun token */
+    padding-bottom: var(--space-4);
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .hero-lead {
+      padding-inline: var(--space-8);
+      padding-bottom: var(--space-6);
+    }
+  }
+
+  .hero-textcol {
+    position: relative;
+    text-align: center;
+    max-width: 56rem; /* max-w-4xl, nessun token */
+    margin-inline: auto;
+  }
+
+  .hero-title {
+    position: relative;
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    line-height: 1.05; /* leading-[1.05] vince su text-4xl/5xl/6xl */
+  }
+  @media (min-width: 768px) {
+    .hero-title {
+      font-size: var(--text-5xl);
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-title {
+      font-size: var(--text-6xl);
+    }
+  }
+
+  .hero-subtitle {
+    position: relative;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: calc(1.5 / 1); /* line-height che text-base porta con sé */
+    margin-top: 1.25rem; /* mt-5, nessun token */
+    max-width: 42rem; /* max-w-2xl, nessun token */
+    margin-inline: auto;
+  }
+  @media (min-width: 768px) {
+    .hero-subtitle {
+      font-size: var(--font-size-lg);
+      line-height: calc(1.75 / 1.125); /* line-height che text-lg porta con sé */
+    }
+  }
+
+  .hero-cta {
+    position: relative;
+    margin-top: var(--space-8);
+  }
+
   /* ── Altezza adattiva (issue #7) ──────────────────────────────────────
      Hero a tutta altezza (82vh) solo quando il viewport è abbastanza alto.
      Su viewport bassi (≤760px) il contenuto da solo riempirebbe lo schermo,
@@ -221,21 +351,75 @@ const serviziItems = servizi.map((s) => ({
   .hero-subtitle {
     opacity: 0.95;
   }
+
+  .hero-svc-wrap {
+    position: relative;
+    max-width: 80rem; /* max-w-7xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-bottom: var(--space-6);
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .hero-svc-wrap {
+      padding-inline: var(--space-8);
+      padding-bottom: var(--space-8);
+    }
+  }
+
   /* Scelta della presentazione dei servizi: pura CSS, nessun JS.
      Sotto i 640px vince la lista compatta; da lì in su le card con icona. */
   .hero-svc-cards {
     display: none;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-3);
   }
   @media (min-width: 640px) {
     .hero-svc-cards {
       display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .hero-svc-list {
       display: none;
     }
   }
+  @media (min-width: 768px) {
+    .hero-svc-cards {
+      gap: var(--space-4);
+    }
+  }
+  @media (min-width: 1024px) {
+    .hero-svc-cards {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .hero-svc-list {
+    background-color: color-mix(in srgb, var(--color-white) 5%, transparent);
+    backdrop-filter: blur(8px); /* backdrop-blur-sm, nessun token blur in ui-tokens */
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid color-mix(in srgb, var(--color-white) 15%, transparent);
+    padding-inline: var(--space-4);
+    padding-block: var(--space-1);
+    /* rounded-lg NON vale i .5rem di default di Tailwind: @butik/ui-tokens
+       ridefinisce --radius-lg su :root a 1rem, e la utility legge quella. */
+    border-radius: var(--radius-lg);
+  }
+
+  .hero-explore {
+    text-align: center;
+    margin-top: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .hero-explore {
+      margin-top: 1.25rem; /* mt-5, nessun token */
+    }
+  }
 
   .hero-tile {
+    position: absolute;
+    will-change: transform;
+    overflow: hidden;
     transition: transform 100ms linear;
     opacity: 0.92;
     /* Mask radiale ampio e molto progressivo: la zona opaca è ampia (immagini
@@ -258,6 +442,20 @@ const serviziItems = servizi.map((s) => ({
       rgba(0, 0, 0, 0.25) 78%,
       transparent 100%
     );
+  }
+
+  .hero-bg-mobile {
+    position: absolute;
+    inset: 0;
+    transition: opacity 1000ms ease-in-out;
+  }
+  /* opacity-100/opacity-0 restano nomi letterali (non semantici): lo <script>
+     sotto le referenzia per stringa via classList.replace nello slideshow. */
+  .opacity-100 {
+    opacity: 1;
+  }
+  .opacity-0 {
+    opacity: 0;
   }
 </style>
 

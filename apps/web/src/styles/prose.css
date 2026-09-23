@@ -1,0 +1,469 @@
+/**
+ * .prose — tipografia del contenuto editoriale.
+ *
+ * Sostituisce `@tailwindcss/typography`, che il sito usava con la coppia
+ * `prose prose-lg`. NON e' riscritto a mano: e' il CSS che il plugin generava
+ * davvero, estratto dalla build fatta con il plugin ancora installato e
+ * congelato qui. Copiare il risultato invece di reinterpretare la regola e'
+ * l'unico modo di garantire che il markdown renda identico a prima.
+ *
+ * Cosa e' cambiato nel travaso:
+ *   - `prose` e `prose-lg` sono fuse in un'unica classe, perche' nel sito
+ *     comparivano sempre insieme. Nel markup resta la sola `prose`.
+ *   - le variabili del plugin (`--tw-prose-*`) diventano `--prose-*`,
+ *     dichiarate una volta sola in testa invece che ripetute inline.
+ *   - sono state tolte le regole per `kbd` e per le varianti `ol[type=...]`:
+ *     il markdown non le produce e nessuna pagina le usa.
+ *   - `:where([class~=not-prose], ...)` e' riscritto come
+ *     `:where(.not-prose, ...)`, che e' equivalente e leggibile. `not-prose`
+ *     continua a funzionare: e' quello che usano i componenti resi dentro il
+ *     markdown per sottrarsi a questi stili.
+ *
+ * I colori qui sotto sono i grigi di default di Tailwind, non la palette di
+ * butik: sono quelli che il sito rende oggi. Portarli sui token e' una scelta
+ * di design, non un travaso - vedi l'issue #46.
+ *
+ * Tutti i selettori del blocco base hanno specificita' zero (`:where`), come
+ * li generava il plugin: qualunque regola scritta altrove li batte.
+ */
+
+.prose {
+  /* Da `.prose` + `.prose-lg` del plugin, fuse. */
+  --prose-body: oklch(37.3% .034 259.733);
+  color: var(--prose-body);
+  max-width: 65ch;
+  font-size: 1.125rem;
+  line-height: 1.77778;
+
+  --prose-bold: oklch(21% .034 264.665);
+  --prose-bullets: oklch(87.2% .01 258.338);
+  --prose-captions: oklch(55.1% .027 264.364);
+  --prose-code: oklch(21% .034 264.665);
+  --prose-counters: oklch(55.1% .027 264.364);
+  --prose-headings: oklch(21% .034 264.665);
+  --prose-hr: oklch(92.8% .006 264.531);
+  --prose-lead: oklch(44.6% .03 256.802);
+  --prose-links: oklch(21% .034 264.665);
+  --prose-pre-bg: oklch(27.8% .033 256.848);
+  --prose-pre-code: oklch(92.8% .006 264.531);
+  --prose-quote-borders: oklch(92.8% .006 264.531);
+  --prose-quotes: oklch(21% .034 264.665);
+  --prose-td-borders: oklch(92.8% .006 264.531);
+  --prose-th-borders: oklch(87.2% .01 258.338);
+}
+
+.prose :where(a):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-links);
+  font-weight:500;
+  text-decoration:underline;
+}
+
+.prose :where(strong):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-bold);
+  font-weight:600;
+}
+
+.prose :where(a strong):not(:where(.not-prose, .not-prose *)),.prose :where(blockquote strong):not(:where(.not-prose, .not-prose *)),.prose :where(thead th strong):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+}
+
+.prose :where(ol):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.25em;
+  margin-bottom:1.25em;
+  padding-inline-start:1.625em;
+  list-style-type:decimal;
+}
+
+.prose :where(ul):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.25em;
+  margin-bottom:1.25em;
+  padding-inline-start:1.625em;
+  list-style-type:disc;
+}
+
+.prose :where(ol>li):not(:where(.not-prose, .not-prose *))::marker {
+  color:var(--prose-counters);
+  font-weight:400;
+}
+
+.prose :where(ul>li):not(:where(.not-prose, .not-prose *))::marker {
+  color:var(--prose-bullets);
+}
+
+.prose :where(blockquote p:first-of-type):not(:where(.not-prose, .not-prose *)):before {
+  content:open-quote;
+}
+
+.prose :where(blockquote p:last-of-type):not(:where(.not-prose, .not-prose *)):after {
+  content:close-quote;
+}
+
+.prose :where(h1 strong):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-weight:900;
+}
+
+.prose :where(h2 strong):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-weight:800;
+}
+
+.prose :where(h3 strong):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-weight:700;
+}
+
+.prose :where(h4 strong):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-weight:700;
+}
+
+.prose :where(img):not(:where(.not-prose, .not-prose *)) {
+  margin-top:2em;
+  margin-bottom:2em;
+}
+
+.prose :where(picture):not(:where(.not-prose, .not-prose *)) {
+  margin-top:2em;
+  margin-bottom:2em;
+  display:block;
+}
+
+.prose :where(code):not(:where(.not-prose, .not-prose *)):before,.prose :where(code):not(:where(.not-prose, .not-prose *)):after {
+  content:"`";
+}
+
+.prose :where(a code):not(:where(.not-prose, .not-prose *)),.prose :where(h1 code):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+}
+
+.prose :where(h4 code):not(:where(.not-prose, .not-prose *)),.prose :where(blockquote code):not(:where(.not-prose, .not-prose *)),.prose :where(thead th code):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+}
+
+.prose :where(pre code):not(:where(.not-prose, .not-prose *)) {
+  font-weight:inherit;
+  color:inherit;
+  font-size:inherit;
+  font-family:inherit;
+  line-height:inherit;
+  background-color:#0000;
+  border-width:0;
+  border-radius:0;
+  padding:0;
+}
+
+.prose :where(pre code):not(:where(.not-prose, .not-prose *)):before,.prose :where(pre code):not(:where(.not-prose, .not-prose *)):after {
+  content:none;
+}
+
+.prose :where(thead):not(:where(.not-prose, .not-prose *)) {
+  border-bottom-width:1px;
+  border-bottom-color:var(--prose-th-borders);
+}
+
+.prose :where(tbody tr):not(:where(.not-prose, .not-prose *)) {
+  border-bottom-width:1px;
+  border-bottom-color:var(--prose-td-borders);
+}
+
+.prose :where(tbody tr:last-child):not(:where(.not-prose, .not-prose *)) {
+  border-bottom-width:0;
+}
+
+.prose :where(tbody td):not(:where(.not-prose, .not-prose *)) {
+  vertical-align:baseline;
+}
+
+.prose :where(tfoot):not(:where(.not-prose, .not-prose *)) {
+  border-top-width:1px;
+  border-top-color:var(--prose-th-borders);
+}
+
+.prose :where(tfoot td):not(:where(.not-prose, .not-prose *)) {
+  vertical-align:top;
+}
+
+.prose :where(th,td):not(:where(.not-prose, .not-prose *)) {
+  text-align:start;
+}
+
+.prose :where(p):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.33333em;
+  margin-bottom:1.33333em;
+}
+
+.prose :where([class~=lead]):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-lead);
+  margin-top:1.09091em;
+  margin-bottom:1.09091em;
+  font-size:1.22222em;
+  line-height:1.45455;
+}
+
+.prose :where(blockquote):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-quotes);
+  border-inline-start-width:.25rem;
+  border-inline-start-color:var(--prose-quote-borders);
+  quotes:"“""”""‘""’";
+  margin-top:1.66667em;
+  margin-bottom:1.66667em;
+  padding-inline-start:1em;
+  font-style:italic;
+  font-weight:500;
+}
+
+.prose :where(h1):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  margin-top:0;
+  margin-bottom:.833333em;
+  font-size:2.66667em;
+  font-weight:800;
+  line-height:1;
+}
+
+.prose :where(h2):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  margin-top:1.86667em;
+  margin-bottom:1.06667em;
+  font-size:1.66667em;
+  font-weight:700;
+  line-height:1.33333;
+}
+
+.prose :where(h3):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  margin-top:1.66667em;
+  margin-bottom:.666667em;
+  font-size:1.33333em;
+  font-weight:600;
+  line-height:1.5;
+}
+
+.prose :where(h4):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  margin-top:1.77778em;
+  margin-bottom:.444444em;
+  font-weight:600;
+  line-height:1.55556;
+}
+
+.prose :where(img):not(:where(.not-prose, .not-prose *)),.prose :where(picture):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.77778em;
+  margin-bottom:1.77778em;
+}
+
+.prose :where(picture>img):not(:where(.not-prose, .not-prose *)) {
+  margin-top:0;
+  margin-bottom:0;
+}
+
+.prose :where(video):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.77778em;
+  margin-bottom:1.77778em;
+}
+
+.prose :where(code):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-code);
+  font-size:.888889em;
+  font-weight:600;
+}
+
+.prose :where(h2 code):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-size:.866667em;
+}
+
+.prose :where(h3 code):not(:where(.not-prose, .not-prose *)) {
+  color:inherit;
+  font-size:.875em;
+}
+
+.prose :where(pre):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-pre-code);
+  background-color:var(--prose-pre-bg);
+  padding-top:1em;
+  padding-inline-end:1.5em;
+  padding-bottom:1em;
+  border-radius:.375rem;
+  margin-top:2em;
+  margin-bottom:2em;
+  padding-inline-start:1.5em;
+  font-size:.888889em;
+  font-weight:400;
+  line-height:1.75;
+  overflow-x:auto;
+}
+
+.prose :where(ol):not(:where(.not-prose, .not-prose *)),.prose :where(ul):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.33333em;
+  margin-bottom:1.33333em;
+  padding-inline-start:1.55556em;
+}
+
+.prose :where(li):not(:where(.not-prose, .not-prose *)) {
+  margin-top:.666667em;
+  margin-bottom:.666667em;
+}
+
+.prose :where(ol>li):not(:where(.not-prose, .not-prose *)),.prose :where(ul>li):not(:where(.not-prose, .not-prose *)) {
+  padding-inline-start:.444444em;
+}
+
+.prose :where(.prose>ul>li p):not(:where(.not-prose, .not-prose *)) {
+  margin-top:.888889em;
+  margin-bottom:.888889em;
+}
+
+.prose :where(.prose>ul>li>p:first-child):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.33333em;
+}
+
+.prose :where(.prose>ul>li>p:last-child):not(:where(.not-prose, .not-prose *)) {
+  margin-bottom:1.33333em;
+}
+
+.prose :where(.prose>ol>li>p:first-child):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.33333em;
+}
+
+.prose :where(.prose>ol>li>p:last-child):not(:where(.not-prose, .not-prose *)) {
+  margin-bottom:1.33333em;
+}
+
+.prose :where(ul ul,ul ol,ol ul,ol ol):not(:where(.not-prose, .not-prose *)) {
+  margin-top:.888889em;
+  margin-bottom:.888889em;
+}
+
+.prose :where(dl):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.33333em;
+  margin-bottom:1.33333em;
+}
+
+.prose :where(dt):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  margin-top:1.33333em;
+  font-weight:600;
+}
+
+.prose :where(dd):not(:where(.not-prose, .not-prose *)) {
+  margin-top:.666667em;
+  padding-inline-start:1.55556em;
+}
+
+.prose :where(hr):not(:where(.not-prose, .not-prose *)) {
+  border-color:var(--prose-hr);
+  border-top-width:1px;
+  margin-top:3.11111em;
+  margin-bottom:3.11111em;
+}
+
+.prose :where(hr+*):not(:where(.not-prose, .not-prose *)),.prose :where(h2+*):not(:where(.not-prose, .not-prose *)),.prose :where(h3+*):not(:where(.not-prose, .not-prose *)),.prose :where(h4+*):not(:where(.not-prose, .not-prose *)) {
+  margin-top:0;
+}
+
+.prose :where(table):not(:where(.not-prose, .not-prose *)) {
+  table-layout:auto;
+  width:100%;
+  margin-top:2em;
+  margin-bottom:2em;
+  font-size:.888889em;
+  line-height:1.5;
+}
+
+.prose :where(thead th):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-headings);
+  vertical-align:bottom;
+  padding-inline-end:.75em;
+  padding-bottom:.75em;
+  padding-inline-start:.75em;
+  font-weight:600;
+}
+
+.prose :where(thead th:first-child):not(:where(.not-prose, .not-prose *)) {
+  padding-inline-start:0;
+}
+
+.prose :where(thead th:last-child):not(:where(.not-prose, .not-prose *)) {
+  padding-inline-end:0;
+}
+
+.prose :where(tbody td,tfoot td):not(:where(.not-prose, .not-prose *)) {
+  padding-top:.75em;
+  padding-inline-end:.75em;
+  padding-bottom:.75em;
+  padding-inline-start:.75em;
+}
+
+.prose :where(tbody td:first-child,tfoot td:first-child):not(:where(.not-prose, .not-prose *)) {
+  padding-inline-start:0;
+}
+
+.prose :where(tbody td:last-child,tfoot td:last-child):not(:where(.not-prose, .not-prose *)) {
+  padding-inline-end:0;
+}
+
+.prose :where(figure):not(:where(.not-prose, .not-prose *)) {
+  margin-top:1.77778em;
+  margin-bottom:1.77778em;
+}
+
+.prose :where(figure>*):not(:where(.not-prose, .not-prose *)) {
+  margin-top:0;
+  margin-bottom:0;
+}
+
+.prose :where(figcaption):not(:where(.not-prose, .not-prose *)) {
+  color:var(--prose-captions);
+  margin-top:1em;
+  font-size:.888889em;
+  line-height:1.5;
+}
+
+.prose :where(.prose>:first-child):not(:where(.not-prose, .not-prose *)) {
+  margin-top:0;
+}
+
+.prose :where(.prose>:last-child):not(:where(.not-prose, .not-prose *)) {
+  margin-bottom:0;
+}
+
+/* Il markup usava `max-w-none` accanto a `prose prose-lg` per annullare il
+   limite di 65ch: qui la stessa cosa, con una classe esplicita. */
+.prose-full {
+  max-width: none;
+}
+
+/* -- Override di butik ----------------------------------------------------
+   Questi non vengono dal plugin: erano gia' in global.css e vincono sul blocco
+   qui sopra perche' hanno specificita' reale (0,1,1) contro zero.
+
+   ATTENZIONE: e' proprio questa specificita' che rende inefficaci le classi
+   applicate ai <p> e ai <li> dei componenti resi dentro il markdown. Prima di
+   toccare queste quattro regole, leggi la nota nell'issue #46. */
+
+.prose h1,
+.prose h2 {
+  font-family: var(--font-heading);
+  color: var(--color-fg);
+}
+
+.prose h3,
+.prose h4 {
+  font-family: var(--font-display);
+  color: var(--color-accent-text);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.prose p,
+.prose li {
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
+
+.prose a {
+  color: var(--color-accent-text);
+  text-decoration: underline;
+}

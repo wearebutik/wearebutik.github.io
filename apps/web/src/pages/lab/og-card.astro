@@ -26,10 +26,10 @@ const cardLinks = [...ogCards.entries()]
 ---
 
 <BaseLayout title="Card OG — verifica — Butik" description="Helper interno: le card Open Graph generate e come controllarle.">
-  <section class="max-w-5xl mx-auto px-6 pt-24 pb-8">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-3">Interno · helper</p>
-    <h1 class="font-heading text-4xl md:text-5xl font-bold text-butik-dark mb-4">Card Open Graph — verifica</h1>
-    <p class="font-sans text-base md:text-lg text-butik-body max-w-3xl leading-relaxed">
+  <section class="page-intro">
+    <p class="eyebrow">Interno · helper</p>
+    <h1 class="page-title">Card Open Graph — verifica</h1>
+    <p class="page-lead">
       Una PNG per pagina, generata alla build dal generatore in produzione. Qui sotto
       l’elenco completo: apri il <strong>PNG</strong> per vedere l’immagine (funziona
       anche in locale), oppure passa l’URL della pagina ai validator — quelli
@@ -37,44 +37,44 @@ const cardLinks = [...ogCards.entries()]
     </p>
   </section>
 
-  <section class="max-w-5xl mx-auto px-6 py-8 border-t border-butik-dark/10">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-2">
+  <section class="table-section">
+    <p class="section-eyebrow">
       Card generate · in produzione
     </p>
-    <h2 class="font-heading text-2xl md:text-3xl font-bold text-butik-dark mb-2">
+    <h2 class="section-title">
       Immagini reali & test
     </h2>
-    <p class="font-sans text-sm text-butik-dark/60 max-w-2xl leading-relaxed mb-6">
+    <p class="section-lead">
       Per ogni pagina: l’immagine PNG effettivamente generata, l’URL della pagina
       (da incollare nei validator) e una scorciatoia per testarla. In locale apri il
       <strong>PNG</strong>; per i validator serve l’URL pubblico (online dopo il deploy).
     </p>
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
+    <div class="table-wrap">
+      <table class="card-table">
         <thead>
-          <tr class="border-b border-butik-dark/15">
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Pagina</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Layout</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">Immagine</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2 pr-4">URL pagina</th>
-            <th class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink py-2">Test</th>
+          <tr class="table-head-row">
+            <th class="table-head-cell">Pagina</th>
+            <th class="table-head-cell">Layout</th>
+            <th class="table-head-cell">Immagine</th>
+            <th class="table-head-cell">URL pagina</th>
+            <th class="table-head-cell">Test</th>
           </tr>
         </thead>
         <tbody>
           {cardLinks.map((c) => (
-            <tr class="border-b border-butik-dark/10 align-top">
-              <td class="font-sans text-sm text-butik-dark py-3 pr-4 whitespace-nowrap">{c.route}</td>
-              <td class="font-sans text-xs text-butik-dark/60 py-3 pr-4 whitespace-nowrap">{c.layout}</td>
-              <td class="py-3 pr-4 whitespace-nowrap">
-                <a href={c.png} target="_blank" class="font-sans text-sm text-butik-red-ink underline">PNG ↗</a>
+            <tr class="table-row">
+              <td class="cell-route">{c.route}</td>
+              <td class="cell-layout">{c.layout}</td>
+              <td class="cell-png">
+                <a href={c.png} target="_blank" class="cell-link">PNG ↗</a>
               </td>
-              <td class="py-3 pr-4">
-                <a href={c.pageUrl} target="_blank" class="font-sans text-sm text-butik-dark/70 underline break-all">{c.pageUrl}</a>
+              <td class="cell-url">
+                <a href={c.pageUrl} target="_blank" class="cell-url-link">{c.pageUrl}</a>
               </td>
-              <td class="py-3 whitespace-nowrap">
-                <a href={c.opengraph} target="_blank" class="font-sans text-sm text-butik-red-ink underline">opengraph.xyz</a>
-                <span class="text-butik-dark/30"> · </span>
-                <a href={c.linkedin} target="_blank" class="font-sans text-sm text-butik-red-ink underline">LinkedIn</a>
+              <td class="cell-test">
+                <a href={c.opengraph} target="_blank" class="cell-link">opengraph.xyz</a>
+                <span class="cell-sep"> · </span>
+                <a href={c.linkedin} target="_blank" class="cell-link">LinkedIn</a>
               </td>
             </tr>
           ))}
@@ -84,3 +84,186 @@ const cardLinks = [...ogCards.entries()]
   </section>
 
 </BaseLayout>
+
+<style>
+  .page-intro {
+    max-width: 64rem; /* max-w-5xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-top: var(--space-24); /* pt-24 */
+    padding-bottom: var(--space-8);
+  }
+
+  .eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    margin-bottom: var(--space-3);
+  }
+
+  .page-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    line-height: calc(2.5 / 2.25); /* text-4xl porta con sé questo line-height */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .page-title {
+      font-size: var(--text-5xl);
+      line-height: 1; /* text-5xl porta con sé questo line-height */
+    }
+  }
+
+  .page-lead {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    color: var(--color-fg);
+    max-width: 48rem; /* max-w-3xl, nessun token */
+    line-height: 1.625; /* leading-relaxed vince sul line-height implicito di text-base/lg */
+  }
+  @media (min-width: 768px) {
+    .page-lead {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  .table-section {
+    max-width: 64rem; /* max-w-5xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-8);
+    border-top: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+  }
+
+  .section-eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    margin-bottom: var(--space-2);
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl); /* text-2xl = 1.5rem, combacia con questo token */
+    line-height: calc(2 / 1.5); /* text-2xl porta con sé questo line-height */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-2);
+  }
+  @media (min-width: 768px) {
+    .section-title {
+      font-size: var(--text-3xl);
+      line-height: 1.2; /* text-3xl porta con sé questo line-height */
+    }
+  }
+
+  .section-lead {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    color: color-mix(in oklab, var(--color-fg) 60%, transparent);
+    max-width: 42rem; /* max-w-2xl, nessun token */
+    line-height: 1.625; /* leading-relaxed vince sul line-height implicito di text-sm */
+    margin-bottom: var(--space-6);
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+  }
+
+  .card-table {
+    width: 100%;
+    text-align: left;
+    border-collapse: collapse;
+  }
+
+  .table-head-row {
+    border-bottom: 1px solid color-mix(in oklab, var(--color-fg) 15%, transparent);
+  }
+
+  .table-head-cell {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    padding-block: var(--space-2);
+    padding-right: var(--space-4);
+  }
+  .table-head-cell:last-child {
+    padding-right: 0;
+  }
+
+  .table-row {
+    border-bottom: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+    vertical-align: top;
+  }
+
+  .cell-route {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* text-sm porta con sé questo line-height */
+    color: var(--color-fg);
+    padding-block: var(--space-3);
+    padding-right: var(--space-4);
+    white-space: nowrap;
+  }
+
+  .cell-layout {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    color: color-mix(in oklab, var(--color-fg) 60%, transparent);
+    padding-block: var(--space-3);
+    padding-right: var(--space-4);
+    white-space: nowrap;
+  }
+
+  .cell-png {
+    padding-block: var(--space-3);
+    padding-right: var(--space-4);
+    white-space: nowrap;
+  }
+
+  .cell-url {
+    padding-block: var(--space-3);
+    padding-right: var(--space-4);
+  }
+
+  .cell-test {
+    padding-block: var(--space-3);
+    white-space: nowrap;
+  }
+
+  .cell-link {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* text-sm porta con sé questo line-height */
+    color: var(--color-accent-text);
+    text-decoration: underline;
+  }
+
+  .cell-url-link {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* text-sm porta con sé questo line-height */
+    color: color-mix(in oklab, var(--color-fg) 70%, transparent);
+    text-decoration: underline;
+    word-break: break-all;
+  }
+
+  .cell-sep {
+    color: color-mix(in oklab, var(--color-fg) 30%, transparent);
+  }
+</style>

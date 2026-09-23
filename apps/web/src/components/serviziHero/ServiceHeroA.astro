@@ -14,9 +14,9 @@ const { content, image, imageAlt = '' } = Astro.props;
 const isLocalImage = typeof image !== 'string';
 ---
 
-<section class="grid grid-cols-1 lg:grid-cols-2 lg:min-h-[70vh]">
+<section class="hero-grid">
   <!-- IMMAGINE — mobile sopra, desktop a destra -->
-  <div class="relative order-1 lg:order-2 h-56 sm:h-64 lg:h-auto">
+  <div class="hero-media">
     {isLocalImage ? (
       <Image
         src={image as ImageMetadata}
@@ -26,7 +26,7 @@ const isLocalImage = typeof image !== 'string';
         quality={72}
         loading="eager"
         fetchpriority="high"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="hero-media-img"
       />
     ) : (
       <img
@@ -34,37 +34,34 @@ const isLocalImage = typeof image !== 'string';
         alt={imageAlt}
         loading="eager"
         fetchpriority="high"
-        class="absolute inset-0 h-full w-full object-cover"
+        class="hero-media-img"
       />
     )}
     <!-- blend morbido verso il pannello scuro: dal basso su mobile, da sinistra su desktop -->
-    <div
-      class="pointer-events-none absolute inset-0 bg-gradient-to-t from-butik-dark/80 via-butik-dark/20 to-transparent lg:bg-gradient-to-l lg:from-transparent lg:via-transparent lg:to-butik-dark"
-      aria-hidden="true"
-    ></div>
+    <div class="hero-media-scrim" aria-hidden="true"></div>
   </div>
 
   <!-- PANNELLO SCURO — contenuto -->
-  <div class="order-2 lg:order-1 bg-butik-dark flex flex-col justify-center px-6 py-12 sm:px-10 lg:px-16 lg:py-20">
-    <div class="max-w-xl">
+  <div class="hero-panel">
+    <div class="hero-panel-inner">
       <Eyebrow tone="invert">{content.eyebrow}</Eyebrow>
 
-      <h1 class="hero-headline mt-5 font-display font-bold leading-[1.05] text-4xl md:text-5xl lg:text-6xl">
+      <h1 class="hero-headline">
         {content.headline}
       </h1>
 
-      <p class="mt-5 max-w-md font-sans text-base sm:text-lg text-white/80">
+      <p class="hero-sub">
         {content.sub}
       </p>
 
       <!-- PROOF CHIP -->
-      <ul class="mt-8 flex flex-wrap gap-3" role="list">
+      <ul class="hero-proof-list" role="list">
         {content.proof.map((p) => (
-          <li class="flex flex-col rounded-md border border-white/10 bg-white/5 px-4 py-2">
-            <span class="font-display text-lg font-bold leading-none text-butik-green">
+          <li class="hero-proof-item">
+            <span class="hero-proof-value">
               {p.value}
             </span>
-            <span class="mt-1 font-sans text-xs leading-tight text-white/70">
+            <span class="hero-proof-label">
               {p.label}
             </span>
           </li>
@@ -72,7 +69,7 @@ const isLocalImage = typeof image !== 'string';
       </ul>
 
       <!-- CTA -->
-      <div class="mt-10 flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="hero-cta-row">
         <Button href={content.ctaPrimary.href}>{content.ctaPrimary.label}</Button>
 
         {content.ctaSecondary && (
@@ -86,8 +83,173 @@ const isLocalImage = typeof image !== 'string';
 </section>
 
 <style>
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  @media (min-width: 64rem) {
+    .hero-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      min-height: 70vh;
+    }
+  }
+
+  .hero-media {
+    position: relative;
+    order: 1;
+    height: 14rem;
+  }
+  @media (min-width: 40rem) {
+    .hero-media {
+      height: 16rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-media {
+      order: 2;
+      height: auto;
+    }
+  }
+
+  .hero-media-img {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+  }
+
+  .hero-media-scrim {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(
+      to top in oklab,
+      color-mix(in oklab, var(--color-butik-dark) 80%, transparent) 0%,
+      color-mix(in oklab, var(--color-butik-dark) 20%, transparent) 50%,
+      transparent 100%
+    );
+  }
+  @media (min-width: 64rem) {
+    .hero-media-scrim {
+      background-image: linear-gradient(to left in oklab, transparent 0%, transparent 50%, var(--color-butik-dark) 100%);
+    }
+  }
+
+  .hero-panel {
+    order: 2;
+    background-color: var(--color-butik-dark);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+  @media (min-width: 40rem) {
+    .hero-panel {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-panel {
+      order: 1;
+      padding-left: var(--space-16);
+      padding-right: var(--space-16);
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+  }
+
+  .hero-panel-inner {
+    max-width: 36rem;
+  }
+
   /* lo stile globale di h1 forza color butik-dark: qui serve bianco su scuro */
   .hero-headline {
     color: var(--color-fg-invert);
+    margin-top: 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    /* leading-[1.05] vinceva su text-4xl/5xl/6xl: line-height fisso a ogni taglia */
+    line-height: 1.05;
+    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+  }
+  @media (min-width: 48rem) {
+    .hero-headline {
+      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-headline {
+      font-size: clamp(2.5rem, 1.5rem + 4.5vw, 3.75rem);
+    }
+  }
+
+  .hero-sub {
+    margin-top: 1.25rem;
+    max-width: 28rem;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: color-mix(in oklab, var(--color-fg-invert) 80%, transparent);
+  }
+  @media (min-width: 40rem) {
+    .hero-sub {
+      font-size: var(--font-size-lg);
+      line-height: calc(1.75 / 1.125);
+    }
+  }
+
+  .hero-proof-list {
+    margin-top: var(--space-8);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .hero-proof-item {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in oklab, var(--color-fg-invert) 10%, transparent);
+    background-color: color-mix(in oklab, var(--color-fg-invert) 5%, transparent);
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    padding-top: var(--space-2);
+    padding-bottom: var(--space-2);
+  }
+
+  .hero-proof-value {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    /* leading-none vinceva su text-lg */
+    line-height: 1;
+    color: var(--color-butik-green);
+  }
+
+  .hero-proof-label {
+    margin-top: var(--space-1);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-xs);
+    /* leading-tight vinceva su text-xs */
+    line-height: 1.25;
+    color: color-mix(in oklab, var(--color-fg-invert) 70%, transparent);
+  }
+
+  .hero-cta-row {
+    margin-top: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  @media (min-width: 40rem) {
+    .hero-cta-row {
+      flex-direction: row;
+      align-items: center;
+    }
   }
 </style>

@@ -41,8 +41,8 @@ const resolvedImg =
       })();
 ---
 
-<div class="my-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center not-prose">
-  <div class="prose prose-lg max-w-none">
+<div class="image-text-row not-prose">
+  <div class="prose prose-full">
     <slot />
   </div>
 
@@ -56,3 +56,19 @@ const resolvedImg =
     caption={caption}
   />
 </div>
+
+<style>
+  .image-text-row {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    align-items: center;
+    gap: var(--space-8);
+    margin-block: var(--space-12);
+  }
+
+  @media (min-width: 768px) {
+    .image-text-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

@@ -19,16 +19,16 @@ const partners = c.partners;
   description={c.metaDescription}
 >
   <!-- Page header -->
-  <div class="pt-20 pb-12">
+  <div class="page-header">
     <SectionHeading as="h1" eyebrow={c.eyebrow} title={c.title} />
   </div>
 
   <!-- Lista logo · partner -->
-  <section class="max-w-3xl mx-auto px-6 pb-24">
-    <ul class="divide-y divide-butik-dark/10 border-y border-butik-dark/10">
+  <section class="partners-section">
+    <ul class="partners-list">
       {partners.map((partner) => (
-        <li class="flex items-center gap-6 py-5">
-          <span class="shrink-0 flex items-center justify-center bg-white rounded-xl ring-1 ring-butik-dark/5 w-40 h-16 px-4">
+        <li class="partner-row">
+          <span class="partner-logo-frame">
             {partner.logo && (
               <Image
                 src={partner.logo}
@@ -37,11 +37,11 @@ const partners = c.partners;
                 densities={[1, 2]}
                 loading="lazy"
                 decoding="async"
-                class="max-h-9 w-auto"
+                class="partner-logo-img"
               />
             )}
           </span>
-          <span class="font-sans text-base md:text-lg text-butik-dark">
+          <span class="partner-name">
             {partner.name}
           </span>
         </li>
@@ -49,3 +49,63 @@ const partners = c.partners;
     </ul>
   </section>
 </BaseLayout>
+
+<style>
+  .page-header {
+    padding-top: 5rem; /* pt-20: nessun token combacia (tra --space-16 e --space-24) */
+    padding-bottom: var(--space-12);
+  }
+
+  .partners-section {
+    max-width: 48rem; /* max-w-3xl: nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-bottom: var(--space-24);
+  }
+
+  .partners-list {
+    border-block: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+  }
+
+  .partner-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: 1.25rem; /* py-5: nessun token combacia (tra --space-4 e --space-6) */
+  }
+  /* divide-y: Tailwind aggiunge il bordo a `:not(:last-child)`, non al primo. */
+  .partners-list > .partner-row:not(:last-child) {
+    border-bottom: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+  }
+
+  .partner-logo-frame {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 10rem; /* w-40: nessun token combacia */
+    height: var(--space-16);
+    padding-inline: var(--space-4);
+    background-color: var(--color-white);
+    border-radius: 0.75rem; /* rounded-xl: nessun token combacia (--radius-md .5rem / --radius-lg 1rem) */
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--color-fg) 5%, transparent); /* ring-1 ring-butik-dark/5 */
+  }
+
+  .partner-logo-img {
+    max-height: 2.25rem; /* max-h-9: nessun token combacia (tra --space-8 e --space-12) */
+    width: auto;
+  }
+
+  .partner-name {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.5; /* line-height che text-base porta con sé */
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .partner-name {
+      font-size: var(--font-size-lg);
+      line-height: calc(1.75 / 1.125); /* line-height che text-lg porta con sé */
+    }
+  }
+</style>

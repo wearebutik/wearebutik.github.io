@@ -22,14 +22,11 @@
     "@astrojs/react": "^6.0.1",
     "@butik/ui": "workspace:*",
     "@butik/ui-tokens": "workspace:*",
-    "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.2.2",
     "astro": "^6.1.5",
     "posthog-js": "^1.399.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "sharp": "^0.34.5",
-    "tailwindcss": "^4.2.2",
     "vanilla-cookieconsent": "^3.1.0"
   },
   "devDependencies": {

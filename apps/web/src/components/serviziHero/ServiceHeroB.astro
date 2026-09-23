@@ -16,31 +16,28 @@ const { content } = Astro.props;
 const _unused = Image;
 ---
 
-<section class="bg-butik-light text-butik-dark flex flex-col">
-  <div class="flex-1 flex items-center">
-    <div class="mx-auto w-full max-w-7xl px-6 py-12 md:py-16 lg:py-20">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-x-12 items-end">
+<section>
+  <div class="hero-inner">
+    <div class="hero-container">
+      <div class="hero-grid">
 
         <!-- Colonna sinistra: claim + CTA ──────────────────────────────── -->
-        <div class="lg:col-span-7">
+        <div class="hero-col-claim">
           <Eyebrow>{content.eyebrow}</Eyebrow>
 
-          <h1 class="hero-claim mt-5 font-heading font-black text-4xl md:text-5xl lg:text-6xl">
+          <h1 class="hero-claim">
             {content.headline}
           </h1>
 
-          <p class="mt-6 max-w-xl font-sans text-lg text-butik-dark/70">
+          <p class="hero-lead">
             {content.sub}
           </p>
 
-          <div class="mt-9 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <div class="hero-actions">
             <Button href={content.ctaPrimary.href} tone="dark">{content.ctaPrimary.label}</Button>
 
             {content.ctaSecondary && (
-              <a
-                href={content.ctaSecondary.href}
-                class="font-display text-xs font-bold tracking-widest uppercase text-butik-dark underline underline-offset-4 decoration-butik-dark/30 hover:text-butik-red-ink hover:decoration-butik-red transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-butik-red"
-              >
+              <a href={content.ctaSecondary.href} class="hero-cta-secondary">
                 {content.ctaSecondary.label}
               </a>
             )}
@@ -48,15 +45,15 @@ const _unused = Image;
         </div>
 
         <!-- Colonna destra: il registro (prova reale come indice) ───────── -->
-        <div class="lg:col-span-5">
+        <div class="hero-col-ledger">
           <Eyebrow>{content.ledgerLabel}</Eyebrow>
-          <ul class="border-t border-butik-dark/15">
+          <ul class="ledger-list">
             {content.ledger.map((row) => (
-              <li class="flex items-baseline gap-4 border-b border-butik-dark/15 py-2.5">
-                <span class="ledger-key shrink-0 w-20 font-display text-sm font-bold tracking-wide text-butik-red-ink">
+              <li class="ledger-row">
+                <span class="ledger-key">
                   {row.k}
                 </span>
-                <span class="font-sans text-sm md:text-base text-butik-dark leading-snug">
+                <span class="ledger-value">
                   {row.v}
                 </span>
               </li>
@@ -69,18 +66,14 @@ const _unused = Image;
   </div>
 
   <!-- Barra prova full-bleed ───────────────────────────────────────────── -->
-  <div class="bg-butik-dark text-white">
-    <ul
-      class="mx-auto flex max-w-7xl items-center gap-6 overflow-x-auto px-6 py-5 md:justify-center md:gap-0 md:overflow-visible md:py-6"
-    >
+  <div class="proof-bar">
+    <ul class="proof-list">
       {content.proofBar.map((item, i) => (
-        <li
-          class="flex shrink-0 items-center font-display text-xs font-bold uppercase tracking-widest md:shrink"
-        >
+        <li class="proof-item">
           {i > 0 && (
-            <span class="mx-5 text-butik-green md:mx-8" aria-hidden="true">/</span>
+            <span class="proof-sep" aria-hidden="true">/</span>
           )}
-          <span class="whitespace-nowrap md:whitespace-normal">{item}</span>
+          <span class="proof-label">{item}</span>
         </li>
       ))}
     </ul>
@@ -90,16 +83,224 @@ const _unused = Image;
 <style>
   section {
     min-height: 70vh;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    display: flex;
+    flex-direction: column;
   }
+
+  .hero-inner {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-container {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 80rem; /* max-w-7xl: nessun --container-* con questo valore in ui-tokens */
+    padding-inline: var(--space-6);
+    padding-block: var(--space-12);
+  }
+  @media (min-width: 48rem) {
+    .hero-container {
+      padding-block: var(--space-16);
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-container {
+      padding-block: 5rem; /* py-20: nessun token per 5rem */
+    }
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    row-gap: var(--space-12);
+    align-items: flex-end;
+  }
+  @media (min-width: 64rem) {
+    .hero-grid {
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      column-gap: var(--space-12);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero-col-claim {
+      grid-column: span 7 / span 7;
+    }
+    .hero-col-ledger {
+      grid-column: span 5 / span 5;
+    }
+  }
+
   /* h1 globale impone color butik-dark + font-heading: il claim lo eredita
      correttamente, qui irrigidiamo solo leading e tracking per l'oversize. */
   .hero-claim {
+    margin-top: 1.25rem; /* mt-5: nessun token per 1.25rem */
+    font-weight: 900; /* font-black: nessun --font-weight-* in ui-tokens */
+    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
     line-height: 1;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
+  @media (min-width: 48rem) {
+    .hero-claim {
+      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+    }
+  }
+  @media (min-width: 64rem) {
+    .hero-claim {
+      font-size: clamp(2.5rem, 1.5rem + 4.5vw, 3.75rem);
+    }
+  }
+
+  .hero-lead {
+    margin-top: var(--space-6);
+    max-width: 36rem; /* max-w-xl: nessun token per 36rem */
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    line-height: calc(1.75 / 1.125);
+    color: color-mix(in oklab, var(--color-fg) 70%, transparent);
+  }
+
+  .hero-actions {
+    margin-top: 2.25rem; /* mt-9: nessun token per 2.25rem */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-8);
+    row-gap: var(--space-4);
+  }
+
+  .hero-cta-secondary {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    font-weight: 700; /* font-bold: nessun --font-weight-* in ui-tokens */
+    letter-spacing: 0.1em; /* tracking-widest: nessun token per 0.1em */
+    text-transform: uppercase;
+    color: var(--color-fg);
+    text-decoration-line: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: color-mix(in oklab, var(--color-fg) 30%, transparent);
+    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
+       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
+    transition:
+      color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
+      text-decoration-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .hero-cta-secondary:hover {
+    color: var(--color-accent-text);
+    text-decoration-color: var(--color-accent);
+  }
+  .hero-cta-secondary:focus-visible {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--color-accent);
+  }
+
+  .ledger-list {
+    border-top-style: solid;
+    border-top-width: 1px;
+    border-top-color: color-mix(in oklab, var(--color-fg) 15%, transparent);
+  }
+
+  .ledger-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-4);
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: color-mix(in oklab, var(--color-fg) 15%, transparent);
+    padding-block: 0.625rem; /* py-2.5: nessun token per 0.625rem */
+  }
+
   /* Allineo le chiavi corte ("2018", "MMW", "15+") su una colonna costante. */
   .ledger-key {
+    flex-shrink: 0;
+    width: 5rem; /* w-20: nessun token per 5rem */
+    font-family: var(--font-display);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875);
+    font-weight: 700; /* font-bold: nessun --font-weight-* in ui-tokens */
+    letter-spacing: 0.025em; /* tracking-wide: nessun token per 0.025em */
+    color: var(--color-accent-text);
     font-variant-numeric: tabular-nums;
+  }
+
+  .ledger-value {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    color: var(--color-fg);
+    /* leading-snug vinceva su text-sm/md:text-base a ogni breakpoint */
+    line-height: 1.375;
+  }
+  @media (min-width: 48rem) {
+    .ledger-value {
+      font-size: var(--font-size-base);
+    }
+  }
+
+  .proof-bar {
+    background-color: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+  }
+
+  .proof-list {
+    margin-inline: auto;
+    display: flex;
+    max-width: 80rem; /* max-w-7xl: nessun token per 80rem */
+    align-items: center;
+    gap: var(--space-6);
+    overflow-x: auto;
+    padding-inline: var(--space-6);
+    padding-block: 1.25rem; /* py-5: nessun token per 1.25rem */
+  }
+  @media (min-width: 48rem) {
+    .proof-list {
+      justify-content: center;
+      gap: 0;
+      overflow: visible;
+      padding-block: var(--space-6);
+    }
+  }
+
+  .proof-item {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    font-weight: 700; /* font-bold: nessun --font-weight-* in ui-tokens */
+    text-transform: uppercase;
+    letter-spacing: 0.1em; /* tracking-widest: nessun token per 0.1em */
+  }
+  @media (min-width: 48rem) {
+    .proof-item {
+      flex-shrink: 1;
+    }
+  }
+
+  .proof-sep {
+    margin-inline: 1.25rem; /* mx-5: nessun token per 1.25rem */
+    color: var(--color-highlight);
+  }
+  @media (min-width: 48rem) {
+    .proof-sep {
+      margin-inline: var(--space-8);
+    }
+  }
+
+  .proof-label {
+    white-space: nowrap;
+  }
+  @media (min-width: 48rem) {
+    .proof-label {
+      white-space: normal;
+    }
   }
 </style>

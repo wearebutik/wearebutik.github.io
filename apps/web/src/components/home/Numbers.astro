@@ -15,17 +15,17 @@ interface Props {
 const { butikMetrics, mmwLabel, mmwMetrics } = Astro.props;
 ---
 
-<section class="bg-butik-dark text-white py-10 md:py-14" aria-label="Numeri e impatto">
-  <dl class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4 max-w-7xl mx-auto px-6">
+<section class="numbers" aria-label="Numeri e impatto">
+  <dl class="numbers-grid">
     {
       butikMetrics.map((metric) => (
         <div>
-          <dt class="sr-only">{metric.label}</dt>
+          <dt class="metric-term">{metric.label}</dt>
           <dd>
-            <span class="block font-heading text-4xl lg:text-5xl font-black text-butik-green leading-none">
+            <span class="metric-value">
               {metric.value}
             </span>
-            <span class="block font-sans text-xs lg:text-sm text-white/70 mt-2 leading-snug" aria-hidden="true">
+            <span class="metric-label" aria-hidden="true">
               {metric.label}
             </span>
           </dd>
@@ -34,21 +34,21 @@ const { butikMetrics, mmwLabel, mmwMetrics } = Astro.props;
     }
   </dl>
 
-  <div class="mt-10 lg:mt-16 pt-10 lg:pt-12 border-t border-white/15 max-w-7xl mx-auto px-6">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-green mb-8 text-center">
+  <div class="numbers-mmw">
+    <p class="numbers-mmw-heading">
       {mmwLabel}
     </p>
 
-    <dl class="grid grid-cols-2 gap-6 lg:gap-12 max-w-xl mx-auto text-center">
+    <dl class="numbers-mmw-grid">
       {
         mmwMetrics.map((metric) => (
           <div>
-            <dt class="sr-only">{metric.label}</dt>
+            <dt class="metric-term">{metric.label}</dt>
             <dd>
-              <span class="block font-heading text-4xl lg:text-5xl font-black text-butik-green leading-none">
+              <span class="metric-value">
                 {metric.value}
               </span>
-              <span class="block font-sans text-xs lg:text-sm text-white/70 mt-2 leading-snug" aria-hidden="true">
+              <span class="metric-label" aria-hidden="true">
                 {metric.label}
               </span>
             </dd>
@@ -58,3 +58,137 @@ const { butikMetrics, mmwLabel, mmwMetrics } = Astro.props;
     </dl>
   </div>
 </section>
+
+<style>
+  .numbers {
+    background-color: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    /* Tailwind py-10: nessun token nella scala. */
+    padding-block: 2.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .numbers {
+      /* Tailwind md:py-14: nessun token nella scala. */
+      padding-block: 3.5rem;
+    }
+  }
+
+  .numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+    /* Tailwind max-w-7xl: nessun token per le larghezze massime. */
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  @media (min-width: 640px) {
+    .numbers-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .numbers-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--space-4);
+    }
+  }
+
+  /* Tailwind sr-only: nasconde visivamente, resta letto dalle tecnologie
+     assistive (stesso pattern di packages/ui/.../ImageCarousel.module.css). */
+  .metric-term {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .metric-value {
+    display: block;
+    font-family: var(--font-heading);
+    /* Tailwind text-4xl è sovrascritto nel @theme del sito con un clamp():
+       nessun token combacia. leading-none vince comunque sul line-height. */
+    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+    font-weight: 900;
+    color: var(--color-highlight);
+    line-height: 1;
+  }
+
+  @media (min-width: 1024px) {
+    .metric-value {
+      /* Tailwind lg:text-5xl, stesso discorso di text-4xl. */
+      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+    }
+  }
+
+  .metric-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-xs);
+    /* leading-snug vince su quello che porterebbe con sé text-xs. */
+    line-height: 1.375;
+    color: color-mix(in srgb, var(--color-fg-invert) 70%, transparent);
+    margin-top: var(--space-2);
+  }
+
+  @media (min-width: 1024px) {
+    .metric-label {
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  .numbers-mmw {
+    /* Tailwind mt-10 / pt-10: nessun token nella scala. */
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  @media (min-width: 1024px) {
+    .numbers-mmw {
+      margin-top: var(--space-16);
+      padding-top: var(--space-12);
+    }
+  }
+
+  .numbers-mmw-heading {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    /* Tailwind text-xs porta con sé anche il line-height. */
+    line-height: calc(1 / 0.75);
+    font-weight: 700;
+    /* Tailwind tracking-widest: 0.1em, nessun token nella scala. */
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-highlight);
+    margin-bottom: var(--space-8);
+    text-align: center;
+  }
+
+  .numbers-mmw-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-6);
+    /* Tailwind max-w-xl: nessun token per le larghezze massime. */
+    max-width: 36rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  @media (min-width: 1024px) {
+    .numbers-mmw-grid {
+      gap: var(--space-12);
+    }
+  }
+</style>

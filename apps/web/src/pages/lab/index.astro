@@ -48,10 +48,10 @@ const gruppi: LabGroup[] = [
 ---
 
 <BaseLayout title="Lab — Butik" description="Indice interno dei prototipi e delle varianti in valutazione.">
-  <section class="max-w-5xl mx-auto px-6 pt-24 pb-10">
-    <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-3">Interno · non indicizzato dal menu</p>
-    <h1 class="font-heading text-4xl md:text-5xl font-bold text-butik-dark mb-4">Lab — pagine di servizio</h1>
-    <p class="font-sans text-base md:text-lg text-butik-body max-w-2xl leading-relaxed">
+  <section class="lab-hero">
+    <p class="lab-eyebrow">Interno · non indicizzato dal menu</p>
+    <h1 class="lab-title">Lab — pagine di servizio</h1>
+    <p class="lab-lead">
       Quel che resta non raggiungibile dal menu: il workshop dei componenti, la verifica delle card
       social e le pagine comode da rivedere col team. I confronti fra varianti sono chiusi — le
       direzioni scelte sono nelle pagine reali.
@@ -59,19 +59,19 @@ const gruppi: LabGroup[] = [
   </section>
 
   {gruppi.map((g) => (
-    <section class="max-w-5xl mx-auto px-6 py-8 border-t border-butik-dark/10">
-      <p class="font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mb-2">{g.eyebrow}</p>
-      <h2 class="font-heading text-2xl md:text-3xl font-bold text-butik-dark mb-2">{g.titolo}</h2>
-      <p class="font-sans text-sm text-butik-dark/60 max-w-2xl leading-relaxed mb-6">{g.intro}</p>
-      <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <section class="lab-group">
+      <p class="lab-group-eyebrow">{g.eyebrow}</p>
+      <h2 class="lab-group-title">{g.titolo}</h2>
+      <p class="lab-group-intro">{g.intro}</p>
+      <ul class="lab-links">
         {g.links.map((l) => (
           <li>
-            <a href={l.href} class="group block border border-butik-dark/15 bg-white p-5 hover:border-butik-red transition-colors">
-              <span class="block font-heading text-base font-bold text-butik-dark group-hover:text-butik-red-ink transition-colors">
+            <a href={l.href} class="lab-link">
+              <span class="lab-link-title">
                 {l.title}
               </span>
-              <span class="block font-sans text-sm text-butik-dark/60 mt-1 leading-relaxed">{l.desc}</span>
-              <span class="block font-display text-xs font-bold tracking-widest uppercase text-butik-red-ink mt-3">{l.href}</span>
+              <span class="lab-link-desc">{l.desc}</span>
+              <span class="lab-link-href">{l.href}</span>
             </a>
           </li>
         ))}
@@ -79,3 +79,145 @@ const gruppi: LabGroup[] = [
     </section>
   ))}
 </BaseLayout>
+
+<style>
+  .lab-hero,
+  .lab-group {
+    max-width: 64rem; /* max-w-5xl, nessun token */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+  .lab-hero {
+    padding-top: var(--space-24);
+    padding-bottom: 2.5rem; /* pb-10: nessun token combacia (tra --space-8 2rem e --space-12 3rem) */
+  }
+  .lab-group {
+    padding-block: var(--space-8);
+    border-top: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+  }
+
+  .lab-eyebrow,
+  .lab-group-eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+  }
+  .lab-eyebrow {
+    margin-bottom: var(--space-3);
+  }
+  .lab-group-eyebrow {
+    margin-bottom: var(--space-2);
+  }
+
+  .lab-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    line-height: calc(2.5 / 2.25); /* text-4xl porta con sé questo line-height, anche sotto il clamp del @theme */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .lab-title {
+      font-size: var(--text-5xl);
+      line-height: 1; /* text-5xl porta con sé questo line-height */
+    }
+  }
+
+  .lab-lead {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    color: var(--color-fg);
+    max-width: 42rem; /* max-w-2xl */
+    line-height: 1.625; /* leading-relaxed vince sul line-height implicito di text-base/lg */
+  }
+  @media (min-width: 768px) {
+    .lab-lead {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  .lab-group-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl); /* text-2xl = 1.5rem, combacia con questo token (non con --font-size-2xl, 2.25rem) */
+    line-height: calc(2 / 1.5); /* text-2xl porta con sé questo line-height */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-2);
+  }
+  @media (min-width: 768px) {
+    .lab-group-title {
+      font-size: var(--text-3xl);
+      line-height: 1.2; /* text-3xl porta con sé questo line-height */
+    }
+  }
+
+  .lab-group-intro {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    color: color-mix(in oklab, var(--color-fg) 60%, transparent);
+    max-width: 42rem; /* max-w-2xl */
+    line-height: 1.625; /* leading-relaxed vince sul line-height implicito di text-sm */
+    margin-bottom: var(--space-6);
+  }
+
+  .lab-links {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  @media (min-width: 640px) {
+    .lab-links {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .lab-link {
+    display: block;
+    border: 1px solid color-mix(in oklab, var(--color-fg) 15%, transparent);
+    background-color: var(--color-white);
+    padding: 1.25rem; /* p-5: nessun token combacia (tra --space-4 1rem e --space-6 1.5rem) */
+    transition: border-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lab-link:hover {
+    border-color: var(--color-accent);
+  }
+
+  .lab-link-title {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    line-height: 1.5; /* text-base porta con sé questo line-height */
+    font-weight: 700;
+    color: var(--color-fg);
+    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .lab-link:hover .lab-link-title {
+    color: var(--color-accent-text);
+  }
+
+  .lab-link-desc {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    color: color-mix(in oklab, var(--color-fg) 60%, transparent);
+    margin-top: var(--space-1);
+    line-height: 1.625; /* leading-relaxed vince sul line-height implicito di text-sm */
+  }
+
+  .lab-link-href {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* text-xs porta con sé questo line-height */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    margin-top: var(--space-3);
+  }
+</style>

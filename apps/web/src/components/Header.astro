@@ -53,34 +53,27 @@ function isActive(href: string) {
 <header
   id="site-header"
   data-overlay={isHome ? 'true' : 'false'}
-  class:list={[
-    'site-header sticky top-0 z-50',
-    isHome ? '' : 'bg-butik-light border-b border-butik-dark/10',
-  ]}
+  class:list={['site-header', isHome ? '' : 'site-header-solid']}
 >
-  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+  <div class="header-inner">
 
     <!-- Left: Logo + Primary Nav -->
-    <div class="flex items-center gap-10">
-      <a href="/" class="flex-shrink-0 relative z-10">
+    <div class="header-left">
+      <a href="/" class="logo-link">
         <Logo
           src={logoImg.src}
           width={45}
           height={45}
           loading="eager"
           alt="Butik — home"
-          className="site-logo h-[2.8125rem] w-auto"
+          className="site-logo"
         />
       </a>
-      <nav class="hidden md:flex items-center gap-8" aria-label="Navigazione principale">
+      <nav class="primary-nav" aria-label="Navigazione principale">
         {navLinks.map(link => (
           <a
             href={link.href}
-            class={`nav-link font-display text-xs font-bold tracking-widest uppercase transition-colors ${
-              isActive(link.href)
-                ? 'text-butik-red-ink'
-                : 'text-butik-dark hover:text-butik-red-ink'
-            }`}
+            class:list={['nav-link', isActive(link.href) && 'nav-link-active']}
           >
             {link.label}
           </a>
@@ -89,30 +82,28 @@ function isActive(href: string) {
     </div>
 
     <!-- Right: CTA -->
-    <span class="hidden md:inline-block">
+    <span class="cta-wrap">
       <Button href={ctaHref} tone="dark" className="header-cta">{ctaLabel}</Button>
     </span>
 
     <!-- Mobile menu: <details> nativo, nessun listener -->
-    <details id="mobile-menu" class="mobile-nav md:hidden">
-      <summary class="mobile-toggle p-3" aria-label="Menu">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+    <details id="mobile-menu" class="mobile-nav">
+      <summary class="mobile-toggle" aria-label="Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" class="mobile-toggle-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </summary>
-      <div class="mobile-panel border-t border-butik-dark/10 bg-butik-light">
-        <nav class="flex flex-col px-6 py-4 gap-1" aria-label="Navigazione principale mobile">
+      <div class="mobile-panel">
+        <nav class="mobile-nav-list" aria-label="Navigazione principale mobile">
           {navLinks.map(link => (
             <a
               href={link.href}
-              class={`font-display text-xs font-bold tracking-widest uppercase py-3 ${
-                isActive(link.href) ? 'text-butik-red-ink' : 'text-butik-dark'
-              }`}
+              class:list={['mobile-link', isActive(link.href) && 'mobile-link-active']}
             >
               {link.label}
             </a>
           ))}
-          <Button href={ctaHref} tone="dark" className="w-full mt-3">{ctaLabel}</Button>
+          <Button href={ctaHref} tone="dark" className="mobile-cta">{ctaLabel}</Button>
         </nav>
       </div>
     </details>
@@ -120,6 +111,85 @@ function isActive(href: string) {
 </header>
 
 <style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .site-header-solid {
+    background-color: var(--color-bg);
+    border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
+  }
+
+  .header-inner {
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .logo-link {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .site-header :global(.site-logo) {
+    height: 2.8125rem;
+    width: auto;
+  }
+
+  .primary-nav {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .primary-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+  }
+
+  .nav-link,
+  .mobile-link {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-fg);
+  }
+  .nav-link {
+    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mobile-link {
+    padding-block: var(--space-3);
+  }
+  .nav-link:hover,
+  .nav-link.nav-link-active,
+  .mobile-link.mobile-link-active {
+    color: var(--color-accent-text);
+  }
+
+  .cta-wrap {
+    display: none;
+  }
+  @media (min-width: 768px) {
+    .cta-wrap {
+      display: inline-block;
+    }
+  }
+
   /* --header-solid: 0 sopra l'hero (overlay), 1 da scrollato. Registrata con
      @property perché serve interpolabile (<number>) ed ereditata: una sola
      animazione sull'header, tutti i discendenti la leggono.
@@ -127,9 +197,7 @@ function isActive(href: string) {
      Colori dai token di @butik/ui-tokens (ADR-0005) e non dai --color-butik-*
      del @theme Tailwind: l'isola Button che l'header contiene consuma già
      quelli, e tenere due scale con gli stessi hex nello stesso componente è
-     drift che aspetta di succedere. Vale per questo blocco <style>; gli
-     attributi class del markup usano ancora le utility Tailwind e cadranno
-     con la rimozione di Tailwind (ADR-0005 #design-tokens). */
+     drift che aspetta di succedere. */
   @property --header-solid {
     syntax: '<number>';
     inherits: true;
@@ -264,20 +332,43 @@ function isActive(href: string) {
 
   /* Menu mobile — <details> nativo. Il pannello è in absolute sotto la barra:
      l'header è sticky (quindi posizionato) e fa da containing block. */
+  @media (min-width: 768px) {
+    .mobile-nav {
+      display: none;
+    }
+  }
   .mobile-nav > summary {
     list-style: none;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    padding: var(--space-3);
   }
   .mobile-nav > summary::-webkit-details-marker { display: none; }
   .mobile-nav > summary::marker { content: ''; }
+  .mobile-toggle-icon {
+    width: var(--space-6);
+    height: var(--space-6);
+  }
 
   .mobile-panel {
     position: absolute;
     top: 100%;
     left: 0;
     right: 0;
+    border-top: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
+    background-color: var(--color-bg);
+  }
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-4);
+    gap: var(--space-1);
+  }
+  .site-header :global(.mobile-cta) {
+    width: 100%;
+    margin-top: var(--space-3);
   }
 
   @media (prefers-reduced-motion: reduce) {

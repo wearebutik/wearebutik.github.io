@@ -54,35 +54,26 @@ const servizi: ServizioCard[] = [
 ];
 ---
 
-<section class="bg-gradient-to-b from-butik-light via-white to-butik-light">
-  <div class="max-w-7xl mx-auto px-6 py-16 md:py-24">
-    <div class="text-center mb-10 md:mb-12">
+<section class="servizi-section">
+  <div class="servizi-container">
+    <div class="servizi-heading">
       <SectionHeading eyebrow="Servizi" title="Cosa facciamo" />
     </div>
 
-    <div class="grid gap-3 md:gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-5">
+    <div class="servizi-grid">
       {servizi.map((servizio, index) => (
         <a
           href={servizio.href}
           class:list={[
-            'group relative bg-white border border-butik-dark/10 transition hover:border-butik-dark/30 hover:shadow-md',
-            'p-5 md:p-7 lg:p-5',
-            'flex flex-col gap-3 md:flex-row md:items-center md:gap-6 lg:flex-col lg:gap-3',
-            index === 0 && 'md:col-span-2 lg:col-span-1',
+            'servizi-card',
+            index === 0 && 'servizi-card--first',
           ]}
         >
-          <div
-            class:list={[
-              'overflow-hidden bg-butik-light',
-              'aspect-[16/9] w-full',
-              'md:w-32 md:h-32 md:aspect-square md:flex-shrink-0',
-              'lg:w-full lg:h-auto lg:aspect-square',
-            ]}
-          >
+          <div class="servizi-card-media">
             <Image
               src={servizio.image}
               alt={servizio.imageAlt}
-              class="w-full h-full object-cover"
+              class="servizi-card-image"
               widths={[200, 320, 480]}
               sizes="(min-width: 1024px) 230px, (min-width: 768px) 128px, 100vw"
               quality={70}
@@ -90,11 +81,11 @@ const servizi: ServizioCard[] = [
             />
           </div>
 
-          <div class="flex flex-col gap-2 md:flex-1 lg:flex-none">
-            <h3 class="font-heading text-base md:text-xl lg:text-lg font-bold text-butik-dark leading-snug">
+          <div class="servizi-card-body">
+            <h3 class="servizi-card-title">
               {servizio.title}
             </h3>
-            <p class="font-sans text-sm md:text-base lg:text-sm text-butik-dark/70 leading-snug">
+            <p class="servizi-card-desc">
               {servizio.description}
             </p>
           </div>
@@ -103,3 +94,169 @@ const servizi: ServizioCard[] = [
     </div>
   </div>
 </section>
+
+<style>
+  .servizi-section {
+    /* bg-gradient-to-b from-butik-light via-white to-butik-light */
+    background: linear-gradient(to bottom, var(--color-bg), var(--color-white), var(--color-bg));
+  }
+
+  .servizi-container {
+    max-width: 80rem; /* max-w-7xl, nessun token (stesso letterale di Header.astro) */
+    margin-inline: auto;
+    padding-inline: var(--space-6); /* px-6 = 1.5rem */
+    padding-block: var(--space-16); /* py-16 = 4rem */
+  }
+  @media (min-width: 768px) {
+    .servizi-container {
+      padding-block: var(--space-24); /* py-24 = 6rem */
+    }
+  }
+
+  .servizi-heading {
+    text-align: center;
+    margin-bottom: 2.5rem; /* mb-10 = 2.5rem, nessun token */
+  }
+  @media (min-width: 768px) {
+    .servizi-heading {
+      margin-bottom: var(--space-12); /* mb-12 = 3rem */
+    }
+  }
+
+  .servizi-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3); /* gap-3 = 0.75rem */
+  }
+  @media (min-width: 768px) {
+    .servizi-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-4); /* gap-4 = 1rem */
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  .servizi-card {
+    position: relative;
+    background: var(--color-white);
+    border: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3); /* gap-3 = 0.75rem */
+    padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+    transition:
+      border-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
+      box-shadow var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .servizi-card:hover {
+    border-color: color-mix(in srgb, var(--color-fg) 30%, transparent);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* shadow-md, nessun token */
+  }
+  @media (min-width: 768px) {
+    .servizi-card {
+      flex-direction: row;
+      align-items: center;
+      gap: var(--space-6); /* gap-6 = 1.5rem */
+      padding: 1.75rem; /* p-7 = 1.75rem, nessun token */
+    }
+    .servizi-card--first {
+      grid-column: span 2 / span 2; /* md:col-span-2 */
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-card {
+      flex-direction: column;
+      gap: var(--space-3); /* gap-3 = 0.75rem */
+      padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+    }
+    .servizi-card--first {
+      grid-column: span 1 / span 1; /* lg:col-span-1 */
+    }
+  }
+
+  .servizi-card-media {
+    overflow: hidden;
+    background: var(--color-bg);
+    aspect-ratio: 16 / 9;
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .servizi-card-media {
+      width: 8rem; /* md:w-32, nessun token */
+      height: 8rem; /* md:h-32, nessun token */
+      aspect-ratio: 1 / 1;
+      flex-shrink: 0;
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-card-media {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+    }
+  }
+
+  .servizi-card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .servizi-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2); /* gap-2 = 0.5rem */
+  }
+  @media (min-width: 768px) {
+    .servizi-card-body {
+      flex: 1 1 0%;
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-card-body {
+      flex: none;
+    }
+  }
+
+  /* text-butik-dark neutralizza il colore rosso dello stile globale h3 (non
+     l'uppercase/tracking, che il markup originale non neutralizzava);
+     leading-snug vince sul line-height implicito di text-base/xl/lg. */
+  .servizi-card-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base); /* text-base = 1rem */
+    font-weight: 700;
+    color: var(--color-fg);
+    line-height: 1.375; /* leading-snug */
+  }
+  @media (min-width: 768px) {
+    .servizi-card-title {
+      font-size: 1.25rem; /* text-xl = 1.25rem, nessun token (--font-size-xl è 1.5rem) */
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-card-title {
+      font-size: var(--font-size-lg); /* text-lg = 1.125rem, combacia con questo token */
+    }
+  }
+
+  .servizi-card-desc {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm); /* text-sm = 0.875rem */
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+    line-height: 1.375; /* leading-snug vince sul line-height implicito di text-sm/base */
+  }
+  @media (min-width: 768px) {
+    .servizi-card-desc {
+      font-size: var(--font-size-base); /* text-base = 1rem */
+    }
+  }
+  @media (min-width: 1024px) {
+    .servizi-card-desc {
+      font-size: var(--font-size-sm); /* text-sm = 0.875rem */
+    }
+  }
+</style>
