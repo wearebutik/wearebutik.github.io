@@ -18,7 +18,9 @@
   },
   "pnpm": {
     "overrides": {
-      "vite": "^7"
+      "vite": "^7",
+      "@sanity/cli-build>vite": "^8.3.0",
+      "@sanity/workbench-cli>vite": "^8.3.0"
     },
     "onlyBuiltDependencies": [
       "esbuild",
