@@ -10,8 +10,8 @@ tags: [process, adr, guidances]
 
 butik's architectural decisions need a home that travels with the repo. A single
 large architecture document is hard to consume incrementally (by humans and AI
-agents alike) and tends to be rewritten in place, losing decision history. A
-lightweight, append-only format is needed instead. At the same time the project
+agents alike) and mixes decisions of very different weight and age in one place. Small,
+separately addressable records are needed instead. At the same time the project
 should start from a *small, coherent* set of decisions — not a long list of
 granular records to reconstruct in your head.
 
@@ -29,10 +29,12 @@ sections (e.g. `0005-design-system.md` covers tokens, CSS Modules, component
 workshop). Reference a specific decision by file + heading anchor, e.g.
 `docs/adr/0005-design-system.md#css-modules`.
 
-**Immutability.** butik is a real project (not a template): ADRs are
-**append-only from the start**. Changing a decision means writing a new ADR that
-supersedes the old one (`superseded by ADR-NNNN`), not rewriting the old one to
-mean something else.
+**ADRs are living documents.** An ADR states the decision in force. When a
+decision changes, its ADR is edited in place to describe the new decision — the
+old text is not kept alongside it, and git history is the record of how it
+evolved. A new ADR is written only for a genuinely new topic. Where the
+alternatives a reader would otherwise propose again are worth keeping, they live
+under *Alternatives considered*, each with the reason it does not hold.
 
 **Guidances vs ADRs.** Practices the project does **not** fix as a decision —
 choices that depend on the specific feature (e.g. which serverless runtime to use
