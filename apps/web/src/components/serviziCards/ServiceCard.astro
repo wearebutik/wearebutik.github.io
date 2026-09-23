@@ -4,7 +4,7 @@
 // li presenta ServiceLauncher, vedi Hero.astro).
 //
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004):
-// in home dalla collezione `pagine` (entry `home`, array `heroServizi`).
+// in home dal campo `card` di ciascun documento servizio (Sanity).
 // L'icona resta config di design e vive qui, indicizzata per slug.
 export interface ServiceCardData {
   /** Slug della collection `servizi`, usato per scegliere l'icona. */

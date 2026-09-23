@@ -10,3 +10,15 @@ export const portableTextComponents = {
     imageCarousel: PtImageCarousel,
   },
 };
+
+// Sezioni del corpo di un servizio.
+import PtServizioSezione from './PtServizioSezione.astro';
+
+export const servizioComponents = {
+  type: Object.fromEntries(
+    ['cosaFacciamo', 'adattoA', 'diCosaCiOccupiamo', 'metodo', 'bandiVinti', 'ctaProgetti', 'ctaBanner'].map((t) => [
+      t,
+      PtServizioSezione,
+    ]),
+  ),
+};

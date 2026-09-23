@@ -9,32 +9,28 @@
 //   b      → claim tipografico + barra prova, senza immagine
 //   c      → scheda-offerta sovrapposta all'immagine di atmosfera
 //
-// I contenuti degli hero A/B/C (eyebrow, claim, prove, esiti, CTA) vengono da
-// `data/serviziHero.ts`. TODO (ADR-0004): sono ancora hardcoded, eredità della
-// fase di prototipazione — vanno portati nel frontmatter della scheda quando
-// sarà decisa l'architettura contenuti.
+// I contenuti degli hero A/B/C (eyebrow, claim, prove, esiti, CTA) sono il
+// campo `hero` del documento servizio su Sanity (ADR-0004).
 import type { ImageMetadata } from 'astro';
 import HeroBanner from '../HeroBanner.astro';
 import ServiceHeroA from './ServiceHeroA.astro';
 import ServiceHeroB from './ServiceHeroB.astro';
 import ServiceHeroC from './ServiceHeroC.astro';
-import { serviziHero } from '../../data/serviziHero';
+import type { ServiceHeroContent } from './types';
 
 export type ServiceHeroVariant = 'banner' | 'a' | 'b' | 'c';
 
 interface Props {
   variant: ServiceHeroVariant;
-  /** Slug della scheda: risolve i contenuti hero delle varianti A/B/C. */
-  slug: string;
+  /** Testi delle varianti A/B/C; senza, si ricade sul banner. */
+  content?: ServiceHeroContent;
   title: string;
   subtitle?: string;
   image: ImageMetadata | string;
   imageAlt?: string;
   transitionName?: string;
 }
-const { variant, slug, title, subtitle, image, imageAlt = '', transitionName } = Astro.props;
-
-const content = serviziHero[slug];
+const { variant, content, title, subtitle, image, imageAlt = '', transitionName } = Astro.props;
 
 // Senza contenuti hero dedicati le varianti A/B/C non hanno cosa mostrare:
 // si ricade sul banner invece di rendere una sezione vuota.
@@ -51,6 +47,6 @@ const resolved = variant !== 'banner' && !content ? 'banner' : variant;
   />
 )}
 
-{resolved === 'a' && <ServiceHeroA content={content} image={image} imageAlt={imageAlt} />}
-{resolved === 'b' && <ServiceHeroB content={content} image={image} imageAlt={imageAlt} />}
-{resolved === 'c' && <ServiceHeroC content={content} image={image} imageAlt={imageAlt} />}
+{resolved === 'a' && content && <ServiceHeroA content={content} image={image} imageAlt={imageAlt} />}
+{resolved === 'b' && content && <ServiceHeroB content={content} image={image} imageAlt={imageAlt} />}
+{resolved === 'c' && content && <ServiceHeroC content={content} image={image} imageAlt={imageAlt} />}

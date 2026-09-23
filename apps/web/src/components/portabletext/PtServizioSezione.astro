@@ -1,0 +1,33 @@
+---
+// Sezioni del corpo di un servizio (blocchi Sanity in apps/studio/schemaTypes/
+// sezioniServizio.ts) → componenti in components/servizi e CtaBanner. Un solo
+// componente con uno switch sul tipo: i campi coincidono con le props, salvo
+// i nomi italiani dello Studio (testo, voci, passi).
+import { PortableText } from 'astro-portabletext';
+import type { Props as PtProps } from 'astro-portabletext/types';
+import CosaFacciamo from '#components/servizi/CosaFacciamo.astro';
+import AdattoA from '#components/servizi/AdattoA.astro';
+import DiCosaCiOccupiamo from '#components/servizi/DiCosaCiOccupiamo.astro';
+import MetodoSteps from '#components/servizi/MetodoSteps.astro';
+import BandiVinti from '#components/servizi/BandiVinti.astro';
+import CtaProgetti from '#components/servizi/CtaProgetti.astro';
+import CtaBanner from '#components/CtaBanner.astro';
+
+type Props = PtProps<{ _type: string; [field: string]: any }>;
+
+const { node: n } = Astro.props;
+---
+
+{n._type === 'cosaFacciamo' && (
+  <CosaFacciamo eyebrow={n.eyebrow}>
+    <PortableText value={n.testo ?? []} />
+  </CosaFacciamo>
+)}
+{n._type === 'adattoA' && <AdattoA text={n.testo} eyebrow={n.eyebrow} />}
+{n._type === 'diCosaCiOccupiamo' && <DiCosaCiOccupiamo items={n.voci ?? []} eyebrow={n.eyebrow} />}
+{n._type === 'metodo' && <MetodoSteps steps={n.passi ?? []} intro={n.intro} eyebrow={n.eyebrow} />}
+{n._type === 'bandiVinti' && <BandiVinti bandi={n.bandi ?? []} eyebrow={n.eyebrow} />}
+{n._type === 'ctaProgetti' && <CtaProgetti title={n.title} schede={n.schede} href={n.href} label={n.label} />}
+{n._type === 'ctaBanner' && (
+  <CtaBanner title={n.title} body={n.body} primaryCta={n.primaryCta} secondaryCta={n.secondaryCta} />
+)}

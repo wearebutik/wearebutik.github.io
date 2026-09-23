@@ -27,6 +27,42 @@ export function sanityImageUrl(image: SanityImage): string {
   return builder.image(image).url();
 }
 
+/** GROQ restituisce null per i campi vuoti; Zod `.optional()` vuole undefined. */
+function withoutNulls(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(withoutNulls);
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value).filter(([, v]) => v !== null).map(([k, v]) => [k, withoutNulls(v)]),
+    );
+  }
+  return value;
+}
+
+type Doc = Record<string, unknown> & { id: string; _updatedAt: string };
+
+/**
+ * Loader della content layer per un tipo di documento Sanity: un'entry per
+ * documento, id = slug. `query` restituisce `id` e `_updatedAt`; `map` adatta
+ * il documento allo schema Zod (es. immagini → URL, che Astro scarica in build).
+ */
+function sanityLoader(name: string, query: string, map: (doc: Doc) => Record<string, unknown>): Loader {
+  return {
+    name: `sanity-${name}`,
+    load: async ({ store, parseData, generateDigest, logger }) => {
+      const docs = await sanity.fetch<Doc[]>(query);
+      store.clear();
+      for (const doc of docs) {
+        const { id, _updatedAt, ...rest } = withoutNulls(doc) as Doc;
+        const data = await parseData({ id, data: map({ id, _updatedAt, ...rest }) });
+        store.set({ id, data, digest: generateDigest(String(_updatedAt)) });
+      }
+      logger.info(`${docs.length} ${name} da Sanity`);
+    },
+  };
+}
+
+const imageUrl = (image: unknown) => (image ? sanityImageUrl(image as SanityImage) : undefined);
+
 const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
   "id": slug.current,
   _updatedAt,
@@ -36,26 +72,26 @@ const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current
   body
 }`;
 
-/** Loader della content layer: un'entry per documento `progetto`, id = slug. */
-export function progettiLoader(): Loader {
-  return {
-    name: 'sanity-progetti',
-    load: async ({ store, parseData, generateDigest, logger }) => {
-      const docs = await sanity.fetch<Array<Record<string, unknown> & { id: string }>>(PROGETTI_QUERY);
-      store.clear();
-      for (const { id, _updatedAt, heroImage, ogImage, ...rest } of docs) {
-        const data = await parseData({
-          id,
-          data: {
-            // GROQ restituisce null per i campi vuoti; Zod `.optional()` vuole undefined
-            ...Object.fromEntries(Object.entries(rest).filter(([, v]) => v !== null)),
-            heroImage: heroImage ? sanityImageUrl(heroImage as SanityImage) : undefined,
-            ogImage: ogImage ? sanityImageUrl(ogImage as SanityImage) : undefined,
-          },
-        });
-        store.set({ id, data, digest: generateDigest(String(_updatedAt)) });
-      }
-      logger.info(`${docs.length} progetti da Sanity`);
-    },
-  };
-}
+export const progettiLoader = () =>
+  sanityLoader('progetti', PROGETTI_QUERY, ({ id, _updatedAt, heroImage, ogImage, ...rest }) => ({
+    ...rest,
+    heroImage: imageUrl(heroImage),
+    ogImage: imageUrl(ogImage),
+  }));
+
+const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current) && draft != true]{
+  "id": slug.current,
+  _updatedAt,
+  title, subtitle, heroImage, heroAlt, heroVariant, audience,
+  metaTitle, metaDescription, ogImage, ogCta,
+  order, draft, hero, card, body
+}`;
+
+export const serviziLoader = () =>
+  sanityLoader('servizi', SERVIZI_QUERY, ({ id, _updatedAt, heroImage, ogImage, audience, ...rest }) => ({
+    ...rest,
+    heroImage: imageUrl(heroImage),
+    ogImage: imageUrl(ogImage),
+    // Nello Studio è una lista di id; lo schema Zod (e /servizi) vuole { id }.
+    audience: ((audience as string[] | undefined) ?? []).map((a) => ({ id: a })),
+  }));

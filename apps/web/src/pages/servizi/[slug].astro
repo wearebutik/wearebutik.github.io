@@ -1,7 +1,10 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { PortableText } from 'astro-portabletext';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import ServiceHero from '#components/serviziHero/ServiceHero.astro';
+import { servizioComponents } from '#components/portabletext/components';
 
 export async function getStaticPaths() {
   const servizi = await getCollection('servizi', e => !e.data.draft);
@@ -12,17 +15,22 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+
+// Immagine OG da Sanity: passa dalla pipeline di Astro come le altre, mai
+// da cdn.sanity.io (ADR-0004). JPEG 1200×630.
+const ogImage = entry.data.ogImage
+  ? (await getImage({ src: `${entry.data.ogImage}?w=1200&h=630&fit=crop`, inferSize: true, format: 'jpg' })).src
+  : undefined;
 ---
 
 <BaseLayout
   title={entry.data.metaTitle ?? `${entry.data.title} — Butik`}
   description={entry.data.metaDescription ?? entry.data.subtitle}
-  ogImage={entry.data.ogImage?.src}
+  ogImage={ogImage}
 >
   <ServiceHero
     variant={entry.data.heroVariant}
-    slug={entry.id}
+    content={entry.data.hero}
     title={entry.data.title}
     subtitle={entry.data.subtitle}
     image={entry.data.heroImage}
@@ -32,7 +40,7 @@ const { Content } = await render(entry);
 
   <article class="service-body">
     <div class="prose prose-full">
-      <Content />
+      <PortableText value={entry.data.body} components={servizioComponents} />
     </div>
   </article>
 </BaseLayout>

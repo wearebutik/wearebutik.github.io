@@ -1,26 +1,27 @@
 import { defineCollection, z } from 'astro:content';
 import type { SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
-import { progettiLoader } from '#lib/sanity';
+import { progettiLoader, serviziLoader } from '#lib/sanity';
 
 // Tipo dell'helper `image()` fornito dallo schema context di Astro: consente di
 // dichiarare riferimenti a media (risolti a build-time) anche dentro gli array.
 type ImageFn = SchemaContext['image'];
 
+// Servizi da Sanity (ADR-0004). Oltre alla scheda, il documento porta i testi
+// degli hero A/B/C, quelli della card (home e /servizi) e il corpo come lista
+// di sezioni riordinabili (blocchi Portable Text resi in servizi/[slug].astro).
+const linkSchema = z.object({ label: z.string(), href: z.string() });
+
 const serviziCollection = defineCollection({
-  loader: glob({
-    pattern: '*.{md,mdx}',
-    base: './src/content/servizi',
-    generateId: ({ entry }) => entry.replace(/\.(mdx?)$/, ''),
-  }),
-  schema: ({ image }) => z.object({
+  loader: serviziLoader(),
+  schema: z.object({
     title: z.string(),
     subtitle: z.string(),
-    heroImage: image(),
+    heroImage: z.string().url(),
     heroAlt: z.string().optional().default(''),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
-    ogImage: image().optional(),
+    ogImage: z.string().url().optional(),
     ogCta: z.string().optional(),
     // Trattamento dell'hero di questa scheda: si sceglie servizio per
     // servizio (vedi components/serviziHero/ServiceHero.astro).
@@ -28,11 +29,34 @@ const serviziCollection = defineCollection({
     //   a/b/c  = split al target · claim tipografico · scheda-offerta
     heroVariant: z.enum(['banner', 'a', 'b', 'c']).optional().default('banner'),
     // Pubblici a cui il servizio parla, come id dei filtri della pagina
-    // /servizi (vedi `filtri` in `pagine/servizi`). È la stessa informazione
-    // degli "Adatto a" nel corpo della scheda, in forma filtrabile.
+    // /servizi (vedi `filtri` in `pagine/servizi`).
     audience: z.array(z.object({ id: z.string() })).optional().default([]),
     order: z.number().optional().default(0),
     draft: z.boolean().optional().default(false),
+    // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
+    hero: z
+      .object({
+        eyebrow: z.string(),
+        headline: z.string(),
+        sub: z.string(),
+        proof: z.array(z.object({ value: z.string(), label: z.string() })).default([]),
+        proofBar: z.array(z.string()).default([]),
+        outcomes: z.array(z.string()).default([]),
+        ctaPrimary: linkSchema,
+        ctaSecondary: linkSchema.optional(),
+        ledgerLabel: z.string().optional().default(''),
+        ledger: z.array(z.object({ k: z.string(), v: z.string() })).default([]),
+      })
+      .optional(),
+    // Card del servizio in home (hero) e in /servizi.
+    card: z.object({
+      title: z.string(),
+      desc: z.string(),
+      statValue: z.string(),
+      statLabel: z.string(),
+    }),
+    // Sezioni del corpo (Portable Text, blocchi custom).
+    body: z.array(z.any()).optional().default([]),
   }),
 });
 
@@ -87,17 +111,6 @@ const metricSchema = z.object({
   label: z.string(),
 });
 
-// Card servizio in hero home: titolo, link, descrizione breve e la prova
-// (valore + etichetta) mostrata in fondo alla card. `href` porta alla scheda
-// servizio: da lì si ricava lo slug per l'icona, che resta config di design.
-const heroServizioSchema = z.object({
-  title: z.string(),
-  href: z.string(),
-  description: z.string(),
-  statValue: z.string(),
-  statLabel: z.string(),
-});
-
 const paginaHome = z.object({
   type: z.literal('home'),
   // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
@@ -111,7 +124,6 @@ const paginaHome = z.object({
   heroCtaHref: z.string(),
   heroExploreLabel: z.string(),
   heroExploreHref: z.string(),
-  heroServizi: z.array(heroServizioSchema),
   // Numeri / impatto
   butikMetrics: z.array(metricSchema),
   mmwLabel: z.string(),
