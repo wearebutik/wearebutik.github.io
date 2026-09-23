@@ -45,7 +45,8 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
   (`apps/web/src/lib/sanity.ts`); the Studio lives in `apps/studio`. Keep each
   Sanity schema aligned with its Zod schema in `apps/web/src/content.config.ts`.
   **No image is ever served from `cdn.sanity.io`**: Sanity images go through
-  Astro's image pipeline and ship from `/_astro/`. Migration in progress (#50):
+  Astro's image pipeline and ship from `/_astro/` (the build fails otherwise —
+  `apps/web/src/lib/sanityCdnGuard.ts`). Migration in progress (#50):
   `progetti` is on Sanity; `servizi` and `pagine` are still Markdown/MDX in
   `apps/web/src/content/**`, edited via Sitepins with `/src/assets/...` media
   paths (ADR-0009).

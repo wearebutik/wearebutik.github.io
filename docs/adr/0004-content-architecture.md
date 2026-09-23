@@ -38,7 +38,8 @@ it.
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
   hosting — including `og:image`. The built site contains no `cdn.sanity.io`
-  URL. This keeps public traffic off Sanity: on the Free plan there are no
+  URL: the `sanity-cdn-guard` integration (`apps/web/src/lib/sanityCdnGuard.ts`)
+  scans `dist/` at the end of every build and fails it if the domain appears. This keeps public traffic off Sanity: on the Free plan there are no
   overages, and exceeding a quota blocks the project.
 - **Publishing.** A publish in the Studio reaches the site through a new build
   and deploy: a Sanity webhook on published documents calls GitHub's
