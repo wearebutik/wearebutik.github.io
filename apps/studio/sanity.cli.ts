@@ -7,4 +7,10 @@ export default defineCliConfig({
   },
   // Deploy gratuito su https://<studioHost>.sanity.studio
   studioHost: 'butik',
+  deployment: {
+    appId: 'cvm2s3qwsyp4gyxy6rmd4zcq',
+    // Lo Studio pubblicato usa la versione di `sanity` fissata nel lockfile,
+    // non l'ultima caricata a runtime dalla CDN di Sanity.
+    autoUpdates: false,
+  },
 });
