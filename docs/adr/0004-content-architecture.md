@@ -46,9 +46,14 @@ it.
   `repository_dispatch` (`event_type: sanity-publish`), which runs
   `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
   stored only in Sanity's webhook settings.
-- **Migration status.** `progetti` reads from Sanity. `servizi` and `pagine` are
-  still Markdown/MDX in `apps/web/src/content/**`, edited via Sitepins (media
-  paths per [ADR-0009](./0009-sitepins-media-paths.md)), until they move to
+- **Structured bodies.** A `servizio` body is a list of reorderable sections
+  (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
+  ai progetti, Banner di chiusura), one Sanity object per site component. Text
+  that needs bold, italics or links is a `testoFormattato` field, never HTML in
+  a string.
+- **Migration status.** `progetti` and `servizi` read from Sanity. `pagine` is
+  still Markdown in `apps/web/src/content/pagine`, edited via Sitepins (media
+  paths per [ADR-0009](./0009-sitepins-media-paths.md)), until it moves to
   Sanity — tracked in issue #50.
 - Purely structural pages (e.g. the experimental `lab/*`) stay in code; editorial
   copy does not live hardcoded in `.astro` pages.
