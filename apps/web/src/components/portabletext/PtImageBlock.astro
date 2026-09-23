@@ -1,0 +1,13 @@
+---
+// Blocco `imageBlock` del corpo Portable Text → wrapper MDX ImageBlock.
+import type { Props as PtProps } from 'astro-portabletext/types';
+import ImageBlock from '#components/mdx/ImageBlock.astro';
+import { sanityImageUrl, type SanityImage } from '#lib/sanity';
+
+type Figura = SanityImage & { alt?: string; caption?: string };
+type Props = PtProps<{ _type: 'imageBlock'; image: Figura }>;
+
+const { image } = Astro.props.node;
+---
+
+<ImageBlock src={sanityImageUrl(image)} alt={image.alt} caption={image.caption} />

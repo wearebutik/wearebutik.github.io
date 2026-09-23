@@ -1,0 +1,15 @@
+---
+// Blocco `imageCarousel` → wrapper MDX ImageCarousel.
+import type { Props as PtProps } from 'astro-portabletext/types';
+import ImageCarousel from '#components/mdx/ImageCarousel.astro';
+import { sanityImageUrl, type SanityImage } from '#lib/sanity';
+
+type Figura = SanityImage & { alt?: string; caption?: string };
+type Props = PtProps<{ _type: 'imageCarousel'; images?: Figura[] }>;
+
+const { images = [] } = Astro.props.node;
+---
+
+<ImageCarousel
+  images={images.map((i) => ({ src: sanityImageUrl(i), alt: i.alt, caption: i.caption }))}
+/>

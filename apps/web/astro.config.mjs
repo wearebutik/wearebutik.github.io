@@ -17,6 +17,9 @@ export default defineConfig({
     // la riabilitiamo esplicitamente perché è un uso voluto e controllato
     // (solo i nostri asset di branding).
     dangerouslyProcessSVG: true,
+    // Immagini dei progetti su Sanity: Astro le scarica a build time e le
+    // ottimizza come le locali, così il sito non dipende dalla CDN Sanity.
+    domains: ['cdn.sanity.io'],
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).

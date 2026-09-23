@@ -14,7 +14,7 @@ export interface OgCard {
   meta?: string[];     // metadati (progetti: cliente · anno)
   cta: string;         // call-to-action scelta dalla pagina
   layout?: 'plain' | 'home' | 'bleed'; // default plain
-  slug?: string;       // id progetto, per risolvere l'hero (layout bleed)
+  hero?: string;       // URL dell'immagine hero (layout bleed)
 }
 
 // Handle mostrato in basso nella card (profilo Instagram).
@@ -68,7 +68,7 @@ export async function getAllOgCards(): Promise<Map<string, OgCard>> {
       meta: meta.length ? meta : undefined,
       cta: e.data.ogCta ?? CTA_PROGETTO,
       layout: 'bleed',
-      slug: e.id,
+      hero: e.data.heroImage,
     });
   }
 

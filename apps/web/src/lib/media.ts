@@ -20,3 +20,8 @@ export function resolveAsset(src: string): ImageMetadata | string {
   const key = src.startsWith('/assets/') ? `/src${src}` : src;
   return assets[key]?.default ?? src;
 }
+
+/** URL assoluto (es. CDN Sanity): Astro lo ottimizza se il dominio è in `image.domains`. */
+export function isRemote(src: string): boolean {
+  return /^https?:\/\//.test(src);
+}

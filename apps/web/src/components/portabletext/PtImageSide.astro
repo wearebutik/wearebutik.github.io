@@ -1,0 +1,18 @@
+---
+// Blocco `imageSide` → ImageLeft o ImageRight, con il testo annidato nello slot.
+import { PortableText } from 'astro-portabletext';
+import type { Props as PtProps } from 'astro-portabletext/types';
+import ImageLeft from '#components/mdx/ImageLeft.astro';
+import ImageRight from '#components/mdx/ImageRight.astro';
+import { sanityImageUrl, type SanityImage } from '#lib/sanity';
+
+type Figura = SanityImage & { alt?: string; caption?: string };
+type Props = PtProps<{ _type: 'imageSide'; image: Figura; side?: 'left' | 'right'; text?: unknown[] }>;
+
+const { image, side, text = [] } = Astro.props.node;
+const Side = side === 'right' ? ImageRight : ImageLeft;
+---
+
+<Side src={sanityImageUrl(image)} alt={image.alt} caption={image.caption}>
+  <PortableText value={text as never} />
+</Side>
