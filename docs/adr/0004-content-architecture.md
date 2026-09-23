@@ -27,7 +27,9 @@ it.
   version in the lockfile (`autoUpdates: false` in `sanity.cli.ts`).
 - **Schemas.** Each collection has a Sanity schema in `apps/studio/schemaTypes/`
   mirroring its Zod schema; the two stay aligned (the `content-check` skill
-  watches for drift). Rich bodies are **Portable Text**, rendered with
+  watches for drift). A field the site requires (required in Zod, or used
+  without a fallback by a component) is `required` in the Studio too: Sanity
+  then refuses to publish a document that would break the build. Rich bodies are **Portable Text**, rendered with
   `astro-portabletext`; custom blocks (`imageBlock`, `imageSide`,
   `imageCarousel`) map onto the existing image components.
 - **Loading.** Each collection has a content-layer loader (`apps/web/src/lib/sanity.ts`)

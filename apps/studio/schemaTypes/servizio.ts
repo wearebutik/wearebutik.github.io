@@ -73,13 +73,14 @@ export const servizio = defineType({
     defineField({
       name: 'hero',
       title: 'Hero',
+      description: 'Testi delle varianti A, B e C. Se vuoto, la scheda usa la variante Banner.',
       type: 'object',
       group: 'hero',
       options: { collapsible: false },
       fields: [
-        { name: 'eyebrow', title: 'Per chi', type: 'string' },
-        { name: 'headline', title: 'Titolo', type: 'string' },
-        { name: 'sub', title: 'Sottotitolo', type: 'text', rows: 2 },
+        { name: 'eyebrow', title: 'Per chi', type: 'string', validation: (r: any) => r.required() },
+        { name: 'headline', title: 'Titolo', type: 'string', validation: (r: any) => r.required() },
+        { name: 'sub', title: 'Sottotitolo', type: 'text', rows: 2, validation: (r: any) => r.required() },
         {
           name: 'proof',
           title: 'Prove (A, C)',
@@ -98,7 +99,7 @@ export const servizio = defineType({
         },
         { name: 'proofBar', title: 'Barra prove (B)', type: 'array', of: [{ type: 'string' }] },
         { name: 'outcomes', title: 'Cosa ottieni (C)', type: 'array', of: [{ type: 'string' }] },
-        { name: 'ctaPrimary', title: 'Pulsante principale', type: 'link' },
+        { name: 'ctaPrimary', title: 'Pulsante principale', type: 'link', validation: (r: any) => r.required() },
         { name: 'ctaSecondary', title: 'Pulsante secondario', type: 'link' },
         { name: 'ledgerLabel', title: 'Etichetta registro (B)', type: 'string' },
         {
@@ -126,12 +127,13 @@ export const servizio = defineType({
       title: 'Card',
       type: 'object',
       group: 'card',
+      validation: (r) => r.required(),
       options: { collapsible: false },
       fields: [
-        { name: 'title', title: 'Titolo breve', type: 'string' },
-        { name: 'desc', title: 'Descrizione', type: 'string' },
-        { name: 'statValue', title: 'Statistica: valore', type: 'string' },
-        { name: 'statLabel', title: 'Statistica: etichetta', type: 'string' },
+        { name: 'title', title: 'Titolo breve', type: 'string', validation: (r: any) => r.required() },
+        { name: 'desc', title: 'Descrizione', type: 'string', validation: (r: any) => r.required() },
+        { name: 'statValue', title: 'Statistica: valore', type: 'string', validation: (r: any) => r.required() },
+        { name: 'statLabel', title: 'Statistica: etichetta', type: 'string', validation: (r: any) => r.required() },
       ],
     }),
 

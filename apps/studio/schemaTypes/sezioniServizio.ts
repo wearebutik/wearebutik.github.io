@@ -16,7 +16,36 @@ export const cosaFacciamo = defineType({
   name: 'cosaFacciamo',
   title: 'Cosa facciamo',
   type: 'object',
-  fields: [eyebrow('Cosa facciamo'), defineField({ name: 'testo', title: 'Testo', type: 'testoFormattato' })],
+  fields: [
+    eyebrow('Cosa facciamo'),
+    // Paragrafi ed elenchi puntati, con grassetto, corsivo e link.
+    defineField({
+      name: 'testo',
+      title: 'Testo',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          styles: [{ title: 'Paragrafo', value: 'normal' }],
+          lists: [{ title: 'Elenco puntato', value: 'bullet' }],
+          marks: {
+            decorators: [
+              { title: 'Grassetto', value: 'strong' },
+              { title: 'Corsivo', value: 'em' },
+            ],
+            annotations: [
+              {
+                name: 'link',
+                title: 'Link',
+                type: 'object',
+                fields: [{ name: 'href', title: 'URL', type: 'string', validation: (r) => r.required() }],
+              },
+            ],
+          },
+        }),
+      ],
+    }),
+  ],
   preview: { prepare: () => ({ title: 'Cosa facciamo' }) },
 });
 
@@ -24,7 +53,10 @@ export const adattoA = defineType({
   name: 'adattoA',
   title: 'Adatto a',
   type: 'object',
-  fields: [eyebrow('Adatto a'), defineField({ name: 'testo', title: 'Testo', type: 'text', rows: 3 })],
+  fields: [
+    eyebrow('Adatto a'),
+    defineField({ name: 'testo', title: 'Testo', type: 'text', rows: 3, validation: (r) => r.required() }),
+  ],
   preview: { select: { subtitle: 'testo' }, prepare: ({ subtitle }) => ({ title: 'Adatto a', subtitle }) },
 });
 
@@ -105,7 +137,7 @@ export const ctaProgetti = defineType({
   title: 'Rimando ai progetti',
   type: 'object',
   fields: [
-    defineField({ name: 'title', title: 'Titolo', type: 'string' }),
+    defineField({ name: 'title', title: 'Titolo', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'schede', title: 'Schede citate', type: 'string' }),
     defineField({ name: 'href', title: 'URL', type: 'string', description: 'Se vuoto: /progetti' }),
     defineField({ name: 'label', title: 'Etichetta', type: 'string', description: 'Se vuoto: "Vedi tutti i progetti"' }),
@@ -118,9 +150,9 @@ export const ctaBanner = defineType({
   title: 'Banner di chiusura',
   type: 'object',
   fields: [
-    defineField({ name: 'title', title: 'Titolo', type: 'string' }),
+    defineField({ name: 'title', title: 'Titolo', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'body', title: 'Testo', type: 'text', rows: 2 }),
-    defineField({ name: 'primaryCta', title: 'Pulsante principale', type: 'link' }),
+    defineField({ name: 'primaryCta', title: 'Pulsante principale', type: 'link', validation: (r) => r.required() }),
     defineField({ name: 'secondaryCta', title: 'Pulsante secondario', type: 'link' }),
   ],
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Banner di chiusura', subtitle }) },
