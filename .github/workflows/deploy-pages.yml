@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Pubblicazione nello Studio Sanity: il webhook del progetto chiama
+  # POST /repos/{owner}/{repo}/dispatches con event_type "sanity-publish"
+  # (ADR-0004). Pubblicazioni ravvicinate si accorpano grazie alla
+  # concurrency qui sotto: parte il build dell'ultima.
+  repository_dispatch:
+    types: [sanity-publish]
 
 permissions:
   contents: read

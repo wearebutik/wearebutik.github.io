@@ -41,7 +41,10 @@ it.
   URL. This keeps public traffic off Sanity: on the Free plan there are no
   overages, and exceeding a quota blocks the project.
 - **Publishing.** A publish in the Studio reaches the site through a new build
-  and deploy.
+  and deploy: a Sanity webhook on published documents calls GitHub's
+  `repository_dispatch` (`event_type: sanity-publish`), which runs
+  `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
+  stored only in Sanity's webhook settings.
 - **Migration status.** `progetti` reads from Sanity. `servizi` and `pagine` are
   still Markdown/MDX in `apps/web/src/content/**`, edited via Sitepins (media
   paths per [ADR-0009](./0009-sitepins-media-paths.md)), until they move to
