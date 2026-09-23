@@ -24,7 +24,8 @@ Build from root: `pnpm build` (turbo). Site-only: `pnpm --filter @butik/web buil
 
 ## Where decisions live
 
-- **`docs/adr/`** — architectural decisions (few, thematic, MADR, append-only).
+- **`docs/adr/`** — architectural decisions (few, thematic, MADR, edited in place
+  when a decision changes; git history is the record).
   Start at [`docs/adr/README.md`](docs/adr/README.md).
 - **`docs/guidances/`** — recommendations, not enforced (per-feature choices like
   which serverless runtime; design vocabulary).
@@ -39,11 +40,15 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
 - **Static-first, host-agnostic** (ADR-0002): no SSR adapter in
   `astro.config.mjs`. Dynamic logic = isolated client→serverless call, chosen
   per-feature (see `docs/guidances/functions.md`), never global SSR.
-- **Content-driven** (ADR-0004): editorial copy lives in `apps/web/src/content/**`
-  + `apps/web/src/content.config.ts`, editable via Sitepins — not hardcoded in new
-  `.astro` pages. Keep Zod and `.sitepins/schema/**` in sync. Media fields use the
-  `/src/assets/...` path convention so images resolve in both Astro `image()` and
-  the Sitepins editor (ADR-0009); Sitepins Media Folder is set to `apps/web/src`.
+- **Content-driven, Sanity as CMS** (ADR-0004): editorial copy is not hardcoded in
+  `.astro` pages. Sanity is read only at build time by content-layer loaders
+  (`apps/web/src/lib/sanity.ts`); the Studio lives in `apps/studio`. Keep each
+  Sanity schema aligned with its Zod schema in `apps/web/src/content.config.ts`.
+  **No image is ever served from `cdn.sanity.io`**: Sanity images go through
+  Astro's image pipeline and ship from `/_astro/`. Migration in progress (#50):
+  `progetti` is on Sanity; `servizi` and `pagine` are still Markdown/MDX in
+  `apps/web/src/content/**`, edited via Sitepins with `/src/assets/...` media
+  paths (ADR-0009).
 - **CSS Modules + tokens** (ADR-0005): style in `*.module.css` co-located with the
   component, values from tokens in `@butik/ui-tokens`. Shared components go in
   `@butik/ui`. **Tailwind is gone** — app-level styling is Astro scoped

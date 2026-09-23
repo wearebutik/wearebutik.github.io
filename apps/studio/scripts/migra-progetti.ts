@@ -7,6 +7,10 @@
 //
 // Gira con `sanity exec --with-user-token`: usa il login della CLI, nessun
 // token da gestire a mano.
+//
+// Eseguita una volta (settembre 2026, #51): gli MDX e le immagini sorgente sono
+// stati poi rimossi dal repo e si recuperano dalla storia git. Resta come
+// modello per le migrazioni delle altre collection.
 import { createReadStream, readdirSync, readFileSync } from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { getCliClient } from 'sanity/cli';
