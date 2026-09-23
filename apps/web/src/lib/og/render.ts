@@ -6,7 +6,7 @@
 //   - bleed : hero a tutta card + scrim (progetti)
 import satori from 'satori';
 import { Resvg } from '@resvg/resvg-js';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { OgCard } from '../../data/ogCards';
 
@@ -54,21 +54,11 @@ function arrowDataUri(color: string): string {
   return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
-/** Hero del progetto come data URI, letto dal frontmatter del .mdx. null se assente. */
-function heroDataUriForSlug(slug: string): string | null {
-  for (const ext of ['mdx', 'md']) {
-    const mdxPath = fromRoot(`src/content/progetti/${slug}.${ext}`);
-    if (!existsSync(mdxPath)) continue;
-    const m = readFileSync(mdxPath, 'utf8').match(/heroImage:\s*["']?([^"'\n]+)["']?/);
-    const raw = m?.[1]?.trim();
-    if (!raw) return null;
-    const imgPath = fromRoot(raw); // raw è root-relative: "/src/assets/..."
-    if (!existsSync(imgPath)) return null;
-    const buf = readFileSync(imgPath);
-    const fmt = imgPath.endsWith('.png') ? 'png' : imgPath.endsWith('.webp') ? 'webp' : 'jpeg';
-    return `data:image/${fmt};base64,${buf.toString('base64')}`;
-  }
-  return null;
+/** Hero del progetto come data URI (JPEG 1200×630 dalla CDN Sanity). null se non scaricabile. */
+async function heroDataUri(url: string): Promise<string | null> {
+  const res = await fetch(`${url}?w=1200&h=630&fit=crop&fm=jpg&q=80`);
+  if (!res.ok) return null;
+  return `data:image/jpeg;base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
 }
 
 /** Riga finale comune: handle (bollo + @) a sinistra, CTA pill rossa a destra. */
@@ -194,10 +184,10 @@ function buildBleed(card: OgCard, handle: string, hero: string): Node {
   ]);
 }
 
-function buildCard(card: OgCard, handle: string): Node {
+async function buildCard(card: OgCard, handle: string): Promise<Node> {
   if (card.layout === 'home') return buildHome(card);
-  if (card.layout === 'bleed' && card.slug) {
-    const hero = heroDataUriForSlug(card.slug);
+  if (card.layout === 'bleed' && card.hero) {
+    const hero = await heroDataUri(card.hero);
     if (hero) return buildBleed(card, handle, hero);
     // hero mancante → fallback al layout chiaro, niente card rotta
   }
@@ -205,7 +195,7 @@ function buildCard(card: OgCard, handle: string): Node {
 }
 
 export async function renderCardPng(card: OgCard, handle: string): Promise<Buffer> {
-  const svg = await satori(buildCard(card, handle) as unknown as never, {
+  const svg = await satori((await buildCard(card, handle)) as unknown as never, {
     width: 1200,
     height: 630,
     fonts: [

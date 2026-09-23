@@ -1,6 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import type { SchemaContext } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { progettiLoader } from '#lib/sanity';
 
 // Tipo dell'helper `image()` fornito dallo schema context di Astro: consente di
 // dichiarare riferimenti a media (risolti a build-time) anche dentro gli array.
@@ -35,28 +36,29 @@ const serviziCollection = defineCollection({
   }),
 });
 
+// Progetti da Sanity (PoC): il loader legge i documenti `progetto` a build
+// time. Le immagini arrivano come URL della CDN Sanity; Astro le scarica e le
+// ottimizza come le locali (vedi `image.domains` in astro.config.mjs).
 const progettiCollection = defineCollection({
-  loader: glob({
-    pattern: '*.{md,mdx}',
-    base: './src/content/progetti',
-    generateId: ({ entry }) => entry.replace(/\.(mdx?)$/, ''),
-  }),
-  schema: ({ image }) => z.object({
+  loader: progettiLoader(),
+  schema: z.object({
     title: z.string(),
     subtitle: z.string(),
-    heroImage: image(),
+    heroImage: z.string().url(),
     heroAlt: z.string().optional().default(''),
     client: z.string().optional(),
     year: z.number().optional(),
     category: z.string().optional(),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
-    ogImage: image().optional(),
+    ogImage: z.string().url().optional(),
     ogCta: z.string().optional(),
     order: z.number().optional().default(0),
     featured: z.boolean().optional().default(false),
     featuredOrder: z.number().optional().default(0),
     draft: z.boolean().optional().default(false),
+    // Corpo in Portable Text, reso da astro-portabletext in progetti/[slug].astro
+    body: z.array(z.any()).optional().default([]),
   }),
 });
 

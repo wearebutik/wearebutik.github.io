@@ -25,6 +25,7 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
           <div class="project-card__media">
             <Image
               src={p.data.heroImage}
+              inferSize
               alt={p.data.heroAlt}
               widths={[400, 700]}
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

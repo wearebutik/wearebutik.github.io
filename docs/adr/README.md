@@ -28,8 +28,9 @@ relate to the [`../guidances/`](../guidances/README.md) recommendations).
    Alternatives considered (fairly represented), Consequences (positive,
    negative/accepted risks, and the triggers that reopen the decision). Fill the
    `tags` — that's what makes the log searchable.
-3. ADRs are **append-only**: never rewrite an accepted decision to mean something
-   different — write a new one and mark the old `superseded by ADR-NNNN`.
+3. ADRs are **living documents**: when a decision changes, edit its ADR in place
+   so it states the decision in force; git history records how it evolved
+   ([ADR-0001](./0001-recording-decisions.md)).
 4. Add a row to the index above.
 
 Choices that depend on the specific feature (which serverless runtime to use) or

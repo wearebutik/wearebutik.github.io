@@ -1,77 +1,96 @@
 ---
 status: accepted
-date: 2026-07-10
-tags: [content, sitepins, content-collections, cms]
+date: 2026-09-23
+tags: [content, cms, sanity, content-collections]
 ---
 
 # ADR-0004: Content architecture
 
 ## Context
 
-butik's content must be editable by the team without touching code, but without
-binding to an external CMS with vendor lock-in. **Sitepins** is already integrated
-(`.sitepins/config.json`, schemas for `progetti` and `servizi`) — a **git-native**
-CMS: it edits files in the repo, no external database. The `progetti` and
-`servizi` collections are already typed with Zod in `src/content.config.ts`.
-
-Today, though, many pages are **hardcoded** in `.astro` (`index`, `chi-siamo`,
-`contatti`, `partners`, …): their copy lives in the markup and isn't editable from
-Sitepins.
+butik's content must be editable by the team without touching code, while the
+site stays static (ADR-0002): no runtime backend serves pages. The site's
+collections are typed with Zod in `apps/web/src/content.config.ts` and consumed
+through Astro content collections.
 
 ## Decision
 
-**Content is content-driven; Sitepins is the editing surface, Astro content
-collections are the typed source of truth.**
+**Sanity is the CMS; Astro content collections are the typed interface the site
+reads.** Sanity is read **only at build time**: the published site never calls
+it.
 
-- Every editorial piece (copy, images, metadata) lives in `src/content/**` as
-  Markdown/MDX with YAML frontmatter, validated by a Zod schema in
-  `src/content.config.ts`.
-- Every collection has a matching **Sitepins schema** in `.sitepins/schema/**`.
-  Zod and Sitepins schemas must stay aligned (the `content-check` skill watches for
-  drift).
-- **Media paths** follow the `/src/assets/...` convention so images resolve both in
-  Astro `image()` and the Sitepins editor — see
-  [ADR-0009](./0009-sitepins-media-paths.md).
-- **MDX bodies & Sitepins.** Sitepins edits Markdown, so `import` lines in an MDX
-  body leak into the editor as loose paragraphs (fragile) while JSX is preserved as
-  a code block. **`progetti`** bodies are therefore kept import-free: the image
-  components (`ImageBlock`/`ImageCarousel`/`ImageLeft`/`ImageRight`) are provided
-  globally via `<Content components={{…}} />` and take a **string `src`**
-  (`/src/assets/…`) resolved to an optimized asset by `#lib/media` (`resolveAsset`
-  + `import.meta.glob`). Their prose is Sitepins-editable. **`servizi`** are a
-  different shape — page compositions built from domain components with inline
-  `export const` data — so they stay **dev-authored** (edited in code; only their
-  frontmatter is Sitepins-editable).
-- **Goal (in progress, dedicated branch):** move today's hardcoded pages to be
-  content-driven, so the whole site is manageable from Sitepins. Purely structural
-  pages (e.g. the experimental `lab/*`) may stay in code.
-- No external CMS with a database: content stays in git, versioned with the code.
+- **Sanity project** `uvzsc0vv`, dataset `production` (public), Free plan. The
+  editing UI is Sanity Studio, in `apps/studio` (`@butik/studio`), published
+  on Sanity's Studio hosting at `butik.sanity.studio`.
+- **Schemas.** Each collection has a Sanity schema in `apps/studio/schemaTypes/`
+  mirroring its Zod schema; the two stay aligned (the `content-check` skill
+  watches for drift). Rich bodies are **Portable Text**, rendered with
+  `astro-portabletext`; custom blocks (`imageBlock`, `imageSide`,
+  `imageCarousel`) map onto the existing image components.
+- **Loading.** Each collection has a content-layer loader (`apps/web/src/lib/sanity.ts`)
+  that queries Sanity with GROQ during `astro build`. Drafts are excluded in the
+  query. If Sanity is unreachable the build fails, and the last deploy keeps
+  being served.
+- **Images never come from Sanity's CDN.** Every image from Sanity goes through
+  Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
+  `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
+  hosting — including `og:image`. The built site contains no `cdn.sanity.io`
+  URL. This keeps public traffic off Sanity: on the Free plan there are no
+  overages, and exceeding a quota blocks the project.
+- **Publishing.** A publish in the Studio reaches the site through a new build
+  and deploy.
+- **Migration status.** `progetti` reads from Sanity. `servizi` and `pagine` are
+  still Markdown/MDX in `apps/web/src/content/**`, edited via Sitepins (media
+  paths per [ADR-0009](./0009-sitepins-media-paths.md)), until they move to
+  Sanity — tracked in issue #50.
+- Purely structural pages (e.g. the experimental `lab/*`) stay in code; editorial
+  copy does not live hardcoded in `.astro` pages.
 
 ## Alternatives considered
 
-### External headless CMS (Contentful, Sanity, …)
+### Sitepins (git-native CMS)
 
-Rejected: vendor lock-in, one more service to run, and content leaves git.
-Sitepins gives an editing UI while staying git-native.
+Content as Markdown in the repo, edited through Sitepins. It keeps content in git
+with no external service, but the editor handles MDX bodies poorly (imports leak
+into the editor as paragraphs, components show up as code blocks), and every
+schema exists twice, in Zod and in `.sitepins/schema/**`. It is being phased out.
 
-### Leave pages hardcoded
+### Strapi Cloud
 
-Rejected as the end state: the team can't edit copy without a dev. Acceptable only
-for structural/experimental pages.
+No free plan since July 2026.
+
+### Contentful, Hygraph
+
+Free plans too tight for the content model (Contentful: 25 content types;
+Hygraph: 1,000 records), and Contentful's first paid tier is ~$300/month.
+
+### Serving images from Sanity's CDN
+
+Simpler (no download at build), but ties public traffic to Sanity's bandwidth
+quota, which on the Free plan blocks the project when exceeded.
 
 ## Consequences
 
 ### Positive
 
-- Content versioned with code, reviewed via PR, zero backend.
-- Strong typing (Zod) → content errors caught at build-time.
+- The team edits structured content, including rich bodies with images, in a
+  purpose-built editor; the site stays static and host-agnostic.
+- Strong typing (Zod) on what the loader returns → content errors caught at
+  build time.
+- Sanity usage grows with the number of builds, not with site traffic.
 
 ### Negative / accepted risks
 
-- Two schemas to keep aligned (Zod ↔ Sitepins).
-- Migrating the hardcoded pages is incremental work, not immediate.
+- Content lives outside git: it is not reviewed via PR, and a publish needs a
+  build to go live.
+- Vendor dependency on Sanity (its API at build time, its Studio for editing).
+- Two schemas to keep aligned (Zod ↔ Sanity).
+- Free-plan limits: 20 seats with only Administrator and Viewer roles, 10k
+  documents, 250k API requests/month.
 
 ### When to deviate (revisit triggers)
 
-- The content model outgrows flat collections (complex relations, extensive
-  multi-language localization) → consider a different data layer.
+- Sanity usage approaches the Free-plan quotas, or the team needs roles beyond
+  Administrator/Viewer → evaluate the Growth plan or another CMS.
+- Editors need to see changes live without a build → consider on-demand
+  revalidation, which conflicts with static-first (ADR-0002).

@@ -1,10 +1,9 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import { PortableText } from 'astro-portabletext';
 import ContentLayout from '../../layouts/ContentLayout.astro';
-import ImageBlock from '#components/mdx/ImageBlock.astro';
-import ImageCarousel from '#components/mdx/ImageCarousel.astro';
-import ImageLeft from '#components/mdx/ImageLeft.astro';
-import ImageRight from '#components/mdx/ImageRight.astro';
+import { portableTextComponents } from '#components/portabletext/components';
 
 export async function getStaticPaths() {
   const progetti = await getCollection('progetti', e => !e.data.draft);
@@ -15,7 +14,17 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+
+// L'immagine OG da Sanity passa dalla pipeline di Astro come le altre: il
+// <meta og:image> punta a /_astro/, mai a cdn.sanity.io (#52). JPEG 1200×630,
+// il formato che tutti gli scraper social leggono.
+const ogImage = entry.data.ogImage
+  ? (await getImage({
+      src: `${entry.data.ogImage}?w=1200&h=630&fit=crop`,
+      inferSize: true,
+      format: 'jpg',
+    })).src
+  : undefined;
 ---
 
 <ContentLayout
@@ -25,13 +34,13 @@ const { Content } = await render(entry);
   heroAlt={entry.data.heroAlt}
   metaTitle={entry.data.metaTitle}
   metaDescription={entry.data.metaDescription}
-  ogImage={entry.data.ogImage?.src}
+  ogImage={ogImage}
   transitionName={`progetto-${entry.id}`}
   client={entry.data.client}
   year={entry.data.year}
   category={entry.data.category}
 >
-  <Content components={{ ImageBlock, ImageCarousel, ImageLeft, ImageRight }} />
+  <PortableText value={entry.data.body} components={portableTextComponents} />
 </ContentLayout>
 
 <span

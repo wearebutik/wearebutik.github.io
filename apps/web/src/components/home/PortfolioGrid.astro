@@ -29,6 +29,7 @@ const { progetti } = Astro.props;
           >
             <Image
               src={p.data.heroImage}
+              inferSize
               alt={p.data.heroAlt}
               widths={[400, 700, 1000]}
               sizes="(max-width: 640px) 100vw, 50vw"

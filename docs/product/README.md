@@ -9,7 +9,7 @@ get their own space.
 
 | Space | Holds | Nature |
 |---|---|---|
-| [`../adr/`](../adr/README.md) | architectural decisions | few, thematic, immutable |
+| [`../adr/`](../adr/README.md) | architectural decisions | few, thematic, kept current |
 | **`decisions/`** | product/design decisions (PDR) | many, granular, source of truth |
 | [`../../reference/`](../../reference/README.md) | raw input (legacy, dumps, prototypes) | read-only history, quarantined |
 
