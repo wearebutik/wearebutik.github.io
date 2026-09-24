@@ -13,7 +13,10 @@
  *    soli. Niente segue lo scroll.
  *
  * L'interruttore è per elemento, non per sezione: in una sezione alta (il
- * metodo) ogni passo parte quando è lui a essere in vista.
+ * metodo) ogni passo parte quando è lui a essere in vista. E parte quando
+ * l'elemento supera i tre quarti dello schermo (view timeline con il bordo
+ * inferiore rientrato del 25%), non appena affiora dal fondo: scorrendo
+ * piano il rimbalzo succede dove si sta guardando.
  *
  * Senza view timeline (Firefox) o con prefers-reduced-motion non si nasconde
  * né si anima nulla. L'hero della home ha la sua entrata al caricamento, nel
@@ -73,7 +76,7 @@
       :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
       > :not([data-no-reveal]) {
       animation: motion-interruttore linear both;
-      animation-timeline: view();
+      animation-timeline: view(block 0% 25%);
       animation-range: entry 70% entry 71%;
     }
 
@@ -113,7 +116,7 @@
     /* ── Titoli di sezione ────────────────────────────────────────────── */
     .page-main:not(:has([data-motion])) section:not(.hero) :has(> h2:not(.prose h2)) {
       animation: motion-interruttore linear both;
-      animation-timeline: view();
+      animation-timeline: view(block 0% 25%);
       animation-range: entry 80% entry 81%;
     }
 
