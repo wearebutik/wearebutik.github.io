@@ -11,24 +11,31 @@
  * Astro va montato con una direttiva (`client:visible`), altrimenti resta la
  * sola parola senza sottolineatura. Con `prefers-reduced-motion` il tratto è
  * già disegnato, senza transizione.
+ *
+ * Con `trigger="load"` il tratto si disegna al caricamento con un'animazione
+ * solo CSS: nessuna direttiva client, resta HTML statico. È il modo giusto
+ * per un testo già visibile all'apertura della pagina (es. il titolo di un hero).
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import styles from './Underline.module.css';
 
 export interface UnderlineProps {
   tone?: 'accent' | 'highlight' | 'fg';
+  /** `view` (default): si disegna entrando in vista, serve il client.
+   *  `load`: si disegna al caricamento, solo CSS, nessuna idratazione. */
+  trigger?: 'view' | 'load';
   /** Il testo da sottolineare. */
   children?: ReactNode;
   className?: string;
 }
 
-export default function Underline({ tone = 'accent', children, className }: UnderlineProps) {
+export default function Underline({ tone = 'accent', trigger = 'view', children, className }: UnderlineProps) {
   const ref = useRef<HTMLSpanElement>(null);
   const [drawn, setDrawn] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || drawn) return;
+    if (!el || drawn || trigger === 'load') return;
     // Senza IntersectionObserver si disegna subito: meglio del tratto assente.
     if (!('IntersectionObserver' in window)) {
       setDrawn(true);
@@ -45,9 +52,9 @@ export default function Underline({ tone = 'accent', children, className }: Unde
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [drawn]);
+  }, [drawn, trigger]);
 
-  const cls = [styles.uline, styles[tone], drawn && styles.drawn, className]
+  const cls = [styles.uline, styles[tone], drawn && styles.drawn, trigger === 'load' && styles.onLoad, className]
     .filter(Boolean)
     .join(' ');
 

@@ -3,7 +3,7 @@ _type: servizio
 audience:
   - operatori
 card:
-  desc: Percorsi immersivi per operatori culturali, turistici e giovani professionisti.
+  desc: Alleniamo operatori e giovani sul campo.
   statLabel: giovani formati
   statValue: 1000+
   title: Formazione

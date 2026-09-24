@@ -4,7 +4,7 @@ audience:
   - comuni
   - operatori
 card:
-  desc: Eventi e format musicali che attivano comunità e quartieri.
+  desc: Portiamo la musica in piazze e quartieri.
   statLabel: persone alla Milano Music Week
   statValue: 70K+
   title: Eventi e format

@@ -5,6 +5,7 @@ import ServiceCard from '../serviziCards/ServiceCard.astro';
 import ServiceLauncher from '../serviziCards/ServiceLauncher.astro';
 import Button from '@butik/ui/Button';
 import ArrowLink from '@butik/ui/ArrowLink';
+import Underline from '@butik/ui/Underline';
 
 import { imageSize } from '#lib/media';
 
@@ -66,6 +67,11 @@ const slideStyle = (i: number) =>
     ? `animation: hero-xfade ${cycle}s linear ${i === 0 ? 0 : -(n - i) * SLIDE_S}s infinite;`
     : undefined;
 
+// Accento tipografico: l'ultima parola del titolo sottolineata, disegnata al
+// caricamento solo con CSS (nessuna idratazione: il titolo è già in vista).
+const cut = title.lastIndexOf(' ');
+const [titleHead, titleLast] = cut === -1 ? ['', title] : [title.slice(0, cut + 1), title.slice(cut + 1)];
+
 // Presentazione dei servizi nell'hero: card con icona da tablet in su, lista
 // compatta da mobile (dove le card non stanno sopra la piega). La scelta è
 // puramente CSS — entrambi i blocchi sono nell'HTML, una media query ne mostra
@@ -116,7 +122,7 @@ const serviziItems = servizi.map((s) => ({
       <!-- Titolo + subtitle + CTA primario -->
       <div class="hero-textcol">
         <h1 class="hero-title">
-          {title}
+          {titleHead}<Underline trigger="load" tone="accent">{titleLast}</Underline>
         </h1>
         <p class="hero-subtitle">
           {subtitle}

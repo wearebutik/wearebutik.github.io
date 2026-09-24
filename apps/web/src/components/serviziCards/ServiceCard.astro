@@ -84,15 +84,17 @@ const icons: Record<string, string> = {
   }
 
   /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking). */
+  /* Il nome del servizio è l'elemento principale della card: più grande
+     della descrizione (una riga), con aria sotto. */
   .card__title {
     font-family: var(--font-heading);
-    font-size: 1.0625rem;
+    font-size: 1.3125rem; /* 21px: nessun token fra --font-size-lg e --font-size-xl */
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: -0.005em;
     text-transform: none;
     color: var(--color-butik-dark);
-    margin: 0;
+    margin: 0 0 var(--space-1);
   }
   .card__desc {
     font-family: var(--font-sans);

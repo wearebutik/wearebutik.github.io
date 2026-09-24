@@ -4,7 +4,7 @@ audience:
   - dmo
   - comuni
 card:
-  desc: 'Itinerari, mappe e guide che raccontano un territorio attraverso la musica.'
+  desc: Disegniamo itinerari, mappe e guide.
   statLabel: nuovi prodotti turistici a Cremona
   statValue: '12'
   title: Turismo musicale

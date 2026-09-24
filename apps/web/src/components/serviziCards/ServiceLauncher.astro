@@ -28,8 +28,10 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   {items.map((c) => (
     <li>
       <a href={linkFor(c.slug, c.href)} class="row">
-        <span class="row-title">{c.title}</span>
-        <span class="row-stat">{`${c.statValue} ${c.statLabel}`}</span>
+        <span class="row-text">
+          <span class="row-title">{c.title}</span>
+          <span class="row-stat">{`${c.statValue} ${c.statLabel}`}</span>
+        </span>
         <span class="row-chev" aria-hidden="true">›</span>
       </a>
     </li>
@@ -63,14 +65,22 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   .row:focus-visible {
     background: var(--row-hover);
   }
+  /* Nome sopra, prova sotto: la prova può essere lunga ("10 Comuni nella
+     Rete dei Comuni Musicali") e affiancata schiacciava il nome fino a
+     sovrapporsi. In colonna va a capo senza togliere spazio al nome. */
+  .row-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
   .row-title {
     font-family: var(--font-heading);
     font-size: 1rem;
     font-weight: 700;
     letter-spacing: -0.005em;
     line-height: 1.15;
-    flex: 1;
-    min-width: 0;
   }
   .row-stat {
     font-family: var(--font-display);
@@ -78,9 +88,8 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+    line-height: 1.35;
     color: var(--muted);
-    white-space: nowrap;
-    flex-shrink: 0;
   }
   /* Chevron di disclosure: segnala che la riga è toccabile (visibile sempre,
      non solo all'hover, così funziona anche su mobile). */

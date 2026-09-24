@@ -61,6 +61,10 @@ export const InHeading: Story = {
 };
 
 // Una parola sola: il tratto si comprime.
+// Al caricamento, solo CSS: come nel titolo dell'hero della home, dove il
+// componente è reso a HTML statico senza direttiva client.
+export const OnLoad: Story = { args: { trigger: 'load' } };
+
 export const ShortText: Story = { args: { children: 'oggi' } };
 
 // Frase lunga: il tratto si allunga mantenendo la stessa irregolarità.

@@ -4,7 +4,7 @@ audience:
   - dmo
   - comuni
 card:
-  desc: 'Itinerari, mappe, guide e materiali editoriali per il turismo musicale.'
+  desc: Disegniamo itinerari, mappe e guide.
   statLabel: partecipanti ai tour, tutti sold out
   statValue: 310+
   title: Turismo musicale

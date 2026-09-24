@@ -4,7 +4,7 @@ audience:
   - comuni
   - operatori
 card:
-  desc: Eventi e format musicali che attivano quartieri e comunità.
+  desc: Portiamo la musica in piazze e quartieri.
   statLabel: persone raggiunte
   statValue: 70K+
   title: Eventi e format

@@ -4,7 +4,7 @@ audience:
   - comuni
   - dmo
 card:
-  desc: Strategie che fanno del patrimonio musicale un asset culturale e turistico.
+  desc: Mappiamo, ascoltiamo, co-progettiamo.
   statLabel: Comuni nella Rete dei Comuni Musicali
   statValue: '10'
   title: Consulenza strategica

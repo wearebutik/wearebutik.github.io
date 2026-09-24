@@ -3,7 +3,7 @@ _type: servizio
 audience:
   - comuni
 card:
-  desc: Progetti musicali finanziati che attivano territori e nuove generazioni.
+  desc: Scriviamo progetti che vincono bandi.
   statLabel: bandi vinti dal 2018
   statValue: '9'
   title: Progettazione culturale
