@@ -113,6 +113,8 @@ const paginaHome = z.object({
   heroCtaHref: z.string(),
   heroExploreLabel: z.string(),
   heroExploreHref: z.string(),
+  // Foto di sfondo dell'hero, in loop. Facoltative: senza, fondo scuro.
+  heroImages: z.array(z.object({ src: z.string().url(), alt: z.string() })).optional().default([]),
   // Numeri / impatto
   butikMetrics: z.array(metricSchema),
   mmwLabel: z.string(),
@@ -131,6 +133,8 @@ const paginaHome = z.object({
   aboutP3: z.string(),
   aboutCtaLabel: z.string(),
   aboutCtaHref: z.string(),
+  // Facoltativa: senza, AboutInline usa l'immagine locale.
+  aboutImage: z.string().url().optional(),
   aboutImageAlt: z.string(),
   // CTA banner 2 (dopo AboutInline, senza body)
   ctaBanner2Title: z.string(),
@@ -153,6 +157,8 @@ const paginaChiSiamo = z.object({
   metaDescription: z.string(),
   heroTitle: z.string(),
   heroSubtitle: z.string(),
+  // Facoltativa: senza, la pagina usa l'immagine locale.
+  heroImage: z.string().url().optional(),
   heroImageAlt: z.string(),
   introEyebrow: z.string(),
   introP1: portableText,

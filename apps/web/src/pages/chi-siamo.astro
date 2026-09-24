@@ -67,7 +67,7 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   <HeroBanner
     title={c.heroTitle}
     subtitle={c.heroSubtitle}
-    image={heroImg}
+    image={c.heroImage ?? heroImg}
     imageAlt={c.heroImageAlt}
   />
 

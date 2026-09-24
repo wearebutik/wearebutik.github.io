@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "sanity dev",
     "deploy": "sanity deploy",
-    "migrate:progetti": "sanity exec scripts/migra-progetti.ts --with-user-token"
+    "migrate:progetti": "sanity exec scripts/migra-progetti.ts --with-user-token",
+    "testi": "sanity exec scripts/testi.ts --with-user-token --",
+    "foto": "sanity exec scripts/foto.ts --with-user-token --"
   },
   "dependencies": {
     "@sanity/vision": "^6.16.0",
@@ -24,6 +26,7 @@
     "gray-matter": "^4.0.3",
     "jsdom": "^30.1.1",
     "marked": "^18.0.14",
+    "sharp": "^0.34.5",
     "smartypants": "^0.2.2",
     "typescript": "^5.9.0"
   }

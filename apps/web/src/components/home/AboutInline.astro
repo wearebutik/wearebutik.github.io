@@ -1,9 +1,11 @@
 ---
 // Copy content-driven (ADR-0004): testo e label arrivano dalla collezione
-// `pagine` (entry `home`), passati da index.astro. L'immagine resta asset locale.
+// `pagine` (entry `home`), passati da index.astro. L'immagine viene da Sanity;
+// senza, resta l'asset locale.
 import { Image } from 'astro:assets';
 
 import heroHome from '../../assets/hero-home.jpg';
+import { imageSize } from '#lib/media';
 
 interface Props {
   title: string;
@@ -12,10 +14,11 @@ interface Props {
   p3: string;
   ctaLabel: string;
   ctaHref: string;
+  image?: string;
   imageAlt: string;
 }
 
-const { title, p1, p2, p3, ctaLabel, ctaHref, imageAlt } = Astro.props;
+const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Astro.props;
 ---
 
 <section class="about-inline">
@@ -45,7 +48,8 @@ const { title, p1, p2, p3, ctaLabel, ctaHref, imageAlt } = Astro.props;
 
       <div class="about-media">
         <Image
-          src={heroHome}
+          src={image}
+          {...imageSize(image)}
           alt={imageAlt}
           widths={[400, 700, 1000]}
           sizes="(max-width: 768px) 100vw, 50vw"

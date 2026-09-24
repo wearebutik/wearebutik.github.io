@@ -67,6 +67,7 @@ const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
   description={c.metaDescription}
 >
   <Hero
+    images={c.heroImages}
     title={c.heroTitle}
     subtitle={c.heroSubtitle}
     ctaLabel={c.heroCtaLabel}
@@ -106,6 +107,7 @@ const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
     p3={c.aboutP3}
     ctaLabel={c.aboutCtaLabel}
     ctaHref={c.aboutCtaHref}
+    image={c.aboutImage}
     imageAlt={c.aboutImageAlt}
   />
   <CtaBanner

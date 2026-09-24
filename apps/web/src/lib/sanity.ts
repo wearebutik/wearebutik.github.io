@@ -121,6 +121,12 @@ export const pagineLoader = () =>
   sanityLoader('pagine', PAGINE_QUERY, ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }) => ({
     ...rest,
     type: PAGINE_TYPE[_type as string],
+    // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
+    ...(Array.isArray(rest.heroImages) && {
+      heroImages: (rest.heroImages as ConImmagine[]).map((i) => ({ src: imageUrl(i), alt: (i.alt as string) ?? '' })),
+    }),
+    ...(rest.heroImage !== undefined && { heroImage: imageUrl(rest.heroImage) }),
+    ...(rest.aboutImage !== undefined && { aboutImage: imageUrl(rest.aboutImage) }),
     ...(Array.isArray(rest.founders) && {
       founders: (rest.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) ?? '' })),
     }),

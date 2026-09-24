@@ -102,6 +102,16 @@ export const paginaHome = pagina(
     str('heroCtaHref', 'Pulsante: URL', 'hero'),
     str('heroExploreLabel', 'Link servizi: etichetta', 'hero'),
     str('heroExploreHref', 'Link servizi: URL', 'hero'),
+    // Foto a tutto sfondo, in loop con dissolvenza (components/home/Hero.astro).
+    // Facoltative: senza, l'hero resta sul fondo scuro.
+    defineField({
+      name: 'heroImages',
+      title: 'Foto di sfondo',
+      description: 'Scorrono in loop con dissolvenza, nell\'ordine della lista. La prima resta ferma per chi riduce le animazioni.',
+      type: 'array',
+      group: 'hero',
+      of: [defineArrayMember({ type: 'figura' })],
+    }),
     metriche('butikMetrics', 'Numeri Butik', 'numeri'),
     str('mmwLabel', 'Etichetta Milano Music Week', 'numeri'),
     metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri'),
@@ -117,6 +127,7 @@ export const paginaHome = pagina(
     txt('aboutP3', 'Paragrafo 3', 'about'),
     str('aboutCtaLabel', 'Link: etichetta', 'about'),
     str('aboutCtaHref', 'Link: URL', 'about'),
+    defineField({ name: 'aboutImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'about' }),
     str('aboutImageAlt', 'Testo alternativo immagine', 'about'),
     str('ctaBanner2Title', 'Titolo', 'banner2'),
     str('ctaBanner2PrimaryLabel', 'Pulsante principale: etichetta', 'banner2'),
@@ -146,6 +157,7 @@ export const paginaChiSiamo = pagina(
   [
     str('heroTitle', 'Titolo', 'intro'),
     txt('heroSubtitle', 'Sottotitolo', 'intro'),
+    defineField({ name: 'heroImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'intro' }),
     str('heroImageAlt', 'Testo alternativo immagine', 'intro'),
     str('introEyebrow', 'Intestazione', 'intro'),
     rich('introP1', 'Paragrafo 1', 'intro'),
