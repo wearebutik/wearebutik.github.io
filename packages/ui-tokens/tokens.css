@@ -16,6 +16,7 @@
   --color-light: #fff2f1;
   --color-dark: #071108;
   --color-red: #e21929;
+  --color-red-deep: #cc1523;
   --color-purple: #62109f;
   --color-green: #d2ff28;
   --color-white: #ffffff;
@@ -25,6 +26,9 @@
   --color-bg-invert: var(--color-dark);
   --color-fg: var(--color-dark);
   --color-fg-invert: var(--color-white);
+  /* Il rosso di brand, per ciò che non porta testo: glifi, puntini, bordi,
+     outline di focus, accenti decorativi (soglia 3:1). Non va sotto il testo
+     né usato come testo: per quello ci sono i due token che seguono. */
   --color-accent: var(--color-red);
   /* Variante scurita dell'accent per il TESTO su fondo chiaro. `--color-accent`
      puro fa 4.36:1 su `--color-bg`, sotto la soglia AA di 4.5:1 per il testo
@@ -32,7 +36,13 @@
      per parole. Questa fa 5.20:1 su `--color-bg` e 5.68:1 su bianco.
      NON usarla su fondo scuro, dove peggiora il contrasto invece di migliorarlo:
      lì il testo va in `--color-fg-invert` o `--color-highlight`. */
-  --color-accent-text: #cc1523;
+  --color-accent-text: var(--color-red-deep);
+  /* Fondo pieno rosso che PORTA TESTO (bottoni, badge, chip attivi, gli hover
+     dei CTA): il testo sopra è `--color-fg-invert`, a 5.68:1. Col rosso di
+     brand il bianco farebbe 4.77:1, a 0.27 dalla soglia di 4.5:1: qualunque
+     ritocco del rosso lo porterebbe sotto in ogni punto insieme. Stesso valore
+     di `--color-accent-text`, ruolo diverso: i due possono divergere. */
+  --color-accent-fill: var(--color-red-deep);
   --color-accent-2: var(--color-purple);
   --color-highlight: var(--color-green);
 

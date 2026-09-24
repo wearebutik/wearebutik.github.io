@@ -6,7 +6,7 @@
   height: 2.25rem;
   width: 2.25rem;
   border-radius: var(--radius-full);
-  background: var(--color-accent);
+  background: var(--color-accent-fill);
   font-family: var(--font-display);
   font-size: var(--font-size-sm);
   font-weight: 700;
