@@ -73,7 +73,10 @@ function sanityLoader(name: string, query: string, map: (doc: Doc) => Record<str
   };
 }
 
-const imageUrl = (image: unknown) => (image ? sanityImageUrl(image as SanityImage) : undefined);
+// Un'immagine senza file (aggiunta nello Studio ma non caricata, o con l'asset
+// rimosso) si ignora: non deve rompere il build.
+const imageUrl = (image: unknown) =>
+  (image as { asset?: unknown } | undefined)?.asset ? sanityImageUrl(image as SanityImage) : undefined;
 
 const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
   "id": slug.current,
@@ -136,7 +139,9 @@ export const pagineLoader = () =>
     type: PAGINE_TYPE[_type as string],
     // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
     ...(Array.isArray(rest.heroImages) && {
-      heroImages: (rest.heroImages as ConImmagine[]).map((i) => ({ src: imageUrl(i), alt: (i.alt as string) ?? '' })),
+      heroImages: (rest.heroImages as ConImmagine[])
+        .filter((i) => i.asset)
+        .map((i) => ({ src: imageUrl(i), alt: (i.alt as string) ?? '' })),
     }),
     ...(rest.heroImage !== undefined && { heroImage: imageUrl(rest.heroImage) }),
     ...(rest.aboutImage !== undefined && { aboutImage: imageUrl(rest.aboutImage) }),

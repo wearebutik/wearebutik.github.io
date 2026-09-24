@@ -76,4 +76,6 @@
   --duration-fast: 150ms;
   --duration-base: 250ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Rimbalzo delle animazioni d'ingresso "ritmo musicale": supera appena e si assesta. */
+  --ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
 }

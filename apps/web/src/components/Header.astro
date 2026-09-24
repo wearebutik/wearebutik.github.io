@@ -382,7 +382,7 @@ function isActive(href: string) {
   }
   @media (prefers-reduced-motion: no-preference) {
     .site-header[data-overlay='true'] .header-inner > * {
-      animation: header-scende 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 1200ms backwards; /* mai both: vedi styles/motion.css */
+      animation: header-scende 600ms var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
     }
     .site-header[data-overlay='true'] .header-inner > :nth-child(2) {
       animation-delay: 1320ms;
@@ -462,6 +462,13 @@ function isActive(href: string) {
     z-index: 2;
     color: var(--color-fg-invert);
   }
+  /* Focus sul pannello scuro: anello bianco (il rosso lì non arriva al 3:1). */
+  .mobile-nav[open] > summary:focus-visible,
+  .mobile-link:focus-visible,
+  .site-header :global(.mobile-cta:focus-visible) {
+    outline: 2px solid var(--color-fg-invert);
+    outline-offset: 3px;
+  }
 
   @keyframes menu-voce {
     0% { opacity: 0; transform: translateX(-20px); }
@@ -470,7 +477,7 @@ function isActive(href: string) {
   }
   @media (prefers-reduced-motion: no-preference) {
     .mobile-nav[open] .mobile-nav-list > * {
-      animation: menu-voce 480ms cubic-bezier(0.34, 1.4, 0.64, 1) 60ms backwards;
+      animation: menu-voce 480ms var(--ease-bounce) 60ms backwards;
     }
     .mobile-nav[open] .mobile-nav-list > :nth-child(2) { animation-delay: 130ms; }
     .mobile-nav[open] .mobile-nav-list > :nth-child(3) { animation-delay: 200ms; }
@@ -486,12 +493,30 @@ function isActive(href: string) {
     const menu = document.getElementById('mobile-menu') as HTMLDetailsElement | null;
     if (!menu || menu.dataset.bound) return;
     menu.dataset.bound = 'true';
+    // Da aperto il pannello copre la pagina: lo sfondo diventa inert (il Tab
+    // resta nel menu, i lettori di schermo non leggono ciò che sta sotto) ed
+    // Esc lo chiude, riportando il focus sull'icona.
+    const sotto = () => [
+      document.querySelector('.page-main'),
+      document.querySelector('footer'),
+      document.querySelector('.header-left'),
+      document.querySelector('.cta-wrap'),
+    ].filter(Boolean) as HTMLElement[];
     menu.addEventListener('toggle', () => {
       document.documentElement.style.overflow = menu.open ? 'hidden' : '';
+      sotto().forEach((el) => (el.inert = menu.open));
+    });
+    menu.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
     });
   }
   document.addEventListener('astro:page-load', initMenu);
   document.addEventListener('astro:before-swap', () => {
     document.documentElement.style.overflow = '';
   });
+  // Il nuovo <main> arriva senza inert; header e footer restano quelli nuovi.
+
 </script>

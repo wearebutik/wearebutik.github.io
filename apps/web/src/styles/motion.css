@@ -89,7 +89,7 @@
   }
   [data-reveal='in']:not(h2) {
     transform-origin: bottom;
-    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) backwards;
+    animation: motion-battito 600ms var(--ease-bounce) var(--d, 0ms) backwards;
   }
 
   @media (max-width: 767px) {
@@ -118,7 +118,7 @@
 @media (prefers-reduced-motion: no-preference) {
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
     transform-origin: bottom;
-    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--ritardo, 150ms) backwards;
+    animation: motion-battito 600ms var(--ease-bounce) var(--ritardo, 150ms) backwards;
   }
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
     animation: motion-assesta 900ms var(--ease-out) backwards;

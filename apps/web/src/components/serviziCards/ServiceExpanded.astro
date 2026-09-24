@@ -88,8 +88,8 @@ const icons: Record<string, string> = {
     position: relative;
   }
   /* Tutta la card è cliccabile: l'area del link "Scopri …" si allarga
-     all'intera card (pseudo-elemento sopra la card, il testo resta
-     selezionabile). L'entrata allo scroll la fa il sistema del sito
+     all'intera card (pseudo-elemento sopra la card: il testo non si
+     seleziona col mouse, si legge e si copia dalla scheda del servizio). L'entrata allo scroll la fa il sistema del sito
      (styles/motion.css + @butik/ui/reveal). */
   .svc-exp :global(.svc-exp__link)::after {
     content: '';
