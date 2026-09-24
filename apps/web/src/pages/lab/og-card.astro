@@ -6,12 +6,13 @@
 // controllarlo sugli strumenti esterni.
 import BaseLayout from '#layouts/BaseLayout.astro';
 import { getAllOgCards, ogPngPathForRoute } from '../../data/ogCards';
+import { BASE } from '#lib/versione';
 
 const PROD = 'https://wearebutik.github.io';
 const ogCards = await getAllOgCards();
 const cardLinks = [...ogCards.entries()]
   .map(([route, card]) => {
-    const pageUrl = PROD + (route === '/' ? '/' : `${route}/`);
+    const pageUrl = PROD + BASE + (route === '/' ? '/' : `${route}/`);
     return {
       route,
       title: card.title,

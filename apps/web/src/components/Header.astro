@@ -3,6 +3,7 @@ import { getImage } from 'astro:assets';
 import logo from '../assets/logos/bollo-rosso.svg';
 import Logo from '@butik/ui/Logo';
 import Button from '@butik/ui/Button';
+import { senzaBase } from '#lib/versione';
 
 // getImage() (non <Image>) perché il risultato alimenta l'atomo React Logo di
 // @butik/ui — vedi ADR-0008 amendment 2026-07-21 sul vincolo immagini Astro
@@ -19,7 +20,8 @@ const navLinks = [
 const ctaHref = '/contatti';
 const ctaLabel = 'Lavoriamo insieme';
 
-const currentPath = Astro.url.pathname;
+// Senza la base: nella versione B (/b/, ADR-0004) i percorsi sono quelli della A.
+const currentPath = senzaBase(Astro.url.pathname);
 // Solo la home va in overlay sopra l'hero. Vincolo da rispettare se un giorno
 // si estende: l'overlay è guidato da una scroll-driven animation, che ha
 // bisogno di un range di scroll — su una pagina più corta del viewport la

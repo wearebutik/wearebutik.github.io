@@ -1,43 +1,46 @@
-# Astro Starter Kit: Minimal
+# butik — sito
 
-```sh
-npm create astro@latest -- --template minimal
-```
+Sito di butik: Astro statico, contenuti su Sanity, pubblicato su GitHub Pages.
+Monorepo pnpm + turbo (`apps/web` il sito, `apps/studio` lo Studio Sanity,
+`packages/*` token e componenti). Le decisioni stanno in [`docs/adr/`](docs/adr/README.md);
+le regole di lavoro in [`CLAUDE.md`](CLAUDE.md).
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comandi
 
-## 🚀 Project Structure
+Dalla radice, con Node ≥ 24:
 
-Inside of your Astro project, you'll see the following folders and files:
+| Comando | Cosa fa |
+| :-- | :-- |
+| `pnpm install` | Installa le dipendenze |
+| `pnpm --filter @butik/web dev` | Sito in locale (versione A) su `localhost:4321` |
+| `pnpm build` | Build completa: versione A in `apps/web/dist/`, versione B in `apps/web/dist/b/` |
+| `pnpm --filter @butik/web build:b` | Solo la versione B (dopo una build A, che svuota `dist/`) |
+| `pnpm --filter @butik/studio dev` | Studio Sanity in locale |
+| `pnpm --filter @butik/studio deploy` | Pubblica lo Studio |
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Versioni dei testi: A su `/`, B su `/b/`
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Il sito pubblico ha due versioni dei testi, dallo stesso codice
+([ADR-0004](docs/adr/0004-content-architecture.md)):
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+- **A**, alla radice: il sito, dal dataset Sanity `production`.
+- **B**, sotto [`/b/`](https://wearebutik.github.io/b/): una riscrittura in
+  revisione, dal dataset `anteprima`. Ha una fascia in alto che la dichiara, è
+  fuori dai motori di ricerca (`noindex`, canonical verso la pagina A) e tutti i
+  suoi link restano dentro `/b/`.
 
-Any static assets, like images, can be placed in the `public/` directory.
+Per rivedere, si confrontano `/pagina` e `/b/pagina`. Un testo scelto dalla B
+passa nel sito copiandolo nel documento corrispondente di `production`, nello
+Studio, e pubblicandolo.
 
-## 🧞 Commands
+**Aggiornare `/b/`.** Una modifica in `anteprima` va online con il deploy
+successivo, che ricostruisce sempre A e B. Per farla uscire subito, lancia a mano
+il workflow *Deploy to GitHub Pages*: `gh workflow run deploy-pages.yml`,
+oppure *Run workflow* dalla scheda Actions di GitHub. Un webhook Sanity sul
+dataset `anteprima` che chiama `repository_dispatch` con
+`event_type: sanity-publish-b` automatizza lo stesso passo (vedi ADR-0004,
+*Publishing*).
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+**Vedere la B in locale.** `pnpm build`, poi un server statico su
+`apps/web/dist/` (per esempio `python3 -m http.server -d apps/web/dist`) e apri
+`/b/`. `astro dev` mostra solo la A.

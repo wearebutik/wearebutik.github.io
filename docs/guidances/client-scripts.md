@@ -88,6 +88,13 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
 The rule above still holds: re-wire on `astro:page-load`, guard what may
 survive, tear down what outlives the page.
 
+## Paths built in client code
+
+The site is also published under `/b/` (version B, ADR-0004). Internal links in
+the HTML are prefixed after the build, but a path assembled in client JS is not:
+build it with `BASE` from `#lib/versione` (as the consent banner does in
+`lib/consent/config.client.ts`), or read it from an `href` already in the DOM.
+
 ## Why this is written down
 
 This failure mode is invisible in review and in the build. It produced three

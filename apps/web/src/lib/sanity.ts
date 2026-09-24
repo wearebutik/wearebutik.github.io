@@ -7,26 +7,20 @@ import type { Loader } from 'astro/loaders';
 
 // Il projectId non è un segreto: è nell'URL di ogni asset pubblico.
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
-export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
-
-// Build di anteprima: SANITY_PERSPECTIVE=drafts legge le bozze (sopra i
-// pubblicati) e richiede SANITY_READ_TOKEN, perché le bozze non sono
-// pubbliche nemmeno su un dataset pubblico. Il token si usa solo a build time
-// e non finisce nel browser; le pagine sì, quindi un'anteprima va tenuta in
-// locale o dietro un accesso protetto. Default: solo i pubblicati, niente token.
-const SANITY_PERSPECTIVE = process.env.SANITY_PERSPECTIVE === 'drafts' ? 'drafts' : 'published';
-const SANITY_READ_TOKEN = process.env.SANITY_READ_TOKEN;
-if (SANITY_PERSPECTIVE === 'drafts' && !SANITY_READ_TOKEN) {
-  throw new Error('SANITY_PERSPECTIVE=drafts richiede SANITY_READ_TOKEN (token viewer di Sanity).');
-}
+// La versione A dei testi sta in `production`, la B (BUTIK_VERSIONE=b, servita
+// sotto /b/) in `anteprima` (ADR-0004). Un override per versione: una sola
+// variabile non deve far costruire A e B dallo stesso dataset.
+export const SANITY_DATASET =
+  process.env.BUTIK_VERSIONE === 'b'
+    ? (process.env.SANITY_DATASET_B ?? 'anteprima')
+    : (process.env.SANITY_DATASET ?? 'production');
 
 export const sanity = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  perspective: SANITY_PERSPECTIVE,
-  ...(SANITY_PERSPECTIVE === 'drafts' && { token: SANITY_READ_TOKEN }),
+  perspective: 'published', // mai le bozze: il sito mostra solo i pubblicati
 });
 
 const builder = createImageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });
