@@ -137,7 +137,8 @@ packages/ui/src/{atoms,molecules,organisms}/Component.{tsx,module.css,stories.ts
 ```
 
 - **atoms** — smallest reusable primitives with no internal composition
-  (`Button`, `Eyebrow`, `Logo`, `SocialLinks`, `NumberBadge`, `ArrowLink`).
+  (`Button`, `Eyebrow`, `MetaLabel`, `Logo`, `SocialLinks`, `NumberBadge`,
+  `ArrowLink`).
 - **molecules** — small compositions of atoms/markup serving one purpose
   (`CtaBanner`, `SectionHeading`, the `mdx/Image*` family).
 - **organisms** — larger sections composed of molecules/atoms (`HeroBanner`).
