@@ -1,5 +1,5 @@
 ---
-// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + "Scopri",
+// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + freccia,
 // con il glifo monolinea del servizio in filigrana nell'angolo in basso
 // a destra. Il vetro (semitrasparente e sfocato) lascia intravedere la foto e
 // con gli angoli arrotondati e lo stato hover si legge come un link.
@@ -57,7 +57,11 @@ const icons: Record<string, string> = {
   <h3 class="card__title">{data.title}</h3>
   <p class="card__desc">{data.desc}</p>
 
-  <span class="card__go">Scopri</span>
+  <span class="card__go" aria-hidden="true">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 6l6 6-6 6" />
+    </svg>
+  </span>
   </div>
 
 </a>
@@ -122,19 +126,35 @@ const icons: Record<string, string> = {
     line-height: 1.45;
     color: color-mix(in srgb, var(--color-white) 88%, transparent);
   }
-  /* Invito al click, sottolineato in rosso come i link testuali del sito.
-     Sempre visibile: su tablet e touch l'hover non c'è. */
+  /* Invito al click: freccia in un cerchio, sempre visibile (su tablet e
+     touch l'hover non c'è). All'hover/focus il cerchio si riempie di rosso
+     e la freccia avanza appena. */
   .card__go {
     align-self: flex-start;
     margin-top: var(--space-2);
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    letter-spacing: 0.1em; /* come le etichette del sito */
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--radius-full);
+    border: 1.5px solid color-mix(in srgb, var(--color-white) 70%, transparent);
     color: var(--color-white);
-    padding-bottom: 0.2em;
-    border-bottom: 2px solid var(--color-butik-red);
+    transition: background-color 160ms ease, border-color 160ms ease;
+  }
+  .card__go svg {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 160ms ease;
+  }
+  .card:hover .card__go,
+  .card:focus-visible .card__go {
+    background-color: var(--color-butik-red);
+    border-color: var(--color-butik-red);
+  }
+  .card:hover .card__go svg,
+  .card:focus-visible .card__go svg {
+    transform: translateX(2px);
   }
 
   /* Filigrana: glifo grande e tenue, tagliato dal bordo in basso a destra;
@@ -163,7 +183,9 @@ const icons: Record<string, string> = {
     .card:hover,
     .card:focus-visible,
     .card:hover .card__icon,
-    .card:focus-visible .card__icon {
+    .card:focus-visible .card__icon,
+    .card:hover .card__go svg,
+    .card:focus-visible .card__go svg {
       transform: none;
     }
   }
