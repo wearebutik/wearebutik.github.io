@@ -1,5 +1,6 @@
 ---
 import { getEntry } from 'astro:content';
+import { richTextHtml } from '#lib/richText';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import { socials } from '#data/socials';
 import SocialLinks from '@butik/ui/SocialLinks';
@@ -121,7 +122,7 @@ const inputClass = 'field-input';
 
           <div>
             <p class="info-label">{c.sedeLabel}</p>
-            <address class="address-block" set:html={c.sedeAddress}>
+            <address class="address-block" set:html={richTextHtml(c.sedeAddress)}>
             </address>
           </div>
 

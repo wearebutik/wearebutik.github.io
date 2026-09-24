@@ -1,20 +1,28 @@
 ---
+import { imageSize } from '#lib/media';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import SectionHeading from '@butik/ui/SectionHeading';
+
+// Testi della pagina dalla pagina "Progetti (indice)" su Sanity (ADR-0004).
+const entry = await getEntry('pagine', 'progetti');
+if (!entry || entry.data.type !== 'progetti-index') {
+  throw new Error('Contenuto pagina "progetti" mancante o non valido (collezione pagine).');
+}
+const c = entry.data;
 
 const progetti = (await getCollection('progetti', e => !e.data.draft))
   .sort((a, b) => a.data.order - b.data.order);
 ---
 
 <BaseLayout
-  title="Progetti — Butik"
-  description="Esplora i progetti di Butik: dalla Milano Music Week al Festival del Turismo Musicale."
+  title={c.metaTitle}
+  description={c.metaDescription}
 >
   <!-- Page header -->
   <div class="page-header">
-    <SectionHeading as="h1" eyebrow="Portfolio" title="Progetti" />
+    <SectionHeading as="h1" eyebrow={c.eyebrow} title={c.title} />
   </div>
 
   <!-- Grid -->
@@ -25,7 +33,7 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
           <div class="project-card__media">
             <Image
               src={p.data.heroImage}
-              inferSize
+              {...imageSize(p.data.heroImage)}
               alt={p.data.heroAlt}
               widths={[400, 700]}
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -53,7 +61,7 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
           </p>
           {p.data.client && (
             <p class="project-card__client">
-              Cliente: {p.data.client}
+              {c.clienteLabel} {p.data.client}
             </p>
           )}
         </a>

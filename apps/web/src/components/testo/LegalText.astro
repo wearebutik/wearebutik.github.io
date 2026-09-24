@@ -1,0 +1,29 @@
+---
+// Testo delle pagine legali da Sanity (tipo `testoLegale`). I titoli H2/H3
+// ricevono lo stesso id che Astro dava ai titoli Markdown (github-slugger), così
+// i link alle sezioni restano validi.
+import { PortableText } from 'astro-portabletext';
+import GithubSlugger from 'github-slugger';
+import LegalHeading from './LegalHeading.astro';
+
+interface Block {
+  _type: string;
+  style?: string;
+  children?: { text?: string }[];
+}
+interface Props {
+  value?: Block[];
+  /** Slugger condiviso tra più corpi della stessa pagina (id univoci). */
+  slugger?: GithubSlugger;
+}
+
+const { value = [], slugger = new GithubSlugger() } = Astro.props;
+
+const blocks = value.map((b) =>
+  b._type === 'block' && (b.style === 'h2' || b.style === 'h3')
+    ? { ...b, _anchor: slugger.slug((b.children ?? []).map((c) => c.text ?? '').join('')) }
+    : b,
+);
+---
+
+<PortableText value={blocks as never} components={{ block: { h2: LegalHeading, h3: LegalHeading } }} />

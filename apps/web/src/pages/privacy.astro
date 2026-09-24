@@ -1,19 +1,20 @@
 ---
-// Privacy & Cookie Policy — content-driven via Sitepins (ADR-0004). A
-// differenza delle altre pagine di `pagine` (frontmatter-only), questa è
-// prosa lunga senza struttura ricorrente: il corpo vive nel body Markdown
-// dell'entry (stessa forma di `progetti`), non in campi frontmatter separati.
-// Il frontmatter resta minimo: meta + il pezzo che il layout interpola fuori
-// dal flusso di prosa (titolo H1, data aggiornamento).
-import { getEntry, render } from 'astro:content';
+// Privacy & Cookie Policy dalla pagina "Privacy e cookie" su Sanity
+// (ADR-0004). Due corpi di testo legale: la Cookie Policy è separata perché il
+// suo titolo porta l'ancora fissa #cookie, a cui rimanda il banner dei cookie.
+import { getEntry } from 'astro:content';
+import GithubSlugger from 'github-slugger';
 import BaseLayout from '#layouts/BaseLayout.astro';
+import LegalText from '#components/testo/LegalText.astro';
 
 const entry = await getEntry('pagine', 'privacy');
 if (!entry || entry.data.type !== 'privacy') {
   throw new Error('Contenuto pagina "privacy" mancante o non valido (collezione pagine).');
 }
 const c = entry.data;
-const { Content } = await render(entry);
+// Un solo slugger per la pagina: id dei titoli univoci tra i due corpi.
+const slugger = new GithubSlugger();
+slugger.slug('cookie');
 ---
 
 <BaseLayout
@@ -24,7 +25,10 @@ const { Content } = await render(entry);
     <div class="prose prose-full">
       <h1>{c.pageTitle}</h1>
       <p><em>Ultimo aggiornamento: {c.updatedDate}.</em></p>
-      <Content />
+      <LegalText value={c.body} slugger={slugger} />
+      <hr />
+      <h2 id="cookie">{c.cookieTitle}</h2>
+      <LegalText value={c.cookieBody} slugger={slugger} />
     </div>
   </article>
 </BaseLayout>

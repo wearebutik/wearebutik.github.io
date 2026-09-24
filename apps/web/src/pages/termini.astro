@@ -1,8 +1,8 @@
 ---
-// Termini di utilizzo — content-driven via Sitepins (ADR-0004). Stessa forma
-// di privacy.astro (PR #30): prosa lunga senza struttura ricorrente, corpo
-// nel body Markdown dell'entry (come `progetti`), frontmatter minimo.
-import { getEntry, render } from 'astro:content';
+// Termini di utilizzo dalla pagina omonima su Sanity (ADR-0004): titolo, data
+// di aggiornamento e un corpo di testo legale.
+import { getEntry } from 'astro:content';
+import LegalText from '#components/testo/LegalText.astro';
 import BaseLayout from '#layouts/BaseLayout.astro';
 
 const entry = await getEntry('pagine', 'termini');
@@ -10,7 +10,6 @@ if (!entry || entry.data.type !== 'termini') {
   throw new Error('Contenuto pagina "termini" mancante o non valido (collezione pagine).');
 }
 const c = entry.data;
-const { Content } = await render(entry);
 ---
 
 <BaseLayout
@@ -21,7 +20,7 @@ const { Content } = await render(entry);
     <div class="prose prose-full">
       <h1>{c.pageTitle}</h1>
       <p><em>Ultimo aggiornamento: {c.updatedDate}.</em></p>
-      <Content />
+      <LegalText value={c.body} />
     </div>
   </article>
 </BaseLayout>
