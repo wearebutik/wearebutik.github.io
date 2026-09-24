@@ -46,10 +46,9 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
   Sanity schema aligned with its Zod schema in `apps/web/src/content.config.ts`.
   **No image is ever served from `cdn.sanity.io`**: Sanity images go through
   Astro's image pipeline and ship from `/_astro/` (the build fails otherwise —
-  `apps/web/src/lib/sanityCdnGuard.ts`). Migration in progress (#50):
-  `progetti` and `servizi` are on Sanity; `pagine` is still Markdown in
-  `apps/web/src/content/pagine`, edited via Sitepins with `/src/assets/...`
-  media paths (ADR-0009).
+  `apps/web/src/lib/sanityCdnGuard.ts`). All collections
+  (`progetti`, `servizi`, `pagine`) are on Sanity; a field the site requires
+  is `required` in the Studio too.
 - **CSS Modules + tokens** (ADR-0005): style in `*.module.css` co-located with the
   component, values from tokens in `@butik/ui-tokens`. Shared components go in
   `@butik/ui`. **Tailwind is gone** — app-level styling is Astro scoped
