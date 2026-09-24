@@ -55,8 +55,14 @@ layout that no longer exists, which is worse than no text at all.
   This is the part of `#motion` that is not superseded, only relocated.
 - **Motion atoms that need the client say so.** Most are pure CSS and render to
   static HTML with no directive. The two that observe entry into the viewport
-  (`Underline`, `CountUp`) need `client:visible` in Astro, or they sit at their
-  initial state; their docblocks say it.
+  (`CountUp`, `Underline` in its default `trigger="view"`) need `client:visible`
+  in Astro, or they sit at their initial state; their docblocks say it.
+  `Underline trigger="load"` is CSS-only.
+- **The site-wide entrance system is shared motion logic**: `@butik/ui/reveal`
+  lives in `packages/ui/src/lib/` like `vinylScratch`. Its styles live in the
+  app (`apps/web/src/styles/motion.css`) because they target the site's markup
+  (grids, section headings, heroes), not a catalogue component; there is no story
+  for it — the living reference is the site and `/lab/motion/b`.
 
 What does **not** change: motion never gets sprinkled inline across unrelated
 components. The invariant survives its address.

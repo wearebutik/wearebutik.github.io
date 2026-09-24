@@ -33,9 +33,16 @@ it.
   `astro-portabletext`; custom blocks (`imageBlock`, `imageSide`,
   `imageCarousel`) map onto the existing image components.
 - **Loading.** Each collection has a content-layer loader (`apps/web/src/lib/sanity.ts`)
-  that queries Sanity with GROQ during `astro build`. Drafts are excluded in the
-  query. If Sanity is unreachable the build fails, and the last deploy keeps
-  being served.
+  that queries Sanity with GROQ during `astro build`, with the `published`
+  perspective: drafts never reach the public site. If Sanity is unreachable the
+  build fails, and the last deploy keeps being served.
+- **Draft preview.** `SANITY_PERSPECTIVE=drafts` plus `SANITY_READ_TOKEN` (a
+  Viewer token, never in the repo) builds the same static site from drafts over
+  published documents. The token is used only at build time, but the pages
+  carry the drafts: a preview build stays local or behind access control, never
+  on the public host. Drafts are how an alternative version of the copy waits
+  for review (the rewrite of the copy sits as drafts over the published
+  revision).
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
@@ -54,7 +61,9 @@ it.
   that needs bold, italics or links is a `testoFormattato` field, never HTML in
   a string.
 - **Pages** are one fixed document each (`_id` `pagina-<id>`: home, chi-siamo,
-  contatti, partners, servizi, progetti, testimonials, privacy, termini),
+  contatti, partners, servizi, progetti, testimonials, privacy, termini, and
+  `footer` — the footer shared by every page, whose social profiles the
+  contatti page reuses),
   shown in the Studio as fixed entries that cannot be created, duplicated or
   deleted. Rich text is rendered inline by `apps/web/src/lib/richText.ts` so
   the containing element keeps the page's scoped styles; legal bodies keep the
@@ -63,6 +72,18 @@ it.
 - **Image sizes** of Sanity images are read from the asset URL (`…-WxH.ext`,
   `imageSize()` in `apps/web/src/lib/media.ts`), not fetched with `inferSize`:
   one network error would otherwise fail the build.
+- **Links that lead nowhere** — placeholders (`#`, example domains, "todo")
+  and internal paths to pages that do not exist — are kept in Sanity and flagged
+  as warnings in the Studio, and the site does not render them
+  (`apps/web/src/lib/links.ts`) until they resolve
+  ([PDR-0004](../product/decisions/0004-unresolved-links.md)).
+- **Bulk content changes** go through repeatable scripts in
+  `apps/studio/scripts/`: `foto.ts` uploads photos from an assignment file
+  (resized, metadata stripped, deduplicated by content hash) and wires them to
+  documents; `testi.ts` exports copy to Markdown files and generates the NDJSON
+  of changed documents (`--bozze` for drafts), imported with
+  `sanity dataset import --replace`. A `dataset export` backup precedes every
+  write to `production`.
 - Purely structural pages (e.g. the experimental `lab/*`) stay in code; editorial
   copy does not live hardcoded in `.astro` pages.
 

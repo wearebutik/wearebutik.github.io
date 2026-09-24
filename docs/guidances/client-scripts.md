@@ -68,9 +68,25 @@ native-HTML form:
   [design-approach.md](design-approach.md#browser-support));
 - state driven by an element entering the viewport → `animation-timeline: view()`.
 
-`apps/web/src/components/Header.astro` went this way: its scroll state and its
-mobile menu were both JavaScript, both broke after a view transition, and both
-are now CSS and native HTML. No init function to forget.
+The header's scroll state went this way: it is a scroll-driven animation, with no
+init function to forget. Its mobile menu is a native `<details>`.
+
+## When a script is the right tool
+
+Some behaviour has no CSS form yet, and a short script is the honest answer:
+
+- **Run once, when an element first enters the viewport** —
+  `@butik/ui/reveal`, armed by `BaseLayout`. A scroll-driven animation replays
+  and reverses with the scroll; "once" needs an `IntersectionObserver`. It binds
+  to the fresh `<main>` on every `astro:page-load` (a dataset flag guards
+  re-entry) and disconnects on `astro:before-swap`.
+- **Side effects outside the component** — the mobile menu in `Header.astro`
+  locks page scroll, makes the page behind it `inert` and closes on Escape. A
+  global side effect (`documentElement.style.overflow`) must be undone on
+  `astro:before-swap`, or the next page inherits it.
+
+The rule above still holds: re-wire on `astro:page-load`, guard what may
+survive, tear down what outlives the page.
 
 ## Why this is written down
 
