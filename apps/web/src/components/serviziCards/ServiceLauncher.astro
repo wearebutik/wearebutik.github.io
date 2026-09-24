@@ -1,8 +1,9 @@
 ---
-// Launcher compatto dei servizi: una riga per servizio (nome + prova + freccia),
+// Launcher compatto dei servizi: una riga per servizio (nome + frase + freccia),
 // tutti scansionabili senza scroll. È la presentazione scelta per i servizi
 // nell'hero su mobile, dove le card non stanno sopra la piega (da tablet in su
-// li presenta ServiceCard, vedi Hero.astro).
+// li presenta ServiceCard, vedi Hero.astro). La frase è la stessa descrizione
+// che la card mostra da tablet in su.
 //
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004).
 // `tone` adatta i colori a sfondo chiaro o scuro (hero home = scuro).
@@ -10,8 +11,7 @@ export interface ServiceLauncherItem {
   slug: string;
   title: string;
   href: string;
-  statValue: string;
-  statLabel: string;
+  desc: string;
 }
 
 interface Props {
@@ -30,7 +30,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
       <a href={linkFor(c.slug, c.href)} class="row">
         <span class="row-text">
           <span class="row-title">{c.title}</span>
-          <span class="row-stat">{`${c.statValue} ${c.statLabel}`}</span>
+          <span class="row-desc">{c.desc}</span>
         </span>
         <span class="row-chev" aria-hidden="true">›</span>
       </a>
@@ -67,9 +67,8 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   .row:focus-visible {
     background: var(--row-hover);
   }
-  /* Nome sopra, prova sotto: la prova può essere lunga ("10 Comuni nella
-     Rete dei Comuni Musicali") e affiancata schiacciava il nome fino a
-     sovrapporsi. In colonna va a capo senza togliere spazio al nome. */
+  /* Nome sopra, frase sotto: in colonna la frase va a capo senza togliere
+     spazio al nome. */
   .row-text {
     flex: 1;
     min-width: 0;
@@ -84,13 +83,10 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     letter-spacing: -0.005em;
     line-height: 1.15;
   }
-  .row-stat {
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    line-height: 1.35;
+  .row-desc {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
     color: var(--muted);
   }
   /* Chevron di disclosure: segnala che la riga è toccabile (visibile sempre,
