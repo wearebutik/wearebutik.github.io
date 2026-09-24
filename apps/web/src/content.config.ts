@@ -1,11 +1,6 @@
 import { defineCollection, z } from 'astro:content';
-import type { SchemaContext } from 'astro:content';
-import { glob } from 'astro/loaders';
-import { progettiLoader, serviziLoader } from '#lib/sanity';
+import { pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
 
-// Tipo dell'helper `image()` fornito dallo schema context di Astro: consente di
-// dichiarare riferimenti a media (risolti a build-time) anche dentro gli array.
-type ImageFn = SchemaContext['image'];
 
 // Servizi da Sanity (ADR-0004). Oltre alla scheda, il documento porta i testi
 // degli hero A/B/C, quelli della card (home e /servizi) e il corpo come lista
@@ -87,23 +82,19 @@ const progettiCollection = defineCollection({
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Collezione `pagine` (ADR-0004): pagine editoriali "singleton" la cui copy era
-// hardcoded nei `.astro`. Ogni entry è una pagina a sé (home, chi-siamo,
-// contatti, partners, servizi), con un set di campi diverso: per questo usiamo
-// una discriminated union su `type`.
+// Collezione `pagine` (ADR-0004): un documento Sanity fisso per pagina (home,
+// chi-siamo, contatti, partners, servizi, progetti, testimonials, privacy,
+// termini), ognuno con un set di campi diverso: per questo una discriminated
+// union su `type`, che il loader ricava dal tipo Sanity.
 //
-// Contenuti ripetuti (metriche, servizi, partner, founder, obiettivi SDG) sono
-// modellati come ARRAY di oggetti, con i media (loghi, foto) come riferimenti
-// `image()` risolti a build-time. Gli schema Sitepins in `.sitepins/schema/pagine/*`
-// rispecchiano questi array con campi `type: "list"` + sotto-`fields` (media =
-// `type: "media"`) — vedi nota nel summary sui limiti di verifica di Sitepins.
-// Zod resta la source of truth tipata: l'allineamento Zod ↔ Sitepins è vigilato
-// dalla skill content-check.
-//
-// Nota: alcune stringhe (paragrafi con <strong>/link, indirizzo) contengono HTML
-// inline e vengono rese con `set:html` nelle pagine per mantenere l'output
-// visivamente identico alla versione hardcoded.
+// I testi con grassetto/corsivo/link sono `testoFormattato` (Portable Text,
+// convertito in HTML da lib/richText.ts); i corpi di privacy e termini sono
+// `testoLegale` (components/testo/LegalText.astro). Le immagini arrivano come
+// URL della CDN Sanity e passano dalla pipeline di Astro.
 // ─────────────────────────────────────────────────────────────────────────────
+
+// Portable Text: validato nella struttura dallo Studio, qui passato com'è.
+const portableText = z.array(z.any()).optional().default([]);
 
 // Voce metrica (Numbers): valore + etichetta.
 const metricSchema = z.object({
@@ -113,8 +104,6 @@ const metricSchema = z.object({
 
 const paginaHome = z.object({
   type: z.literal('home'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   // Hero
@@ -154,24 +143,22 @@ const paginaHome = z.object({
   newsletterBody: z.string(),
   newsletterPlaceholder: z.string(),
   newsletterButton: z.string(),
-  newsletterPrivacy: z.string(),
+  newsletterPrivacy: portableText,
   newsletterSuccess: z.string(),
 });
 
-const paginaChiSiamo = (image: ImageFn) => z.object({
+const paginaChiSiamo = z.object({
   type: z.literal('chi-siamo'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   heroTitle: z.string(),
   heroSubtitle: z.string(),
   heroImageAlt: z.string(),
   introEyebrow: z.string(),
-  introP1: z.string(),
-  introP2: z.string(),
-  introP3: z.string(),
-  introP4: z.string(),
+  introP1: portableText,
+  introP2: portableText,
+  introP3: portableText,
+  introP4: portableText,
   missionEyebrow: z.string(),
   missionStatement: z.string(),
   sdgEyebrow: z.string(),
@@ -185,20 +172,18 @@ const paginaChiSiamo = (image: ImageFn) => z.object({
   // Prefisso label di ogni card SDG (es. "Obiettivo 8").
   sdgObiettivoLabel: z.string(),
   teamEyebrow: z.string(),
-  teamP1: z.string(),
-  teamP2: z.string(),
-  teamP3: z.string(),
-  // Founder come ARRAY di oggetti, con foto come media (`image()`).
-  // `.or('')` tollera la riga appena aggiunta da Sitepins senza immagine
-  // (defaultValue vuoto) — senza questo, un salvataggio dal CMS romperebbe
-  // `astro build`. La pagina salta il render dell'immagine se vuota.
+  teamP1: portableText,
+  teamP2: portableText,
+  teamP3: portableText,
+  // Founder come ARRAY di oggetti; la foto è l'URL Sanity, '' se manca (la
+  // pagina salta il render dell'immagine).
   founders: z.array(z.object({
     name: z.string(),
     role: z.string(),
     bio: z.string(),
     email: z.string(),
     linkedin: z.string(),
-    photo: image().or(z.literal('')),
+    photo: z.string().optional().default(''),
   })),
   // Label del link LinkedIn di ogni founder (visibile accanto all'icona).
   linkedinLabel: z.string(),
@@ -212,8 +197,6 @@ const paginaChiSiamo = (image: ImageFn) => z.object({
 
 const paginaContatti = z.object({
   type: z.literal('contatti'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   headerEyebrow: z.string(),
@@ -225,7 +208,7 @@ const paginaContatti = z.object({
   pecLabel: z.string(),
   pecValue: z.string(),
   sedeLabel: z.string(),
-  sedeAddress: z.string(),
+  sedeAddress: portableText,
   seguiciLabel: z.string(),
   // Form contatti (issue #26): label/placeholder dei campi, testo del
   // pulsante e messaggi di stato mostrati dallo script client-side.
@@ -245,64 +228,50 @@ const paginaContatti = z.object({
   formNetworkErrorMessage: z.string(),
 });
 
-// paginaPrivacy: a differenza delle altre entry di `pagine` (frontmatter-only,
-// un campo per stringa), questa è prosa lunga e sequenziale senza struttura
-// ricorrente (niente array/card) — stessa forma di `progetti` (ADR-0004), non
-// di chi-siamo/contatti. Il corpo vive quindi nel body Markdown dell'entry
-// (Sitepins lo edita come markdown, non campo per campo); il frontmatter
-// resta minimo: solo meta + il pezzo che il layout .astro deve interpolare
-// fuori dal flusso di prosa (titolo H1, data aggiornamento).
+// Privacy: la Cookie Policy è una sezione a sé perché il suo titolo ha
+// l'ancora fissa #cookie, a cui rimanda il banner dei cookie.
 const paginaPrivacy = z.object({
   type: z.literal('privacy'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   pageTitle: z.string(),
   updatedDate: z.string(),
+  body: portableText,
+  cookieTitle: z.string(),
+  cookieBody: portableText,
 });
 
-const paginaPartners = (image: ImageFn) => z.object({
+const paginaPartners = z.object({
   type: z.literal('partners'),
   metaTitle: z.string(),
   metaDescription: z.string(),
   eyebrow: z.string(),
   title: z.string(),
-  // Partner come ARRAY di oggetti { nome, logo(media) }.
-  // `.or('')` tollera la riga appena aggiunta da Sitepins senza logo
-  // (defaultValue vuoto) — evita di rompere `astro build` dal CMS.
-  // La pagina salta il render del logo se vuoto.
+  // Partner come ARRAY di oggetti { nome, logo }; il logo è l'URL Sanity, ''
+  // se manca (la pagina salta il render del logo).
   partners: z.array(z.object({
     name: z.string(),
-    logo: image().or(z.literal('')),
+    logo: z.string().optional().default(''),
   })),
 });
 
-// paginaTermini: stessa forma minimale di paginaPrivacy (PR #30) — prosa
-// legale lunga e sequenziale senza struttura ricorrente (niente array/card),
-// come `progetti` (ADR-0004). Il corpo vive nel body Markdown dell'entry, non
-// in campi frontmatter; il frontmatter resta solo meta + i due pezzi che il
-// layout interpola fuori dal flusso di prosa (titolo H1, data aggiornamento).
 const paginaTermini = z.object({
   type: z.literal('termini'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   pageTitle: z.string(),
   updatedDate: z.string(),
+  body: portableText,
 });
 
 const paginaServizi = z.object({
   type: z.literal('servizi-index'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   headerEyebrow: z.string(),
   headerTitle: z.string(),
   headerIntro1: z.string(),
-  headerIntro2: z.string(),
+  headerIntro2: portableText,
   metodoEyebrow: z.string(),
   metodoTitle: z.string(),
   // Passi del metodo come ARRAY di oggetti { titolo, descrizione }. Riusato
@@ -327,10 +296,17 @@ const paginaServizi = z.object({
   ctaSecondaryHref: z.string(),
 });
 
+const paginaProgetti = z.object({
+  type: z.literal('progetti-index'),
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  eyebrow: z.string(),
+  title: z.string(),
+  clienteLabel: z.string(),
+});
+
 const paginaTestimonials = z.object({
   type: z.literal('testimonials'),
-  // Etichetta della voce nell'elenco Sitepins (non renderizzata sul sito).
-  title: z.string(),
   eyebrow: z.string(),
   sectionTitle: z.string(),
   // Testimonianze condivise: riusate identiche da home (index.astro) e
@@ -344,17 +320,14 @@ const paginaTestimonials = z.object({
 });
 
 const pagineCollection = defineCollection({
-  loader: glob({
-    pattern: '*.{md,mdx}',
-    base: './src/content/pagine',
-    generateId: ({ entry }) => entry.replace(/\.(mdx?)$/, ''),
-  }),
-  schema: ({ image }) => z.discriminatedUnion('type', [
+  loader: pagineLoader(),
+  schema: z.discriminatedUnion('type', [
     paginaHome,
-    paginaChiSiamo(image),
+    paginaChiSiamo,
     paginaContatti,
-    paginaPartners(image),
+    paginaPartners,
     paginaServizi,
+    paginaProgetti,
     paginaTestimonials,
     paginaTermini,
     paginaPrivacy,

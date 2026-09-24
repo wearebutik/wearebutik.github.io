@@ -21,7 +21,8 @@ const { entry } = Astro.props;
 const ogImage = entry.data.ogImage
   ? (await getImage({
       src: `${entry.data.ogImage}?w=1200&h=630&fit=crop`,
-      inferSize: true,
+      width: 1200,
+      height: 630,
       format: 'jpg',
     })).src
   : undefined;

@@ -53,10 +53,16 @@ it.
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
   that needs bold, italics or links is a `testoFormattato` field, never HTML in
   a string.
-- **Migration status.** `progetti` and `servizi` read from Sanity. `pagine` is
-  still Markdown in `apps/web/src/content/pagine`, edited via Sitepins (media
-  paths per [ADR-0009](./0009-sitepins-media-paths.md)), until it moves to
-  Sanity — tracked in issue #50.
+- **Pages** are one fixed document each (`_id` `pagina-<id>`: home, chi-siamo,
+  contatti, partners, servizi, progetti, testimonials, privacy, termini),
+  shown in the Studio as fixed entries that cannot be created, duplicated or
+  deleted. Rich text is rendered inline by `apps/web/src/lib/richText.ts` so
+  the containing element keeps the page's scoped styles; legal bodies keep the
+  heading ids Markdown used to generate, and the Cookie Policy heading keeps the
+  fixed `#cookie` anchor the consent banner links to.
+- **Image sizes** of Sanity images are read from the asset URL (`…-WxH.ext`,
+  `imageSize()` in `apps/web/src/lib/media.ts`), not fetched with `inferSize`:
+  one network error would otherwise fail the build.
 - Purely structural pages (e.g. the experimental `lab/*`) stay in code; editorial
   copy does not live hardcoded in `.astro` pages.
 

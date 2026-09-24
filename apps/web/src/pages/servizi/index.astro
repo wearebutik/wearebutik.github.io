@@ -5,6 +5,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import ServiceExpanded from '#components/serviziCards/ServiceExpanded.astro';
+import { richTextHtml } from '#lib/richText';
 import Metodo from '#components/home/Metodo.astro';
 import type { MetodoIconName } from '#data/metodo';
 import CtaBanner from '#components/CtaBanner.astro';
@@ -34,7 +35,7 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
     <p class="svc-lead">
       {c.headerIntro1}
     </p>
-    <p class="svc-lead" set:html={c.headerIntro2}></p>
+    <p class="svc-lead" set:html={richTextHtml(c.headerIntro2)}></p>
   </section>
 
   <section class="svc-main">

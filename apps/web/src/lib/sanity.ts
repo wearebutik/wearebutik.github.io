@@ -95,3 +95,36 @@ export const serviziLoader = () =>
     // Nello Studio è una lista di id; lo schema Zod (e /servizi) vuole { id }.
     audience: ((audience as string[] | undefined) ?? []).map((a) => ({ id: a })),
   }));
+
+// Pagine: un documento fisso per pagina (_id `pagina-<id>`, ADR-0004). Il tipo
+// Sanity diventa il discriminante `type` dello schema Zod `pagine`.
+const PAGINE_TYPE: Record<string, string> = {
+  paginaHome: 'home',
+  paginaChiSiamo: 'chi-siamo',
+  paginaContatti: 'contatti',
+  paginaPartners: 'partners',
+  paginaServizi: 'servizi-index',
+  paginaProgetti: 'progetti-index',
+  paginaTestimonials: 'testimonials',
+  paginaPrivacy: 'privacy',
+  paginaTermini: 'termini',
+};
+
+const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_TYPE))} && _id match "pagina-*"]{
+  ...,
+  "id": string::split(_id, "pagina-")[1]
+}`;
+
+type ConImmagine = Record<string, unknown>;
+
+export const pagineLoader = () =>
+  sanityLoader('pagine', PAGINE_QUERY, ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }) => ({
+    ...rest,
+    type: PAGINE_TYPE[_type as string],
+    ...(Array.isArray(rest.founders) && {
+      founders: (rest.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) ?? '' })),
+    }),
+    ...(Array.isArray(rest.partners) && {
+      partners: (rest.partners as ConImmagine[]).map((p) => ({ ...p, logo: imageUrl(p.logo) ?? '' })),
+    }),
+  }));

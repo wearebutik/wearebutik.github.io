@@ -1,17 +1,19 @@
 ---
+import { imageSize } from '#lib/media';
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import HeroBanner from '#components/HeroBanner.astro';
 import CtaBanner from '#components/CtaBanner.astro';
 import Testimonials from '#components/home/Testimonials.astro';
 import { Image } from 'astro:assets';
+import { richTextHtml } from '#lib/richText';
 
 import heroImg from '#assets/hero-home.jpg';
 import Eyebrow from '@butik/ui/Eyebrow';
 
-// Copy editoriale content-driven via collezione `pagine` (ADR-0004): il testo è
-// editabile da Sitepins, la presentazione resta qui. Alcuni paragrafi contengono
-// <strong>/link inline e vengono resi con `set:html` per output identico.
+// Copy editoriale dalla pagina "Chi siamo" su Sanity (ADR-0004), la
+// presentazione resta qui. I paragrafi di intro e team sono testo formattato
+// (grassetto, link), convertiti in HTML da richTextHtml.
 const entry = await getEntry('pagine', 'chi-siamo');
 if (!entry || entry.data.type !== 'chi-siamo') {
   throw new Error('Contenuto pagina "chi-siamo" mancante o non valido (collezione pagine).');
@@ -27,7 +29,7 @@ if (!testimonialsEntry || testimonialsEntry.data.type !== 'testimonials') {
 const testimonials = testimonialsEntry.data;
 
 // Founder come ARRAY dalla collezione: nome/ruolo/bio/email/linkedin + foto
-// (media risolto a build-time da `image()`).
+// (URL Sanity, scaricato e ottimizzato da Astro in build).
 const founders = c.founders;
 
 // Obiettivi di Sviluppo Sostenibile (Agenda ONU 2030): num + titolo sono copy
@@ -73,10 +75,10 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
   <section class="intro-section">
     <Eyebrow align="left">{c.introEyebrow}</Eyebrow>
     <div class="intro-copy">
-      <p set:html={c.introP1}></p>
-      <p set:html={c.introP2}></p>
-      <p set:html={c.introP3}></p>
-      <p set:html={c.introP4}></p>
+      <p set:html={richTextHtml(c.introP1)}></p>
+      <p set:html={richTextHtml(c.introP2)}></p>
+      <p set:html={richTextHtml(c.introP3)}></p>
+      <p set:html={richTextHtml(c.introP4)}></p>
     </div>
   </section>
 
@@ -126,9 +128,9 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
     <div class="team-lead">
       <Eyebrow align="left">{c.teamEyebrow}</Eyebrow>
       <div class="team-copy">
-        <p set:html={c.teamP1}></p>
-        <p set:html={c.teamP2}></p>
-        <p set:html={c.teamP3}></p>
+        <p set:html={richTextHtml(c.teamP1)}></p>
+        <p set:html={richTextHtml(c.teamP2)}></p>
+        <p set:html={richTextHtml(c.teamP3)}></p>
       </div>
     </div>
 
@@ -139,6 +141,7 @@ const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }
             {f.photo && (
               <Image
                 src={f.photo}
+                {...imageSize(f.photo)}
                 alt={`Ritratto di ${f.name}`}
                 widths={[300, 500]}
                 sizes="(max-width: 768px) 100vw, 33vw"

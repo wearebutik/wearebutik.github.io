@@ -1,0 +1,11 @@
+---
+// Titolo H2/H3 di un testo legale, con l'id calcolato da LegalText.
+import type { BlockProps } from 'astro-portabletext/types';
+
+type Props = BlockProps;
+
+const node = Astro.props.node as BlockProps['node'] & { _anchor?: string };
+const Tag = node.style as 'h2' | 'h3';
+---
+
+<Tag id={node._anchor}><slot /></Tag>

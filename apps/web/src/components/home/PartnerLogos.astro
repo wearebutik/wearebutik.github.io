@@ -1,4 +1,5 @@
 ---
+import { imageSize } from '#lib/media';
 import { Image } from 'astro:assets';
 import { partners as defaultPartners, type Partner } from '../../data/partners';
 
@@ -28,8 +29,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
           <div class="partner-card" data-name={partner.name}>
             <Image
               src={partner.logo}
+              {...imageSize(partner.logo, { height: 40 })}
               alt=""
-              height={40}
               densities={[1, 2]}
               loading="eager"
               decoding="async"
@@ -57,8 +58,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
             <div class="partner-item-frame">
               <Image
                 src={partner.logo}
+                {...imageSize(partner.logo, { height: 36 })}
                 alt=""
-                height={36}
                 densities={[1, 2]}
                 loading="lazy"
                 decoding="async"
@@ -83,8 +84,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
             <div class="partner-item-frame">
               <Image
                 src={partner.logo}
+                {...imageSize(partner.logo, { height: 36 })}
                 alt=""
-                height={36}
                 densities={[1, 2]}
                 loading="lazy"
                 decoding="async"

@@ -92,6 +92,9 @@ importers:
       astro-portabletext:
         specifier: ^1.0.1
         version: 1.0.1(astro@6.4.8(@types/node@24.13.6)(jiti@2.7.0)(lightningcss@1.33.0)(rollup@4.62.2)(yaml@2.9.1))
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
       posthog-js:
         specifier: ^1.399.1
         version: 1.399.1

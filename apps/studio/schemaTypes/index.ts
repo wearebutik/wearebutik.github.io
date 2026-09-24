@@ -3,6 +3,7 @@ import { servizio } from './servizio';
 import { imageBlock, imageSide, imageCarousel, figura } from './blocchi';
 import { sezioniServizio } from './sezioniServizio';
 import { testoFormattato, link } from './testo';
+import { pagineTypes, testoLegale } from './pagine';
 
 export const schemaTypes = [
   progetto,
@@ -13,5 +14,7 @@ export const schemaTypes = [
   imageCarousel,
   ...sezioniServizio,
   testoFormattato,
+  testoLegale,
   link,
+  ...pagineTypes,
 ];

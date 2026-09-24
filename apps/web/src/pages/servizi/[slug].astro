@@ -19,7 +19,7 @@ const { entry } = Astro.props;
 // Immagine OG da Sanity: passa dalla pipeline di Astro come le altre, mai
 // da cdn.sanity.io (ADR-0004). JPEG 1200×630.
 const ogImage = entry.data.ogImage
-  ? (await getImage({ src: `${entry.data.ogImage}?w=1200&h=630&fit=crop`, inferSize: true, format: 'jpg' })).src
+  ? (await getImage({ src: `${entry.data.ogImage}?w=1200&h=630&fit=crop`, width: 1200, height: 630, format: 'jpg' })).src
   : undefined;
 ---
 

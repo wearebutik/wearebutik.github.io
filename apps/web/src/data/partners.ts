@@ -2,7 +2,8 @@ import type { ImageMetadata } from 'astro';
 
 export type Partner = {
   name: string;
-  logo: ImageMetadata;
+  /** Asset locale, o URL Sanity (scaricato e ottimizzato da Astro in build). */
+  logo: ImageMetadata | string;
 };
 
 // Loghi collaborazioni in src/assets/logos/ (PNG trasparenti), importati come
