@@ -21,6 +21,9 @@ export interface RevealOptions {
   delay?: number;
 }
 
+/** Oltre questo numero di passi la sequenza non allunga più il ritardo. */
+const MAX_PASSI = 6;
+
 const DEFAULTS: Required<RevealOptions> = {
   // Contenitori riconosciuti dal nome (griglie, liste, card, elenchi numerati)
   // o dichiarati con data-reveal-group (es. la fascia dei loghi partner).
@@ -57,6 +60,17 @@ export function initReveal(root: HTMLElement | null, options: RevealOptions = {}
   };
   const elementi = [...candidati].filter((el) => !dentroUnAltro(el));
   elementi.forEach((el) => (el.dataset.reveal = 'attesa'));
+  // Titoli: il testo va in un elemento in linea, così la sottolineatura può
+  // essere uno sfondo che si allarga (si "disegna" da sinistra a destra,
+  // riga dopo riga), invece di una text-decoration che può solo comparire.
+  elementi
+    .filter((el) => el.matches(headingSelector) && !el.querySelector(':scope > [data-reveal-linea]'))
+    .forEach((h) => {
+      const linea = document.createElement('span');
+      linea.dataset.revealLinea = '';
+      linea.append(...h.childNodes);
+      h.append(linea);
+    });
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -64,8 +78,13 @@ export function initReveal(root: HTMLElement | null, options: RevealOptions = {}
         .filter((e) => e.isIntersecting)
         .map((e) => e.target as HTMLElement)
         .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
-      entrati.forEach((el, i) => {
-        el.style.setProperty('--d', `${delay + i * step}ms`);
+      // I titoli partono subito; gli altri in sequenza, con il ritardo che si
+      // ferma dopo MAX_PASSI (arrivando a metà pagina o scorrendo veloce
+      // entrano molti elementi insieme: nessuno deve aspettare troppo).
+      let i = 0;
+      entrati.forEach((el) => {
+        const titolo = el.matches(headingSelector);
+        el.style.setProperty('--d', `${titolo ? delay : delay + Math.min(i++, MAX_PASSI) * step}ms`);
         el.dataset.reveal = 'in';
         io.unobserve(el);
       });

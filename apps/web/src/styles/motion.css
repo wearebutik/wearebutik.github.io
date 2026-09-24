@@ -4,7 +4,7 @@
  * Gli elementi delle griglie (card, passi, numeri, progetti) salgono dal
  * basso con un piccolo rimbalzo, come barre di un equalizzatore, e quelli che
  * entrano insieme partono in sequenza; i titoli di sezione si sottolineano di
- * rosso. Una volta sola: poi restano.
+ * rosso con una linea che si disegna. Una volta sola: poi restano.
  *
  * La logica (quando parte cosa, e con che ritardo) è in @butik/ui/reveal,
  * attivata da BaseLayout: arma gli elementi con data-reveal="attesa" e li fa
@@ -49,16 +49,15 @@
   }
 }
 
-/* Sottolineatura del testo (segue le parole, qualunque sia l'allineamento):
-   entra salendo e colorandosi d'accento, con lo stesso rimbalzo. */
-@keyframes motion-sottolinea {
+/* Sottolineatura dei titoli: una linea che si disegna da sinistra a destra
+   (sfondo di un elemento in linea che si allarga; sui titoli su più righe
+   procede riga dopo riga). L'elemento in linea lo crea @butik/ui/reveal. */
+@keyframes motion-disegna {
   from {
-    text-decoration-color: transparent;
-    text-underline-offset: 0.6em;
+    background-size: 0% 3px;
   }
   to {
-    text-decoration-color: var(--color-accent);
-    text-underline-offset: 0.18em;
+    background-size: 100% 3px;
   }
 }
 
@@ -71,14 +70,15 @@
     animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) both;
   }
 
-  h2[data-reveal] {
-    text-decoration-line: underline;
-    text-decoration-thickness: 3px;
-    text-decoration-color: transparent;
-    text-underline-offset: 0.6em;
+  h2[data-reveal] > [data-reveal-linea] {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 3px;
+    padding-bottom: 0.12em;
   }
-  h2[data-reveal='in'] {
-    animation: motion-sottolinea 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) both;
+  h2[data-reveal='in'] > [data-reveal-linea] {
+    animation: motion-disegna 800ms cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0ms) both;
   }
 }
 
