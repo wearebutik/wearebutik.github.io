@@ -40,14 +40,16 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
 
 <style>
   /* ── LIST ──────────────────────────────────────────────────────────── */
+  /* Linee solo fra una riga e l'altra: la lista sta dentro un riquadro con
+     il suo bordo, e una linea sopra la prima e sotto l'ultima riga finiva
+     quasi addosso a quel bordo. */
   .launcher-list {
     list-style: none;
     margin: 0;
     padding: 0;
-    border-top: 1px solid var(--rule);
   }
-  .launcher-list li {
-    border-bottom: 1px solid var(--rule);
+  .launcher-list li + li {
+    border-top: 1px solid var(--rule);
   }
   .row {
     display: flex;
