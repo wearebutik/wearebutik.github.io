@@ -10,6 +10,10 @@
 // entra in vista); i suoi elementi, con una style query su --in-vista, avviano
 // un'animazione A TEMPO. Niente segue lo scroll. Senza view timeline (Firefox)
 // o con reduced-motion non si nasconde né si anima nulla.
+//
+// L'hero è già in vista all'apertura: la sua entrata parte al caricamento,
+// a tempo, senza interruttore (e resta attiva anche dove le view timeline non
+// ci sono; con reduced-motion no).
 import BaseLayout from '#layouts/BaseLayout.astro';
 import HomePage from '#components/home/HomePage.astro';
 
@@ -74,6 +78,76 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
   @keyframes lab-interruttore {
     from { --in-vista: 0; }
     to { --in-vista: 1; }
+  }
+
+  /* ── Hero: entrata al caricamento ─────────────────────────────────────── */
+  @media (prefers-reduced-motion: no-preference) {
+    @keyframes lab-hero-su {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes lab-hero-eq {
+      0% { opacity: 0; transform: scaleY(0.3); }
+      60% { opacity: 1; transform: scaleY(1.08); }
+      100% { opacity: 1; transform: none; }
+    }
+    @keyframes lab-hero-maschera {
+      from { clip-path: inset(0 0 100% 0); transform: translateY(0.3em); }
+      to { clip-path: inset(0 0 -0.3em 0); transform: none; }
+    }
+    @keyframes lab-hero-zoom {
+      from { transform: scale(1.08); }
+      to { transform: none; }
+    }
+    @keyframes lab-hero-dissolvi {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    /* A: tutto sale in dissolvenza, in sequenza: titolo, sottotitolo, pulsante, card. */
+    [data-motion='a'] :is(.hero-title, .hero-subtitle, .hero-cta, .hero-svc-cards > *, .hero-svc-list, .hero-explore) {
+      animation: lab-hero-su 700ms var(--ease-out) both;
+    }
+    [data-motion='a'] .hero-subtitle { animation-delay: 120ms; }
+    [data-motion='a'] .hero-cta { animation-delay: 240ms; }
+    [data-motion='a'] :is(.hero-svc-cards > *, .hero-svc-list) { animation-delay: 360ms; }
+    [data-motion='a'] .hero-svc-cards > :nth-child(2) { animation-delay: 440ms; }
+    [data-motion='a'] .hero-svc-cards > :nth-child(3) { animation-delay: 520ms; }
+    [data-motion='a'] .hero-svc-cards > :nth-child(4) { animation-delay: 600ms; }
+    [data-motion='a'] .hero-svc-cards > :nth-child(5) { animation-delay: 680ms; }
+    [data-motion='a'] .hero-explore { animation-delay: 800ms; }
+
+    /* B: testo in dissolvenza, le card salgono a tempo come barre di un equalizzatore. */
+    [data-motion='b'] :is(.hero-title, .hero-subtitle, .hero-cta, .hero-explore) {
+      animation: lab-hero-dissolvi 600ms var(--ease-out) both;
+    }
+    [data-motion='b'] .hero-subtitle { animation-delay: 100ms; }
+    [data-motion='b'] .hero-cta { animation-delay: 200ms; }
+    [data-motion='b'] :is(.hero-svc-cards > *, .hero-svc-list) {
+      transform-origin: bottom;
+      animation: lab-hero-eq 560ms cubic-bezier(0.34, 1.4, 0.64, 1) 350ms both;
+    }
+    [data-motion='b'] .hero-svc-cards > :nth-child(2) { animation-delay: 470ms; }
+    [data-motion='b'] .hero-svc-cards > :nth-child(3) { animation-delay: 590ms; }
+    [data-motion='b'] .hero-svc-cards > :nth-child(4) { animation-delay: 710ms; }
+    [data-motion='b'] .hero-svc-cards > :nth-child(5) { animation-delay: 830ms; }
+    [data-motion='b'] .hero-explore { animation-delay: 1000ms; }
+
+    /* C: la foto parte leggermente ingrandita e si assesta; il titolo si
+       rivela da una maschera, il resto entra in dissolvenza. */
+    [data-motion='c'] .hero-slides {
+      animation: lab-hero-zoom 1800ms var(--ease-out) both;
+    }
+    [data-motion='c'] .hero-title {
+      animation: lab-hero-maschera 900ms var(--ease-out) 150ms both;
+    }
+    [data-motion='c'] :is(.hero-subtitle, .hero-cta, .hero-svc-cards, .hero-svc-list, .hero-explore) {
+      animation: lab-hero-dissolvi 800ms var(--ease-out) both;
+    }
+    [data-motion='c'] .hero-subtitle { animation-delay: 500ms; }
+    [data-motion='c'] .hero-cta { animation-delay: 650ms; }
+    [data-motion='c'] :is(.hero-svc-cards, .hero-svc-list) { animation-delay: 850ms; }
+    [data-motion='c'] .hero-explore { animation-delay: 1000ms; }
   }
 
   /* Elementi animati, per tutte le direzioni:
