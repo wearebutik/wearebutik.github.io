@@ -102,6 +102,8 @@ function esportaValore(v: Valore, t: Tipo): Valore {
   if (v === undefined || v === null || isImageValue(v) || isImage(t)) return undefined;
   if (isSlug(t)) return v.current;
   if (isBlockArray(t)) return toMarkdown(v);
+  // Lista di sole immagini (es. heroImages): non è testo, resta fuori dai file.
+  if (Array.isArray(v) && v.length && v.every(isImageValue)) return undefined;
   if (Array.isArray(v)) {
     return v
       .map((item) => {
