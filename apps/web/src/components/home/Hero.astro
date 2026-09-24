@@ -160,7 +160,9 @@ const serviziItems = servizi.map((s) => ({
     position: relative;
     background-color: var(--color-fg);
     overflow: hidden;
-    margin-top: -5rem; /* -mt-20, nessun token spacing a 5rem */
+    /* Risale sotto tutto l'header: 5rem più il suo bordo inferiore di 1px (con
+       solo -5rem restava in cima una riga di 1px con lo sfondo chiaro). */
+    margin-top: calc(-5rem - 1px);
   }
 
   .hero-content {
