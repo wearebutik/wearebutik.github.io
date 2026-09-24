@@ -12,6 +12,7 @@
     "./ArrowLink": "./src/atoms/ArrowLink.tsx",
     "./Button": "./src/atoms/Button.tsx",
     "./Eyebrow": "./src/atoms/Eyebrow.tsx",
+    "./MetaLabel": "./src/atoms/MetaLabel.tsx",
     "./NumberBadge": "./src/atoms/NumberBadge.tsx",
     "./SocialLinks": "./src/atoms/SocialLinks.tsx",
     "./Logo": "./src/atoms/Logo.tsx",

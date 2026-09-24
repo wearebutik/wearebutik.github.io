@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import SectionHeading from '@butik/ui/SectionHeading';
+import MetaLabel from '@butik/ui/MetaLabel';
 
 // Testi della pagina dalla pagina "Progetti (indice)" su Sanity (ADR-0004).
 const entry = await getEntry('pagine', 'progetti');
@@ -45,9 +46,9 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
           </div>
           <div class="project-card__meta">
             {p.data.category && (
-              <span class="project-card__category">
+              <MetaLabel>
                 {p.data.category}
-              </span>
+              </MetaLabel>
             )}
             {p.data.year && (
               <span class="project-card__year">{p.data.year}</span>
@@ -129,15 +130,6 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
     margin-bottom: var(--space-2);
   }
 
-  .project-card__category {
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
-    font-weight: 700;
-    letter-spacing: 0.1em; /* tracking-widest, nessun token */
-    text-transform: uppercase;
-    color: var(--color-butik-red-ink);
-  }
 
   .project-card__year {
     font-family: var(--font-display);
