@@ -22,8 +22,10 @@ export interface RevealOptions {
 }
 
 const DEFAULTS: Required<RevealOptions> = {
+  // Contenitori riconosciuti dal nome (griglie, liste, card, elenchi numerati)
+  // o dichiarati con data-reveal-group (es. la fascia dei loghi partner).
   groupSelector:
-    "section:not(.hero, [data-hero]) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))",
+    "section:not(.hero, [data-hero]) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol), [data-reveal-group])",
   headingSelector: 'section:not(.hero, [data-hero]) h2:not(.prose h2)',
   step: 120,
   delay: 150,
