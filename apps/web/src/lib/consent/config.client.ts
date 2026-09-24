@@ -7,6 +7,7 @@ import type CookieConsent from 'vanilla-cookieconsent';
 import { acceptedCategory } from 'vanilla-cookieconsent';
 import { optInPostHog, optOutPostHog } from '#lib/analytics/posthog.client';
 import { safeGtag } from './gtag';
+import { BASE } from '#lib/versione';
 
 // Riflette lo stato delle categorie su Google Consent Mode v2 e su PostHog.
 // `analytics` guida `analytics_storage` (+ PostHog); `marketing` guida i tre
@@ -74,7 +75,7 @@ export const consentConfig: CookieConsent.CookieConsentConfig = {
         consentModal: {
           title: 'Utilizziamo i cookie',
           description:
-            'Misuriamo in forma aggregata e senza cookie le pagine visitate e le prestazioni del sito. Con il tuo consenso attiviamo anche cookie di analisi e di marketing per capire meglio come viene usato il sito e misurare le campagne. Nessun cookie parte senza il tuo consenso. Dettagli nella <a href="/privacy#cookie">Cookie Policy</a>.',
+            `Misuriamo in forma aggregata e senza cookie le pagine visitate e le prestazioni del sito. Con il tuo consenso attiviamo anche cookie di analisi e di marketing per capire meglio come viene usato il sito e misurare le campagne. Nessun cookie parte senza il tuo consenso. Dettagli nella <a href="${BASE}/privacy#cookie">Cookie Policy</a>.`,
           acceptAllBtn: 'Accetta tutti',
           acceptNecessaryBtn: 'Rifiuta',
           showPreferencesBtn: 'Gestisci preferenze',
@@ -85,9 +86,11 @@ export const consentConfig: CookieConsent.CookieConsentConfig = {
           acceptNecessaryBtn: 'Rifiuta tutti',
           savePreferencesBtn: 'Salva preferenze',
           closeIconLabel: 'Chiudi',
-          // Link alla policy in fondo al modal preferenze.
+          // Link alla policy in fondo al modal preferenze. BASE: nella versione B
+          // (/b/) i link restano dentro la B; l'HTML di questi testi è nel JS,
+          // fuori dalla riscrittura di basePath.
           footer:
-            '<a href="/privacy">Privacy &amp; Cookie Policy</a> · <a href="/termini">Termini di utilizzo</a>',
+            `<a href="${BASE}/privacy">Privacy &amp; Cookie Policy</a> · <a href="${BASE}/termini">Termini di utilizzo</a>`,
           sections: [
             {
               title: 'Cookie necessari',

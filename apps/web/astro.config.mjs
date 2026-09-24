@@ -3,9 +3,16 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { sanityCdnGuard } from './src/lib/sanityCdnGuard.ts';
+import { basePath } from './src/lib/basePath.ts';
+
+// Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
+// (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
+// scritto in dist/b accanto alla versione A. `pnpm build` le costruisce entrambe.
+const versioneB = process.env.BUTIK_VERSIONE === 'b';
 
 export default defineConfig({
   ...(process.env.SITE ? { site: process.env.SITE } : {}),
+  ...(versioneB ? { base: '/b', outDir: './dist/b' } : {}),
   prefetch: {
     prefetchAll: true,
   },
@@ -24,5 +31,5 @@ export default defineConfig({
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
-  integrations: [react(), mdx(), sanityCdnGuard()],
+  integrations: [react(), mdx(), sanityCdnGuard(), basePath()],
 });

@@ -13,6 +13,7 @@ import 'vanilla-cookieconsent/dist/cookieconsent.css';
 import { getImage } from 'astro:assets';
 import logo from '../assets/logos/bollo-rosso.svg';
 import { getAllOgCards, ogPngPathForRoute, normalizeRoute } from '../data/ogCards';
+import { BASE, VERSIONE_B, senzaBase } from '#lib/versione';
 
 const optimizedOg = await getImage({ src: logo, width: 1200, format: 'png' });
 
@@ -35,15 +36,21 @@ const {
 } = Astro.props;
 
 const siteBase = Astro.site ?? Astro.url.origin;
-const canonicalURL = new URL(Astro.url.pathname, siteBase);
+// Nella versione B (/b/, ADR-0004) il canonical punta alla pagina corrispondente
+// della A e la pagina resta fuori dai motori di ricerca; og:url resta quello
+// della B, così un link condiviso per la revisione porta alla B.
+const percorsoA = senzaBase(Astro.url.pathname);
+const pageURL = new URL(Astro.url.pathname, siteBase);
+const canonicalURL = new URL(percorsoA, siteBase);
+const robotsNoindex = noindex || VERSIONE_B;
 
 // og:image — precedenza: override esplicito della pagina > card generata per
 // questa rotta > logo di fallback. Sempre come URL assoluto.
-const route = normalizeRoute(Astro.url.pathname);
+const route = normalizeRoute(percorsoA);
 const ogCards = await getAllOgCards();
 const ogCard = ogImage ? null : ogCards.get(route);
 const hasCard = ogCard != null;
-const ogImagePath = ogImage ?? (hasCard ? ogPngPathForRoute(route) : optimizedOg.src);
+const ogImagePath = ogImage ?? (hasCard ? BASE + ogPngPathForRoute(route) : optimizedOg.src);
 const ogImageURL = new URL(ogImagePath, siteBase).href;
 // width/height/type valgono solo per le card generate (1200×630 PNG):
 // per il logo di fallback la proporzione è diversa, meglio non dichiararli.
@@ -62,7 +69,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <meta name="generator" content={Astro.generator} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {robotsNoindex && <meta name="robots" content="noindex, nofollow" />}
 
     {/* Google Tag Manager + Consent Mode v2 (ADR-0006). Il default `denied`
         DEVE precedere il caricamento di gtm.js: entrambi in questo unico script
@@ -110,7 +117,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Butik" />
     <meta property="og:locale" content="it_IT" />
-    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:url" content={pageURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={ogImageURL} />
@@ -137,6 +144,14 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       <noscript
         set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
       />
+    )}
+    {VERSIONE_B && (
+      <p class="versione-b">
+        <strong>Versione B</strong> — testi in revisione, non ancora pubblicati.
+        {/* Unico link della B che porta alla A: marcato perché basePath non lo
+            riscriva, e con ricarica completa fuori dal ClientRouter. */}
+        <a href={percorsoA} data-versione-a data-astro-reload>Vedi la versione pubblicata</a>
+      </p>
     )}
     <Header />
     <main class="page-main" data-reveal-off={reveal ? undefined : ''}>
@@ -196,5 +211,26 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
 
   .page-main {
     flex: 1 1 0%;
+  }
+
+  .versione-b {
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-dark);
+    color: var(--color-fg-invert);
+    font-size: var(--font-size-xs);
+    text-align: center;
+  }
+
+  .versione-b a {
+    margin-inline-start: var(--space-2);
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .versione-b a:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
   }
 </style>
