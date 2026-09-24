@@ -45,8 +45,7 @@ docs/  .claude/  reference/  design/   # repo-wide, stay at root
   authored in a **Storybook** workshop.
 - **What's at root, not in a package**: `docs/`, `.claude/`, `reference/`,
   `design/` are repo-wide (decisions, agent config, raw input, brand assets) and
-  don't belong to any single app/package. `.sitepins/` stays at root but its
-  config points at `apps/web/src/**` (the CMS operates from the repo root).
+  don't belong to any single app/package.
 - **Grow on demand, no empty boxes**: `apps/functions` is created when the first
   serverless function is actually needed (its options live in
   [`functions.md`](../guidances/functions.md)); `packages/ui` starts with a single
@@ -79,8 +78,6 @@ size.
 
 - More structure than a single package needs today (mitigated by "grow on
   demand").
-- Tooling that assumes a repo-root site (e.g. Sitepins) needs its paths pointed at
-  `apps/web/**` — recorded here so it isn't rediscovered painfully.
 
 ### When to deviate (revisit triggers)
 

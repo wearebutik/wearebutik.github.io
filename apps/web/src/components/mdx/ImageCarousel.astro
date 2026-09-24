@@ -6,11 +6,11 @@
  * 2026-07-21) — a differenza delle altre molecole immagine è
  * genuinamente interattiva, quindi consumata con `client:visible` (non
  * presentazionale pura). Questo wrapper resta .astro per risolvere le
- * immagini (`resolveAsset`, `getImage()` — Astro/Vite-only).
+ * immagini (`getImage()` — Astro/Vite-only).
  */
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { imageSize, isRemote, resolveAsset } from '#lib/media';
+import { imageSize, isRemote } from '#lib/media';
 import ImageCarousel from '@butik/ui/ImageCarousel';
 
 interface CarouselImage {
@@ -27,7 +27,7 @@ const { images } = Astro.props;
 
 const resolvedImages = await Promise.all(
   images.map(async ({ src, alt, caption }) => {
-    const resolved = typeof src === 'string' ? resolveAsset(src) : src;
+    const resolved = src;
     if (typeof resolved === 'string' && !isRemote(resolved)) {
       return { src: resolved, alt, caption };
     }

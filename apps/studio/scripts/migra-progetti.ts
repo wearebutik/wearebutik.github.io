@@ -44,7 +44,7 @@ const uploaded = new Map<string, string>(); // path "/src/assets/…" → asset 
 async function uploadImage(srcPath: string): Promise<string> {
   const hit = uploaded.get(srcPath);
   if (hit) return hit;
-  // Sitepins scrive `/assets/…`, i contenuti a mano `/src/assets/…` (ADR-0009)
+  // Path dei contenuti: `/assets/…` (scritto da Sitepins) o `/src/assets/…`
   const file = resolve(WEB, srcPath.replace(/^\/(src\/)?/, 'src/'));
   const asset = await client.assets.upload('image', createReadStream(file), {
     filename: basename(file),

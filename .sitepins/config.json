@@ -1,8 +1,0 @@
-{
-  "content": "apps/web/src/content",
-  "media": "apps/web/src",
-  "public": "apps/web/public",
-  "configs": [],
-  "custom-commit": false,
-  "arrangement": []
-}

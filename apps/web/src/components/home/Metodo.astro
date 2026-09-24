@@ -11,10 +11,10 @@
 // disco gira indisturbato finché non lo si prende in mano — e funziona identico
 // da touch. Con `prefers-reduced-motion` resta tutto fermo.
 //
-// Copy (eyebrow/title/tappe) content-driven via Sitepins (ADR-0004): riusa la
-// stessa entry `pagine/servizi` di /servizi. L'icona per tappa resta config di
+// Copy (eyebrow/title/tappe) dalla pagina Servizi su Sanity (ADR-0004): riusa
+// la stessa entry `pagine/servizi` di /servizi. L'icona per tappa resta config di
 // design passata come prop dal chiamante (come sdgStyle in chi-siamo.astro):
-// non è editoriale, non vive nello schema Sitepins.
+// non è editoriale, non vive nello schema Sanity.
 import type { MetodoIconName } from '../../data/metodo';
 import MetodoIcon from './MetodoIcon.astro';
 import SectionHeading from '@butik/ui/SectionHeading';

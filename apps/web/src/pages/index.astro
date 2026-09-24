@@ -17,7 +17,7 @@ const topProgetti = (await getCollection('progetti', e => e.data.featured && !e.
   .slice(0, 4);
 
 // Copy editoriale della home content-driven (ADR-0004): la collezione `pagine`
-// (entry `home`) è la source of truth tipata, editabile da Sitepins.
+// (entry `home`, pagina Home su Sanity) è la source of truth tipata.
 const homeEntry = await getEntry('pagine', 'home');
 if (!homeEntry || homeEntry.data.type !== 'home') {
   throw new Error('Contenuto pagina "home" mancante o non valido (collezione pagine).');
@@ -34,7 +34,7 @@ const partners = partnersEntry.data.partners;
 
 // Metodo (issue #26 — W2): stessa entry `pagine/servizi` di /servizi, unica
 // source of truth per eyebrow/titolo/passi. Le icone per tappa restano config
-// di design qui, non nello schema Sitepins.
+// di design qui, non nello schema Sanity.
 const serviziEntry = await getEntry('pagine', 'servizi');
 if (!serviziEntry || serviziEntry.data.type !== 'servizi-index') {
   throw new Error('Contenuto pagina "servizi" mancante o non valido (collezione pagine) — richiesto anche dalla sezione Metodo in home.');

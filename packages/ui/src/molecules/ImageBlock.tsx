@@ -3,8 +3,8 @@
  *
  * Blocco immagine full-width con didascalia opzionale, per il body
  * editoriale (contenuto MDX). Riceve `src`/`srcSet` già risolti dal
- * chiamante `.astro` — la risoluzione degli asset (`resolveAsset`,
- * `getImage()`) resta app-side, Astro/Vite-only. Vedi ADR-0008 amendment
+ * chiamante `.astro` — l'ottimizzazione delle immagini (`getImage()`)
+ * resta app-side, Astro/Vite-only. Vedi ADR-0008 amendment
  * 2026-07-21.
  */
 import styles from './ImageBlock.module.css';
