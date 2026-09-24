@@ -89,7 +89,8 @@ export const AccentViaComponentHook: Story = {
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states.
-// Hover: il testo prende l'accento "ink" e la freccia scorre.
+// Hover: il testo prende l'accento "ink", il cerchio della freccia si riempie
+// e la freccia scorre di 2px.
 export const OnLightHover: Story = {
   ...OnLight,
   parameters: { pseudo: { hover: true } },
