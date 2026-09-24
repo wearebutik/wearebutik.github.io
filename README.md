@@ -33,13 +33,11 @@ Per rivedere, si confrontano `/pagina` e `/b/pagina`. Un testo scelto dalla B
 passa nel sito copiandolo nel documento corrispondente di `production`, nello
 Studio, e pubblicandolo.
 
-**Aggiornare `/b/`.** Una modifica in `anteprima` va online con il deploy
-successivo, che ricostruisce sempre A e B. Per farla uscire subito, lancia a mano
-il workflow *Deploy to GitHub Pages*: `gh workflow run deploy-pages.yml`,
-oppure *Run workflow* dalla scheda Actions di GitHub. Un webhook Sanity sul
-dataset `anteprima` che chiama `repository_dispatch` con
-`event_type: sanity-publish-b` automatizza lo stesso passo (vedi ADR-0004,
-*Publishing*).
+**Aggiornare `/b/`.** Dopo una modifica in `anteprima`, lancia a mano il
+workflow *Deploy to GitHub Pages*: `gh workflow run deploy-pages.yml`, oppure
+*Run workflow* dalla scheda Actions di GitHub. Ogni deploy ricostruisce A e B,
+quindi la modifica esce anche con il deploy successivo, qualunque cosa lo
+faccia partire.
 
 **Vedere la B in locale.** `pnpm build`, poi un server statico su
 `apps/web/dist/` (per esempio `python3 -m http.server -d apps/web/dist`) e apri

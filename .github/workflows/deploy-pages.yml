@@ -4,14 +4,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Pubblicazione nello Studio Sanity: il webhook del progetto chiama
-  # POST /repos/{owner}/{repo}/dispatches con event_type "sanity-publish"
-  # (dataset production, versione A) o "sanity-publish-b" (dataset anteprima,
-  # versione B su /b/) — ADR-0004. Ogni build ricostruisce entrambe le
-  # versioni. Pubblicazioni ravvicinate si accorpano grazie alla concurrency
-  # qui sotto: parte il build dell'ultima.
+  # Pubblicazione nello Studio Sanity: il webhook del progetto (dataset
+  # production) chiama POST /repos/{owner}/{repo}/dispatches con event_type
+  # "sanity-publish" (ADR-0004). Ogni build ricostruisce entrambe le versioni,
+  # A e B su /b/; una modifica in `anteprima` esce con un run a mano
+  # (workflow_dispatch). Pubblicazioni ravvicinate si accorpano grazie alla
+  # concurrency qui sotto: parte il build dell'ultima.
   repository_dispatch:
-    types: [sanity-publish, sanity-publish-b]
+    types: [sanity-publish]
 
 permissions:
   contents: read
