@@ -1,6 +1,8 @@
 ---
-// Card-servizio: titolo + descrizione + prova in fondo, con il glifo
-// monolinea del servizio in filigrana nell'angolo in basso a destra.
+// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + prova in
+// fondo, con il glifo monolinea del servizio in filigrana nell'angolo in basso
+// a destra. Il vetro (semitrasparente e sfocato) lascia intravedere la foto e
+// con gli angoli arrotondati e lo stato hover si legge come un link.
 // È la presentazione scelta per i servizi nell'hero da tablet in su (da mobile
 // li presenta ServiceLauncher, vedi Hero.astro).
 //
@@ -61,48 +63,34 @@ const icons: Record<string, string> = {
 </a>
 
 <style>
+  /* Vetro: fondo scuro semitrasparente + sfocatura della foto sottostante.
+     Il testo bianco sta sopra il velo dell'hero (60%) più il vetro: il
+     contrasto non dipende dalla foto. */
   .card {
     position: relative;
     overflow: hidden; /* la filigrana esce dal bordo e viene tagliata */
     display: flex;
     flex-direction: column;
-    background: #fff;
-    border: 1px solid color-mix(in srgb, var(--color-butik-dark) 15%, transparent);
-    padding: 1.25rem 1.25rem 1.4rem;
+    height: 100%;
+    padding: 1.25rem 1.25rem 1.4rem; /* nessun token a 1.25rem */
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--color-white) 25%, transparent);
+    background-color: color-mix(in srgb, var(--color-butik-dark) 35%, transparent);
+    backdrop-filter: blur(12px); /* nessun token blur */
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-white);
     text-decoration: none;
-    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
   }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(7, 17, 8, 0.12);
-    border-color: var(--color-butik-red);
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(-3px);
+    background-color: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
+    border-color: var(--color-white);
   }
   .card:focus-visible {
-    outline: 2px solid var(--color-butik-red);
+    outline: 2px solid var(--color-white);
     outline-offset: 3px;
-    border-color: var(--color-butik-red);
-  }
-
-  /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking). */
-  /* Il nome del servizio è l'elemento principale della card: più grande
-     della descrizione (una riga), con aria sotto. */
-  .card__title {
-    font-family: var(--font-heading);
-    font-size: 1.3125rem; /* 21px: nessun token fra --font-size-lg e --font-size-xl */
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.005em;
-    text-transform: none;
-    color: var(--color-butik-dark);
-    margin: 0 0 var(--space-1);
-  }
-  .card__desc {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    line-height: 1.45;
-    color: color-mix(in srgb, var(--color-butik-dark) 70%, transparent);
-    flex: 1;
-    margin: 0;
   }
 
   /* Testo sopra la filigrana. */
@@ -114,8 +102,37 @@ const icons: Record<string, string> = {
     gap: 0.5rem;
   }
 
-  /* Filigrana: glifo grande, tenue, tagliato dal bordo in basso a destra.
-     Fino al 16% (hover) il testo che ci passa sopra resta sopra 4.5:1. */
+  /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking).
+     Il nome del servizio è l'elemento principale della card. */
+  .card__title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.005em;
+    text-transform: none;
+    color: var(--color-white);
+    margin: 0;
+  }
+  .card__desc {
+    flex: 1;
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-white) 88%, transparent);
+  }
+  .card__stat {
+    font-family: var(--font-display);
+    font-size: 0.6875rem; /* come le etichette delle card: nessun token a 11px */
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-white) 75%, transparent);
+  }
+
+  /* Filigrana: glifo grande e tenue, tagliato dal bordo in basso a destra;
+     all'hover si accende e ruota appena. */
   .card__icon {
     position: absolute;
     right: -1.75rem;
@@ -123,36 +140,24 @@ const icons: Record<string, string> = {
     width: 8.5rem; /* scala della filigrana: nessun token di dimensione icona */
     height: 8.5rem;
     color: var(--color-butik-red);
-    opacity: 0.12;
+    opacity: 0.35;
     transition: opacity 160ms ease, transform 300ms ease;
   }
   .card:hover .card__icon,
   .card:focus-visible .card__icon {
-    opacity: 0.16;
+    opacity: 0.55;
     transform: rotate(-8deg) scale(1.05);
   }
 
-  .card__stat {
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    /* 65%: sopra 4.5:1 anche dove passa la filigrana (al 55% era 4.26:1 già su bianco). */
-    color: color-mix(in srgb, var(--color-butik-dark) 65%, transparent);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .card {
-      transition: box-shadow 160ms ease, border-color 160ms ease;
+    .card,
+    .card__icon {
+      transition: background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
     }
-    .card:hover {
-      transform: none;
-    }
-    .card__icon,
+    .card:hover,
+    .card:focus-visible,
     .card:hover .card__icon,
     .card:focus-visible .card__icon {
-      transition: opacity 160ms ease;
       transform: none;
     }
   }
