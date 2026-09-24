@@ -17,6 +17,11 @@
 // `<!-- galleria -->` nel corpo indica dove vanno i blocchi immagine, nei
 // servizi una voce `- _type: galleria` fra le sezioni. Senza marcatore, i
 // blocchi immagine finiscono in fondo. Ripetibile: stesso input, stesso NDJSON.
+//
+// Con --bozze i documenti escono come bozze (`drafts.<id>`), solo quelli che
+// differiscono dal pubblicato: si importano accanto ai pubblicati senza
+// toccarli, e nello Studio si pubblicano pagina per pagina.
+//   … testi genera <cartella> <file.ndjson> --bozze
 import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { getCliClient } from 'sanity/cli';
@@ -250,7 +255,7 @@ function differenze(a: Valore, b: Valore, p: string) {
   } else console.log(`   ${p}: ${JSON.stringify(a)?.slice(0, 90)} → ${JSON.stringify(b)?.slice(0, 90)}`);
 }
 
-async function genera(dir: string, out: string) {
+async function genera(dir: string, out: string, bozze = false) {
   const files = readdirSync(dir).filter((f) => f.endsWith('.md')).sort();
   const ids = files.map((f) => f.replace(/\.md$/, ''));
   const attuali: Record<string, Valore> = Object.fromEntries(
@@ -282,8 +287,9 @@ async function genera(dir: string, out: string) {
     const pulito = JSON.parse(JSON.stringify(doc));
     if (attuale && JSON.stringify(impronta(pulito)) === JSON.stringify(impronta(attuale))) continue;
     if (attuale && process.env.DIFF) differenze(impronta(attuale), impronta(pulito), _id);
+    if (bozze) pulito._id = `drafts.${_id}`;
     righe.push(JSON.stringify(pulito));
-    console.log(`${attuale ? '~' : '+'} ${_id}`);
+    console.log(`${attuale ? '~' : '+'} ${pulito._id}`);
   }
   writeFileSync(out, righe.join('\n') + '\n');
   console.log(`${righe.length} documenti cambiati → ${out}`);
@@ -294,8 +300,8 @@ const [cmd, dir, out] = process.argv.slice(2).filter((a) => !a.startsWith('--'))
 if (cmd === 'esporta' && dir) {
   esporta(resolve(process.cwd(), dir), await client.fetch(`*[_type in $tipi && !(_id in path("drafts.**"))] | order(_id)`, { tipi: TIPI }));
 } else if (cmd === 'genera' && dir && out) {
-  await genera(resolve(process.cwd(), dir), resolve(process.cwd(), out));
+  await genera(resolve(process.cwd(), dir), resolve(process.cwd(), out), process.argv.includes('--bozze'));
 } else {
-  console.error('Uso: testi esporta <cartella> | testi genera <cartella> <file.ndjson>');
+  console.error('Uso: testi esporta <cartella> | testi genera <cartella> <file.ndjson> [--bozze]');
   process.exit(1);
 }
