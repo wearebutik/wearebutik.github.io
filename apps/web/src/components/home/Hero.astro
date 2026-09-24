@@ -377,4 +377,34 @@ const serviziItems = servizi.map((s) => ({
     }
   }
 
+  /* ── Entrata al caricamento (direzione "ritmo musicale", vedi
+     styles/motion.css): il testo compare in dissolvenza, poi le card salgono
+     una dopo l'altra con un piccolo rimbalzo, come barre di un equalizzatore.
+     A tempo dal caricamento: l'hero è già in vista. Esclusa nelle prove di
+     /lab/motion, che hanno le loro regole. */
+  @keyframes hero-in-dissolvi {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes hero-in-battito {
+    0% { opacity: 0; transform: scaleY(0.3); }
+    60% { opacity: 1; transform: scaleY(1.08); }
+    100% { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    :global(.page-main:not(:has([data-motion]))) :is(.hero-title, .hero-subtitle, .hero-cta, .hero-explore) {
+      animation: hero-in-dissolvi 600ms var(--ease-out) both;
+    }
+    :global(.page-main:not(:has([data-motion]))) .hero-subtitle { animation-delay: 100ms; }
+    :global(.page-main:not(:has([data-motion]))) .hero-cta { animation-delay: 200ms; }
+    :global(.page-main:not(:has([data-motion]))) :is(.hero-svc-cards > *, .hero-svc-list) {
+      transform-origin: bottom;
+      animation: hero-in-battito 560ms cubic-bezier(0.34, 1.4, 0.64, 1) 350ms both;
+    }
+    :global(.page-main:not(:has([data-motion]))) .hero-svc-cards > :nth-child(2) { animation-delay: 470ms; }
+    :global(.page-main:not(:has([data-motion]))) .hero-svc-cards > :nth-child(3) { animation-delay: 590ms; }
+    :global(.page-main:not(:has([data-motion]))) .hero-svc-cards > :nth-child(4) { animation-delay: 710ms; }
+    :global(.page-main:not(:has([data-motion]))) .hero-svc-cards > :nth-child(5) { animation-delay: 830ms; }
+    :global(.page-main:not(:has([data-motion]))) .hero-explore { animation-delay: 1000ms; }
+  }
 </style>
