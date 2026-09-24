@@ -23,6 +23,7 @@
     "./ImageRight": "./src/molecules/ImageRight.tsx",
     "./ImageCarousel": "./src/molecules/ImageCarousel.tsx",
     "./vinylScratch": "./src/lib/vinylScratch.ts",
+    "./reveal": "./src/lib/reveal.ts",
     "./Equalizer": "./src/atoms/motion/Equalizer.tsx",
     "./Waveform": "./src/atoms/motion/Waveform.tsx",
     "./Marquee": "./src/atoms/motion/Marquee.tsx",

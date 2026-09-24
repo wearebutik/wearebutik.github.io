@@ -5,10 +5,9 @@
 // diventa un sistema riusabile (token + attributo sulle sezioni) e questa
 // pagina si cancella.
 //
-// La prova B è la versione con un piccolo script (in fondo): ogni elemento
-// si anima una volta sola, la prima volta che entra, e gli elementi che
-// entrano insieme partono in sequenza (come le card dell'hero). L'entrata
-// dell'hero è quella del sito (Hero.astro). A e C hanno le regole CSS sotto.
+// La prova B è il sistema del sito (styles/motion.css + @butik/ui/reveal,
+// attivato da BaseLayout), scelto; A e C hanno le regole CSS sotto e il
+// sistema del sito è spento (reveal={false}).
 //
 // Tecnica comune, solo CSS (la stessa dei numeri, components/home/Numbers.astro):
 // ogni sezione ha un interruttore legato allo scroll (--in-vista 0→1 quando
@@ -25,7 +24,7 @@ import HomePage from '#components/home/HomePage.astro';
 export function getStaticPaths() {
   return [
     { params: { v: 'a' }, props: { nome: 'A · Rivelazione sobria', nota: 'Dissolvenza e piccola salita; gli elementi delle griglie entrano in sequenza.' } },
-    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale (con JavaScript)', nota: 'Ogni elemento sale con un piccolo rimbalzo la prima volta che entra, poi resta. Quelli che entrano insieme partono in sequenza, 120ms l’uno dall’altro (il metodo, su desktop, entra in fila come i servizi). I titoli di sezione si sottolineano di rosso.' } },
+    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale (scelta, è quella del sito)', nota: 'Ogni elemento sale con un piccolo rimbalzo la prima volta che entra, poi resta. Quelli che entrano insieme partono in sequenza, 120ms l’uno dall’altro (il metodo, su desktop, entra in fila come i servizi). I titoli di sezione si sottolineano di rosso.' } },
     { params: { v: 'c' }, props: { nome: 'C · Editoriale', nota: 'I titoli si rivelano da una maschera, le foto entrano con una tendina, i testi in dissolvenza.' } },
   ];
 }
@@ -35,7 +34,7 @@ const { nome, nota } = Astro.props;
 const altre = ['a', 'b', 'c'].filter((x) => x !== v);
 ---
 
-<BaseLayout title={`Motion ${v?.toUpperCase()} — Lab`} description="Prova interna di animazioni d’ingresso." noindex>
+<BaseLayout title={`Motion ${v?.toUpperCase()} — Lab`} description="Prova interna di animazioni d’ingresso." noindex reveal={v === 'b'}>
   <aside class="lab-bar" aria-label="Prova di motion">
     <strong>{nome}</strong> — {nota}
     <span class="lab-bar__links">
@@ -198,80 +197,4 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
       }
     }
   }
-  /* ── B · Ritmo musicale, con JavaScript ─────────────────────────────────
-     Lo script arma gli elementi (data-reveal="attesa") e li fa partire
-     (data-reveal="in") quando entrano, con il ritardo --d della sequenza.
-     Senza script nulla è armato: tutto resta visibile. */
-  @keyframes lab-b-battito {
-    0% { opacity: 0; transform: scaleY(0.4); }
-    60% { opacity: 1; transform: scaleY(1.06); }
-    100% { opacity: 1; transform: none; }
-  }
-  @keyframes lab-b-sottolinea {
-    from { text-decoration-color: transparent; text-underline-offset: 0.6em; }
-    to { text-decoration-color: var(--color-accent); text-underline-offset: 0.18em; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    [data-motion='b'] [data-reveal='attesa']:not(h2) {
-      opacity: 0;
-    }
-    [data-motion='b'] [data-reveal='in']:not(h2) {
-      transform-origin: bottom;
-      animation: lab-b-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) both;
-    }
-    [data-motion='b'] h2[data-reveal] {
-      text-decoration-line: underline;
-      text-decoration-thickness: 3px;
-      text-decoration-color: transparent;
-      text-underline-offset: 0.6em;
-    }
-    [data-motion='b'] h2[data-reveal='in'] {
-      animation: lab-b-sottolinea 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 150ms both;
-    }
-  }
 </style>
-
-<script>
-  // Prova B: animazione d'ingresso una volta sola, con sequenza per gli
-  // elementi che entrano insieme. Idempotente sotto il ClientRouter
-  // (docs/guidances/client-scripts.md): si arma a ogni astro:page-load solo
-  // sui nodi non ancora armati, e l'osservatore si stacca prima dello swap.
-  const GRUPPI = "section:not(.hero) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))";
-  const PASSO = 120; // ms fra un elemento e il successivo della stessa entrata
-  const ATTESA = 150; // ms prima del primo, perché il rimbalzo si veda
-
-  function initRevealB() {
-    const root = document.querySelector<HTMLElement>("[data-motion='b']");
-    if (!root || root.dataset.revealBound) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!('IntersectionObserver' in window)) return;
-    root.dataset.revealBound = 'true';
-
-    const elementi = [
-      ...root.querySelectorAll<HTMLElement>(`${GRUPPI} > :not([data-no-reveal])`),
-      ...root.querySelectorAll<HTMLElement>('section:not(.hero) h2:not(.prose h2)'),
-    ];
-    elementi.forEach((el) => (el.dataset.reveal = 'attesa'));
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        // Gli elementi che entrano nello stesso momento partono in sequenza,
-        // nell'ordine della pagina.
-        const entrati = entries
-          .filter((e) => e.isIntersecting)
-          .map((e) => e.target as HTMLElement)
-          .sort((a, b) => (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1));
-        entrati.forEach((el, i) => {
-          el.style.setProperty('--d', `${ATTESA + i * PASSO}ms`);
-          el.dataset.reveal = 'in';
-          io.unobserve(el);
-        });
-      },
-      { rootMargin: '0px 0px -8% 0px' },
-    );
-    elementi.forEach((el) => io.observe(el));
-    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
-  }
-
-  document.addEventListener('astro:page-load', initRevealB);
-</script>

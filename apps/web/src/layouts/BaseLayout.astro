@@ -22,6 +22,8 @@ interface Props {
   ogImage?: string;
   /** Pagine interne (lab): fuori dai motori di ricerca. */
   noindex?: boolean;
+  /** Animazioni d'ingresso (styles/motion.css + @butik/ui/reveal); false per spegnerle. */
+  reveal?: boolean;
 }
 
 const {
@@ -29,6 +31,7 @@ const {
   description = 'La prima impresa sociale italiana specializzata in progettazione culturale e sviluppo territoriale attraverso la musica.',
   ogImage,
   noindex = false,
+  reveal = true,
 } = Astro.props;
 
 const siteBase = Astro.site ?? Astro.url.origin;
@@ -136,7 +139,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       />
     )}
     <Header />
-    <main class="page-main">
+    <main class="page-main" data-reveal-off={reveal ? undefined : ''}>
       <slot />
     </main>
     <Footer />
@@ -146,6 +149,20 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         indipendentemente dalla risposta al banner. Rieseguito a ogni
         astro:page-load perché le view transition rimpiazzano il DOM;
         CookieConsent.run e initPostHogCookieless sono idempotenti. */}
+    {/* Animazioni d'ingresso: arma gli elementi di <main> a ogni pagina
+        (il ClientRouter rimpiazza <main>, quindi il nodo è sempre nuovo) e
+        stacca l'osservatore prima dello swap. */}
+    <script>
+      import { initReveal } from '@butik/ui/reveal';
+
+      document.addEventListener('astro:page-load', () => {
+        const main = document.querySelector<HTMLElement>('.page-main');
+        if (!main || 'revealOff' in main.dataset) return;
+        const stop = initReveal(main);
+        document.addEventListener('astro:before-swap', stop, { once: true });
+      });
+    </script>
+
     <script>
       import { initCookieConsent } from '#lib/consent/init.client';
       import { initPostHogCookieless } from '#lib/analytics/posthog.client';

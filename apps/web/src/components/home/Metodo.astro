@@ -108,9 +108,8 @@ for (let y = 0; y < H; y += SEGV) {
     background: var(--color-white);
     padding-top: var(--space-12);
     padding-bottom: var(--space-12);
-    /* clip, non hidden: taglia uguale ma non crea un contenitore di scroll,
-       così le animazioni d'ingresso (styles/motion.css) misurano i passi
-       rispetto allo schermo e non alla sezione. */
+    /* clip, non hidden: taglia uguale ma non crea un contenitore di scroll
+       (le animazioni legate allo scroll misurerebbero rispetto alla sezione). */
     overflow: clip;
   }
   .metodo-container {
