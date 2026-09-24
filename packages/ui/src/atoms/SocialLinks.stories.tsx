@@ -38,3 +38,18 @@ export const Default: Story = {};
 export const SingleIcon: Story = {
   args: { socials: sampleSocials.slice(0, 1) },
 };
+
+// Lista vuota: stato raggiungibile (i dati arrivano da apps/web). Il
+// componente rende una <ul> vuota, senza fallback e senza ingombro visibile.
+export const Empty: Story = {
+  args: { socials: [] },
+};
+
+// Stati d'interazione, forzati con storybook-addon-pseudo-states.
+export const Hover: Story = {
+  parameters: { pseudo: { hover: true } },
+};
+
+export const FocusVisible: Story = {
+  parameters: { pseudo: { focusVisible: true } },
+};

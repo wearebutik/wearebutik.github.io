@@ -34,3 +34,20 @@ export const Header: Story = {
 export const Footer: Story = {
   args: { width: 72, height: 72 },
 };
+
+// className si UNISCE alle classi interne: è il gancio con cui l'header
+// applica i suoi effetti locali. Qui la stessa ombra dello stato overlay
+// dell'header (sopra un'immagine), con la classe definita nello specimen come
+// l'header la definisce con :global() — una regola scoped di Astro non
+// raggiungerebbe l'<img> dell'isola (ADR-0008 #astro-island-boundary).
+export const WithClassName: Story = {
+  args: { width: 45, height: 45, className: 'story-logo-overlay' },
+  decorators: [
+    (Story) => (
+      <div style={{ background: 'var(--color-bg-invert)', padding: 'var(--space-8)' }}>
+        <style>{`.story-logo-overlay { filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--color-fg) 45%, transparent)); height: 2.8125rem; width: auto; }`}</style>
+        <Story />
+      </div>
+    ),
+  ],
+};

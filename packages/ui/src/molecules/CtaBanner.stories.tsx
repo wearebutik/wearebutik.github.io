@@ -36,3 +36,28 @@ export const LongTitle: Story = {
     title: 'Vuoi costruire un progetto culturale che duri nel tempo e coinvolga la community?',
   },
 };
+
+// body e secondaryCta sono indipendenti: qui c'è il body ma non la CTA
+// secondaria, il caso in cui il layout content/actions si sbilancia.
+export const BodyWithoutSecondary: Story = {
+  args: {
+    body:
+      'Raccontaci la tua idea, il territorio in cui vuoi lavorare e le persone che vuoi coinvolgere: troviamo insieme il format giusto, dai tempi al budget.',
+    secondaryCta: undefined,
+  },
+};
+
+// Il caso speculare: due CTA senza body.
+export const SecondaryWithoutBody: Story = {
+  args: { body: undefined },
+};
+
+// Stati d'interazione, forzati con storybook-addon-pseudo-states: la
+// primaria passa al rosso pieno, la secondaria si riempie.
+export const CtaHover: Story = {
+  parameters: { pseudo: { hover: true } },
+};
+
+export const CtaFocusVisible: Story = {
+  parameters: { pseudo: { focusVisible: true } },
+};

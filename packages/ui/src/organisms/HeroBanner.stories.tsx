@@ -10,6 +10,14 @@ const placeholderSrc =
     '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#463a52"/></svg>'
   );
 
+// Foto bianca: il caso peggiore per il contrasto del testo. Lo scrim deve
+// tenere leggibili titolo e sottotitolo anche qui.
+const brightSrc =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#ffffff"/></svg>'
+  );
+
 const meta = {
   title: 'Organisms/HeroBanner',
   component: HeroBanner,
@@ -39,5 +47,14 @@ export const LongTitle: Story = {
   args: {
     title: 'Un titolo molto lungo che deve andare a capo su più righe restando leggibile',
     subtitle: 'E un sottotitolo altrettanto descrittivo per verificare la gerarchia visiva.',
+  },
+};
+
+// Sottotitolo su foto bianca: rende verificabile nel workshop (anche con il
+// pannello a11y) che lo scrim regga il caso peggiore.
+export const BrightImage: Story = {
+  args: {
+    src: brightSrc,
+    subtitle: 'Un sottotitolo che espande il contesto in una riga o due.',
   },
 };
