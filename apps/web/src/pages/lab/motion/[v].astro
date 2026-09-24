@@ -1,0 +1,176 @@
+---
+// LAB — prova usa e getta: tre direzioni di animazione d'ingresso sulla home
+// vera (stesso componente HomePage di pages/index.astro). Cambia solo il CSS,
+// applicato dal contenitore [data-motion]. Dopo la scelta la direzione vincente
+// diventa un sistema riusabile (token + attributo sulle sezioni) e questa
+// pagina si cancella.
+//
+// Tecnica comune, solo CSS (la stessa dei numeri, components/home/Numbers.astro):
+// ogni sezione ha un interruttore legato allo scroll (--in-vista 0→1 quando
+// entra in vista); i suoi elementi, con una style query su --in-vista, avviano
+// un'animazione A TEMPO. Niente segue lo scroll. Senza view timeline (Firefox)
+// o con reduced-motion non si nasconde né si anima nulla.
+import BaseLayout from '#layouts/BaseLayout.astro';
+import HomePage from '#components/home/HomePage.astro';
+
+export function getStaticPaths() {
+  return [
+    { params: { v: 'a' }, props: { nome: 'A · Rivelazione sobria', nota: 'Dissolvenza e piccola salita; gli elementi delle griglie entrano in sequenza.' } },
+    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale', nota: 'Gli elementi “salgono a tempo” come barre di un equalizzatore, con un piccolo rimbalzo; i titoli di sezione si sottolineano di rosso.' } },
+    { params: { v: 'c' }, props: { nome: 'C · Editoriale', nota: 'I titoli si rivelano da una maschera, le foto entrano con una tendina, i testi in dissolvenza.' } },
+  ];
+}
+
+const { v } = Astro.params;
+const { nome, nota } = Astro.props;
+const altre = ['a', 'b', 'c'].filter((x) => x !== v);
+---
+
+<BaseLayout title={`Motion ${v?.toUpperCase()} — Lab`} description="Prova interna di animazioni d’ingresso." noindex>
+  <aside class="lab-bar" aria-label="Prova di motion">
+    <strong>{nome}</strong> — {nota}
+    <span class="lab-bar__links">
+      {altre.map((x) => <a href={`/lab/motion/${x}`}>Vai a {x.toUpperCase()}</a>)}
+    </span>
+  </aside>
+  <div class="motion" data-motion={v}>
+    <HomePage />
+  </div>
+</BaseLayout>
+
+<style>
+  .lab-bar {
+    position: fixed;
+    z-index: 60;
+    left: var(--space-4);
+    bottom: var(--space-4);
+    max-width: 32rem; /* barra informativa compatta */
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-white);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    box-shadow: 0 8px 24px rgba(7, 17, 8, 0.2);
+  }
+  .lab-bar__links {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+  .lab-bar a {
+    color: var(--color-accent-text);
+    font-weight: 700;
+  }
+</style>
+
+<style is:global>
+  /* ── Comune: interruttore per sezione ─────────────────────────────────── */
+  @property --in-vista {
+    syntax: '<integer>';
+    initial-value: 0;
+    inherits: true;
+  }
+  @keyframes lab-interruttore {
+    from { --in-vista: 0; }
+    to { --in-vista: 1; }
+  }
+
+  /* Elementi animati, per tutte le direzioni:
+     - titoli di sezione (h2)
+     - elementi delle griglie e delle liste (figli di classi *grid*, *list*, *cards*)
+     - testi introduttivi (p diretti delle intestazioni) e immagini. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .motion section:not(.hero) {
+        animation: lab-interruttore linear both;
+        animation-timeline: view();
+        animation-range: entry 15% entry 16%;
+      }
+
+      /* ── A · Rivelazione sobria ─────────────────────────────────────── */
+      @keyframes lab-a {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: none; }
+      }
+      [data-motion='a'] section:not(.hero) :is(h2, p, [class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li, img) {
+        opacity: 0;
+      }
+      @container style(--in-vista: 1) {
+        [data-motion='a'] section:not(.hero) :is(h2, p, [class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li, img) {
+          animation: lab-a 600ms var(--ease-out) both;
+        }
+        [data-motion='a'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(2) { animation-delay: 80ms; }
+        [data-motion='a'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(3) { animation-delay: 160ms; }
+        [data-motion='a'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(4) { animation-delay: 240ms; }
+        [data-motion='a'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(5) { animation-delay: 320ms; }
+        [data-motion='a'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(n + 6) { animation-delay: 400ms; }
+        [data-motion='a'] section:not(.hero) p { animation-delay: 100ms; }
+      }
+
+      /* ── B · Ritmo musicale ─────────────────────────────────────────── */
+      @keyframes lab-b {
+        0% { opacity: 0; transform: scaleY(0.4); }
+        60% { opacity: 1; transform: scaleY(1.06); }
+        100% { opacity: 1; transform: none; }
+      }
+      @keyframes lab-b-titolo {
+        from { background-size: 0% 3px; }
+        to { background-size: 100% 3px; }
+      }
+      [data-motion='b'] section:not(.hero) :is([class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) {
+        opacity: 0;
+        transform-origin: bottom;
+      }
+      [data-motion='b'] section:not(.hero) h2 {
+        background-image: linear-gradient(var(--color-accent), var(--color-accent));
+        background-repeat: no-repeat;
+        background-position: 0 100%;
+        background-size: 0% 3px;
+        padding-bottom: 0.15em;
+        /* La linea sta sotto il testo, non sotto tutta la riga (i titoli di
+           sezione della home sono centrati). */
+        width: fit-content;
+        margin-inline: auto;
+      }
+      @container style(--in-vista: 1) {
+        [data-motion='b'] section:not(.hero) :is([class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) {
+          animation: lab-b 520ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
+        }
+        [data-motion='b'] section:not(.hero) h2 {
+          animation: lab-b-titolo 700ms var(--ease-out) 150ms both;
+        }
+        /* Sequenza "a tempo": 120ms fra un elemento e l'altro, come battiti. */
+        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(2) { animation-delay: 120ms; }
+        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(3) { animation-delay: 240ms; }
+        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(4) { animation-delay: 360ms; }
+        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(5) { animation-delay: 480ms; }
+        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(n + 6) { animation-delay: 600ms; }
+      }
+
+      /* ── C · Editoriale ─────────────────────────────────────────────── */
+      @keyframes lab-c-titolo {
+        from { clip-path: inset(0 0 100% 0); transform: translateY(0.4em); }
+        to { clip-path: inset(0 0 -0.2em 0); transform: none; }
+      }
+      @keyframes lab-c-foto {
+        from { clip-path: inset(0 100% 0 0); }
+        to { clip-path: inset(0 0 0 0); }
+      }
+      @keyframes lab-c-testo {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      [data-motion='c'] section:not(.hero) h2 { clip-path: inset(0 0 100% 0); }
+      [data-motion='c'] section:not(.hero) img { clip-path: inset(0 100% 0 0); }
+      [data-motion='c'] section:not(.hero) :is(p, [class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) { opacity: 0; }
+      @container style(--in-vista: 1) {
+        [data-motion='c'] section:not(.hero) h2 { animation: lab-c-titolo 800ms var(--ease-out) both; }
+        [data-motion='c'] section:not(.hero) img { animation: lab-c-foto 1000ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both; }
+        [data-motion='c'] section:not(.hero) :is(p, [class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) {
+          animation: lab-c-testo 700ms var(--ease-out) 300ms both;
+        }
+      }
+    }
+  }
+</style>
