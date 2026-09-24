@@ -3,11 +3,11 @@
 // `pagine` (entry `home`) come array, passate da index.astro.
 //
 // Una riga sola: i numeri di butik e, per ultimo, il dato più forte della
-// Milano Music Week (l'ultima voce di `mmwMetrics`), evidenziato. I numeri
-// contano da zero mentre la sezione entra in vista: solo CSS (contatore su
-// una custom property animata con una view timeline), nessuna isola da
-// idratare. Dove la view timeline non c'è, o con reduced-motion, il numero
-// compare fermo al valore finale.
+// Milano Music Week (l'ultima voce di `mmwMetrics`), evidenziato. Quando la
+// sezione entra in vista i numeri contano da zero al valore, una volta sola:
+// un IntersectionObserver aggiunge una classe, il conteggio è un'animazione
+// CSS a tempo (contatore su una custom property). Senza JavaScript, o con
+// reduced-motion, il numero resta fermo al valore finale.
 type Metric = {
   value: string;
   label: string;
@@ -34,7 +34,7 @@ const items = [
 ].map((m) => ({ ...m, count: parse(m.value) }));
 ---
 
-<section class="numbers" aria-label="Numeri e impatto">
+<section class="numbers" aria-label="Numeri e impatto" data-numbers>
   <dl class="numbers-grid">
     {
       items.map((m) => (
@@ -156,15 +156,35 @@ const items = [
     color: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
   }
 
-  /* ── Conteggio all'ingresso ───────────────────────────────────────────
-     --n è un intero registrato: animandolo da 0 a --to e mostrandolo con
-     counter() il numero "sale". La view timeline lega l'avanzamento alla
-     sezione che entra in vista; il numero vero passa ai soli lettori di
-     schermo, il contatore è aria-hidden. */
+  /* ── Conteggio all'ingresso, solo CSS ────────────────────────────────
+     Due pezzi:
+     1. un interruttore: un'animazione legata allo scroll (view timeline)
+        porta --in-vista da 0 a 1 quando la sezione entra in vista, e con
+        fill `both` lo lascia a 1 finché la sezione resta sopra il bordo
+        inferiore dello schermo;
+     2. il conteggio: una style query su --in-vista avvia un'animazione A
+        TEMPO del contatore (--n da 0 a --to, mostrato con counter()). Non
+        segue lo scroll: parte, dura 1.4s, finisce.
+     Risalendo sopra la sezione l'interruttore torna a 0 e il conteggio si
+     riarma. Il numero vero passa ai lettori di schermo, il contatore è
+     aria-hidden. */
+  @property --in-vista {
+    syntax: '<integer>';
+    initial-value: 0;
+    inherits: true;
+  }
   @property --n {
     syntax: '<integer>';
     initial-value: 0;
     inherits: false;
+  }
+  @keyframes interruttore {
+    from {
+      --in-vista: 0;
+    }
+    to {
+      --in-vista: 1;
+    }
   }
   @keyframes conta {
     from {
@@ -176,6 +196,11 @@ const items = [
   }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
+      .numbers {
+        animation: interruttore linear both;
+        animation-timeline: view();
+        animation-range: entry 30% entry 31%;
+      }
       .metric-num {
         position: absolute;
         width: 1px;
@@ -188,13 +213,40 @@ const items = [
       .metric-count {
         display: inline;
         counter-reset: n var(--n);
-        animation: conta linear both;
-        animation-timeline: view();
-        animation-range: entry 20% cover 45%;
       }
       .metric-count::after {
         content: counter(n);
       }
+      @container style(--in-vista: 1) {
+        .metric-count {
+          animation: conta 1400ms var(--ease-out) both;
+        }
+      }
     }
   }
 </style>
+
+<script>
+  // Arma i contatori (a 0) e li fa partire quando la sezione entra in vista.
+  // Idempotente sotto il ClientRouter: gira a ogni astro:page-load, il flag
+  // `data-armed` evita di rilegare lo stesso nodo (docs/guidances/client-scripts.md).
+  function initNumbers() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    document.querySelectorAll<HTMLElement>('[data-numbers]:not([data-armed])').forEach((section) => {
+      section.dataset.armed = '';
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            section.dataset.counting = '';
+            io.disconnect();
+          }
+        },
+        { threshold: 0.4 },
+      );
+      io.observe(section);
+      document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+    });
+  }
+  document.addEventListener('astro:page-load', initNumbers);
+</script>
