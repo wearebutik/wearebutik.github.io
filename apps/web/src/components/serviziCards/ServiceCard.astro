@@ -1,6 +1,6 @@
 ---
-// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + prova in
-// fondo, con il glifo monolinea del servizio in filigrana nell'angolo in basso
+// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + "Scopri",
+// con il glifo monolinea del servizio in filigrana nell'angolo in basso
 // a destra. Il vetro (semitrasparente e sfocato) lascia intravedere la foto e
 // con gli angoli arrotondati e lo stato hover si legge come un link.
 // È la presentazione scelta per i servizi nell'hero da tablet in su (da mobile
@@ -57,7 +57,7 @@ const icons: Record<string, string> = {
   <h3 class="card__title">{data.title}</h3>
   <p class="card__desc">{data.desc}</p>
 
-  <span class="card__stat">{`${data.statValue} ${data.statLabel}`}</span>
+  <span class="card__go">Scopri</span>
   </div>
 
 </a>
@@ -122,13 +122,19 @@ const icons: Record<string, string> = {
     line-height: 1.45;
     color: color-mix(in srgb, var(--color-white) 88%, transparent);
   }
-  .card__stat {
+  /* Invito al click, sottolineato in rosso come i link testuali del sito.
+     Sempre visibile: su tablet e touch l'hover non c'è. */
+  .card__go {
+    align-self: flex-start;
+    margin-top: var(--space-2);
     font-family: var(--font-display);
-    font-size: 0.6875rem; /* come le etichette delle card: nessun token a 11px */
+    font-size: var(--font-size-xs);
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em; /* come le etichette del sito */
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-white) 75%, transparent);
+    color: var(--color-white);
+    padding-bottom: 0.2em;
+    border-bottom: 2px solid var(--color-butik-red);
   }
 
   /* Filigrana: glifo grande e tenue, tagliato dal bordo in basso a destra;
