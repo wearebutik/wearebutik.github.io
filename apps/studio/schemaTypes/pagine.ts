@@ -30,12 +30,13 @@ const rich = (name: string, title: string, group?: string) =>
 const seo = [str('metaTitle', 'Meta title', 'seo'), txt('metaDescription', 'Meta description', 'seo')];
 const seoGroup = { name: 'seo', title: 'SEO' };
 
-const metriche = (name: string, title: string, group?: string) =>
+const metriche = (name: string, title: string, group?: string, description?: string) =>
   defineField({
     name,
     title,
     type: 'array',
     group,
+    description,
     ...lista,
     of: [
       defineArrayMember({
@@ -114,7 +115,7 @@ export const paginaHome = pagina(
     }),
     metriche('butikMetrics', 'Numeri Butik', 'numeri'),
     str('mmwLabel', 'Etichetta Milano Music Week', 'numeri'),
-    metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri'),
+    metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri', 'In home si mostra l’ultima voce, accanto ai numeri di butik: mettete per ultimo il dato più forte.'),
     str('ctaBanner1Title', 'Titolo', 'banner1'),
     txt('ctaBanner1Body', 'Testo', 'banner1'),
     str('ctaBanner1PrimaryLabel', 'Pulsante principale: etichetta', 'banner1'),
