@@ -1,5 +1,5 @@
 ---
-import { isRemote } from '#lib/media';
+import { imageSize, isRemote } from '#lib/media';
 import type { ImageMetadata } from 'astro';
 import { Image } from 'astro:assets';
 import type { ServiceHeroContent } from './types';
@@ -23,7 +23,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
     {isLocalImage ? (
       <Image
         src={image}
-        inferSize={typeof image === 'string'}
+        {...imageSize(image)}
         alt={imageAlt}
         widths={[800, 1200, 1600]}
         sizes="100vw"

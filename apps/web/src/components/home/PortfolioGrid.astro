@@ -1,4 +1,5 @@
 ---
+import { imageSize } from '#lib/media';
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import SectionHeading from '@butik/ui/SectionHeading';
@@ -29,7 +30,7 @@ const { progetti } = Astro.props;
           >
             <Image
               src={p.data.heroImage}
-              inferSize
+              {...imageSize(p.data.heroImage)}
               alt={p.data.heroAlt}
               widths={[400, 700, 1000]}
               sizes="(max-width: 640px) 100vw, 50vw"
