@@ -34,6 +34,8 @@ const schema = createSchema({ name: 'butik', types: schemaTypes });
 const TIPI = ['progetto', 'servizio', ...schemaTypes.map((t) => t.name).filter((n) => n.startsWith('pagina'))];
 const SISTEMA = new Set(['_id', '_rev', '_createdAt', '_updatedAt', '_type', '_key']);
 const MARCATORE = '<!-- galleria -->';
+// Testi alternativi delle immagini: li scrive scripts/foto.ts, non questi file.
+const ALT = new Set(['heroAlt', 'heroImageAlt', 'aboutImageAlt']);
 
 type Tipo = Record<string, any>;
 type Valore = any;
@@ -267,6 +269,12 @@ async function genera(dir: string, out: string) {
       if (k === '_type') continue;
       if (!campo(tipo, k)) throw new Error(`${f}: campo "${k}" assente nello schema di ${_type}`);
       doc[k] = costruisci(v, campo(tipo, k), attuale?.[k]);
+    }
+    // Un campo di testo che il documento ha ma il file no è stato tolto: via
+    // anche dal documento. Le immagini non sono nei file e restano.
+    for (const k of Object.keys(attuale ?? {})) {
+      if (SISTEMA.has(k) || ALT.has(k) || k.startsWith('_') || k in data || (k === 'body' && _type === 'progetto')) continue;
+      if (esportaValore(attuale[k], campo(tipo, k)) !== undefined) delete doc[k];
     }
     if (_type === 'progetto' && content.trim()) doc.body = corpoProgetto(content, campo(tipo, 'body'), attuale?.body);
     const pulito = JSON.parse(JSON.stringify(doc));

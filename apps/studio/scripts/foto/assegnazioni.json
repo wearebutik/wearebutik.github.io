@@ -1,0 +1,880 @@
+[
+  {
+    "_id": "pagina-home",
+    "campi": {
+      "heroImages": [
+        {
+          "file": "hompage/TUM00137.JPG",
+          "alt": "Insegna al neon rossa con il logo di butik su una parete scura, illuminata da una luce arancione"
+        },
+        {
+          "file": "hompage/TUM00152.JPG",
+          "alt": "Sala allestita per un incontro, con sedie in fila davanti a un tavolo con casse e l’insegna al neon di butik"
+        },
+        {
+          "file": "hompage/TUM00148.JPG",
+          "alt": "Spazio luminoso con due palme e sedie pieghevoli disposte davanti a un tavolo con l’insegna al neon di butik"
+        },
+        {
+          "file": "hompage/IMG06780.jpg",
+          "alt": "Musicista dietro il bancone di un locale illuminato da luci verdi e rosse, con l’insegna al neon di butik sullo sfondo"
+        }
+      ],
+      "aboutImage": {
+        "file": "chi siamo/MW_25-167.jpg",
+        "alt": "Il team di butik sorridente davanti al cartellone della Milano Music Week 2025",
+        "altCampo": "aboutImageAlt"
+      }
+    }
+  },
+  {
+    "_id": "pagina-chi-siamo",
+    "campi": {
+      "heroImage": {
+        "file": "chi siamo/DSCF9492 copia.jpg",
+        "alt": "Il team di butik seduto su un divano nello spazio del Festival del Turismo Musicale, davanti a un muro di mattoni",
+        "altCampo": "heroImageAlt"
+      },
+      "founders": [
+        {
+          "photo": {
+            "file": "chi siamo/Alessandra Di Caro foto (1) (1).jpeg"
+          }
+        },
+        {
+          "photo": {
+            "file": "chi siamo/Alessia Naldini Immagine Bio.heic"
+          }
+        },
+        {
+          "photo": {
+            "file": "chi siamo/Marialuisa Rovetta.jpg"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "_id": "servizio-consulenza-strategica",
+    "campi": {
+      "heroImage": {
+        "file": "servizi/Consulenza strategica, ascolto e co-progettazione/P1014853.jpg",
+        "alt": "Tavolo di lavoro in una sala istituzionale affrescata, con post-it e appunti durante un incontro di co-progettazione",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "servizi/Consulenza strategica, ascolto e co-progettazione/TUM00061.JPG",
+        "alt": "Tavolo di confronto tra amministratori e operatori, con partecipanti collegati in video, al Festival del Turismo Musicale"
+      },
+      {
+        "file": "servizi/Consulenza strategica, ascolto e co-progettazione/TUM00086.JPG",
+        "alt": "Partecipanti seduti attorno a un tavolo di lavoro in una sala storica durante un incontro del Festival del Turismo Musicale"
+      }
+    ]
+  },
+  {
+    "_id": "servizio-formazione-capacity-building",
+    "campi": {
+      "heroImage": {
+        "file": "servizi/Formazione e capacity building/ELE08968.jpg",
+        "alt": "Tabellone verde con i punteggi dei gruppi di lavoro per ogni modulo, usato in un laboratorio formativo gamificato",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "servizi/Formazione e capacity building/ELE09036.jpg",
+        "alt": "Formatrice sorridente che mostra un mazzo di carte da gioco viola durante un laboratorio"
+      }
+    ]
+  },
+  {
+    "_id": "servizio-eventi-culturali-musicali",
+    "campi": {
+      "heroImage": {
+        "file": "servizi/Ideazione e realizzazione di eventi culturali e musicali/MMW2025_DAY4©llum collettivo-0324.jpg",
+        "alt": "Duo sul palco sotto luci rosse, con chitarra acustica e voce, durante un concerto",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "servizi/Ideazione e realizzazione di eventi culturali e musicali/DSCF9325.jpg",
+        "alt": "Talk sul palco del Festival del Turismo Musicale: un relatore al microfono seduto accanto a una chitarra"
+      }
+    ]
+  },
+  {
+    "_id": "servizio-progettazione-culturale",
+    "campi": {
+      "heroImage": {
+        "file": "servizi/Progettazione culturale su base musicale/dcm-6.jpeg",
+        "alt": "Persone in cerchio mano nella mano in una piazza davanti a una torre medievale, durante un’attività partecipativa",
+        "altCampo": "heroAlt"
+      }
+    }
+  },
+  {
+    "_id": "servizio-prodotti-turistico-musicali",
+    "campi": {
+      "heroImage": {
+        "file": "servizi/Sviluppo di prodotti, itinerari e storytelling turistico-musicale/TUM00535.JPG",
+        "alt": "Gruppo di visitatori in una via affollata del centro storico di Napoli decorata con festoni, durante un tour turistico-musicale",
+        "altCampo": "heroAlt"
+      }
+    }
+  },
+  {
+    "_id": "progetto-materia-prima",
+    "crea": {
+      "_type": "progetto",
+      "title": "Materia Prima",
+      "slug": "materia-prima",
+      "subtitle": "Academy creativa e formazione su promozione territoriale e coinvolgimento giovanile, per neet e under 35 del GAL Terre di Murgia (Puglia)",
+      "category": "Progettazione culturale / Formazione",
+      "order": 1,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Materia Prima/dcm-6.jpeg",
+        "alt": "Partecipanti in cerchio si tengono per mano nella piazza davanti a un castello in pietra con un lungo stendardo blu e giallo",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Materia Prima/DSC_0800 copia.JPG",
+        "alt": "Corteo festoso davanti alle mura del castello, con partecipanti che portano grandi maschere colorate su bastoni"
+      },
+      {
+        "file": "progetti/Materia Prima/DSC_0793 copia.JPG",
+        "alt": "Piazza al tramonto con gruppi di persone ai piedi di un castello medievale durante un evento di Materia Prima"
+      },
+      {
+        "file": "progetti/Materia Prima/DSC_0834 copia.JPG",
+        "alt": "Manifesti rossi della «1ª Sagra Tradita» al Castello di Sannicandro e stampe gialle con maschere stilizzate appese al muro"
+      },
+      {
+        "file": "progetti/Materia Prima/DSC_0838 copia.JPG",
+        "alt": "Tavolo coperto di locandine colorate, cartoline in pixel art e carte da gioco prodotte durante il progetto Materia Prima"
+      },
+      {
+        "file": "progetti/Materia Prima/dcm-16 copia.jpeg",
+        "alt": "Due partecipanti davanti a una parete di illustrazioni in pixel art con didascalie, in una sala dalle mura in pietra"
+      },
+      {
+        "file": "progetti/Materia Prima/dcm-10 copia.jpeg",
+        "alt": "Mani che mescolano un mazzo di carte «Evento!» sopra una botte usata come tavolo, con carte obiettivo in pixel art"
+      },
+      {
+        "file": "progetti/Materia Prima/dcm-3 copia.jpeg",
+        "alt": "Partita al gioco di carte di Materia Prima su una botte di legno, tra carte «Obiettivo» e personaggi in pixel art"
+      },
+      {
+        "file": "progetti/Materia Prima/dcm-14.jpeg",
+        "alt": "Partecipanti in fila applaudono in piazza, dietro una fila di luci blu e disegni azzurri tracciati sul selciato"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-mete",
+    "crea": {
+      "_type": "progetto",
+      "title": "METE — Music Experience, Trips in Europe",
+      "slug": "mete",
+      "subtitle": "Progetto europeo di mobilità giovanile ed educazione non formale, con focus sugli obiettivi dell’agenda 2030 in ambito musicale",
+      "category": "Progettazione culturale / Formazione",
+      "order": 2,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/METE — Music Experience, Trips in Europe/DF0DAFFB-32B4-4EF9-8872-886721CC7B87.jpeg",
+        "alt": "Studenti del progetto METE ascoltano una guida in un museo di strumenti musicali tradizionali, tra vetrine di cornamuse, fisarmoniche e tamburi",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/876BA931-E683-46AE-8DCA-6DA6CA0C3574_1_105_c.jpeg",
+        "alt": "Studenti del progetto METE seduti in prima fila nella platea vuota di una sala da concerti con poltrone rosse, durante un viaggio studio"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/BE78524C-3FD4-4F2E-967A-64457CE157FB_1_102_a.jpeg",
+        "alt": "Incontro con un professionista locale in uno spazio culturale dalle pareti rosse con poltrone e tappeti, durante il viaggio studio METE"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/94CE806A-21A1-4E5C-8B5D-C74B8967AC8D_1_105_c.jpeg",
+        "alt": "Studenti del progetto METE attorno a un tavolino all'aperto in un ex complesso industriale con ciminiera, durante il viaggio studio a Belgrado"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/02E6CDB1-D765-47DF-878B-F0728069F24B_1_105_c.jpeg",
+        "alt": "Gruppo del progetto METE posa accanto a un roll-up sugli Obiettivi di Sviluppo Sostenibile dell'Agenda 2030, in una sala di formazione"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/716D5189-58E8-40F2-A264-E52830191FC4_1_102_o.jpeg",
+        "alt": "Studenti in cerchio ascoltano una professionista del settore musicale in uno spazio di lavoro dal soffitto industriale, durante un viaggio METE"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/473D4052-6DC4-4449-9A83-B6291C60BFB6_1_105_c.jpeg",
+        "alt": "Professionisti della scena musicale locale seduti sotto il palco di una sala davanti allo schermo, durante un incontro con gli studenti METE"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/3C58744A-715D-4D25-A0E6-3F8C9AFF901E_1_105_c.jpeg",
+        "alt": "Studenti del progetto METE in visita davanti alla facciata rossa in legno del locale Barsotto, in una giornata di sole"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/48B708F9-9568-4CA6-A4B9-3D791A90B2F7_1_105_c.jpeg",
+        "alt": "Studenti del progetto METE assistono a una diretta in uno studio radiofonico con microfoni, insegna al neon e postazioni di regia"
+      },
+      {
+        "file": "progetti/METE — Music Experience, Trips in Europe/MAPPA_BELGRADO_Tavola disegno 1.png",
+        "alt": "Fronte della Belgrade Music Map prodotta dal progetto METE, con festival mese per mese e schede illustrate delle venue musicali"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-cult-keys",
+    "crea": {
+      "_type": "progetto",
+      "title": "Cult Keys",
+      "slug": "cult-keys",
+      "subtitle": "Programma di capacity building per operatori culturali con percorso di ascolto e formazione su progettazione culturale e music export",
+      "category": "Progettazione culturale / Formazione",
+      "order": 3,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Cult Keys/ELE08928.jpg",
+        "alt": "Vista dall'alto di un tavolo di lavoro affollato, con i cubi Cult Keys e Cult Funding e il tabellone dei punteggi alla parete",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Cult Keys/ELE09260.jpg",
+        "alt": "Una formatrice in piedi accanto allo schermo «Ora tocca a voi» mentre i partecipanti di Cult Keys ascoltano sorridendo"
+      },
+      {
+        "file": "progetti/Cult Keys/ELE09023.jpg",
+        "alt": "Due formatrici guidano un'attività davanti a un monitor con un foglio di calcolo, mentre il gruppo segue la sessione"
+      },
+      {
+        "file": "progetti/Cult Keys/ELE09305.jpg",
+        "alt": "Partecipanti seduti attorno al tavolo discutono, con le carte viola del gioco di progettazione disposte davanti a loro"
+      },
+      {
+        "file": "progetti/Cult Keys/IMG_0941.jpeg",
+        "alt": "Lezione del Music Export Kit: una relatrice presenta una slide sul budget per l'export a un pubblico seduto in sala"
+      },
+      {
+        "file": "progetti/Cult Keys/IMG_0962.jpeg",
+        "alt": "Portatile con la slide di apertura del workshop Music Export Kit in primo piano, pubblico seduto sullo sfondo tra le piante"
+      },
+      {
+        "file": "progetti/Cult Keys/IMG_2826.jpg",
+        "alt": "Sala gremita in penombra con luci rosse durante un incontro del Music Export Kit, relatrice sul palco davanti allo schermo"
+      },
+      {
+        "file": "progetti/Cult Keys/IMG_3159.jpg",
+        "alt": "Pubblico seduto in una sala a volta con quadri alle pareti durante un incontro del Music Export Kit, con roll-up rosso"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-tum-festival-turismo-musicale",
+    "campi": {
+      "heroImage": {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2024/IMG06662.jpg",
+        "alt": "Band acustica suona sotto un portico davanti a una piazza con il pubblico in ascolto, durante il Festival del Turismo Musicale a Pesaro",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2021/DSCF9245.jpg",
+        "alt": "Due relatori con microfono seduti in uno spazio con pareti in mattoni, tra una chitarra e i totem del Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2021/DSCF9391.jpg",
+        "alt": "Partecipante appunta un segnaposto su una grande carta geografica dell'Italia appesa al muro, al Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2022/P1015002.jpg",
+        "alt": "Bottega di liuteria con banchi da lavoro, attrezzi e violini appesi davanti a una grande finestra, visitata durante il Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2022/P1014996.jpg",
+        "alt": "Liutaio con grembiule vernicia il fondo di un violino davanti a un gruppo di visitatori, in una bottega durante il Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2023/TUM00377.JPG",
+        "alt": "Gruppo di partecipanti in ascolto attorno alla guida in una strada affollata del centro storico, durante un tour musicale del festival"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2023/TUM00402.JPG",
+        "alt": "Partecipanti al tour musicale sfogliano dischi in vinile tra gli scaffali del negozio Futuribile Record Club, durante il Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2023/TUM00475.JPG",
+        "alt": "Band sul palco di un teatro illuminato di blu, con tastiere, basso, batteria e sassofono, durante il concerto del Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2023/TUM00427.JPG",
+        "alt": "In bianco e nero, i palchi di un teatro all'italiana su più ordini gremiti di pubblico, durante un concerto del Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2024/IMG07172.jpg",
+        "alt": "Gruppo numeroso cammina lungo una via lastricata del centro storico durante un tour guidato del Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2024/IMG07230.jpg",
+        "alt": "DJ set con casse e consolle nel cortile di un palazzo storico con portico illuminato di rosso, durante il Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2024/IMG07072.jpg",
+        "alt": "Cantante lirica in abito rosso si esibisce accompagnata al pianoforte davanti a un piccolo pubblico seduto, durante il Festival del Turismo Musicale"
+      },
+      {
+        "file": "progetti/TUM — Festival del Turismo Musicale/2024/IMG06809.jpg",
+        "alt": "Talk con quattro relatori su sgabelli in un circolo musicale, accanto all'insegna al neon di Butik, durante il Festival del Turismo Musicale"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-napoli-music-city",
+    "crea": {
+      "_type": "progetto",
+      "title": "Napoli Music City",
+      "slug": "napoli-music-city",
+      "subtitle": "Percorso di ascolto e co-progettazione per rafforzare il ruolo di Napoli come Music City",
+      "category": "Consulenza strategica / Turismo musicale",
+      "order": 6,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Napoli Music City/c5b21750-52fb-4eed-ba30-19a5bf7cd458.JPG",
+        "alt": "Tavolo dei relatori con le bandiere e il gonfalone del Comune di Napoli e lo schermo 'I Comuni Musicali in Italia'",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Napoli Music City/A42220E1-9616-4E0C-8C7A-659E8C37E816.jpeg",
+        "alt": "Foto di gruppo in platea di un teatro storico con palchi dorati e sipario rosso, durante il percorso Napoli Music City"
+      },
+      {
+        "file": "progetti/Napoli Music City/1292B6DF-675C-4CB0-B563-C88A295E7876_1_105_c.jpeg",
+        "alt": "Foto di gruppo di operatori e organizzatori davanti al roll-up 'Turismo musicale a Napoli' 2023"
+      },
+      {
+        "file": "progetti/Napoli Music City/55A225E5-4D70-456F-8D4E-B37875D4E449_1_105_c.jpeg",
+        "alt": "Tavolo di lavoro con operatori musicali e turistici attorno a un tavolo, focus group del percorso Napoli Music City"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-cult-funding",
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Cult Funding/ELE08932.jpg",
+        "alt": "Partecipanti al camp Cult Funding seduti attorno a un grande tavolo con i portatili, concentrati sul lavoro di gruppo",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Cult Funding/ELE09058.jpg",
+        "alt": "Foto di gruppo dei partecipanti al camp Cult Funding su un prato tra pini e cipressi, nella luce del tardo pomeriggio"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09394.jpg",
+        "alt": "Un team lavora ai portatili davanti al tabellone verde dei punteggi per squadra e modulo del gioco Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09000.jpg",
+        "alt": "Libretto verde con la scritta «Vuoi trovare fondi per il tuo progetto?», materiale del percorso Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09046.jpg",
+        "alt": "Una facilitatrice mostra le carte viola del gioco a una partecipante durante un'attività di Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09281.jpg",
+        "alt": "Scambio di carte colorate attorno al tavolo durante una sessione di gioco del laboratorio Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09301.jpg",
+        "alt": "Carte «Sfide sociali» disposte sul tavolo accanto a quaderni e badge Cult Funding durante la simulazione di progettazione"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09314.jpg",
+        "alt": "Mani che tengono una carta «Sfida» sulla cittadinanza attiva, accanto a una carta obiettivo, nel gioco di Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09065.jpg",
+        "alt": "Schermo di un portatile con l'albero dei problemi elaborato da un team durante il laboratorio Cult Funding"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09173.jpg",
+        "alt": "Quattro partecipanti sorridenti con i premi in mano accanto ai cubi Cult Keys e Cult Funding e al tabellone dei punti"
+      },
+      {
+        "file": "progetti/Cult Funding/ELE09401.jpg",
+        "alt": "Post-it colorati su un cartellone mentre una mano con un pennarello costruisce la mappa dei problemi a Cult Funding"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-al-contrario-lab",
+    "crea": {
+      "_type": "progetto",
+      "title": "Al Contrario Lab",
+      "slug": "al-contrario-lab",
+      "subtitle": "Corso di formazione in organizzazione di festival, con laboratorio pratico su coinvolgimento territoriale e di comunità",
+      "category": "Formazione",
+      "order": 8,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Al Contrario Lab/57959425-3753-41FB-B259-F034B5A9831E_1_102_o.jpeg",
+        "alt": "Una partecipante scrive su grandi fogli appesi al muro con idee e temi del festival durante il laboratorio Al Contrario Lab",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Al Contrario Lab/BED93332-DED4-4A88-BF59-FC27C0FA7578_1_102_o.jpeg",
+        "alt": "Foto di gruppo dei partecipanti di Al Contrario Lab in una piazzetta di borgo, sotto un castello medievale su una collina"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/2B56F1A5-1E56-47EF-833A-C5C983A99A45_1_102_o.jpeg",
+        "alt": "Gruppo in ascolto all'aperto davanti a una casa in pietra, con le montagne sullo sfondo, durante un'esplorazione del borgo"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/E254AD27-37B4-4708-8679-9A19ABE6BE40_1_102_o.jpeg",
+        "alt": "Partecipanti seduti sui gradini di una chiesa con portale verde e affresco, tra appunti e tablet durante il laboratorio"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/B4E25CE6-179B-4C20-8E0A-21498ECDF294_1_105_c.jpeg",
+        "alt": "Aula a volta con i corsisti di Al Contrario Lab seduti in cerchio e il banner del Festival Al Contrario alla parete"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/3C4F01C8-53F0-4490-B9F3-20D4726E2C95_1_105_c.jpeg",
+        "alt": "Parete coperta di post-it colorati con parole chiave come silenzio, rinascita e poesia, raccolte durante il laboratorio"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/415573BB-A0B2-48DB-A3AF-165E794DE9D0_1_105_c.jpeg",
+        "alt": "Corsisti di Al Contrario Lab sorridenti a una lunga tavolata apparecchiata sotto un pergolato, con vista sulle colline"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/BFEC71D0-4765-4953-90C4-5E72A40A6CE9_1_105_c.jpeg",
+        "alt": "Targa in ceramica dipinta con la scritta «Cà du Merlu» e un pentagramma con note musicali, murata su una parete in pietra"
+      },
+      {
+        "file": "progetti/Al Contrario Lab/0B2E3EEB-31D2-4E92-9867-D323C3E2B3FA_1_102_o.jpeg",
+        "alt": "Post-it di saluto dei corsisti a fine laboratorio, con messaggi come «Si può fare!» e «Ciao Butik»"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-music-export-kit",
+    "crea": {
+      "_type": "progetto",
+      "title": "Music Export Kit",
+      "slug": "music-export-kit",
+      "subtitle": "Percorso laboratoriale su posizionamento e promozione all'estero di progetti e imprese musicali",
+      "category": "Formazione",
+      "order": 9,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Music Export Kit/IMG_0941.jpeg",
+        "alt": "Partecipanti seduti ai tavolini seguono una relatrice davanti alla slide sul budget per l'export, workshop Music Export Kit",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Music Export Kit/IMG_0962.jpeg",
+        "alt": "Laptop con la schermata del workshop Music Export Kit di Italia Music Export in primo piano, partecipanti sullo sfondo"
+      },
+      {
+        "file": "progetti/Music Export Kit/IMG_0944.jpg",
+        "alt": "Relatrice al microfono su una pedana accanto al roll-up Music Export Kit, con slide su come strutturare il budget"
+      },
+      {
+        "file": "progetti/Music Export Kit/IMG_2826.jpg",
+        "alt": "Sala gremita con soffitto a luci rosse e bianche, il pubblico segue una lezione del Music Export Kit proiettata sul palco"
+      },
+      {
+        "file": "progetti/Music Export Kit/IMG_2829.jpeg",
+        "alt": "Relatrice sul palco davanti alla slide 'Fase preparatoria' e al roll-up Music Export Kit, pubblico in penombra"
+      },
+      {
+        "file": "progetti/Music Export Kit/07F1C5AB-5988-48DC-8DB9-11AA0469E327.JPG",
+        "alt": "Due relatori a un tavolo sotto lo schermo con il titolo Music Export Kit, pubblico seduto in una sala con volte bianche"
+      },
+      {
+        "file": "progetti/Music Export Kit/IMG_3159.jpg",
+        "alt": "Sala voltata con quadri alle pareti e partecipanti in ascolto di una lezione del workshop Music Export Kit"
+      },
+      {
+        "file": "progetti/Music Export Kit/PHOTO-2024-05-08-18-27-43.jpg",
+        "alt": "Partecipanti al lavoro in gruppi ai tavolini con laptop, sotto luci rosse, durante un'esercitazione del Music Export Kit"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-docenze-e-panel",
+    "crea": {
+      "_type": "progetto",
+      "title": "Docenze e panel",
+      "slug": "docenze-e-panel",
+      "subtitle": "Moduli e lezioni su turismo musicale e progettazione culturale per SAE, NAM, IULM e 24ORE Business School",
+      "category": "Formazione",
+      "order": 11,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Docenze e panel/Jump_PhotoByChiaraConti-2.jpg",
+        "alt": "Relatrice al microfono presenta butik e il turismo musicale in Italia accanto all'insegna Linecheck Milano 2019",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Docenze e panel/20211125-Linecheck-30.jpg",
+        "alt": "Sei relatori sul palco sotto lo schermo del panel 'Music festivals as drivers of territorial promotion', 25 novembre"
+      },
+      {
+        "file": "progetti/Docenze e panel/nicolabraga-0835.jpg",
+        "alt": "Quattro relatori seduti su un divano durante un panel, una di loro parla al microfono, schermo rosso sullo sfondo"
+      },
+      {
+        "file": "progetti/Docenze e panel/E141EC7A-82D8-4B55-929A-791450DB05EC.jpeg",
+        "alt": "Due docenti davanti alla slide sul Festival del Turismo Musicale 2022 a Cremona durante una lezione in aula"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-milano-music-week",
+    "crea": {
+      "_type": "progetto",
+      "title": "Milano Music Week",
+      "slug": "milano-music-week",
+      "subtitle": "Organizzazione, coordinamento generale e sviluppo nuovi format per Milano Music Week 2024-25-26",
+      "category": "Eventi e format",
+      "order": 12,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Milano Music Week/MMW2025_DAY4©llum collettivo-0324.jpg",
+        "alt": "Due musicisti cantano allo stesso microfono con chitarra acustica sotto luci rosse, su un palco della Milano Music Week",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY7©llum collettivo-2966.jpg",
+        "alt": "Arco della Pace a Milano con il cubo della Milano Music Week e il pubblico in coda davanti al monumento"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY2©llum collettivo-7432.jpg",
+        "alt": "Panel in una sala storica con lampadari di cristallo e stucchi, pubblico seduto davanti ai relatori della Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY1_CAROSELLO©llum collettivo-.jpg",
+        "alt": "Totem della Milano Music Week 17-23 novembre 2025 con i loghi dei promotori, tra cui il Comune di Milano"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY7©llum collettivo-3647.jpg",
+        "alt": "Cantautore con chitarra acustica al microfono sotto luci blu durante un concerto della Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY7_©llum collettivo -5268.jpg",
+        "alt": "Pubblico sorridente che applaude a braccia alzate sotto il palco durante un concerto della Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY2©llum collettivo-7005.jpg",
+        "alt": "Pubblico seduto e in piedi segue con attenzione un incontro in una sala luminosa durante la Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW2025_DAY6_©llum collettivo -3592.jpg",
+        "alt": "Donna sorridente tra i vinili di un negozio di dischi, uno dei luoghi coinvolti nella Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/7 copia.jpg",
+        "alt": "DJ sorridente con cuffie alla console durante un DJ set della Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/MMW24_DAY7_©️LLum collettivo_CAROSELLO-6.jpg",
+        "alt": "Concerto visto dall'alto: palco con luci rosa e fumo, cantante che si sporge verso la folla della Milano Music Week"
+      },
+      {
+        "file": "progetti/Milano Music Week/18.jpg",
+        "alt": "Pila di dischi in vinile illuminata da luce calda, dettaglio da uno degli spazi della Milano Music Week"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-periphonic",
+    "crea": {
+      "_type": "progetto",
+      "title": "Periphonic",
+      "slug": "periphonic",
+      "subtitle": "Programmazione musicale diffusa e co-progettata con le realtà locali del Municipio 2 di Milano",
+      "category": "Progettazione culturale / Eventi e format",
+      "order": 13,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Periphonic/MMW2025_DAY7_©llum collettivo -4862.jpg",
+        "alt": "Rapper con microfono davanti a una gradinata dipinta di rosa e nero, con carretto sound system, durante Periphonic",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY3©llum collettivo-8863.jpg",
+        "alt": "Trio con voce, oud e percussioni suona sotto una proiezione di motivi geometrici arabi, concerto di Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY6_©llum collettivo -3974.jpg",
+        "alt": "Danzatrice in abito tradizionale andino ricamato balla in strada davanti al pubblico del quartiere durante Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY7_©llum collettivo -4865.jpg",
+        "alt": "Gruppo di ragazzi e ragazze riunito sul piazzale ai piedi di una gradinata all'aperto durante un evento di Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY5©llum collettivo-03208.jpg",
+        "alt": "DJ con cappellino e felpa blu alla console in un locale dalle pareti scrostate con candele e fiori, Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY7_©llum collettivo -4743.jpg",
+        "alt": "DJ con cuffie alla console in un ristorante di quartiere, tra i tavoli e gli avventori, durante Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY6_©llum collettivo -3782.jpg",
+        "alt": "Cantante con microfono e chitarrista in uno spazio con cisterne di vino e pareti in legno, pubblico di spalle, Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY5©llum collettivo-03222.jpg",
+        "alt": "Cassette di frutta e verdura di un mercato in primo piano e un carretto da musica verde sullo sfondo, Periphonic"
+      },
+      {
+        "file": "progetti/Periphonic/MMW2025_DAY7_©llum collettivo -4846.jpg",
+        "alt": "Bombolette spray rosa e rosse su un gradino di cemento, dettaglio del laboratorio di street art di Periphonic"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-comuni-musicali-in-italia",
+    "crea": {
+      "_type": "progetto",
+      "title": "I Comuni Musicali in Italia",
+      "slug": "comuni-musicali-in-italia",
+      "subtitle": "Percorso di facilitazione istituzionale e costruzione di alleanze territoriali tra 10 Amministrazioni locali italiane portatrici di buone pratiche di turismo musicale",
+      "category": "Consulenza strategica",
+      "order": 15,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/I Comuni Musicali in Italia/TUM00061.JPG",
+        "alt": "Rappresentanti dei Comuni riuniti attorno a un tavolo in una sala storica, con collegamento video e totem del Festival del Turismo Musicale",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/I Comuni Musicali in Italia/P1014853.jpg",
+        "alt": "Tavolo di lavoro in una sala comunale decorata, con post-it su politiche e strumenti in primo piano, durante il tavolo dei Comuni Musicali"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/TUM00028.JPG",
+        "alt": "Amministratori e referenti comunali discutono seduti attorno a un tavolo con segnaposto, durante il tavolo I Comuni Musicali in Italia"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/TUM00026.JPG",
+        "alt": "Sala con tavolo, segnaposto e schermo per il collegamento online, allestita con i pannelli del Festival del Turismo Musicale per i Comuni Musicali"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/TUM00109.JPG",
+        "alt": "Foto di gruppo dei partecipanti al tavolo dei Comuni Musicali accanto allo schermo con i rappresentanti collegati in videochiamata"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/TUM00011.JPG",
+        "alt": "Shopper illustrate del Festival del Turismo Musicale con i badge nominativi del tavolo I Comuni Musicali in Italia, Napoli 2023"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/IMG_9061.JPG",
+        "alt": "Fila di shopper in cotone con badge rossi del tavolo I Comuni Musicali in Italia 2022 a Cremona, disposte su un tavolo"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/P1014869.jpg",
+        "alt": "Dettaglio del tavolo di lavoro con segnaposto, caramelle e il cartoncino Polifonie del Festival del Turismo Musicale di Cremona"
+      },
+      {
+        "file": "progetti/I Comuni Musicali in Italia/A42220E1-9616-4E0C-8C7A-659E8C37E816.jpeg",
+        "alt": "Foto di gruppo dei partecipanti tra le poltrone rosse della platea di un grande teatro all'italiana con palchi dorati"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-itinerari-turistico-musicali",
+    "crea": {
+      "_type": "progetto",
+      "title": "Itinerari turistico-musicali",
+      "slug": "itinerari-turistico-musicali",
+      "subtitle": "Tour e itinerari urbani per scoprire il patrimonio musicale di una città - realizzati a Cremona, Napoli, Pesaro e Tricarico",
+      "category": "Turismo musicale",
+      "order": 16,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Itinerari turistico-musicali/TOUR NAPOLI/TUM00320.JPG",
+        "alt": "Gruppo del tour musicale di Napoli radunato davanti al Trianon Viviani, Teatro della Canzone Napoletana",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR NAPOLI/TUM00535.JPG",
+        "alt": "Folla in una stretta via di Napoli sotto festoni azzurri con bandierine e volti di calciatori, durante il tour musicale"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR NAPOLI/TUM00402.JPG",
+        "alt": "Partecipanti al tour di Napoli sfogliano vinili nel negozio Futuribile Record Club, con copertine di dischi alla parete"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR NAPOLI/TUM00398.JPG",
+        "alt": "Un uomo con cappello da pescatore davanti a una parete di vinili di canzone napoletana, tappa del tour di Napoli"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR PESARO COAST TO COAST/IMG07174.jpg",
+        "alt": "Il gruppo del tour Pesaro Coast to Coast cammina per una via pedonale del centro guidato da un narratore"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR PESARO COAST TO COAST/IMG07216.jpg",
+        "alt": "Foto di gruppo dei partecipanti al tour Pesaro Coast to Coast in mezzo a una via del centro storico"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/CREMONA EXPRESS/IMG_8642.jpg",
+        "alt": "Visitatori di Cremona Express in una bottega di liuteria, tra violini appesi, forme in legno e attrezzi da lavoro"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/CREMONA EXPRESS/P1014935.jpg",
+        "alt": "Mani che montano un piccolo violino in legno da un kit, appoggiato su una mappa illustrata di Cremona"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/CREMONA EXPRESS/P1014889.jpg",
+        "alt": "Gruppo di Cremona Express in ascolto in una piazza davanti a un palazzo in mattoni e a una statua in bronzo"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/VR VIOLINO/DSC03080.JPG",
+        "alt": "Un liutaio chino sul banco di lavoro illuminato da una lampada, tra casse di violino grezze e sgorbie, per il tour in VR"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/VR VIOLINO/DSCF9263.jpg",
+        "alt": "Una persona con visore di realtà virtuale seduta tra teli gialli e bianchi durante l'esperienza VR sul violino"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR TRICARICO/Tricarico 56.JPG",
+        "alt": "Murale colorato a Tricarico con maschere del carnevale ricoperte di nastri, campanacci e due suonatori in cappello"
+      },
+      {
+        "file": "progetti/Itinerari turistico-musicali/TOUR TRICARICO/CARNEVALE DI TRICARICO.jpeg",
+        "alt": "Maschere del carnevale di Tricarico con nastri colorati, veli e grandi campanacci sfilano per una strada nella nebbia"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-mappe-comuni-musicali",
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_BELGRADO-2.png",
+        "alt": "Mappa musicale illustrata di Belgrado con legenda di locali, club, negozi di dischi e spazi culturali e un itinerario di una giornata",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_BELGRADO_1.png",
+        "alt": "Fronte della Belgrade Music Map con calendario dei festival mese per mese e schede illustrate delle principali venue musicali della città"
+      },
+      {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_SAN SEB_BILBO_ 01.png",
+        "alt": "Fronte della Bilbao & San Sebastian Music Map a colori vivaci, con festival mese per mese e schede delle venue musicali delle due città"
+      },
+      {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_SAN SEB_BILBO-02.png",
+        "alt": "Mappa illustrata di Bilbao e San Sebastián con luoghi della musica numerati, legenda per categorie e un itinerario di due giorni"
+      },
+      {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_TORINO 1.jpg",
+        "alt": "Fronte della Turin Music Map con festival dell'anno, presentazione del progetto METE e schede illustrate delle venue musicali di Torino"
+      },
+      {
+        "file": "progetti/Mappe turistico-musicali/MAPPA_TORINO 2.jpg",
+        "alt": "Mappa di Torino con i luoghi della musica numerati per quartiere, legenda di venue, club e negozi di dischi e un itinerario di una giornata"
+      },
+      {
+        "file": "progetti/Mappe turistico-musicali/Mappa FFF 1.jpg",
+        "alt": "Mappa illustrata delle eccellenze del territorio di Macerata realizzata per il Fat Fat Fat Festival, con locali, street art e luoghi insoliti"
+      }
+    ]
+  },
+  {
+    "_id": "progetto-music-city-guides",
+    "crea": {
+      "_type": "progetto",
+      "title": "Music City Guides",
+      "slug": "music-city-guides",
+      "subtitle": "Guide turistiche per scoprire i luoghi e le scene musicali di un territorio - realizzate per Verona, Napoli, Brescia e Pesaro",
+      "category": "Turismo musicale",
+      "order": 18,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "progetti/Music City Guides/MUSICMAP NAPOLI 1.jpg",
+        "alt": "Copertina illustrata della guida turistico-musicale di Napoli: figure danzanti, il Vesuvio e la scritta 'Napoli, a place to play'",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": [
+      {
+        "file": "progetti/Music City Guides/MUSICMAP BRESCIA 1.jpg",
+        "alt": "Copertina illustrata della guida turistico-musicale di Brescia con castello, figure che suonano e danzano su fondo rosa e arancio"
+      },
+      {
+        "file": "progetti/Music City Guides/MUSICMAP PESARO 1.jpg",
+        "alt": "Copertina illustrata della guida turistico-musicale di Pesaro con la sfera di Pomodoro, il mare e una barca a vela"
+      },
+      {
+        "file": "progetti/Music City Guides/MUSICMAP VERONA 1.jpg",
+        "alt": "Copertina illustrata della guida turistico-musicale di Verona con l'Arena, una figura danzante e una luna crescente"
+      },
+      {
+        "file": "progetti/Music City Guides/MUSICMAP NAPOLI 2.jpg",
+        "alt": "Pagina 'Mappa & playlist' della guida musicale di Napoli: mappa con i luoghi della musica e lettore della playlist"
+      }
+    ]
+  },
+  {
+    "elimina": "progetto-template-progetto"
+  }
+]

@@ -9,3 +9,6 @@ node_modules/
 .turbo/
 design/
 .sanity/
+
+# Build di confronto delle versioni dei testi
+build-anteprima/
