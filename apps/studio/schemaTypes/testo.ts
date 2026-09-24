@@ -13,14 +13,25 @@ export const urlSicuro = (v: unknown) =>
     ? true
     : 'Usa un indirizzo http(s)://, mailto:, tel: oppure un percorso che inizia con /';
 
+// Link che non portano da nessuna parte: `#` da solo, indirizzi di esempio,
+// promemoria. Non bloccano la pubblicazione (avviso giallo nello Studio, e in
+// `sanity documents validate --level warning`), ma vanno sistemati: un link
+// rotto è peggio dell'assenza del link (issue #40).
+const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
+
+/** Avviso per un URL segnaposto. */
+export const linkSegnaposto = (v: unknown) =>
+  typeof v === 'string' && SEGNAPOSTO.test(v.trim())
+    ? 'Link segnaposto: indica la destinazione vera, oppure togli il link e lascia il testo'
+    : true;
+
 /** Campo URL di un link: obbligatorio e con uno schema ammesso. */
 export const hrefField = (extra: Record<string, unknown> = {}) => ({
   name: 'href',
   title: 'URL',
   type: 'string',
   ...extra,
-  validation: (r: Rule) =>
-    r.required().custom(urlSicuro),
+  validation: (r: Rule) => [r.required().custom(urlSicuro), r.custom(linkSegnaposto).warning()],
 });
 
 export const testoFormattato = defineType({
