@@ -22,11 +22,10 @@
  *
  * Senza view timeline (Firefox) o con prefers-reduced-motion non si nasconde
  * né si anima nulla. L'hero della home ha la sua entrata al caricamento, nel
- * suo componente. Le prove A e C in /lab/motion hanno le loro regole e qui
- * sono escluse; la prova B usa questo sistema. Un elemento si esclude con
- * data-no-reveal. --motion-inset regola dove parte l'animazione (quanto è
- * rientrato il bordo inferiore dello schermo): la prova B lo sovrascrive per
- * cercare il valore giusto.
+ * suo componente. Le prove in /lab/motion hanno le loro regole e qui sono
+ * escluse ([data-motion]). Un elemento si esclude con data-no-reveal.
+ * --motion-inset regola dove parte l'animazione (quanto è rientrato il bordo
+ * inferiore dello schermo).
  */
 
 @property --in-vista {
@@ -76,7 +75,7 @@
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
     /* ── Elementi delle griglie ───────────────────────────────────────── */
-    .page-main:not(:has([data-motion='a'], [data-motion='c']))
+    .page-main:not(:has([data-motion]))
       section:not(.hero)
       :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
       > :not([data-no-reveal]) {
@@ -85,7 +84,7 @@
       animation-range: entry 0% entry 1%;
     }
 
-    .page-main:not(:has([data-motion='a'], [data-motion='c']))
+    .page-main:not(:has([data-motion]))
       section:not(.hero)
       :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
       > :not([data-no-reveal])
@@ -95,7 +94,7 @@
     }
 
     @container style(--in-vista: 1) {
-      .page-main:not(:has([data-motion='a'], [data-motion='c']))
+      .page-main:not(:has([data-motion]))
         section:not(.hero)
         :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
         > :not([data-no-reveal])
@@ -104,28 +103,28 @@
       }
 
       /* Elementi della stessa fila: in sequenza, 100ms l'uno dall'altro. */
-      .page-main:not(:has([data-motion='a'], [data-motion='c'])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(2) > * {
+      .page-main:not(:has([data-motion])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(2) > * {
         animation-delay: 250ms;
       }
-      .page-main:not(:has([data-motion='a'], [data-motion='c'])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(3) > * {
+      .page-main:not(:has([data-motion])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(3) > * {
         animation-delay: 350ms;
       }
-      .page-main:not(:has([data-motion='a'], [data-motion='c'])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(4) > * {
+      .page-main:not(:has([data-motion])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(4) > * {
         animation-delay: 450ms;
       }
-      .page-main:not(:has([data-motion='a'], [data-motion='c'])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(5) > * {
+      .page-main:not(:has([data-motion])) :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(5) > * {
         animation-delay: 550ms;
       }
     }
 
     /* ── Titoli di sezione ────────────────────────────────────────────── */
-    .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) :has(> h2:not(.prose h2)) {
+    .page-main:not(:has([data-motion])) section:not(.hero) :has(> h2:not(.prose h2)) {
       animation: motion-interruttore linear both;
       animation-timeline: view(block 0% var(--motion-inset, 0%));
       animation-range: entry 0% entry 1%;
     }
 
-    .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) h2:not(.prose h2, [data-no-reveal]) {
+    .page-main:not(:has([data-motion])) section:not(.hero) h2:not(.prose h2, [data-no-reveal]) {
       text-decoration-line: underline;
       text-decoration-thickness: 3px;
       text-decoration-color: transparent;
@@ -133,7 +132,7 @@
     }
 
     @container style(--in-vista: 1) {
-      .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) h2:not(.prose h2, [data-no-reveal]) {
+      .page-main:not(:has([data-motion])) section:not(.hero) h2:not(.prose h2, [data-no-reveal]) {
         animation: motion-sottolinea 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 200ms both;
       }
     }
