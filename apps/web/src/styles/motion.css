@@ -67,12 +67,14 @@
 /* ── Transizioni fra pagine ───────────────────────────────────────────────
    Gli elementi con un nome di transizione (immagine e titolo di un progetto
    dall'elenco all'header, card di un servizio) passano da una pagina
-   all'altra con lo stesso rimbalzo delle barre. La pagina (root) resta con
-   la dissolvenza del router. */
+   all'altra rimbalzando all'arrivo, come le barre. La pagina (root) resta
+   con la dissolvenza del router. */
 @media (prefers-reduced-motion: no-preference) {
+  /* Rimbalzo vero, non solo un rallentamento: arriva, supera la
+     destinazione dell'8%, torna un po' indietro e si assesta. */
   ::view-transition-group(*) {
-    animation-duration: 650ms;
-    animation-timing-function: cubic-bezier(0.34, 1.3, 0.64, 1);
+    animation-duration: 800ms;
+    animation-timing-function: linear(0, 0.55 22%, 0.9 38%, 1.08 52%, 0.97 68%, 1.015 82%, 1);
   }
   ::view-transition-group(root) {
     animation-duration: revert;
