@@ -16,7 +16,8 @@ export const urlSicuro = (v: unknown) =>
 // Link che non portano da nessuna parte: `#` da solo, indirizzi di esempio,
 // promemoria. Non bloccano la pubblicazione (avviso giallo nello Studio, e in
 // `sanity documents validate --level warning`), ma vanno sistemati: un link
-// rotto è peggio dell'assenza del link (issue #40).
+// rotto è peggio dell'assenza del link (issue #40). L'avviso è applicato a
+// ogni campo stringa e testo dello schema da schemaTypes/index.ts.
 const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
 
 /** Avviso per un URL segnaposto. */
@@ -31,7 +32,7 @@ export const hrefField = (extra: Record<string, unknown> = {}) => ({
   title: 'URL',
   type: 'string',
   ...extra,
-  validation: (r: Rule) => [r.required().custom(urlSicuro), r.custom(linkSegnaposto).warning()],
+  validation: (r: Rule) => r.required().custom(urlSicuro),
 });
 
 export const testoFormattato = defineType({
