@@ -34,6 +34,20 @@ export const TwoSlides: Story = {
   args: { images: sampleImages.slice(0, 2) },
 };
 
+// Foto verticali e orizzontali insieme: le verticali restano intere, con la
+// stessa foto sfocata ai lati.
+const verticale = {
+  src:
+    'data:image/svg+xml;utf8,' +
+    encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1600"><rect width="900" height="1600" fill="#8a3b5a"/><circle cx="450" cy="800" r="300" fill="#f2c14e"/></svg>'
+    ),
+  alt: 'Foto verticale di prova',
+};
+export const MixedOrientation: Story = {
+  args: { images: [verticale, sampleImages[0], verticale] },
+};
+
 // Galleria lunga (i progetti ne hanno fino a 13) su mobile: i pallini vanno
 // a capo e il pulsante "Avanti" resta nello schermo.
 export const ManySlidesMobile: Story = {

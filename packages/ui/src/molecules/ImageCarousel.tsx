@@ -81,6 +81,17 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
         {images.map((img, i) => (
           <div className={styles.slide} key={`${img.src}-${i}`}>
             <figure className={styles.figure}>
+              {/* Sfondo: la stessa foto, sfocata, riempie lo spazio attorno
+                  a una foto che non ne ha le proporzioni (es. verticale).
+                  Stesso src/srcSet: il browser la scarica una volta sola. */}
+              <img
+                src={img.src}
+                srcSet={img.srcSet}
+                sizes={img.sizes}
+                alt=""
+                aria-hidden="true"
+                className={styles.backdrop}
+              />
               <img
                 src={img.src}
                 srcSet={img.srcSet}
