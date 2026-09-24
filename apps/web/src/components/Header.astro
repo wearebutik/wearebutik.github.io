@@ -403,7 +403,7 @@ function isActive(href: string) {
   }
   @media (prefers-reduced-motion: no-preference) {
     .site-header[data-overlay='true'] .header-inner > * {
-      animation: header-scende 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 1200ms both;
+      animation: header-scende 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 1200ms backwards; /* mai both: vedi styles/motion.css */
     }
     .site-header[data-overlay='true'] .header-inner > :nth-child(2) {
       animation-delay: 1320ms;

@@ -92,15 +92,23 @@ const items = [
   .metric--mmw {
     grid-column: 1 / -1;
   }
-  /* Il bordo sta sul contenuto (dd): la linea d'accento accompagna il numero. */
+  /* Fino al tablet la Milano Music Week è una riga a sé, separata da una
+     linea sopra; su desktop sta nella fila, separata da una barra a sinistra.
+     La linea sta sul contenuto (dd), così entra con il numero. */
   .metric--mmw dd {
     position: relative;
-    padding-left: var(--space-4);
-    border-left: 2px solid var(--color-accent);
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--color-accent);
   }
   @media (min-width: 1024px) {
     .metric--mmw {
       grid-column: auto;
+    }
+    .metric--mmw dd {
+      padding-top: 0;
+      border-top: 0;
+      padding-left: var(--space-4);
+      border-left: 2px solid var(--color-accent);
     }
     .metric--mmw .metric-eyebrow {
       position: absolute;

@@ -119,12 +119,12 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .hero:not([data-morph]) .image {
-    animation: banner-foto 900ms var(--ease-out) both;
+    animation: banner-foto 900ms var(--ease-out) backwards;
   }
   .hero:not([data-morph]) .title,
   .hero:not([data-morph]) .subtitle {
     transform-origin: bottom;
-    animation: banner-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 200ms both;
+    animation: banner-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 200ms backwards;
   }
   .hero:not([data-morph]) .subtitle {
     animation-delay: 320ms;

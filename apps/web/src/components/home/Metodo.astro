@@ -62,9 +62,9 @@ for (let y = 0; y < H; y += SEGV) {
       <SectionHeading eyebrow={eyebrow} title={title} />
     </div>
 
-    <ol class="vino">
+    <ol class="vino" data-reveal-effetto="scivola">
       {/* rail-onda continuo che scende: visibile solo su mobile */}
-      <span class="vino-rail" aria-hidden="true">
+      <span class="vino-rail" aria-hidden="true" data-no-reveal>
         <svg viewBox={`0 0 ${MID * 2} ${H}`} preserveAspectRatio="none">
           <path d={dv} />
         </svg>

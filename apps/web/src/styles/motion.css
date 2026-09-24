@@ -32,6 +32,24 @@
   }
 }
 
+/* Variante "scivola": entra da sinistra con un piccolo rimbalzo orizzontale.
+   Per le liste in colonna su mobile (i passi del metodo), dove schiacciare
+   in verticale un elemento alto sembra un difetto. */
+@keyframes motion-scivola {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* Foto di un'hero: parte leggermente ingrandita e si assesta con un
    rimbalzo verso l'alto (mai sotto la misura piena: niente bordi scoperti). */
 @keyframes motion-assesta {
@@ -61,13 +79,23 @@
   }
 }
 
+/* Riempimento `backwards`, mai `both`: a fine animazione non resta nessuna
+   trasformazione. Anche una trasformazione neutra fa da riferimento per gli
+   elementi posizionati dentro (il pannello del menu mobile, la guida del
+   metodo) e sovrascrive quella propria dell'elemento. */
 @media (prefers-reduced-motion: no-preference) {
   [data-reveal='attesa']:not(h2) {
     opacity: 0;
   }
   [data-reveal='in']:not(h2) {
     transform-origin: bottom;
-    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) both;
+    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) backwards;
+  }
+
+  @media (max-width: 767px) {
+    [data-reveal-effetto='scivola'] > [data-reveal='in'] {
+      animation-name: motion-scivola;
+    }
   }
 
   h2[data-reveal] > [data-reveal-linea] {
@@ -90,10 +118,10 @@
 @media (prefers-reduced-motion: no-preference) {
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
     transform-origin: bottom;
-    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--ritardo, 150ms) both;
+    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--ritardo, 150ms) backwards;
   }
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
-    animation: motion-assesta 900ms var(--ease-out) both;
+    animation: motion-assesta 900ms var(--ease-out) backwards;
   }
 }
 
