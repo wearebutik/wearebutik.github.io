@@ -1,7 +1,7 @@
 .link {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   font-family: var(--font-display);
   font-size: var(--font-size-xs);
   font-weight: 700;
@@ -9,67 +9,90 @@
   text-transform: uppercase;
   text-decoration: none;
   color: var(--color-fg);
-  /* Catena di fallback: hook del componente → accento ereditato dal contesto
-     (le card dei servizi ne impostano uno per categoria) → accento globale.
-     Bordo e outline restano sull'accent pieno: sono elementi non testuali,
-     soglia 3:1, che il rosso passa. Il `color` dell'hover no — vedi sotto. */
-  border-bottom: 2px solid var(--arrow-link-accent, var(--accent, var(--color-accent)));
-  padding-bottom: var(--space-1);
+  /* Catena di fallback dell'accento: hook del componente → accento ereditato
+     dal contesto (le card dei servizi ne impostano uno per categoria) →
+     accento globale. Colora il cerchio (elemento non testuale, soglia 3:1). */
+  --al-accent: var(--arrow-link-accent, var(--accent, var(--color-accent)));
   transition: color var(--duration-fast) var(--ease-out);
 }
 
-/* Catena PARALLELA per il colore del testo. Non basta scurire l'ultimo anello:
-   quando il contesto imposta `--accent` (le card dei servizi lo fanno) vince
-   quello e il fallback non viene mai consultato. Serve che ogni anello abbia la
-   sua variante "ink", cosi' un contesto che definisce un accento per il testo
-   passa `--accent-ink` accanto a `--accent`. */
+/* Catena PARALLELA per il colore del testo all'hover: quando il contesto
+   imposta `--accent` vince quello, quindi ogni anello ha la sua variante "ink"
+   leggibile come testo. */
 .link:hover {
   color: var(--arrow-link-accent-ink, var(--accent-ink, var(--color-accent-text)));
 }
 
 .link:focus-visible {
-  outline: 2px solid var(--arrow-link-accent, var(--accent, var(--color-accent)));
-  outline-offset: 2px;
+  outline: 2px solid var(--al-accent);
+  outline-offset: 4px;
 }
 
-/* Su fondo scuro o fotografico: sottolineatura invece del bordo, che a piena
-   opacità su un'immagine risulterebbe una barra. */
+/* Cerchio con la freccia: misure intere in px (28, 14, bordo 2) per restare
+   nitido. All'hover si riempie d'accento e la freccia diventa bianca. */
+.arrow {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--al-accent);
+  color: var(--al-accent);
+  transition: background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.arrow svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.link:hover .arrow,
+.link:focus-visible .arrow {
+  background-color: var(--al-accent);
+  color: var(--color-white);
+}
+
+.link:hover .arrow svg,
+.link:focus-visible .arrow svg {
+  transform: translateX(2px);
+}
+
+/* Su fondo scuro o fotografico: testo e cerchio bianchi; all'hover il
+   cerchio si riempie d'accento, come nelle card dell'hero. */
 .invert {
-  color: color-mix(in srgb, var(--color-fg-invert) 90%, transparent);
-  border-bottom: 0;
-  padding-bottom: 0;
-  text-decoration: underline;
-  text-underline-offset: 4px;
-  /* 60% e non 30%: a 30 la sottolineatura compositava a ~2.3:1 sul fondo,
-     sotto il 3:1 di WCAG 1.4.11, ed era l'unica decorazione persistente
-     del link. Il 100% resta all'hover come rinforzo. */
-  text-decoration-color: color-mix(in srgb, var(--color-fg-invert) 60%, transparent);
-  transition: color var(--duration-fast) var(--ease-out),
-    text-decoration-color var(--duration-fast) var(--ease-out);
+  color: var(--color-fg-invert);
+}
+
+.invert .arrow {
+  border-color: var(--color-fg-invert);
+  color: var(--color-fg-invert);
 }
 
 .invert:hover {
   color: var(--color-fg-invert);
-  text-decoration-color: var(--color-fg-invert);
+}
+
+.invert:hover .arrow,
+.invert:focus-visible .arrow {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
 }
 
 .invert:focus-visible {
   outline-color: var(--color-fg-invert);
 }
 
-.arrow {
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-.link:hover .arrow {
-  transform: translateX(var(--space-1));
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .arrow {
+  .arrow svg {
     transition: none;
   }
-  .link:hover .arrow {
+  .link:hover .arrow svg,
+  .link:focus-visible .arrow svg {
     transform: none;
   }
 }

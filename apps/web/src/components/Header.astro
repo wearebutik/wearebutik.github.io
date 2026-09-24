@@ -301,7 +301,7 @@ function isActive(href: string) {
     background-color: color-mix(
       in srgb,
       var(--color-fg) calc(var(--header-solid) * 100%),
-      color-mix(in srgb, var(--color-fg) 45%, transparent)
+      color-mix(in srgb, var(--color-fg) 35%, transparent)
     );
     color: var(--color-fg-invert);
     border: 1px solid color-mix(
@@ -309,7 +309,10 @@ function isActive(href: string) {
       var(--color-fg) calc(var(--header-solid) * 100%),
       color-mix(in srgb, var(--color-fg-invert) 45%, transparent)
     );
-    backdrop-filter: blur(calc((1 - var(--header-solid)) * 4px));
+    /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%, sfocatura
+       12px); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
+    backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
+    -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
     transition: background-color 300ms ease, border-color 300ms ease;
   }
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
