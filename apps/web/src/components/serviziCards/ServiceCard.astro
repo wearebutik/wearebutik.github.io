@@ -58,7 +58,6 @@ const icons: Record<string, string> = {
   <span class="card__stat">{`${data.statValue} ${data.statLabel}`}</span>
   </div>
 
-  <span class="card__go" aria-hidden="true">→</span>
 </a>
 
 <style>
@@ -96,7 +95,6 @@ const icons: Record<string, string> = {
     text-transform: none;
     color: var(--color-butik-dark);
     margin: 0 0 var(--space-1);
-    padding-right: 1.25rem; /* spazio per la freccia nell'angolo */
   }
   .card__desc {
     font-family: var(--font-sans);
@@ -144,33 +142,11 @@ const icons: Record<string, string> = {
     color: color-mix(in srgb, var(--color-butik-dark) 65%, transparent);
   }
 
-  /* Affordance senza costo di spazio: la freccia è fuori dal flusso (angolo)
-     e sempre visibile, così la card si legge come link anche senza hover
-     (tablet, touch). All'hover/focus si sposta appena. La card intera è il link. */
-  .card__go {
-    position: absolute;
-    top: 1.1rem;
-    right: 1.1rem;
-    font-size: 1.1rem;
-    line-height: 1;
-    color: var(--color-butik-red);
-    transition: transform 150ms ease;
-  }
-  .card:hover .card__go,
-  .card:focus-visible .card__go {
-    transform: translateX(3px);
-  }
   @media (prefers-reduced-motion: reduce) {
     .card {
       transition: box-shadow 160ms ease, border-color 160ms ease;
     }
     .card:hover {
-      transform: none;
-    }
-    .card__go,
-    .card:hover .card__go,
-    .card:focus-visible .card__go {
-      transition: none;
       transform: none;
     }
     .card__icon,
