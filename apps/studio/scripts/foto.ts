@@ -17,14 +17,16 @@
 //                "heroImages": [{ "file": "…", "alt": "…" }],
 //                "founders": [{ "photo": { "file": "…" } }] },   // per posizione
 //     "galleria": [{ "file": "…", "alt": "…" }] }                // carosello nel corpo
+// Un `file` che inizia con `./` si legge accanto al file di assegnazioni.
 //   { "elimina": "progetto-y" }
 // `galleria` sostituisce tutti i blocchi immagine del corpo con un solo
-// carosello, dove stava il primo blocco immagine (o in fondo).
+// carosello, dove stava il primo blocco immagine (o in fondo); una `galleria`
+// vuota toglie i blocchi immagine e basta.
 // Con --prova stampa cosa farebbe, senza caricare né scrivere.
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, readFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
-import { basename, extname, join, resolve } from 'node:path';
+import { basename, dirname, extname, join, resolve } from 'node:path';
 import { getCliClient } from 'sanity/cli';
 import sharp from 'sharp';
 
@@ -53,7 +55,8 @@ const caricate = new Map<string, string>();
 async function carica(rel: string): Promise<string> {
   const hit = caricate.get(rel);
   if (hit) return hit;
-  let src = join(FOTO_DIR, rel);
+  // `./…`: file accanto alle assegnazioni (es. il segnaposto grigio).
+  let src = rel.startsWith('./') ? resolve(dirname(resolve(process.cwd(), file!)), rel) : join(FOTO_DIR, rel);
   if (/\.heic$/i.test(src)) {
     const jpg = join(tmp, `${basename(src, extname(src))}.jpg`);
     execFileSync('sips', ['-s', 'format', 'jpeg', src, '--out', jpg], { stdio: 'ignore' });
@@ -120,8 +123,10 @@ for (const voce of voci) {
     doc[k] = await valore(v, doc[k]);
     if (isFoto(v) && v.altCampo) doc[v.altCampo] = v.alt;
   }
-  if (voce.galleria?.length) {
-    const carosello = { _type: 'imageCarousel', _key: key(), images: await valore(voce.galleria, undefined) };
+  if (voce.galleria) {
+    const carosello = voce.galleria.length
+      ? [{ _type: 'imageCarousel', _key: key(), images: await valore(voce.galleria, undefined) }]
+      : [];
     // Il carosello prende il posto del primo blocco immagine; dei blocchi
     // "immagine + testo" resta il testo.
     const body: any[] = doc.body ?? [];
@@ -129,7 +134,7 @@ for (const voce of voci) {
     const primo = body.findIndex((b) => IMMAGINI.has(b._type));
     const senza = senzaImmagini(body);
     const at = primo === -1 ? senza.length : senzaImmagini(body.slice(0, primo)).length;
-    doc.body = [...senza.slice(0, at), carosello, ...senza.slice(at)];
+    doc.body = [...senza.slice(0, at), ...carosello, ...senza.slice(at)];
   }
   console.log(`${attuale ? '~' : '+'} ${voce._id}`);
   tx.createOrReplace(doc as any);

@@ -875,6 +875,55 @@
     ]
   },
   {
+    "_id": "progetto-consulenza-dmo-visit-cremona",
+    "campi": {
+      "heroImage": {
+        "file": "./segnaposto.jpg",
+        "alt": "",
+        "altCampo": "heroAlt"
+      }
+    },
+    "galleria": []
+  },
+  {
+    "_id": "progetto-corso-turismo-musicale-visit-cremona",
+    "crea": {
+      "_type": "progetto",
+      "title": "Corso Turismo Musicale — DMO Visit Cremona",
+      "slug": "corso-turismo-musicale-visit-cremona",
+      "subtitle": "Formazione per operatori culturali e turistici per trasformare il patrimonio musicale in esperienze turistiche strutturate",
+      "category": "Formazione",
+      "order": 10,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "./segnaposto.jpg",
+        "alt": "",
+        "altCampo": "heroAlt"
+      }
+    }
+  },
+  {
+    "_id": "progetto-consulenza-societa-concerti-parma",
+    "crea": {
+      "_type": "progetto",
+      "title": "Consulenza Strategica — Società dei Concerti di Parma",
+      "slug": "consulenza-societa-concerti-parma",
+      "subtitle": "Percorso di consulenza strategica triennale su audience development, internazionalizzazione e sostenibilità.",
+      "category": "Consulenza strategica",
+      "order": 14,
+      "draft": false
+    },
+    "campi": {
+      "heroImage": {
+        "file": "./segnaposto.jpg",
+        "alt": "",
+        "altCampo": "heroAlt"
+      }
+    }
+  },
+  {
     "elimina": "progetto-template-progetto"
   }
 ]
