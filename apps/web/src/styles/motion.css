@@ -15,8 +15,10 @@
  * L'interruttore è per elemento, non per sezione: in una sezione alta (il
  * metodo) ogni passo parte quando è lui a essere in vista. E parte quando
  * l'elemento supera i tre quarti dello schermo (view timeline con il bordo
- * inferiore rientrato del 25%), non appena affiora dal fondo: scorrendo
- * piano il rimbalzo succede dove si sta guardando.
+ * inferiore rientrato), non appena affiora dal fondo: scorrendo piano il
+ * rimbalzo succede dove si sta guardando. Conta il bordo superiore
+ * dell'elemento, non una percentuale della sua altezza: elementi bassi (i
+ * numeri) e alti (i passi del metodo) partono alla stessa linea.
  *
  * Senza view timeline (Firefox) o con prefers-reduced-motion non si nasconde
  * né si anima nulla. L'hero della home ha la sua entrata al caricamento, nel
@@ -79,8 +81,8 @@
       :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
       > :not([data-no-reveal]) {
       animation: motion-interruttore linear both;
-      animation-timeline: view(block 0% var(--motion-inset, 25%));
-      animation-range: entry 70% entry 71%;
+      animation-timeline: view(block 0% var(--motion-inset, 12%));
+      animation-range: entry 0% entry 1%;
     }
 
     .page-main:not(:has([data-motion='a'], [data-motion='c']))
@@ -119,8 +121,8 @@
     /* ── Titoli di sezione ────────────────────────────────────────────── */
     .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) :has(> h2:not(.prose h2)) {
       animation: motion-interruttore linear both;
-      animation-timeline: view(block 0% var(--motion-inset, 25%));
-      animation-range: entry 80% entry 81%;
+      animation-timeline: view(block 0% var(--motion-inset, 12%));
+      animation-range: entry 0% entry 1%;
     }
 
     .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) h2:not(.prose h2, [data-no-reveal]) {

@@ -91,6 +91,10 @@ const items = [
      tutti alla stessa altezza. */
   .metric--mmw {
     grid-column: 1 / -1;
+  }
+  /* Il bordo sta sul contenuto (dd), non sul contenitore: entra insieme al
+     numero nell'animazione d'ingresso (styles/motion.css anima i figli). */
+  .metric--mmw dd {
     position: relative;
     padding-left: var(--space-4);
     border-left: 2px solid var(--color-accent);

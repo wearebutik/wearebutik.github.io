@@ -23,7 +23,7 @@ import HomePage from '#components/home/HomePage.astro';
 export function getStaticPaths() {
   return [
     { params: { v: 'a' }, props: { nome: 'A · Rivelazione sobria', nota: 'Dissolvenza e piccola salita; gli elementi delle griglie entrano in sequenza.' } },
-    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale', nota: 'Il sistema vero del sito (styles/motion.css): ogni elemento sale con un piccolo rimbalzo quando è lui in vista, i titoli si sottolineano di rosso. Qui si regola il punto di partenza: ora il bordo inferiore dello schermo è rientrato del 10% (sul sito è 25%).' } },
+    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale', nota: 'Il sistema vero del sito (styles/motion.css): ogni elemento sale con un piccolo rimbalzo quando è lui in vista, i titoli si sottolineano di rosso. Qui si regola il punto di partenza: ogni elemento parte quando il suo bordo superiore supera l’88% dell’altezza dello schermo.' } },
     { params: { v: 'c' }, props: { nome: 'C · Editoriale', nota: 'I titoli si rivelano da una maschera, le foto entrano con una tendina, i testi in dissolvenza.' } },
   ];
 }
@@ -40,7 +40,7 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
       {altre.map((x) => <a href={`/lab/motion/${x}`}>Vai a {x.toUpperCase()}</a>)}
     </span>
   </aside>
-  <div class="motion" data-motion={v} style={v === 'b' ? '--motion-inset: 10%' : undefined}>
+  <div class="motion" data-motion={v} style={v === 'b' ? '--motion-inset: 12%' : undefined}>
     <HomePage />
   </div>
 </BaseLayout>
