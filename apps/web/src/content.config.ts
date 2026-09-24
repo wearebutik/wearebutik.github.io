@@ -325,6 +325,23 @@ const paginaTestimonials = z.object({
   })),
 });
 
+// Footer (contenuto condiviso da tutte le pagine; i social anche da Contatti).
+const paginaFooter = z.object({
+  type: z.literal('footer'),
+  ragioneSociale: z.string(),
+  indirizzo: z.string(),
+  partitaIva: z.string(),
+  contattiLabel: z.string(),
+  pec: z.string(),
+  email: z.string(),
+  social: z.array(z.object({ rete: z.string(), href: z.string() })).optional().default([]),
+  colonna1: z.array(linkSchema).optional().default([]),
+  colonna2: z.array(linkSchema).optional().default([]),
+  linkLegali: z.array(linkSchema).optional().default([]),
+  cookieLabel: z.string(),
+  copyright: z.string(),
+});
+
 const pagineCollection = defineCollection({
   loader: pagineLoader(),
   schema: z.discriminatedUnion('type', [
@@ -337,6 +354,7 @@ const pagineCollection = defineCollection({
     paginaTestimonials,
     paginaTermini,
     paginaPrivacy,
+    paginaFooter,
   ]),
 });
 

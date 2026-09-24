@@ -20,11 +20,22 @@ export const urlSicuro = (v: unknown) =>
 // ogni campo stringa e testo dello schema da schemaTypes/index.ts.
 const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
 
-/** Avviso per un URL segnaposto. */
-export const linkSegnaposto = (v: unknown) =>
-  typeof v === 'string' && SEGNAPOSTO.test(v.trim())
-    ? 'Link segnaposto: indica la destinazione vera, oppure togli il link e lascia il testo'
-    : true;
+// Pagine interne che esistono sul sito (le schede servizio e progetto per
+// forma: /servizi/<slug>, /progetti/<slug>). Un percorso interno fuori da
+// questo elenco porta a un 404: il sito non lo mostra (apps/web/src/lib/links.ts).
+const PAGINA_INTERNA = /^\/(chi-siamo|servizi|progetti|contatti|partners|privacy|termini)?\/?$|^\/(servizi|progetti)\/[a-z0-9-]+\/?$/;
+
+/** Avviso per un URL segnaposto o per una pagina interna che non esiste. */
+export const linkSegnaposto = (v: unknown) => {
+  if (typeof v !== 'string') return true;
+  const t = v.trim();
+  if (SEGNAPOSTO.test(t)) return 'Link segnaposto: indica la destinazione vera, oppure togli il link e lascia il testo';
+  if (/^\/[^\s]*$/.test(t) && !t.startsWith('//')) {
+    const percorso = t.replace(/[?#].*$/, '');
+    if (!PAGINA_INTERNA.test(percorso)) return `La pagina ${percorso} non esiste sul sito: il link non viene mostrato finché non c'è`;
+  }
+  return true;
+};
 
 /** Campo URL di un link: obbligatorio e con uno schema ammesso. */
 export const hrefField = (extra: Record<string, unknown> = {}) => ({

@@ -394,6 +394,79 @@ export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
   defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
 ]);
 
+// Footer: non è una pagina ma un contenuto condiviso da tutte (e i social
+// anche dalla pagina Contatti). Niente SEO. Le icone dei social restano nel
+// codice (apps/web/src/data/socials.ts), qui si sceglie la rete.
+export const RETI_SOCIAL = ['facebook', 'instagram', 'linkedin', 'youtube', 'spotify', 'tiktok'] as const;
+
+export const paginaFooter = defineType({
+  name: 'paginaFooter',
+  title: 'Footer',
+  type: 'document',
+  groups: [
+    { name: 'azienda', title: 'Dati aziendali', default: true },
+    { name: 'link', title: 'Link' },
+  ],
+  fields: [
+    str('ragioneSociale', 'Ragione sociale', 'azienda'),
+    txt('indirizzo', 'Indirizzo', 'azienda'),
+    str('partitaIva', 'Partita IVA', 'azienda'),
+    str('contattiLabel', 'Etichetta dei contatti (es. "PEC & Email")', 'azienda'),
+    str('pec', 'PEC', 'azienda'),
+    str('email', 'Email', 'azienda'),
+    defineField({
+      name: 'social',
+      title: 'Social',
+      description: 'Anche nella pagina Contatti. Un indirizzo segnaposto (es. "#") non compare sul sito.',
+      type: 'array',
+      group: 'azienda',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'profiloSocial',
+          fields: [
+            defineField({
+              name: 'rete',
+              title: 'Rete',
+              type: 'string',
+              options: { list: [...RETI_SOCIAL] },
+              validation: (r) => r.required(),
+            }),
+            defineField(hrefField({ title: 'Indirizzo del profilo' })),
+          ],
+          preview: { select: { title: 'rete', subtitle: 'href' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'colonna1',
+      title: 'Link, prima colonna',
+      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    defineField({
+      name: 'colonna2',
+      title: 'Link, seconda colonna',
+      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    defineField({
+      name: 'linkLegali',
+      title: 'Link legali (in fondo)',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    str('cookieLabel', 'Pulsante preferenze cookie', 'link'),
+    str('copyright', 'Copyright (l’anno lo aggiunge il sito)', 'link'),
+  ],
+  preview: { prepare: () => ({ title: 'Footer' }) },
+});
+
 // id del documento Sanity → id dell'entry `pagine` sul sito.
 export const PAGINE = {
   paginaHome: 'home',
@@ -405,6 +478,7 @@ export const PAGINE = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaFooter: 'footer',
 } as const;
 
 export const pagineTypes = [
@@ -417,4 +491,5 @@ export const pagineTypes = [
   paginaTestimonials,
   paginaPrivacy,
   paginaTermini,
+  paginaFooter,
 ];

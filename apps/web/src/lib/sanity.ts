@@ -108,6 +108,7 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaFooter: 'footer',
 };
 
 const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_TYPE))} && _id match "pagina-*"]{
