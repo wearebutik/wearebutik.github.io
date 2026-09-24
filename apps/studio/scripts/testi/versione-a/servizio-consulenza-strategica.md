@@ -4,7 +4,7 @@ audience:
   - comuni
   - dmo
 card:
-  desc: Mappiamo, ascoltiamo, co-progettiamo.
+  desc: Mappiamo, ascoltiamo, co‑progettiamo.
   statLabel: Comuni nella Rete dei Comuni Musicali
   statValue: '10'
   title: Consulenza strategica

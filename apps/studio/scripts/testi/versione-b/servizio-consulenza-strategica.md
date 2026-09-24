@@ -4,7 +4,7 @@ audience:
   - comuni
   - dmo
 card:
-  desc: Mappiamo, ascoltiamo, co-progettiamo.
+  desc: Mappiamo, ascoltiamo, co‑progettiamo.
   statLabel: territori coinvolti
   statValue: 15+
   title: Consulenza strategica

@@ -76,11 +76,12 @@ const icons: Record<string, string> = {
   .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 14px 30px rgba(7, 17, 8, 0.12);
-    border-color: color-mix(in srgb, var(--color-butik-dark) 30%, transparent);
+    border-color: var(--color-butik-red);
   }
   .card:focus-visible {
     outline: 2px solid var(--color-butik-red);
     outline-offset: 3px;
+    border-color: var(--color-butik-red);
   }
 
   /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking). */
@@ -95,6 +96,7 @@ const icons: Record<string, string> = {
     text-transform: none;
     color: var(--color-butik-dark);
     margin: 0 0 var(--space-1);
+    padding-right: 1.25rem; /* spazio per la freccia nell'angolo */
   }
   .card__desc {
     font-family: var(--font-sans);
@@ -143,7 +145,8 @@ const icons: Record<string, string> = {
   }
 
   /* Affordance senza costo di spazio: la freccia è fuori dal flusso (angolo)
-     e compare solo all'hover/focus. La card intera è il link. */
+     e sempre visibile, così la card si legge come link anche senza hover
+     (tablet, touch). All'hover/focus si sposta appena. La card intera è il link. */
   .card__go {
     position: absolute;
     top: 1.1rem;
@@ -151,14 +154,11 @@ const icons: Record<string, string> = {
     font-size: 1.1rem;
     line-height: 1;
     color: var(--color-butik-red);
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity 150ms ease, transform 150ms ease;
+    transition: transform 150ms ease;
   }
   .card:hover .card__go,
   .card:focus-visible .card__go {
-    opacity: 1;
-    transform: none;
+    transform: translateX(3px);
   }
   @media (prefers-reduced-motion: reduce) {
     .card {
@@ -167,8 +167,10 @@ const icons: Record<string, string> = {
     .card:hover {
       transform: none;
     }
-    .card__go {
-      transition: opacity 150ms ease;
+    .card__go,
+    .card:hover .card__go,
+    .card:focus-visible .card__go {
+      transition: none;
       transform: none;
     }
     .card__icon,
