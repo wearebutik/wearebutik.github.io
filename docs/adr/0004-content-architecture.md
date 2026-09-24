@@ -68,8 +68,7 @@ it.
     (`SANITY_DATASET` for A, `SANITY_DATASET_B` for B).
   - **Lifecycle.** `anteprima` holds B for as long as a review is open. When it
     closes, `build:b` comes out of the `build` script in
-    `apps/web/package.json` (and the `anteprima` webhook, if any, is removed):
-    `/b/` disappears with the next deploy, and `anteprima` can be emptied.
+    `apps/web/package.json`: `/b/` disappears with the next deploy, and `anteprima` can be emptied.
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
@@ -82,11 +81,9 @@ it.
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs
   `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
   stored only in Sanity's webhook settings. Every deploy rebuilds both A and B.
-  A change in `anteprima` goes live on `/b/` with the next deploy; to trigger
-  one directly, run the workflow by hand (`gh workflow run deploy-pages.yml`,
-  or *Run workflow* in GitHub Actions), or add a second webhook on `anteprima`
-  with the same URL and token and `event_type: sanity-publish-b`, which the
-  workflow already accepts.
+  `anteprima` has no webhook: a change there goes live on `/b/` when the
+  workflow is run by hand (`gh workflow run deploy-pages.yml`, or *Run
+  workflow* in GitHub Actions), or with the next deploy for any reason.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
@@ -144,6 +141,12 @@ Drafts are not public even on a public dataset: building them needs a read
 token and a preview behind access control (another host, e.g. Cloudflare
 Access). In the Studio, *Publish* on any page publishes its B draft, so a
 routine edit can replace A by mistake.
+
+### A webhook on `anteprima`
+
+A second Sanity webhook would rebuild `/b/` on every publish in `anteprima`.
+B changes in batches (imports, review rounds), so a manual run is enough and
+keeps one fewer GitHub token in Sanity's settings.
 
 ### Rewriting B's links with a helper in every component
 
