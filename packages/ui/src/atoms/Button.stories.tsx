@@ -155,3 +155,23 @@ export const InvertToneFocusVisible: Story = {
   ...InvertTone,
   parameters: { pseudo: { focusVisible: true } },
 };
+
+export const GhostHover: Story = {
+  ...Ghost,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const GhostFocusVisible: Story = {
+  ...Ghost,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+export const AccentGhostToneHover: Story = {
+  ...AccentGhostTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const AccentGhostToneFocusVisible: Story = {
+  ...AccentGhostTone,
+  parameters: { pseudo: { focusVisible: true } },
+};
