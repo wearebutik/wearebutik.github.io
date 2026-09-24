@@ -5,6 +5,9 @@
 // diventa un sistema riusabile (token + attributo sulle sezioni) e questa
 // pagina si cancella.
 //
+// La prova B usa il sistema vero (styles/motion.css e l'entrata dell'hero in
+// Hero.astro), con --motion-inset regolato qui; A e C hanno le regole sotto.
+//
 // Tecnica comune, solo CSS (la stessa dei numeri, components/home/Numbers.astro):
 // ogni sezione ha un interruttore legato allo scroll (--in-vista 0→1 quando
 // entra in vista); i suoi elementi, con una style query su --in-vista, avviano
@@ -20,7 +23,7 @@ import HomePage from '#components/home/HomePage.astro';
 export function getStaticPaths() {
   return [
     { params: { v: 'a' }, props: { nome: 'A · Rivelazione sobria', nota: 'Dissolvenza e piccola salita; gli elementi delle griglie entrano in sequenza.' } },
-    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale', nota: 'Gli elementi “salgono a tempo” come barre di un equalizzatore, con un piccolo rimbalzo; i titoli di sezione si sottolineano di rosso.' } },
+    { params: { v: 'b' }, props: { nome: 'B · Ritmo musicale', nota: 'Il sistema vero del sito (styles/motion.css): ogni elemento sale con un piccolo rimbalzo quando è lui in vista, i titoli si sottolineano di rosso. Qui si regola il punto di partenza: ora il bordo inferiore dello schermo è rientrato del 10% (sul sito è 25%).' } },
     { params: { v: 'c' }, props: { nome: 'C · Editoriale', nota: 'I titoli si rivelano da una maschera, le foto entrano con una tendina, i testi in dissolvenza.' } },
   ];
 }
@@ -37,7 +40,7 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
       {altre.map((x) => <a href={`/lab/motion/${x}`}>Vai a {x.toUpperCase()}</a>)}
     </span>
   </aside>
-  <div class="motion" data-motion={v}>
+  <div class="motion" data-motion={v} style={v === 'b' ? '--motion-inset: 10%' : undefined}>
     <HomePage />
   </div>
 </BaseLayout>
@@ -117,21 +120,6 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
     [data-motion='a'] .hero-svc-cards > :nth-child(5) { animation-delay: 680ms; }
     [data-motion='a'] .hero-explore { animation-delay: 800ms; }
 
-    /* B: testo in dissolvenza, le card salgono a tempo come barre di un equalizzatore. */
-    [data-motion='b'] :is(.hero-title, .hero-subtitle, .hero-cta, .hero-explore) {
-      animation: lab-hero-dissolvi 600ms var(--ease-out) both;
-    }
-    [data-motion='b'] .hero-subtitle { animation-delay: 100ms; }
-    [data-motion='b'] .hero-cta { animation-delay: 200ms; }
-    [data-motion='b'] :is(.hero-svc-cards > *, .hero-svc-list) {
-      transform-origin: bottom;
-      animation: lab-hero-eq 560ms cubic-bezier(0.34, 1.4, 0.64, 1) 350ms both;
-    }
-    [data-motion='b'] .hero-svc-cards > :nth-child(2) { animation-delay: 470ms; }
-    [data-motion='b'] .hero-svc-cards > :nth-child(3) { animation-delay: 590ms; }
-    [data-motion='b'] .hero-svc-cards > :nth-child(4) { animation-delay: 710ms; }
-    [data-motion='b'] .hero-svc-cards > :nth-child(5) { animation-delay: 830ms; }
-    [data-motion='b'] .hero-explore { animation-delay: 1000ms; }
 
     /* C: la foto parte leggermente ingrandita e si assesta; il titolo si
        rivela da una maschera, il resto entra in dissolvenza. */
@@ -156,7 +144,7 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
      - testi introduttivi (p diretti delle intestazioni) e immagini. */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
-      .motion section:not(.hero) {
+      .motion:is([data-motion='a'], [data-motion='c']) section:not(.hero) {
         animation: lab-interruttore linear both;
         animation-timeline: view();
         animation-range: entry 15% entry 16%;
@@ -182,45 +170,6 @@ const altre = ['a', 'b', 'c'].filter((x) => x !== v);
         [data-motion='a'] section:not(.hero) p { animation-delay: 100ms; }
       }
 
-      /* ── B · Ritmo musicale ─────────────────────────────────────────── */
-      @keyframes lab-b {
-        0% { opacity: 0; transform: scaleY(0.4); }
-        60% { opacity: 1; transform: scaleY(1.06); }
-        100% { opacity: 1; transform: none; }
-      }
-      @keyframes lab-b-titolo {
-        from { background-size: 0% 3px; }
-        to { background-size: 100% 3px; }
-      }
-      [data-motion='b'] section:not(.hero) :is([class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) {
-        opacity: 0;
-        transform-origin: bottom;
-      }
-      [data-motion='b'] section:not(.hero) h2 {
-        background-image: linear-gradient(var(--color-accent), var(--color-accent));
-        background-repeat: no-repeat;
-        background-position: 0 100%;
-        background-size: 0% 3px;
-        padding-bottom: 0.15em;
-        /* La linea sta sotto il testo, non sotto tutta la riga (i titoli di
-           sezione della home sono centrati). */
-        width: fit-content;
-        margin-inline: auto;
-      }
-      @container style(--in-vista: 1) {
-        [data-motion='b'] section:not(.hero) :is([class*='grid'] > *, [class*='list'] > *, [class*='cards'] > *, ol > li) {
-          animation: lab-b 520ms cubic-bezier(0.34, 1.4, 0.64, 1) both;
-        }
-        [data-motion='b'] section:not(.hero) h2 {
-          animation: lab-b-titolo 700ms var(--ease-out) 150ms both;
-        }
-        /* Sequenza "a tempo": 120ms fra un elemento e l'altro, come battiti. */
-        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(2) { animation-delay: 120ms; }
-        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(3) { animation-delay: 240ms; }
-        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(4) { animation-delay: 360ms; }
-        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(5) { animation-delay: 480ms; }
-        [data-motion='b'] :is([class*='grid'], [class*='list'], [class*='cards'], ol) > :nth-child(n + 6) { animation-delay: 600ms; }
-      }
 
       /* ── C · Editoriale ─────────────────────────────────────────────── */
       @keyframes lab-c-titolo {
