@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "sanity dev",
     "deploy": "sanity deploy",
-    "migrate:progetti": "sanity exec scripts/migra-progetti.ts --with-user-token"
+    "migrate:progetti": "sanity exec scripts/migra-progetti.ts --with-user-token",
+    "migrate:pagine": "sanity exec scripts/migra-pagine.ts --with-user-token"
   },
   "dependencies": {
     "@sanity/vision": "^6.16.0",
