@@ -79,3 +79,54 @@
     font-size: 1.25rem;
   }
 }
+
+/* ── Entrata "ritmo musicale" ───────────────────────────────────────────
+   Al caricamento la foto si assesta da un leggero ingrandimento con un
+   rimbalzo, e titolo e sottotitolo salgono come barre di un equalizzatore
+   (lo stesso linguaggio delle animazioni d'ingresso del sito). Quando la foto
+   arriva con il morph della view transition (dal portfolio), il sito marca
+   la sezione con data-morph e l'entrata si salta: il rimbalzo lo fa già la
+   transizione. */
+@keyframes banner-foto {
+  0% {
+    transform: scale(1.12);
+  }
+  55% {
+    transform: none;
+  }
+  75% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes banner-battito {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleY(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hero:not([data-morph]) .image {
+    animation: banner-foto 900ms var(--ease-out) both;
+  }
+  .hero:not([data-morph]) .title,
+  .hero:not([data-morph]) .subtitle {
+    transform-origin: bottom;
+    animation: banner-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 200ms both;
+  }
+  .hero:not([data-morph]) .subtitle {
+    animation-delay: 320ms;
+  }
+}

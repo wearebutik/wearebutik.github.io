@@ -155,6 +155,19 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <script>
       import { initReveal } from '@butik/ui/reveal';
 
+      // Header delle pagine (HeroBanner): se la sua foto arriva con il morph
+      // della view transition (stesso nome sulla pagina che si lascia, es. la
+      // card del portfolio), si marca data-morph e l'entrata al caricamento si
+      // salta: il rimbalzo lo fa già la transizione.
+      document.addEventListener('astro:before-swap', (e) => {
+        const banner = e.newDocument.querySelector<HTMLElement>('[data-hero-banner]');
+        const nome = banner?.querySelector<HTMLElement>('img')?.style.viewTransitionName;
+        if (!banner || !nome) return;
+        const presente = [...document.querySelectorAll<HTMLElement>('[data-astro-transition-scope], [style*="view-transition-name"]')]
+          .some((el) => getComputedStyle(el).viewTransitionName === nome);
+        if (presente) banner.dataset.morph = '';
+      });
+
       document.addEventListener('astro:page-load', () => {
         const main = document.querySelector<HTMLElement>('.page-main');
         if (!main || 'revealOff' in main.dataset) return;

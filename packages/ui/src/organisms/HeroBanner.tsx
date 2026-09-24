@@ -43,7 +43,7 @@ export default function HeroBanner({
   transitionName,
 }: HeroBannerProps) {
   return (
-    <section className={styles.hero}>
+    <section className={styles.hero} data-hero-banner>
       <div className={styles.imageWrap}>
         <img
           src={src}
