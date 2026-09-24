@@ -1,5 +1,8 @@
 ---
-// Card-servizio: glifo monolinea + titolo + descrizione + prova in fondo.
+// Card-servizio in vetro sulle foto dell'hero: titolo + descrizione + freccia,
+// con il glifo monolinea del servizio in filigrana nell'angolo in basso
+// a destra. Il vetro (semitrasparente e sfocato) lascia intravedere la foto e
+// con gli angoli arrotondati e lo stato hover si legge come un link.
 // È la presentazione scelta per i servizi nell'hero da tablet in su (da mobile
 // li presenta ServiceLauncher, vedi Hero.astro).
 //
@@ -50,98 +53,141 @@ const icons: Record<string, string> = {
     set:html={icons[data.slug]}
   />
 
+  <div class="card__body">
   <h3 class="card__title">{data.title}</h3>
   <p class="card__desc">{data.desc}</p>
 
-  <span class="card__stat">{`${data.statValue} ${data.statLabel}`}</span>
+  <span class="card__go" aria-hidden="true">
+    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 8h11M9 4l4 4-4 4" />
+    </svg>
+  </span>
+  </div>
 
-  <span class="card__go" aria-hidden="true">→</span>
 </a>
 
 <style>
+  /* Vetro: fondo scuro semitrasparente + sfocatura della foto sottostante.
+     Il testo bianco sta sopra il velo dell'hero (60%) più il vetro: il
+     contrasto non dipende dalla foto. */
   .card {
     position: relative;
+    overflow: hidden; /* la filigrana esce dal bordo e viene tagliata */
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
-    background: #fff;
-    border: 1px solid color-mix(in srgb, var(--color-butik-dark) 15%, transparent);
-    padding: 1.25rem 1.25rem 1.4rem;
+    height: 100%;
+    padding: 1.25rem 1.25rem 1.4rem; /* nessun token a 1.25rem */
+    border-radius: var(--radius-lg);
+    border: 1px solid color-mix(in srgb, var(--color-white) 25%, transparent);
+    background-color: color-mix(in srgb, var(--color-butik-dark) 35%, transparent);
+    backdrop-filter: blur(12px); /* nessun token blur */
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--color-white);
     text-decoration: none;
-    transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
   }
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 30px rgba(7, 17, 8, 0.12);
-    border-color: color-mix(in srgb, var(--color-butik-dark) 30%, transparent);
+  .card:hover,
+  .card:focus-visible {
+    transform: translateY(-3px);
+    background-color: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
+    border-color: var(--color-white);
   }
   .card:focus-visible {
-    outline: 2px solid var(--color-butik-red);
+    outline: 2px solid var(--color-white);
     outline-offset: 3px;
   }
 
-  /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking). */
+  /* Testo sopra la filigrana. */
+  .card__body {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking).
+     Il nome del servizio è l'elemento principale della card. */
   .card__title {
     font-family: var(--font-heading);
-    font-size: 1.0625rem;
+    font-size: var(--font-size-xl);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.15;
     letter-spacing: -0.005em;
     text-transform: none;
-    color: var(--color-butik-dark);
+    color: var(--color-white);
     margin: 0;
   }
   .card__desc {
-    font-family: var(--font-sans);
-    font-size: 0.875rem;
-    line-height: 1.45;
-    color: color-mix(in srgb, var(--color-butik-dark) 70%, transparent);
     flex: 1;
     margin: 0;
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-white) 88%, transparent);
   }
-
-  .card__icon {
+  /* Invito al click: freccia in un cerchio, sempre visibile (su tablet e
+     touch l'hover non c'è). All'hover/focus il cerchio si riempie di rosso
+     e la freccia avanza appena. */
+  .card__go {
+    align-self: flex-start;
+    margin-top: var(--space-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Misure intere in px (cerchio 32, freccia 16, tratto 2): la freccia
+       cade sulla griglia dei pixel e resta nitida. */
     width: 2rem;
     height: 2rem;
-    color: var(--color-butik-red);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-white);
+    color: var(--color-white);
+    transition: background-color 160ms ease, border-color 160ms ease;
   }
-
-  .card__stat {
-    font-family: var(--font-display);
-    font-size: 0.6875rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
-  }
-
-  /* Affordance senza costo di spazio: la freccia è fuori dal flusso (angolo)
-     e compare solo all'hover/focus. La card intera è il link. */
-  .card__go {
-    position: absolute;
-    top: 1.1rem;
-    right: 1.1rem;
-    font-size: 1.1rem;
-    line-height: 1;
-    color: var(--color-butik-red);
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity 150ms ease, transform 150ms ease;
+  .card__go svg {
+    width: 1rem;
+    height: 1rem;
+    transition: transform 160ms ease;
   }
   .card:hover .card__go,
   .card:focus-visible .card__go {
-    opacity: 1;
-    transform: none;
+    background-color: var(--color-butik-red);
+    border-color: var(--color-butik-red);
   }
+  .card:hover .card__go svg,
+  .card:focus-visible .card__go svg {
+    transform: translateX(2px);
+  }
+
+  /* Filigrana: glifo grande e tenue, tagliato dal bordo in basso a destra;
+     all'hover si accende e ruota appena. */
+  .card__icon {
+    position: absolute;
+    right: -1.75rem;
+    bottom: -1.75rem;
+    width: 8.5rem; /* scala della filigrana: nessun token di dimensione icona */
+    height: 8.5rem;
+    color: var(--color-butik-red);
+    opacity: 0.35;
+    transition: opacity 160ms ease, transform 300ms ease;
+  }
+  .card:hover .card__icon,
+  .card:focus-visible .card__icon {
+    opacity: 0.55;
+    transform: rotate(-8deg) scale(1.05);
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .card {
-      transition: box-shadow 160ms ease, border-color 160ms ease;
+    .card,
+    .card__icon {
+      transition: background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
     }
-    .card:hover {
-      transform: none;
-    }
-    .card__go {
-      transition: opacity 150ms ease;
+    .card:hover,
+    .card:focus-visible,
+    .card:hover .card__icon,
+    .card:focus-visible .card__icon,
+    .card:hover .card__go svg,
+    .card:focus-visible .card__go svg {
       transform: none;
     }
   }

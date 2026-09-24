@@ -30,12 +30,13 @@ const rich = (name: string, title: string, group?: string) =>
 const seo = [str('metaTitle', 'Meta title', 'seo'), txt('metaDescription', 'Meta description', 'seo')];
 const seoGroup = { name: 'seo', title: 'SEO' };
 
-const metriche = (name: string, title: string, group?: string) =>
+const metriche = (name: string, title: string, group?: string, description?: string) =>
   defineField({
     name,
     title,
     type: 'array',
     group,
+    description,
     ...lista,
     of: [
       defineArrayMember({
@@ -102,9 +103,19 @@ export const paginaHome = pagina(
     str('heroCtaHref', 'Pulsante: URL', 'hero'),
     str('heroExploreLabel', 'Link servizi: etichetta', 'hero'),
     str('heroExploreHref', 'Link servizi: URL', 'hero'),
+    // Foto a tutto sfondo, in loop con dissolvenza (components/home/Hero.astro).
+    // Facoltative: senza, l'hero resta sul fondo scuro.
+    defineField({
+      name: 'heroImages',
+      title: 'Foto di sfondo',
+      description: 'Scorrono in loop con dissolvenza, nell\'ordine della lista. La prima resta ferma per chi riduce le animazioni.',
+      type: 'array',
+      group: 'hero',
+      of: [defineArrayMember({ type: 'figura' })],
+    }),
     metriche('butikMetrics', 'Numeri Butik', 'numeri'),
     str('mmwLabel', 'Etichetta Milano Music Week', 'numeri'),
-    metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri'),
+    metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri', 'In home si mostra l’ultima voce, accanto ai numeri di butik: mettete per ultimo il dato più forte.'),
     str('ctaBanner1Title', 'Titolo', 'banner1'),
     txt('ctaBanner1Body', 'Testo', 'banner1'),
     str('ctaBanner1PrimaryLabel', 'Pulsante principale: etichetta', 'banner1'),
@@ -117,6 +128,7 @@ export const paginaHome = pagina(
     txt('aboutP3', 'Paragrafo 3', 'about'),
     str('aboutCtaLabel', 'Link: etichetta', 'about'),
     str('aboutCtaHref', 'Link: URL', 'about'),
+    defineField({ name: 'aboutImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'about' }),
     str('aboutImageAlt', 'Testo alternativo immagine', 'about'),
     str('ctaBanner2Title', 'Titolo', 'banner2'),
     str('ctaBanner2PrimaryLabel', 'Pulsante principale: etichetta', 'banner2'),
@@ -146,6 +158,7 @@ export const paginaChiSiamo = pagina(
   [
     str('heroTitle', 'Titolo', 'intro'),
     txt('heroSubtitle', 'Sottotitolo', 'intro'),
+    defineField({ name: 'heroImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'intro' }),
     str('heroImageAlt', 'Testo alternativo immagine', 'intro'),
     str('introEyebrow', 'Intestazione', 'intro'),
     rich('introP1', 'Paragrafo 1', 'intro'),
@@ -381,6 +394,79 @@ export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
   defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
 ]);
 
+// Footer: non è una pagina ma un contenuto condiviso da tutte (e i social
+// anche dalla pagina Contatti). Niente SEO. Le icone dei social restano nel
+// codice (apps/web/src/data/socials.ts), qui si sceglie la rete.
+export const RETI_SOCIAL = ['facebook', 'instagram', 'linkedin', 'youtube', 'spotify', 'tiktok'] as const;
+
+export const paginaFooter = defineType({
+  name: 'paginaFooter',
+  title: 'Footer',
+  type: 'document',
+  groups: [
+    { name: 'azienda', title: 'Dati aziendali', default: true },
+    { name: 'link', title: 'Link' },
+  ],
+  fields: [
+    str('ragioneSociale', 'Ragione sociale', 'azienda'),
+    txt('indirizzo', 'Indirizzo', 'azienda'),
+    str('partitaIva', 'Partita IVA', 'azienda'),
+    str('contattiLabel', 'Etichetta dei contatti (es. "PEC & Email")', 'azienda'),
+    str('pec', 'PEC', 'azienda'),
+    str('email', 'Email', 'azienda'),
+    defineField({
+      name: 'social',
+      title: 'Social',
+      description: 'Anche nella pagina Contatti. Un indirizzo segnaposto (es. "#") non compare sul sito.',
+      type: 'array',
+      group: 'azienda',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'profiloSocial',
+          fields: [
+            defineField({
+              name: 'rete',
+              title: 'Rete',
+              type: 'string',
+              options: { list: [...RETI_SOCIAL] },
+              validation: (r) => r.required(),
+            }),
+            defineField(hrefField({ title: 'Indirizzo del profilo' })),
+          ],
+          preview: { select: { title: 'rete', subtitle: 'href' } },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'colonna1',
+      title: 'Link, prima colonna',
+      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    defineField({
+      name: 'colonna2',
+      title: 'Link, seconda colonna',
+      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    defineField({
+      name: 'linkLegali',
+      title: 'Link legali (in fondo)',
+      type: 'array',
+      group: 'link',
+      of: [defineArrayMember({ type: 'link' })],
+    }),
+    str('cookieLabel', 'Pulsante preferenze cookie', 'link'),
+    str('copyright', 'Copyright (l’anno lo aggiunge il sito)', 'link'),
+  ],
+  preview: { prepare: () => ({ title: 'Footer' }) },
+});
+
 // id del documento Sanity → id dell'entry `pagine` sul sito.
 export const PAGINE = {
   paginaHome: 'home',
@@ -392,6 +478,7 @@ export const PAGINE = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaFooter: 'footer',
 } as const;
 
 export const pagineTypes = [
@@ -404,4 +491,5 @@ export const pagineTypes = [
   paginaTestimonials,
   paginaPrivacy,
   paginaTermini,
+  paginaFooter,
 ];

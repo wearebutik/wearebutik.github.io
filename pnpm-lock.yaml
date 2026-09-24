@@ -59,6 +59,9 @@ importers:
       marked:
         specifier: ^18.0.14
         version: 18.0.14
+      sharp:
+        specifier: ^0.34.5
+        version: 0.34.5
       smartypants:
         specifier: ^0.2.2
         version: 0.2.2

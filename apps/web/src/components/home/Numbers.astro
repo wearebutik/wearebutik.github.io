@@ -1,6 +1,13 @@
 ---
 // Copy content-driven (ADR-0004): metriche e label arrivano dalla collezione
 // `pagine` (entry `home`) come array, passate da index.astro.
+//
+// Una riga sola: i numeri di butik e, per ultimo, il dato più forte della
+// Milano Music Week (l'ultima voce di `mmwMetrics`), evidenziato. Quando la
+// sezione entra in vista i numeri contano da zero al valore, una volta sola:
+// un IntersectionObserver aggiunge una classe, il conteggio è un'animazione
+// CSS a tempo (contatore su una custom property). Senza JavaScript, o con
+// reduced-motion, il numero resta fermo al valore finale.
 type Metric = {
   value: string;
   label: string;
@@ -13,93 +20,106 @@ interface Props {
 }
 
 const { butikMetrics, mmwLabel, mmwMetrics } = Astro.props;
+const mmw = mmwMetrics.at(-1);
+
+/** "30+" → { n: 30, suffix: '+' }; "70K+" → { n: 70, suffix: 'K+' }. */
+const parse = (value: string) => {
+  const m = value.match(/^(\d+)(.*)$/);
+  return m ? { n: Number(m[1]), suffix: m[2] } : undefined;
+};
+
+const items = [
+  ...butikMetrics.map((m) => ({ ...m, eyebrow: undefined as string | undefined })),
+  ...(mmw ? [{ ...mmw, eyebrow: mmwLabel }] : []),
+].map((m) => ({ ...m, count: parse(m.value) }));
 ---
 
-<section class="numbers" aria-label="Numeri e impatto">
+<section class="numbers" aria-label="Numeri e impatto" data-numbers>
   <dl class="numbers-grid">
     {
-      butikMetrics.map((metric) => (
-        <div>
-          <dt class="metric-term">{metric.label}</dt>
+      items.map((m) => (
+        <div class:list={['metric', { 'metric--mmw': m.eyebrow }]}>
+          <dt class="sr-only">{m.eyebrow ? `${m.label} — ${m.eyebrow}` : m.label}</dt>
           <dd>
+            {m.eyebrow && <span class="metric-eyebrow" aria-hidden="true">{m.eyebrow}</span>}
             <span class="metric-value">
-              {metric.value}
+              {/* Tutto su una riga: niente spazi fra numero e suffisso. */}
+              {m.count ? (
+                <><span class="metric-num">{m.count.n}</span><span class="metric-count" aria-hidden="true" style={`--to: ${m.count.n}`} />{m.count.suffix}</>
+              ) : (
+                m.value
+              )}
             </span>
-            <span class="metric-label" aria-hidden="true">
-              {metric.label}
-            </span>
+            <span class="metric-label" aria-hidden="true">{m.label}</span>
           </dd>
         </div>
       ))
     }
   </dl>
-
-  <div class="numbers-mmw">
-    <p class="numbers-mmw-heading">
-      {mmwLabel}
-    </p>
-
-    <dl class="numbers-mmw-grid">
-      {
-        mmwMetrics.map((metric) => (
-          <div>
-            <dt class="metric-term">{metric.label}</dt>
-            <dd>
-              <span class="metric-value">
-                {metric.value}
-              </span>
-              <span class="metric-label" aria-hidden="true">
-                {metric.label}
-              </span>
-            </dd>
-          </div>
-        ))
-      }
-    </dl>
-  </div>
 </section>
 
 <style>
   .numbers {
     background-color: var(--color-bg-invert);
     color: var(--color-fg-invert);
-    /* Tailwind py-10: nessun token nella scala. */
-    padding-block: 2.5rem;
-  }
-
-  @media (min-width: 768px) {
-    .numbers {
-      /* Tailwind md:py-14: nessun token nella scala. */
-      padding-block: 3.5rem;
-    }
+    padding-block: var(--space-12);
   }
 
   .numbers-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6);
-    /* Tailwind max-w-7xl: nessun token per le larghezze massime. */
-    max-width: 80rem;
+    gap: var(--space-8) var(--space-6);
+    align-items: start;
+    max-width: 80rem; /* come l'hero: nessun token per le larghezze massime */
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
-
   @media (min-width: 640px) {
     .numbers-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
-
   @media (min-width: 1024px) {
     .numbers-grid {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: var(--space-4);
+      grid-template-columns: repeat(6, minmax(0, 1fr));
     }
   }
 
-  /* Tailwind sr-only: nasconde visivamente, resta letto dalle tecnologie
-     assistive (stesso pattern di packages/ui/.../ImageCarousel.module.css). */
-  .metric-term {
+  /* Il dato della Milano Music Week: separato da una linea d'accento. Fino
+     al tablet occupa una riga tutta sua; su desktop sta nella fila e il nome
+     dell'evento sale sopra il numero, fuori dal flusso, così i numeri restano
+     tutti alla stessa altezza. */
+  .metric--mmw {
+    grid-column: 1 / -1;
+  }
+  /* Fino al tablet la Milano Music Week è una riga a sé, separata da una
+     linea sopra; su desktop sta nella fila, separata da una barra a sinistra.
+     La linea sta sul contenuto (dd), così entra con il numero. */
+  .metric--mmw dd {
+    position: relative;
+    padding-top: var(--space-6);
+    border-top: 2px solid var(--color-accent);
+  }
+  @media (min-width: 1024px) {
+    .metric--mmw {
+      grid-column: auto;
+    }
+    .metric--mmw dd {
+      padding-top: 0;
+      border-top: 0;
+      padding-left: var(--space-4);
+      border-left: 2px solid var(--color-accent);
+    }
+    .metric--mmw .metric-eyebrow {
+      position: absolute;
+      top: 0;
+      transform: translateY(calc(-100% - var(--space-2)));
+      margin: 0;
+    }
+  }
+
+  /* Solo per i lettori di schermo (stesso pattern di ImageCarousel). */
+  .sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -111,84 +131,133 @@ const { butikMetrics, mmwLabel, mmwMetrics } = Astro.props;
     border: 0;
   }
 
+  /* Senza animazione il numero vero resta visibile e il contatore sparisce. */
+  .metric-count {
+    display: none;
+  }
+
+  .metric-eyebrow {
+    display: block;
+    margin-bottom: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em; /* come le etichette del sito */
+    text-transform: uppercase;
+    color: var(--color-highlight);
+  }
+
   .metric-value {
     display: block;
     font-family: var(--font-heading);
-    /* Tailwind text-4xl è sovrascritto nel @theme del sito con un clamp():
-       nessun token combacia. leading-none vince comunque sul line-height. */
-    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+    /* Scala dei numeri d'impatto: nessun token combacia col clamp. */
+    font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
     font-weight: 900;
-    color: var(--color-highlight);
     line-height: 1;
-  }
-
-  @media (min-width: 1024px) {
-    .metric-value {
-      /* Tailwind lg:text-5xl, stesso discorso di text-4xl. */
-      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
-    }
+    color: var(--color-highlight);
+    font-variant-numeric: tabular-nums;
   }
 
   .metric-label {
     display: block;
-    font-family: var(--font-sans);
-    font-size: var(--font-size-xs);
-    /* leading-snug vince su quello che porterebbe con sé text-xs. */
-    line-height: 1.375;
-    color: color-mix(in srgb, var(--color-fg-invert) 70%, transparent);
     margin-top: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.375;
+    color: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
   }
 
-  @media (min-width: 1024px) {
-    .metric-label {
-      font-size: var(--font-size-sm);
+  /* ── Conteggio all'ingresso, solo CSS ────────────────────────────────
+     Due pezzi:
+     1. un interruttore: un'animazione legata allo scroll (view timeline)
+        porta --in-vista da 0 a 1 quando la sezione entra in vista, e con
+        fill `both` lo lascia a 1 finché la sezione resta sopra il bordo
+        inferiore dello schermo;
+     2. il conteggio: una style query su --in-vista avvia un'animazione A
+        TEMPO del contatore (--n da 0 a --to, mostrato con counter()). Non
+        segue lo scroll: parte, dura 1.4s, finisce.
+     Risalendo sopra la sezione l'interruttore torna a 0 e il conteggio si
+     riarma. Il numero vero passa ai lettori di schermo, il contatore è
+     aria-hidden. */
+  @property --in-vista {
+    syntax: '<integer>';
+    initial-value: 0;
+    inherits: true;
+  }
+  @property --n {
+    syntax: '<integer>';
+    initial-value: 0;
+    inherits: false;
+  }
+  @keyframes interruttore {
+    from {
+      --in-vista: 0;
+    }
+    to {
+      --in-vista: 1;
     }
   }
-
-  .numbers-mmw {
-    /* Tailwind mt-10 / pt-10: nessun token nella scala. */
-    margin-top: 2.5rem;
-    padding-top: 2.5rem;
-    border-top: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
-    max-width: 80rem;
-    margin-inline: auto;
-    padding-inline: var(--space-6);
-  }
-
-  @media (min-width: 1024px) {
-    .numbers-mmw {
-      margin-top: var(--space-16);
-      padding-top: var(--space-12);
+  @keyframes conta {
+    from {
+      --n: 0;
+    }
+    to {
+      --n: var(--to);
     }
   }
-
-  .numbers-mmw-heading {
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    /* Tailwind text-xs porta con sé anche il line-height. */
-    line-height: calc(1 / 0.75);
-    font-weight: 700;
-    /* Tailwind tracking-widest: 0.1em, nessun token nella scala. */
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-highlight);
-    margin-bottom: var(--space-8);
-    text-align: center;
-  }
-
-  .numbers-mmw-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-6);
-    /* Tailwind max-w-xl: nessun token per le larghezze massime. */
-    max-width: 36rem;
-    margin-inline: auto;
-    text-align: center;
-  }
-
-  @media (min-width: 1024px) {
-    .numbers-mmw-grid {
-      gap: var(--space-12);
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .numbers {
+        animation: interruttore linear both;
+        animation-timeline: view();
+        animation-range: entry 30% entry 31%;
+      }
+      .metric-num {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .metric-count {
+        display: inline;
+        counter-reset: n var(--n);
+      }
+      .metric-count::after {
+        content: counter(n);
+      }
+      @container style(--in-vista: 1) {
+        .metric-count {
+          animation: conta 1400ms var(--ease-out) both;
+        }
+      }
     }
   }
 </style>
+
+<script>
+  // Arma i contatori (a 0) e li fa partire quando la sezione entra in vista.
+  // Idempotente sotto il ClientRouter: gira a ogni astro:page-load, il flag
+  // `data-armed` evita di rilegare lo stesso nodo (docs/guidances/client-scripts.md).
+  function initNumbers() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    document.querySelectorAll<HTMLElement>('[data-numbers]:not([data-armed])').forEach((section) => {
+      section.dataset.armed = '';
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            section.dataset.counting = '';
+            io.disconnect();
+          }
+        },
+        { threshold: 0.4 },
+      );
+      io.observe(section);
+      document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+    });
+  }
+  document.addEventListener('astro:page-load', initNumbers);
+</script>

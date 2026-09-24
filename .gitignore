@@ -9,3 +9,9 @@ node_modules/
 .turbo/
 design/
 .sanity/
+
+# Build di confronto delle versioni dei testi
+build-anteprima/
+
+# Screenshot e istantanee del browser di test (Playwright MCP)
+.playwright-mcp/

@@ -16,7 +16,7 @@ const { content } = Astro.props;
 const _unused = Image;
 ---
 
-<section>
+<section data-hero>
   <div class="hero-inner">
     <div class="hero-container">
       <div class="hero-grid">
@@ -25,15 +25,15 @@ const _unused = Image;
         <div class="hero-col-claim">
           <Eyebrow>{content.eyebrow}</Eyebrow>
 
-          <h1 class="hero-claim">
+          <h1 class="hero-claim" data-battito style="--ritardo: 150ms">
             {content.headline}
           </h1>
 
-          <p class="hero-lead">
+          <p class="hero-lead" data-battito style="--ritardo: 270ms">
             {content.sub}
           </p>
 
-          <div class="hero-actions">
+          <div class="hero-actions" data-battito style="--ritardo: 390ms">
             <Button href={content.ctaPrimary.href} tone="dark">{content.ctaPrimary.label}</Button>
 
             {content.ctaSecondary && (
@@ -45,7 +45,7 @@ const _unused = Image;
         </div>
 
         <!-- Colonna destra: il registro (prova reale come indice) ───────── -->
-        <div class="hero-col-ledger">
+        <div class="hero-col-ledger" data-battito style="--ritardo: 510ms">
           <Eyebrow>{content.ledgerLabel}</Eyebrow>
           <ul class="ledger-list">
             {content.ledger.map((row) => (

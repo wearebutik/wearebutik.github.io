@@ -1,7 +1,9 @@
 ---
 import { getImage } from 'astro:assets';
+import { getEntry } from 'astro:content';
 import logo from '../assets/logos/bollo-rosso.svg';
-import { socials } from '../data/socials';
+import { conIcone } from '../data/socials';
+import { soloLinkValidi } from '#lib/links';
 import SocialLinks from '@butik/ui/SocialLinks';
 import Logo from '@butik/ui/Logo';
 
@@ -10,20 +12,22 @@ import Logo from '@butik/ui/Logo';
 // dentro le isole.
 const logoImg = await getImage({ src: logo, width: 72, height: 72 });
 
-const linksColumn1 = [
-  { href: '/chi-siamo', label: 'Chi siamo' },
-  { href: '/servizi', label: 'Servizi' },
-  { href: '/progetti', label: 'Portfolio' },
-  { href: '/formats', label: 'Formats' },
-  { href: '/blog', label: 'Blog' },
-];
-
-const linksColumn2 = [
-  { href: '/network', label: 'Network' },
-  { href: '/contatti', label: 'Contattaci' },
-  { href: '/sostienici', label: 'Sostienici' },
-  { href: '/transparency', label: 'Transparency' },
-];
+// Contenuti del footer da Sanity (documento Footer, ADR-0004). I link che non
+// portano da nessuna parte (segnaposto, pagine inesistenti) non si mostrano:
+// nello Studio restano, segnalati in giallo. Finché il documento non esiste
+// (es. su un dataset non ancora aggiornato) il footer mostra logo, link legali
+// di base e preferenze cookie.
+const entry = await getEntry('pagine', 'footer');
+const f = entry?.data.type === 'footer' ? entry.data : undefined;
+const socials = conIcone((await soloLinkValidi(f?.social ?? [])));
+const colonna1 = await soloLinkValidi(f?.colonna1 ?? []);
+const colonna2 = await soloLinkValidi(f?.colonna2 ?? []);
+const linkLegali = await soloLinkValidi(
+  f?.linkLegali ?? [
+    { label: 'Privacy policy', href: '/privacy' },
+    { label: 'Termini di utilizzo', href: '/termini' },
+  ],
+);
 
 const year = new Date().getFullYear();
 ---
@@ -39,31 +43,35 @@ const year = new Date().getFullYear();
             <Logo src={logoImg.src} width={72} height={72} className="footer-logo" />
           </a>
 
-          <address class="footer-address">
-            <strong class="footer-company-name">Butik s.r.l. Impresa Sociale</strong><br />
-            Via Plinio 14, 20129 Milano — Italy<br />
-            P. IVA 10429130965
-          </address>
+          {f && (
+            <address class="footer-address">
+              <strong class="footer-company-name">{f.ragioneSociale}</strong><br />
+              {f.indirizzo.split('\n').map((riga) => <>{riga}<br /></>)}
+              P. IVA {f.partitaIva}
+            </address>
+          )}
 
-          <div class="footer-contact">
-            <p class="footer-contact-label">
-              PEC &amp; Email
-            </p>
-            <p class="footer-contact-emails">
-              <a href="mailto:butik@legalmail.it" class="footer-link">butik@legalmail.it</a><br />
-              <a href="mailto:info@wearebutik.com" class="footer-link">info@wearebutik.com</a>
-            </p>
-          </div>
+          {f && (
+            <div class="footer-contact">
+              <p class="footer-contact-label">{f.contattiLabel}</p>
+              <p class="footer-contact-emails">
+                <a href={`mailto:${f.pec}`} class="footer-link">{f.pec}</a><br />
+                <a href={`mailto:${f.email}`} class="footer-link">{f.email}</a>
+              </p>
+            </div>
+          )}
 
-          <div class="footer-social">
-            <SocialLinks socials={socials} />
-          </div>
+          {socials.length > 0 && (
+            <div class="footer-social">
+              <SocialLinks socials={socials} />
+            </div>
+          )}
         </div>
 
         <!-- Col 3: link 1 (allineata al top del row) -->
         <nav aria-label="Sezioni sito" class="footer-nav">
           <ul class="footer-nav-list">
-            {linksColumn1.map(link => (
+            {colonna1.map(link => (
               <li>
                 <a
                   href={link.href}
@@ -79,7 +87,7 @@ const year = new Date().getFullYear();
         <!-- Col 4: link 2 (allineata al top, mr per spaziatura uniforme col bordo) -->
         <nav aria-label="Sezioni servizio" class="footer-nav footer-nav-service">
           <ul class="footer-nav-list">
-            {linksColumn2.map(link => (
+            {colonna2.map(link => (
               <li>
                 <a
                   href={link.href}
@@ -95,17 +103,16 @@ const year = new Date().getFullYear();
 
       <!-- Bottom bar -->
       <div class="footer-bottom">
-        <p>&copy; {year} Butik. Tutti i diritti riservati.</p>
+        <p>&copy; {year} {f?.copyright ?? 'Butik'}</p>
         <p class="footer-bottom-links">
-          <a href="/privacy" class="footer-bottom-link">Privacy policy</a>
-          <a href="/termini" class="footer-bottom-link">Termini di utilizzo</a>
+          {linkLegali.map((l) => <a href={l.href} class="footer-bottom-link">{l.label}</a>)}
           <!-- Riapre la modale delle preferenze cookie (ADR-0006). -->
           <button
             id="cookie-preferences"
             type="button"
             class="footer-bottom-link footer-cookie-btn"
           >
-            Preferenze cookie
+            {f?.cookieLabel ?? 'Preferenze cookie'}
           </button>
         </p>
       </div>

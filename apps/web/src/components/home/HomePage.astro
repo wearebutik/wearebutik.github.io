@@ -1,0 +1,121 @@
+---
+// Contenuto della home (tutto tranne il layout): usato da pages/index.astro
+// e dalle prove di motion in pages/lab/motion, che lo mostrano identico.
+import { getCollection, getEntry } from 'astro:content';
+import Hero from '#components/home/Hero.astro';
+import PartnerLogos from '#components/home/PartnerLogos.astro';
+import Numbers from '#components/home/Numbers.astro';
+import Testimonials from '#components/home/Testimonials.astro';
+import PortfolioGrid from '#components/home/PortfolioGrid.astro';
+import CtaBanner from '#components/CtaBanner.astro';
+import AboutInline from '#components/home/AboutInline.astro';
+import Metodo from '#components/home/Metodo.astro';
+import type { MetodoIconName } from '#data/metodo';
+import NewsletterSignup from '#components/home/NewsletterSignup.astro';
+
+const topProgetti = (await getCollection('progetti', e => e.data.featured && !e.data.draft))
+  .sort((a, b) => a.data.featuredOrder - b.data.featuredOrder)
+  .slice(0, 4);
+
+// Copy editoriale della home content-driven (ADR-0004): la collezione `pagine`
+// (entry `home`, pagina Home su Sanity) è la source of truth tipata.
+const homeEntry = await getEntry('pagine', 'home');
+if (!homeEntry || homeEntry.data.type !== 'home') {
+  throw new Error('Contenuto pagina "home" mancante o non valido (collezione pagine).');
+}
+const c = homeEntry.data;
+
+// Partner (loghi come media) dalla collezione `pagine` (entry `partners`):
+// un'unica source of truth condivisa con la pagina /partners.
+const partnersEntry = await getEntry('pagine', 'partners');
+if (!partnersEntry || partnersEntry.data.type !== 'partners') {
+  throw new Error('Contenuto pagina "partners" mancante o non valido (collezione pagine).');
+}
+const partners = partnersEntry.data.partners;
+
+// Metodo (issue #26 — W2): stessa entry `pagine/servizi` di /servizi, unica
+// source of truth per eyebrow/titolo/passi. Le icone per tappa restano config
+// di design qui, non nello schema Sanity.
+const serviziEntry = await getEntry('pagine', 'servizi');
+if (!serviziEntry || serviziEntry.data.type !== 'servizi-index') {
+  throw new Error('Contenuto pagina "servizi" mancante o non valido (collezione pagine) — richiesto anche dalla sezione Metodo in home.');
+}
+const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagonismo', 'formazione', 'eventi'];
+
+// Testimonianze: entry condivisa `pagine/testimonials`, riusata identica da
+// chi-siamo.astro.
+const testimonialsEntry = await getEntry('pagine', 'testimonials');
+if (!testimonialsEntry || testimonialsEntry.data.type !== 'testimonials') {
+  throw new Error('Contenuto pagina "testimonials" mancante o non valido (collezione pagine).');
+}
+const testimonials = testimonialsEntry.data;
+
+// Card dei servizi nell'hero: i testi vivono nel documento servizio (Sanity),
+// nello stesso ordine della pagina /servizi.
+const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((s) => ({
+    title: s.data.card.title,
+    href: `/servizi/${s.id}`,
+    description: s.data.card.desc,
+    statValue: s.data.card.statValue,
+    statLabel: s.data.card.statLabel,
+  }));
+---
+  <Hero
+    images={c.heroImages}
+    title={c.heroTitle}
+    subtitle={c.heroSubtitle}
+    ctaLabel={c.heroCtaLabel}
+    ctaHref={c.heroCtaHref}
+    exploreLabel={c.heroExploreLabel}
+    exploreHref={c.heroExploreHref}
+    servizi={serviziCards}
+  />
+  <PartnerLogos partners={partners} />
+  <Numbers
+    butikMetrics={c.butikMetrics}
+    mmwLabel={c.mmwLabel}
+    mmwMetrics={c.mmwMetrics}
+  />
+  <Metodo
+    eyebrow={serviziEntry.data.metodoEyebrow}
+    title={serviziEntry.data.metodoTitle}
+    tappe={serviziEntry.data.metodo}
+    icons={metodoIcons}
+  />
+  <Testimonials
+    eyebrow={testimonials.eyebrow}
+    sectionTitle={testimonials.sectionTitle}
+    testimonials={testimonials.testimonials}
+  />
+  <PortfolioGrid progetti={topProgetti} />
+  <CtaBanner
+    title={c.ctaBanner1Title}
+    body={c.ctaBanner1Body}
+    primaryCta={{ label: c.ctaBanner1PrimaryLabel, href: c.ctaBanner1PrimaryHref }}
+    secondaryCta={{ label: c.ctaBanner1SecondaryLabel, href: c.ctaBanner1SecondaryHref }}
+  />
+  <AboutInline
+    title={c.aboutTitle}
+    p1={c.aboutP1}
+    p2={c.aboutP2}
+    p3={c.aboutP3}
+    ctaLabel={c.aboutCtaLabel}
+    ctaHref={c.aboutCtaHref}
+    image={c.aboutImage}
+    imageAlt={c.aboutImageAlt}
+  />
+  <CtaBanner
+    title={c.ctaBanner2Title}
+    primaryCta={{ label: c.ctaBanner2PrimaryLabel, href: c.ctaBanner2PrimaryHref }}
+    secondaryCta={{ label: c.ctaBanner2SecondaryLabel, href: c.ctaBanner2SecondaryHref }}
+  />
+  <NewsletterSignup
+    title={c.newsletterTitle}
+    body={c.newsletterBody}
+    placeholder={c.newsletterPlaceholder}
+    button={c.newsletterButton}
+    privacy={c.newsletterPrivacy}
+    success={c.newsletterSuccess}
+  />

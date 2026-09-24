@@ -143,7 +143,8 @@ export const servizio = defineType({
       title: 'Sezioni',
       type: 'array',
       group: 'corpo',
-      of: sezioniServizio.map((s) => defineArrayMember({ type: s.name })),
+      // Sezioni del servizio, più le foto (stessi blocchi del corpo dei progetti).
+      of: [...sezioniServizio.map((s) => s.name), 'imageBlock', 'imageCarousel'].map((type) => defineArrayMember({ type })),
     }),
 
     // ── SEO ─────────────────────────────────────────────────────────────────

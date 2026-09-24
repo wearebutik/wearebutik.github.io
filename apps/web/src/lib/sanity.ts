@@ -9,12 +9,24 @@ import type { Loader } from 'astro/loaders';
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
 export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 
+// Build di anteprima: SANITY_PERSPECTIVE=drafts legge le bozze (sopra i
+// pubblicati) e richiede SANITY_READ_TOKEN, perché le bozze non sono
+// pubbliche nemmeno su un dataset pubblico. Il token si usa solo a build time
+// e non finisce nel browser; le pagine sì, quindi un'anteprima va tenuta in
+// locale o dietro un accesso protetto. Default: solo i pubblicati, niente token.
+const SANITY_PERSPECTIVE = process.env.SANITY_PERSPECTIVE === 'drafts' ? 'drafts' : 'published';
+const SANITY_READ_TOKEN = process.env.SANITY_READ_TOKEN;
+if (SANITY_PERSPECTIVE === 'drafts' && !SANITY_READ_TOKEN) {
+  throw new Error('SANITY_PERSPECTIVE=drafts richiede SANITY_READ_TOKEN (token viewer di Sanity).');
+}
+
 export const sanity = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  perspective: 'published',
+  perspective: SANITY_PERSPECTIVE,
+  ...(SANITY_PERSPECTIVE === 'drafts' && { token: SANITY_READ_TOKEN }),
 });
 
 const builder = createImageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });
@@ -61,7 +73,10 @@ function sanityLoader(name: string, query: string, map: (doc: Doc) => Record<str
   };
 }
 
-const imageUrl = (image: unknown) => (image ? sanityImageUrl(image as SanityImage) : undefined);
+// Un'immagine senza file (aggiunta nello Studio ma non caricata, o con l'asset
+// rimosso) si ignora: non deve rompere il build.
+const imageUrl = (image: unknown) =>
+  (image as { asset?: unknown } | undefined)?.asset ? sanityImageUrl(image as SanityImage) : undefined;
 
 const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
   "id": slug.current,
@@ -108,6 +123,7 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaFooter: 'footer',
 };
 
 const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_TYPE))} && _id match "pagina-*"]{
@@ -121,6 +137,14 @@ export const pagineLoader = () =>
   sanityLoader('pagine', PAGINE_QUERY, ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }) => ({
     ...rest,
     type: PAGINE_TYPE[_type as string],
+    // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
+    ...(Array.isArray(rest.heroImages) && {
+      heroImages: (rest.heroImages as ConImmagine[])
+        .filter((i) => i.asset)
+        .map((i) => ({ src: imageUrl(i), alt: (i.alt as string) ?? '' })),
+    }),
+    ...(rest.heroImage !== undefined && { heroImage: imageUrl(rest.heroImage) }),
+    ...(rest.aboutImage !== undefined && { aboutImage: imageUrl(rest.aboutImage) }),
     ...(Array.isArray(rest.founders) && {
       founders: (rest.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) ?? '' })),
     }),

@@ -2,7 +2,8 @@
 import { getEntry } from 'astro:content';
 import { richTextHtml } from '#lib/richText';
 import BaseLayout from '#layouts/BaseLayout.astro';
-import { socials } from '#data/socials';
+import { conIcone } from '#data/socials';
+import { soloLinkValidi } from '#lib/links';
 import SocialLinks from '@butik/ui/SocialLinks';
 import SectionHeading from '@butik/ui/SectionHeading';
 import Eyebrow from '@butik/ui/Eyebrow';
@@ -28,9 +29,13 @@ const WEB3FORMS_ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_ACCESS_KEY ?? '';
 // ─────────────────────────────────────────────────────────────────────────────
 
 const inputClass = 'field-input';
+// Social dal documento Footer su Sanity (unica fonte con il footer).
+const footer = await getEntry('pagine', 'footer');
+const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? footer.data.social : []));
 ---
 
 <BaseLayout
+  reveal={false}
   title={c.metaTitle}
   description={c.metaDescription}
 >

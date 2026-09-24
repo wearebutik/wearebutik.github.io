@@ -15,10 +15,15 @@ export const portableTextComponents = {
 import PtServizioSezione from './PtServizioSezione.astro';
 
 export const servizioComponents = {
-  type: Object.fromEntries(
-    ['cosaFacciamo', 'adattoA', 'diCosaCiOccupiamo', 'metodo', 'bandiVinti', 'ctaProgetti', 'ctaBanner'].map((t) => [
-      t,
-      PtServizioSezione,
-    ]),
-  ),
+  type: {
+    ...Object.fromEntries(
+      ['cosaFacciamo', 'adattoA', 'diCosaCiOccupiamo', 'metodo', 'bandiVinti', 'ctaProgetti', 'ctaBanner'].map((t) => [
+        t,
+        PtServizioSezione,
+      ]),
+    ),
+    // Le foto usano gli stessi blocchi del corpo dei progetti.
+    imageBlock: PtImageBlock,
+    imageCarousel: PtImageCarousel,
+  },
 };

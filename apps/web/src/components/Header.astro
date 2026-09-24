@@ -14,7 +14,6 @@ const navLinks = [
   { href: '/servizi', label: 'Servizi' },
   { href: '/contatti', label: 'Contatti' },
   { href: '/progetti', label: 'Portfolio' },
-  { href: '/blog', label: 'Blog' },
 ];
 
 const ctaHref = '/contatti';
@@ -26,6 +25,7 @@ const currentPath = Astro.url.pathname;
 // bisogno di un range di scroll — su una pagina più corta del viewport la
 // timeline non avanza e l'header resterebbe fermo sullo stato trasparente.
 const isHome = currentPath === '/';
+const overlay = isHome;
 
 function isActive(href: string) {
   if (href === '/') return currentPath === '/';
@@ -52,8 +52,8 @@ function isActive(href: string) {
 */}
 <header
   id="site-header"
-  data-overlay={isHome ? 'true' : 'false'}
-  class:list={['site-header', isHome ? '' : 'site-header-solid']}
+  data-overlay={overlay ? 'true' : 'false'}
+  class:list={['site-header', overlay ? '' : 'site-header-solid']}
 >
   <div class="header-inner">
 
@@ -91,6 +91,9 @@ function isActive(href: string) {
       <summary class="mobile-toggle" aria-label="Menu">
         <svg xmlns="http://www.w3.org/2000/svg" class="mobile-toggle-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" class="mobile-toggle-close" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 6l12 12M18 6L6 18" />
         </svg>
       </summary>
       <div class="mobile-panel">
@@ -159,8 +162,7 @@ function isActive(href: string) {
     }
   }
 
-  .nav-link,
-  .mobile-link {
+  .nav-link {
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
     line-height: calc(1 / 0.75);
@@ -172,12 +174,8 @@ function isActive(href: string) {
   .nav-link {
     transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .mobile-link {
-    padding-block: var(--space-3);
-  }
   .nav-link:hover,
-  .nav-link.nav-link-active,
-  .mobile-link.mobile-link-active {
+  .nav-link.nav-link-active {
     color: var(--color-accent-text);
   }
 
@@ -301,7 +299,7 @@ function isActive(href: string) {
     background-color: color-mix(
       in srgb,
       var(--color-fg) calc(var(--header-solid) * 100%),
-      color-mix(in srgb, var(--color-fg) 45%, transparent)
+      color-mix(in srgb, var(--color-fg) 35%, transparent)
     );
     color: var(--color-fg-invert);
     border: 1px solid color-mix(
@@ -309,7 +307,10 @@ function isActive(href: string) {
       var(--color-fg) calc(var(--header-solid) * 100%),
       color-mix(in srgb, var(--color-fg-invert) 45%, transparent)
     );
-    backdrop-filter: blur(calc((1 - var(--header-solid)) * 4px));
+    /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%, sfocatura
+       12px); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
+    backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
+    -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
     transition: background-color 300ms ease, border-color 300ms ease;
   }
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
@@ -351,26 +352,6 @@ function isActive(href: string) {
     height: var(--space-6);
   }
 
-  .mobile-panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    border-top: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
-    background-color: var(--color-bg);
-  }
-  .mobile-nav-list {
-    display: flex;
-    flex-direction: column;
-    padding-inline: var(--space-6);
-    padding-block: var(--space-4);
-    gap: var(--space-1);
-  }
-  .site-header :global(.mobile-cta) {
-    width: 100%;
-    margin-top: var(--space-3);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .site-header[data-overlay='true'],
     .site-header[data-overlay='true'] .nav-link,
@@ -380,4 +361,162 @@ function isActive(href: string) {
       transition: none;
     }
   }
+  /* ── Entrata in home ────────────────────────────────────────────────
+     In home l'header compare dopo l'hero (foto, titolo, card: vedi
+     home/Hero.astro): logo, menu e pulsante scendono dall'alto uno dopo
+     l'altro con un piccolo rimbalzo. Si animano i blocchi interni e non
+     l'header, che ha già la sua animazione legata allo scroll. */
+  @keyframes header-scende {
+    0% {
+      opacity: 0;
+      transform: translateY(-16px);
+    }
+    60% {
+      opacity: 1;
+      transform: translateY(3px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .site-header[data-overlay='true'] .header-inner > * {
+      animation: header-scende 600ms var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
+    }
+    .site-header[data-overlay='true'] .header-inner > :nth-child(2) {
+      animation-delay: 1320ms;
+    }
+    .site-header[data-overlay='true'] .header-inner > :nth-child(3) {
+      animation-delay: 1440ms;
+    }
+  }
+  /* ── Menu mobile a tutto schermo ────────────────────────────────────
+     <details> nativo. Da aperto, un pannello di vetro scuro copre la pagina
+     (la foto o il contenuto si intravedono sfocati), le voci grandi entrano
+     una dopo l'altra con il rimbalzo, il pulsante è rosso e l'icona diventa
+     una X. Lo scorrimento della pagina si blocca finché è aperto (script in
+     fondo). Il pannello è assoluto nell'header, che è sticky in cima: copre
+     lo schermo intero. Il fondo al 65% tiene il testo bianco sopra 6:1 anche
+     sulle pagine chiare. */
+  .mobile-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: color-mix(in srgb, var(--color-fg) 65%, transparent);
+    /* Riflesso in alto, come una lastra di vetro. */
+    background-image: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-fg-invert) 10%, transparent),
+      transparent 45%
+    );
+    backdrop-filter: blur(24px) saturate(1.2); /* vetro: nessun token blur */
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  }
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
+    padding-inline: var(--space-8);
+    gap: var(--space-2);
+  }
+  .mobile-link {
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    line-height: 1.15;
+    padding-block: var(--space-2);
+    color: var(--color-fg-invert);
+  }
+  .mobile-link.mobile-link-active {
+    color: var(--color-highlight);
+  }
+  .site-header :global(.mobile-cta) {
+    width: 100%;
+    margin-top: var(--space-8);
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-fg-invert);
+  }
+
+  .mobile-toggle-close {
+    display: none;
+    width: var(--space-6);
+    height: var(--space-6);
+  }
+  .mobile-nav[open] .mobile-toggle-icon {
+    display: none;
+  }
+  .mobile-nav[open] .mobile-toggle-close {
+    display: block;
+  }
+  .mobile-nav[open] > summary {
+    position: relative;
+    z-index: 2;
+    color: var(--color-fg-invert);
+  }
+  /* Focus sul pannello scuro: anello bianco (il rosso lì non arriva al 3:1). */
+  .mobile-nav[open] > summary:focus-visible,
+  .mobile-link:focus-visible,
+  .site-header :global(.mobile-cta:focus-visible) {
+    outline: 2px solid var(--color-fg-invert);
+    outline-offset: 3px;
+  }
+
+  @keyframes menu-voce {
+    0% { opacity: 0; transform: translateX(-20px); }
+    60% { opacity: 1; transform: translateX(3px); }
+    100% { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-nav[open] .mobile-nav-list > * {
+      animation: menu-voce 480ms var(--ease-bounce) 60ms backwards;
+    }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(2) { animation-delay: 130ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(3) { animation-delay: 200ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(4) { animation-delay: 270ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(5) { animation-delay: 340ms; }
+  }
 </style>
+
+<script>
+  // Menu mobile aperto: la pagina sotto non scorre. Si rilega a ogni pagina
+  // (il ClientRouter rimpiazza l'header) e si sblocca prima dello swap.
+  function initMenu() {
+    const menu = document.getElementById('mobile-menu') as HTMLDetailsElement | null;
+    if (!menu || menu.dataset.bound) return;
+    menu.dataset.bound = 'true';
+    // Da aperto il pannello copre la pagina: lo sfondo diventa inert (il Tab
+    // resta nel menu, i lettori di schermo non leggono ciò che sta sotto) ed
+    // Esc lo chiude, riportando il focus sull'icona.
+    const sotto = () => [
+      document.querySelector('.page-main'),
+      document.querySelector('footer'),
+      document.querySelector('.header-left'),
+      document.querySelector('.cta-wrap'),
+    ].filter(Boolean) as HTMLElement[];
+    menu.addEventListener('toggle', () => {
+      document.documentElement.style.overflow = menu.open ? 'hidden' : '';
+      sotto().forEach((el) => (el.inert = menu.open));
+    });
+    menu.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && menu.open) {
+        menu.open = false;
+        menu.querySelector('summary')?.focus();
+      }
+    });
+  }
+  document.addEventListener('astro:page-load', initMenu);
+  document.addEventListener('astro:before-swap', () => {
+    document.documentElement.style.overflow = '';
+  });
+  // Il nuovo <main> arriva senza inert; header e footer restano quelli nuovi.
+
+</script>

@@ -23,7 +23,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
 <section class="partner-strip" data-partner-strip>
   {/* ---------- Desktop: marquee a riga singola ---------- */}
   <div class="partner-desktop">
-    <div class="partner-track partner-track-row is-autoscroll" data-partner-track>
+    <div class="partner-track partner-track-row is-autoscroll" data-partner-track data-reveal-group>
       {
         desktopTrack.map((partner) => (
           <div class="partner-card" data-name={partner.name}>
@@ -50,6 +50,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     <div
       class="partner-track partner-track-row-mobile is-autoscroll"
       data-partner-track
+      data-reveal-group
       style="--marquee-dur: 40s"
     >
       {
@@ -76,6 +77,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     <div
       class="partner-track partner-track-row-mobile is-autoscroll is-reverse"
       data-partner-track
+      data-reveal-group
       style="--marquee-dur: 48s"
     >
       {

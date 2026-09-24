@@ -1,0 +1,262 @@
+---
+// LAB — revisione di foto e testi prima di pubblicarli: per ogni pagina,
+// servizio e progetto le foto assegnate (header e galleria) con il loro testo
+// alternativo, più i punti ancora da decidere. Le foto si leggono dai
+// documenti Sanity del dataset con cui si costruisce il sito, quindi la pagina
+// mostra sempre lo stato di quel dataset. Pagina interna: noindex, fuori dal menu.
+import { getCollection, getEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '#layouts/BaseLayout.astro';
+import { sanityImageUrl, type SanityImage } from '#lib/sanity';
+import { imageSize } from '#lib/media';
+
+interface Foto {
+  src: string;
+  alt: string;
+  ruolo: string;
+}
+interface Scheda {
+  titolo: string;
+  href: string;
+  foto: Foto[];
+}
+
+type Figura = SanityImage & { alt?: string };
+type Blocco = { _type: string; images?: Figura[]; image?: Figura };
+
+/** Foto dei blocchi immagine di un corpo Portable Text. */
+function galleria(body: Blocco[]): Foto[] {
+  return body.flatMap((b) =>
+    [...(b.images ?? []), ...(b.image ? [b.image] : [])].map((i, n) => ({
+      src: sanityImageUrl(i),
+      alt: i.alt ?? '',
+      ruolo: `Galleria ${n + 1}`,
+    })),
+  );
+}
+
+const home = await getEntry('pagine', 'home');
+const chiSiamo = await getEntry('pagine', 'chi-siamo');
+const pagine: Scheda[] = [];
+if (home?.data.type === 'home') {
+  pagine.push({
+    titolo: 'Home',
+    href: '/',
+    foto: [
+      ...home.data.heroImages.map((i, n) => ({ src: i.src, alt: i.alt, ruolo: `Hero ${n + 1}` })),
+      ...(home.data.aboutImage ? [{ src: home.data.aboutImage, alt: home.data.aboutImageAlt, ruolo: 'Chi siamo' }] : []),
+    ],
+  });
+}
+if (chiSiamo?.data.type === 'chi-siamo') {
+  pagine.push({
+    titolo: 'Chi siamo',
+    href: '/chi-siamo',
+    foto: [
+      ...(chiSiamo.data.heroImage ? [{ src: chiSiamo.data.heroImage, alt: chiSiamo.data.heroImageAlt, ruolo: 'Header' }] : []),
+      ...chiSiamo.data.founders
+        .filter((f) => f.photo)
+        .map((f) => ({ src: f.photo, alt: `Ritratto di ${f.name}`, ruolo: f.name })),
+    ],
+  });
+}
+
+const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const schede = (
+  entries: typeof servizi | typeof progetti,
+  base: string,
+): Scheda[] =>
+  entries.map((e) => ({
+    titolo: e.data.title,
+    href: `${base}/${e.id}`,
+    foto: [
+      { src: e.data.heroImage, alt: e.data.heroAlt, ruolo: 'Header' },
+      ...galleria(e.data.body as Blocco[]),
+    ],
+  }));
+
+const gruppi = [
+  { titolo: 'Pagine', schede: pagine },
+  { titolo: 'Servizi', schede: schede(servizi, '/servizi') },
+  { titolo: 'Progetti', schede: schede(progetti, '/progetti') },
+];
+
+// Punti aperti della revisione (settembre 2026): si tolgono quando sono decisi.
+const dubbi: { titolo: string; testo: string }[] = [
+  { titolo: 'LinkedIn delle fondatrici', testo: 'I link puntano a “#”: servono gli URL dei profili.' },
+  { titolo: 'Nomi leggibili nelle foto', testo: 'Tre foto dei Comuni Musicali mostrano nomi di persone su badge e segnaposto: tenerle, ritagliarle o sostituirle?' },
+  { titolo: 'Un bambino in una foto di gruppo', testo: 'Itinerari, Cremona Express: nel gruppo c’è un bambino. Tenerla?' },
+  { titolo: 'Progetti senza foto', testo: 'DMO Visit Cremona, Corso Turismo Musicale — DMO Visit Cremona e Società dei Concerti di Parma hanno un segnaposto grigio finché non arrivano le foto.' },
+  { titolo: 'Tricarico', testo: 'Le foto sembrano del carnevale, non del tour. Tenerle nella galleria degli Itinerari?' },
+  { titolo: 'Header deboli', testo: 'METE e Periphonic hanno poche foto orizzontali e in bassa risoluzione: l’header viene tagliato molto.' },
+  { titolo: 'Dati incoerenti nel sorgente', testo: 'Focus group 3 o 4; Full Immersion 5 o 7 giorni; Mappe: “3 mappe” ma ne elenca 5, 3000 copie per mappa o in totale, Bilbao o San Sebastián; Comuni Musicali: “quattro tavoli” ma tre sedi. Le due versioni omettono il dato o scelgono un valore.' },
+  { titolo: 'Bandi vinti: 9 o 10+?', testo: 'La home dice +10, l’elenco ne conta 9; le versioni non usano lo stesso numero ovunque.' },
+  { titolo: 'Testimonianze', testo: 'Le tre testimonianze precedenti (Maria Rossi, Luca Bianchi, Sara Verdi) erano inventate: resta solo quella di Cult Funding. Il voto a 5 stelle è obbligatorio nello schema ma non viene dal sorgente.' },
+  { titolo: 'Privacy e termini', testo: 'Tolti i “[DA COMPLETARE]”, completato il titolare con i dati societari, tolte tre sezioni vuote dai termini. Il testo va rivisto da un legale.' },
+  { titolo: 'Ledger eventi (versione B)', testo: 'Le descrizioni di Assomusica, FIMI, SIAE… non sono nel sorgente: toglierle?' },
+];
+---
+
+<BaseLayout title="Revisione foto e testi — Lab" description="Revisione interna di foto e testi prima della pubblicazione." noindex>
+  <section class="rev-hero">
+    <p class="rev-eyebrow">Interno · non indicizzato</p>
+    <h1 class="rev-title">Revisione foto e testi</h1>
+    <p class="rev-lead">
+      Le foto assegnate a ogni pagina, con il loro testo alternativo, e i punti ancora da decidere.
+      I testi si rivedono aprendo le pagine vere dai titoli qui sotto.
+    </p>
+  </section>
+
+  <section class="rev-group">
+    <h2 class="rev-group-title">Da decidere</h2>
+    <ol class="rev-dubbi">
+      {dubbi.map((d) => (
+        <li>
+          <strong>{d.titolo}.</strong> {d.testo}
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {gruppi.map((g) => (
+    <section class="rev-group">
+      <h2 class="rev-group-title">{g.titolo}</h2>
+      {g.schede.map((s) => (
+        <article class="rev-scheda">
+          <h3 class="rev-scheda-title">
+            <a href={s.href}>{s.titolo}</a>
+            <span class="rev-count">{s.foto.length} foto</span>
+          </h3>
+          {s.foto.length === 0 ? (
+            <p class="rev-vuoto">Nessuna foto in questo dataset.</p>
+          ) : (
+            <ul class="rev-grid">
+              {s.foto.map((f) => (
+                <li class="rev-foto">
+                  <Image src={f.src} {...imageSize(f.src)} alt={f.alt} widths={[320, 640]} sizes="(max-width: 640px) 50vw, 240px" quality={70} class="rev-img" />
+                  <p class="rev-ruolo">{f.ruolo}</p>
+                  <p class="rev-alt">{f.alt || '— alt mancante —'}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </article>
+      ))}
+    </section>
+  ))}
+</BaseLayout>
+
+<style>
+  .rev-hero,
+  .rev-group {
+    max-width: 72rem; /* nessun token di larghezza contenitore */
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+  .rev-hero {
+    padding-top: var(--space-24);
+    padding-bottom: var(--space-8);
+  }
+  .rev-group {
+    padding-block: var(--space-8);
+    border-top: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
+  }
+
+  .rev-eyebrow {
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em; /* come l'eyebrow di lab/index */
+    text-transform: uppercase;
+    color: var(--color-accent-text);
+    margin-bottom: var(--space-3);
+  }
+  .rev-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-4xl);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--color-fg);
+    margin-bottom: var(--space-4);
+  }
+  .rev-lead,
+  .rev-dubbi {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+    color: var(--color-fg);
+    max-width: 48rem; /* misura di lettura */
+  }
+  .rev-dubbi {
+    padding-left: var(--space-6);
+    list-style: decimal;
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .rev-group-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-6);
+  }
+  .rev-scheda {
+    margin-bottom: var(--space-12);
+  }
+  .rev-scheda-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    margin-bottom: var(--space-4);
+  }
+  .rev-scheda-title a {
+    color: var(--color-fg);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .rev-scheda-title a:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .rev-count,
+  .rev-vuoto,
+  .rev-ruolo {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    font-weight: 400;
+    color: color-mix(in oklab, var(--color-fg) 70%, transparent);
+  }
+
+  .rev-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .rev-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  .rev-img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    background-color: color-mix(in oklab, var(--color-fg) 8%, transparent);
+  }
+  .rev-ruolo {
+    margin-top: var(--space-2);
+    font-weight: 700;
+  }
+  .rev-alt {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+    color: var(--color-fg);
+  }
+</style>

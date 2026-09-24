@@ -8,10 +8,10 @@
  * maiuscolo, tracking largo, freccia decorativa (`aria-hidden`, il testo del
  * link basta da solo agli screen reader).
  *
- * Le due decorazioni restano distinte per tono — bordo inferiore su fondo
- * chiaro, sottolineatura su fondo scuro — perché è ciò che rende leggibile
- * il link nei due contesti; il micro-movimento della freccia al passaggio del
- * mouse invece è unificato, e rispetta prefers-reduced-motion.
+ * La freccia è la stessa delle card dei servizi: disegnata (SVG a misure
+ * intere, nitida), dentro un cerchio che al passaggio del mouse si riempie
+ * d'accento. È il cerchio a dire "link": niente sottolineature separate dal
+ * testo. Il micro-movimento della freccia rispetta prefers-reduced-motion.
  *
  * CSS Modules + token (ADR-0005), presentazionale (ADR-0008).
  */
@@ -44,7 +44,9 @@ export default function ArrowLink({ href, children, tone = 'default', className 
     <a className={cls} href={href}>
       {children}
       <span className={styles.arrow} aria-hidden="true">
-        →
+        <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 7h9M8 4l3 3-3 3" />
+        </svg>
       </span>
     </a>
   );

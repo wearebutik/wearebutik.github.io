@@ -6,6 +6,7 @@ import '@butik/ui-tokens/tokens.css';
 import '../styles/reset.css';
 import '../styles/global.css';
 import '../styles/prose.css';
+import '../styles/motion.css';
 // Stili del cookie banner (ADR-0006). L'inizializzazione avviene lato client
 // nello <script> in fondo al layout.
 import 'vanilla-cookieconsent/dist/cookieconsent.css';
@@ -19,12 +20,18 @@ interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Pagine interne (lab): fuori dai motori di ricerca. */
+  noindex?: boolean;
+  /** Animazioni d'ingresso (styles/motion.css + @butik/ui/reveal); false per spegnerle. */
+  reveal?: boolean;
 }
 
 const {
   title = 'Butik',
   description = 'La prima impresa sociale italiana specializzata in progettazione culturale e sviluppo territoriale attraverso la musica.',
   ogImage,
+  noindex = false,
+  reveal = true,
 } = Astro.props;
 
 const siteBase = Astro.site ?? Astro.url.origin;
@@ -55,6 +62,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <meta name="generator" content={Astro.generator} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     {/* Google Tag Manager + Consent Mode v2 (ADR-0006). Il default `denied`
         DEVE precedere il caricamento di gtm.js: entrambi in questo unico script
@@ -131,7 +139,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       />
     )}
     <Header />
-    <main class="page-main">
+    <main class="page-main" data-reveal-off={reveal ? undefined : ''}>
       <slot />
     </main>
     <Footer />
@@ -141,6 +149,33 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         indipendentemente dalla risposta al banner. Rieseguito a ogni
         astro:page-load perché le view transition rimpiazzano il DOM;
         CookieConsent.run e initPostHogCookieless sono idempotenti. */}
+    {/* Animazioni d'ingresso: arma gli elementi di <main> a ogni pagina
+        (il ClientRouter rimpiazza <main>, quindi il nodo è sempre nuovo) e
+        stacca l'osservatore prima dello swap. */}
+    <script>
+      import { initReveal } from '@butik/ui/reveal';
+
+      // Header delle pagine (HeroBanner): se la sua foto arriva con il morph
+      // della view transition (stesso nome sulla pagina che si lascia, es. la
+      // card del portfolio), si marca data-morph e l'entrata al caricamento si
+      // salta: il rimbalzo lo fa già la transizione.
+      document.addEventListener('astro:before-swap', (e) => {
+        const banner = e.newDocument.querySelector<HTMLElement>('[data-hero-banner]');
+        const nome = banner?.querySelector<HTMLElement>('img')?.style.viewTransitionName;
+        if (!banner || !nome) return;
+        const presente = [...document.querySelectorAll<HTMLElement>('[data-astro-transition-scope], [style*="view-transition-name"]')]
+          .some((el) => getComputedStyle(el).viewTransitionName === nome);
+        if (presente) banner.dataset.morph = '';
+      });
+
+      document.addEventListener('astro:page-load', () => {
+        const main = document.querySelector<HTMLElement>('.page-main');
+        if (!main || 'revealOff' in main.dataset) return;
+        const stop = initReveal(main);
+        document.addEventListener('astro:before-swap', stop, { once: true });
+      });
+    </script>
+
     <script>
       import { initCookieConsent } from '#lib/consent/init.client';
       import { initPostHogCookieless } from '#lib/analytics/posthog.client';

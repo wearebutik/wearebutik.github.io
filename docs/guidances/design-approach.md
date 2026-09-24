@@ -43,9 +43,26 @@
   one component lives with it — in the component's CSS Module under
   `packages/ui`, or in the `.astro` that owns the behaviour. Co-location is the
   point of CSS Modules; the shared `lib` is for what genuinely crosses components.
-- A motion atom that observes the viewport (`Underline`, `CountUp`) needs
-  `client:visible` in Astro; without a directive it renders frozen at its initial
-  state.
+- A motion atom that observes the viewport (`CountUp`, `Underline` in its default
+  `trigger="view"`) needs `client:visible` in Astro; without a directive it renders
+  frozen at its initial state. `Underline trigger="load"` draws with CSS on page
+  load and needs no directive — use it for text already in view (a hero title).
+- **Entrance motion is one system** ([PDR-0002](../product/decisions/0002-motion-musical-rhythm.md)):
+  `@butik/ui/reveal` (armed by `BaseLayout` on every page) plus the styles in
+  `apps/web/src/styles/motion.css`. Grid and list items bounce up once, the first
+  time they enter; items entering together follow each other; section `h2`s get a
+  red line drawn under them. A component opts in with `data-reveal-group` when its
+  container is not a grid/list/cards by name, opts an element out with
+  `data-no-reveal`, picks the sideways variant with `data-reveal-effetto="scivola"`;
+  a page opts out with `BaseLayout reveal={false}`.
+- **Heroes enter on load, not on scroll**: `data-hero` on the section (excluded from
+  the reveal), `data-battito` + `--ritardo` on the pieces that bounce up in
+  sequence, `data-assesta` on the photo that settles from a slight zoom.
+- **Entrance animations end clean**: fill mode `backwards`, never `both`. A
+  leftover identity transform becomes the containing block of positioned
+  descendants (it collapsed the mobile menu panel) and overrides the element's own
+  `transform` (it misaligned the metodo rail).
+- **Easing**: `--ease-bounce` for the musical bounce, `--ease-out` for the rest.
 
 ## Browser support
 

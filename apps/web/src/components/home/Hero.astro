@@ -5,40 +5,17 @@ import ServiceCard from '../serviziCards/ServiceCard.astro';
 import ServiceLauncher from '../serviziCards/ServiceLauncher.astro';
 import Button from '@butik/ui/Button';
 import ArrowLink from '@butik/ui/ArrowLink';
+import Underline from '@butik/ui/Underline';
 
-import imgA from '../../assets/servizi/template-servizio/gallery-1.jpg';
-import imgB from '../../assets/servizi/template-servizio/img-right.jpg';
-import imgC from '../../assets/servizi/template-servizio/hero.jpg';
-import imgD from '../../assets/servizi/template-servizio/img-block.jpg';
-import imgE from '../../assets/servizi/template-servizio/img-left.jpg';
-import imgF from '../../assets/servizi/template-servizio/gallery-3.jpg';
-import imgG from '../../assets/servizi/template-servizio/gallery-2.jpg';
-import imgH from '../../assets/hero-home.jpg';
+import { imageSize } from '#lib/media';
 
-// ── Background tiles ────────────────────────────────────────────────────
-// Mosaico di immagini absolute che coprono tutto lo sfondo dell'hero.
-// Posizione/dimensione in % della section, con sovrapposizioni volute.
-// Parallax: ogni tile ha vy (verticale) e vx (orizzontale) differenti.
-interface BgTile {
-  src: ImageMetadata;
-  alt: string;
-  /** Style inline per posizionamento iniziale (top/left/width/height in %). */
-  pos: string;
-  /** Velocità parallax: y per scroll verticale, x per drift orizzontale. */
-  vy: number;
-  vx: number;
-}
-
-const bgTiles: BgTile[] = [
-  { src: imgC, alt: 'Itinerario turistico-musicale',     pos: 'top:-5%; left:-3%;  width:42%; height:55%;', vy: 0.22, vx:  0.04 },
-  { src: imgA, alt: 'Workshop di co-progettazione',      pos: 'top:-8%; left:32%;  width:36%; height:50%;', vy: 0.10, vx: -0.06 },
-  { src: imgB, alt: 'Comunità coinvolta',                pos: 'top:-3%; left:62%;  width:42%; height:48%;', vy: 0.28, vx:  0.05 },
-  { src: imgE, alt: 'Formazione e capacity building',    pos: 'top:38%; left:-4%;  width:38%; height:60%;', vy: 0.34, vx: -0.03 },
-  { src: imgH, alt: 'Evento culturale Butik',            pos: 'top:42%; left:28%;  width:42%; height:55%;', vy: 0.15, vx:  0.05 },
-  { src: imgD, alt: 'Concerto e attivazione',            pos: 'top:40%; left:62%;  width:40%; height:58%;', vy: 0.26, vx: -0.04 },
-  { src: imgG, alt: 'Percorso di formazione',            pos: 'top:62%; left:8%;   width:32%; height:42%;', vy: 0.40, vx:  0.08 },
-  { src: imgF, alt: 'Mappa turistico-musicale',          pos: 'top:65%; left:55%;  width:35%; height:40%;', vy: 0.18, vx: -0.07 },
-];
+// ── Foto di sfondo ──────────────────────────────────────────────────────
+// Foto a tutto sfondo da Sanity (pagina home), in loop con dissolvenza
+// incrociata, solo CSS. Ogni foto resta `SLIDE_S` secondi, di cui `FADE_S`
+// di dissolvenza sulla successiva. Le percentuali dei keyframes dipendono dal
+// numero di foto, per questo il blocco @keyframes è generato qui sotto.
+const SLIDE_S = 7;
+const FADE_S = 1.5;
 
 // ── Card servizi (5) ───────────────────────────────────────────────────
 // Copy editoriale content-driven (ADR-0004): la card di ciascun documento
@@ -52,10 +29,8 @@ interface ServizioCard {
   statLabel: string;
 }
 
-// Slideshow mobile: 4-5 immagini di sfondo che ruotano
-const mobileBackgrounds = [bgTiles[0], bgTiles[2], bgTiles[4], bgTiles[6]];
-
 interface Props {
+  images: { src: string; alt: string }[];
   title: string;
   subtitle: string;
   ctaLabel: string;
@@ -65,6 +40,7 @@ interface Props {
   servizi: ServizioCard[];
 }
 const {
+  images,
   title,
   subtitle,
   ctaLabel,
@@ -73,6 +49,28 @@ const {
   exploreHref,
   servizi,
 } = Astro.props;
+
+// Ciclo: la foto i è piena nella sua finestra [0, p], sfuma in [p, p+f] e
+// rientra in [100-f, 100], mentre la precedente (sotto) è ancora piena.
+// Il ritardo negativo mette ogni foto nella sua fase già al primo frame.
+const n = images.length;
+const cycle = n * SLIDE_S;
+const p = 100 / n;
+const f = (100 * FADE_S) / cycle;
+const pct = (v: number) => `${+v.toFixed(3)}%`;
+const keyframes =
+  n > 1
+    ? `@keyframes hero-xfade{0%,${pct(p)}{opacity:1}${pct(p + f)},${pct(100 - f)}{opacity:0}100%{opacity:1}}`
+    : '';
+const slideStyle = (i: number) =>
+  n > 1
+    ? `animation: hero-xfade ${cycle}s linear ${i === 0 ? 0 : -(n - i) * SLIDE_S}s infinite;`
+    : undefined;
+
+// Accento tipografico: l'ultima parola del titolo sottolineata, disegnata al
+// caricamento solo con CSS (nessuna idratazione: il titolo è già in vista).
+const cut = title.lastIndexOf(' ');
+const [titleHead, titleLast] = cut === -1 ? ['', title] : [title.slice(0, cut + 1), title.slice(cut + 1)];
 
 // Presentazione dei servizi nell'hero: card con icona da tablet in su, lista
 // compatta da mobile (dove le card non stanno sopra la piega). La scelta è
@@ -93,49 +91,22 @@ const serviziItems = servizi.map((s) => ({
   data-hero-section
 >
 
-  <!-- ── DESKTOP: mosaico full-bleed di immagini con parallax ────────── -->
-  <div class="hero-bg-desktop" aria-hidden="true">
-    {bgTiles.map((tile, i) => (
-      <div
-        class="hero-tile"
-        style={tile.pos}
-        data-tile-vy={tile.vy}
-        data-tile-vx={tile.vx}
-        data-tile-index={i}
-      >
-        <Image
-          src={tile.src}
-          alt=""
-          widths={[400, 700, 1000]}
-          sizes="(max-width: 768px) 0px, 40vw"
-          quality={72}
-          loading="eager"
-          class="hero-tile-img"
-        />
-      </div>
-    ))}
-  </div>
-
-  <!-- ── MOBILE: slideshow di sfondo single-image ────────────────────── -->
-  <div class="hero-bg-mobile-wrap" aria-hidden="true">
-    {mobileBackgrounds.map((tile, i) => (
-      <div
-        class:list={[
-          'hero-bg-mobile',
-          i === 0 ? 'opacity-100' : 'opacity-0',
-        ]}
-        data-hero-bg-mobile={i}
-      >
-        <Image
-          src={tile.src}
-          alt=""
-          widths={[480, 768]}
-          sizes="100vw"
-          quality={70}
-          loading={i === 0 ? 'eager' : 'lazy'}
-          class="hero-bg-mobile-img"
-        />
-      </div>
+  <!-- ── Foto di sfondo in loop (decorative: il contenuto è nel testo) ── -->
+  {keyframes && <style is:inline set:html={keyframes} />}
+  <div class="hero-slides" aria-hidden="true" data-assesta>
+    {images.map((img, i) => (
+      <Image
+        src={img.src}
+        {...imageSize(img.src)}
+        alt=""
+        widths={[768, 1280, 1920, 2560]}
+        sizes="100vw"
+        quality={72}
+        loading={i === 0 ? 'eager' : 'lazy'}
+        fetchpriority={i === 0 ? 'high' : 'auto'}
+        class="hero-slide"
+        style={slideStyle(i)}
+      />
     ))}
   </div>
 
@@ -150,14 +121,14 @@ const serviziItems = servizi.map((s) => ({
 
       <!-- Titolo + subtitle + CTA primario -->
       <div class="hero-textcol">
-        <h1 class="hero-title">
-          {title}
+        <h1 class="hero-title" data-battito style="--ritardo: 150ms">
+          {titleHead}<Underline trigger="load" tone="accent">{titleLast}</Underline>
         </h1>
-        <p class="hero-subtitle">
+        <p class="hero-subtitle" data-battito style="--ritardo: 270ms">
           {subtitle}
         </p>
 
-        <div class="hero-cta">
+        <div class="hero-cta" data-battito style="--ritardo: 390ms">
           <Button href={ctaHref}>{ctaLabel}</Button>
         </div>
       </div>
@@ -199,43 +170,33 @@ const serviziItems = servizi.map((s) => ({
     flex-direction: column;
   }
 
-  .hero-bg-desktop {
-    position: absolute;
-    inset: 0;
-    display: none;
-  }
-  @media (min-width: 768px) {
-    .hero-bg-desktop {
-      display: block;
-    }
-  }
-
-  .hero-bg-mobile-wrap {
+  .hero-slides {
     position: absolute;
     inset: 0;
   }
-  @media (min-width: 768px) {
-    .hero-bg-mobile-wrap {
-      display: none;
-    }
-  }
-
-  .hero-tile-img,
-  .hero-bg-mobile-img {
+  .hero-slide {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+  }
+  /* Senza animazione (reduced-motion, o una sola foto) resta la prima. */
+  .hero-slide:first-child {
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-slide {
+      animation: none !important;
+    }
   }
 
   .hero-scrim {
     position: absolute;
     inset: 0;
-    background-color: color-mix(in srgb, var(--color-fg) 55%, transparent);
-  }
-  @media (min-width: 768px) {
-    .hero-scrim {
-      background-color: color-mix(in srgb, var(--color-fg) 35%, transparent);
-    }
+    /* Velo tarato su foto a tutto sfondo (AA per titolo e card sopra). */
+    background-color: color-mix(in srgb, var(--color-fg) 60%, transparent);
   }
   .hero-gradient {
     position: absolute;
@@ -416,105 +377,52 @@ const serviziItems = servizi.map((s) => ({
     }
   }
 
-  .hero-tile {
-    position: absolute;
-    will-change: transform;
-    overflow: hidden;
-    transition: transform 100ms linear;
-    opacity: 0.92;
-    /* Mask radiale ampio e molto progressivo: la zona opaca è ampia (immagini
-       ben visibili al centro di ciascuna tile) e il fade ai bordi attraversa
-       5 stop in maniera "atmosferica" senza salti di luminanza percepibili.
-       Niente blur né border-radius: il mask basta a evitare bordi netti. */
-    -webkit-mask-image: radial-gradient(
-      ellipse 95% 95% at center,
-      #000 5%,
-      rgba(0, 0, 0, 0.92) 30%,
-      rgba(0, 0, 0, 0.6) 55%,
-      rgba(0, 0, 0, 0.25) 78%,
-      transparent 100%
-    );
-    mask-image: radial-gradient(
-      ellipse 95% 95% at center,
-      #000 5%,
-      rgba(0, 0, 0, 0.92) 30%,
-      rgba(0, 0, 0, 0.6) 55%,
-      rgba(0, 0, 0, 0.25) 78%,
-      transparent 100%
-    );
+  /* ── Entrata al caricamento (direzione "ritmo musicale", vedi
+     styles/motion.css): la foto si assesta, titolo, sottotitolo e pulsante
+     salgono con il rimbalzo (data-battito, data-assesta), poi le card, una
+     dopo l'altra, come barre di un equalizzatore.
+     A tempo dal caricamento: l'hero è già in vista. Esclusa nelle prove A e C
+     di /lab/motion, che hanno le loro regole. Le card sono di ServiceCard:
+     il selettore dei figli è :global, lo scope di Hero non le raggiunge. */
+  @keyframes hero-in-dissolvi {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
-
-  .hero-bg-mobile {
-    position: absolute;
-    inset: 0;
-    transition: opacity 1000ms ease-in-out;
+  @keyframes hero-in-scivola {
+    0% { opacity: 0; transform: translateX(-20px); }
+    60% { opacity: 1; transform: translateX(3px); }
+    100% { opacity: 1; transform: none; }
   }
-  /* opacity-100/opacity-0 restano nomi letterali (non semantici): lo <script>
-     sotto le referenzia per stringa via classList.replace nello slideshow. */
-  .opacity-100 {
-    opacity: 1;
+  @keyframes hero-in-battito {
+    0% { opacity: 0; transform: scaleY(0.3); }
+    60% { opacity: 1; transform: scaleY(1.08); }
+    100% { opacity: 1; transform: none; }
   }
-  .opacity-0 {
-    opacity: 0;
+  @media (prefers-reduced-motion: no-preference) {
+    /* Titolo, sottotitolo e pulsante: data-battito (styles/motion.css). */
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore {
+      animation: hero-in-dissolvi 600ms var(--ease-out) backwards;
+    }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(*) {
+      transform-origin: bottom;
+      animation: hero-in-battito 560ms var(--ease-bounce) 520ms backwards;
+    }
+    /* Mobile: il riquadro compare in dissolvenza e le righe entrano una dopo
+       l'altra scivolando da sinistra (le righe sono di ServiceLauncher). */
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list {
+      animation: hero-in-dissolvi 500ms var(--ease-out) 450ms backwards;
+    }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li) {
+      animation: hero-in-scivola 520ms var(--ease-bounce) 550ms backwards;
+    }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(2)) { animation-delay: 640ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(3)) { animation-delay: 730ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(4)) { animation-delay: 820ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(5)) { animation-delay: 910ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(2)) { animation-delay: 640ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(3)) { animation-delay: 760ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(4)) { animation-delay: 880ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(5)) { animation-delay: 1000ms; }
+    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore { animation-delay: 1150ms; }
   }
 </style>
-
-<script>
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const desktopMQ = window.matchMedia('(min-width: 768px)');
-
-  // ── 1. Mobile slideshow (cross-fade ogni 5s) ───────────────────────────
-  const mobileBgs = Array.from(
-    document.querySelectorAll<HTMLElement>('.hero-bg-mobile[data-hero-bg-mobile]')
-  );
-  if (mobileBgs.length > 1 && !reducedMotion) {
-    let current = 0;
-    setInterval(() => {
-      mobileBgs[current].classList.replace('opacity-100', 'opacity-0');
-      current = (current + 1) % mobileBgs.length;
-      mobileBgs[current].classList.replace('opacity-0', 'opacity-100');
-    }, 5000);
-  }
-
-  // ── 2. Parallax desktop (translate X+Y per ogni tile) ──────────────────
-  const tiles = Array.from(
-    document.querySelectorAll<HTMLElement>('.hero-tile[data-tile-index]')
-  );
-  const heroSection = document.querySelector<HTMLElement>('[data-hero-section]');
-
-  let ticking = false;
-  const updateParallax = () => {
-    if (!heroSection || !desktopMQ.matches || reducedMotion) {
-      tiles.forEach((t) => { t.style.transform = ''; });
-      ticking = false;
-      return;
-    }
-    const rect = heroSection.getBoundingClientRect();
-    if (rect.bottom < -50 || rect.top > window.innerHeight + 50) {
-      ticking = false;
-      return;
-    }
-    const progress = -rect.top; // px scrollati dentro l'hero
-    tiles.forEach((tile) => {
-      const vy = parseFloat(tile.dataset.tileVy || '0');
-      const vx = parseFloat(tile.dataset.tileVx || '0');
-      const ty = (progress * vy).toFixed(2);
-      const tx = (progress * vx).toFixed(2);
-      tile.style.transform = `translate3d(${tx}px, ${ty}px, 0)`;
-    });
-    ticking = false;
-  };
-
-  const onScroll = () => {
-    if (!ticking) {
-      ticking = true;
-      requestAnimationFrame(updateParallax);
-    }
-  };
-
-  if (heroSection && tiles.length) {
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    updateParallax();
-  }
-</script>

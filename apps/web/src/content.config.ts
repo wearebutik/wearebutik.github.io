@@ -113,6 +113,8 @@ const paginaHome = z.object({
   heroCtaHref: z.string(),
   heroExploreLabel: z.string(),
   heroExploreHref: z.string(),
+  // Foto di sfondo dell'hero, in loop. Facoltative: senza, fondo scuro.
+  heroImages: z.array(z.object({ src: z.string().url(), alt: z.string() })).optional().default([]),
   // Numeri / impatto
   butikMetrics: z.array(metricSchema),
   mmwLabel: z.string(),
@@ -131,6 +133,8 @@ const paginaHome = z.object({
   aboutP3: z.string(),
   aboutCtaLabel: z.string(),
   aboutCtaHref: z.string(),
+  // Facoltativa: senza, AboutInline usa l'immagine locale.
+  aboutImage: z.string().url().optional(),
   aboutImageAlt: z.string(),
   // CTA banner 2 (dopo AboutInline, senza body)
   ctaBanner2Title: z.string(),
@@ -153,6 +157,8 @@ const paginaChiSiamo = z.object({
   metaDescription: z.string(),
   heroTitle: z.string(),
   heroSubtitle: z.string(),
+  // Facoltativa: senza, la pagina usa l'immagine locale.
+  heroImage: z.string().url().optional(),
   heroImageAlt: z.string(),
   introEyebrow: z.string(),
   introP1: portableText,
@@ -319,6 +325,23 @@ const paginaTestimonials = z.object({
   })),
 });
 
+// Footer (contenuto condiviso da tutte le pagine; i social anche da Contatti).
+const paginaFooter = z.object({
+  type: z.literal('footer'),
+  ragioneSociale: z.string(),
+  indirizzo: z.string(),
+  partitaIva: z.string(),
+  contattiLabel: z.string(),
+  pec: z.string(),
+  email: z.string(),
+  social: z.array(z.object({ rete: z.string(), href: z.string() })).optional().default([]),
+  colonna1: z.array(linkSchema).optional().default([]),
+  colonna2: z.array(linkSchema).optional().default([]),
+  linkLegali: z.array(linkSchema).optional().default([]),
+  cookieLabel: z.string(),
+  copyright: z.string(),
+});
+
 const pagineCollection = defineCollection({
   loader: pagineLoader(),
   schema: z.discriminatedUnion('type', [
@@ -331,6 +354,7 @@ const pagineCollection = defineCollection({
     paginaTestimonials,
     paginaTermini,
     paginaPrivacy,
+    paginaFooter,
   ]),
 });
 

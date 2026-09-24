@@ -1,0 +1,144 @@
+/*
+ * Animazioni d'ingresso del sito — direzione "ritmo musicale".
+ *
+ * Gli elementi delle griglie (card, passi, numeri, progetti) salgono dal
+ * basso con un piccolo rimbalzo, come barre di un equalizzatore, e quelli che
+ * entrano insieme partono in sequenza; i titoli di sezione si sottolineano di
+ * rosso con una linea che si disegna. Una volta sola: poi restano.
+ *
+ * La logica (quando parte cosa, e con che ritardo) è in @butik/ui/reveal,
+ * attivata da BaseLayout: arma gli elementi con data-reveal="attesa" e li fa
+ * partire con data-reveal="in" e il ritardo --d. Senza script nulla è armato;
+ * con prefers-reduced-motion lo script non arma niente. Una pagina si spegne
+ * con la prop `reveal={false}` di BaseLayout (es. contatti), un elemento con
+ * data-no-reveal. Le hero (home, schede servizio) hanno l'entrata al
+ * caricamento qui sotto (data-battito, data-assesta) e sono escluse dalle
+ * animazioni allo scroll (data-hero).
+ */
+
+/* Barra di equalizzatore: sale dal basso, supera appena e si assesta. */
+@keyframes motion-battito {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scaleY(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Variante "scivola": entra da sinistra con un piccolo rimbalzo orizzontale.
+   Per le liste in colonna su mobile (i passi del metodo), dove schiacciare
+   in verticale un elemento alto sembra un difetto. */
+@keyframes motion-scivola {
+  0% {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Foto di un'hero: parte leggermente ingrandita e si assesta con un
+   rimbalzo verso l'alto (mai sotto la misura piena: niente bordi scoperti). */
+@keyframes motion-assesta {
+  0% {
+    transform: scale(1.12);
+  }
+  55% {
+    transform: none;
+  }
+  75% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Sottolineatura dei titoli: una linea che si disegna da sinistra a destra
+   (sfondo di un elemento in linea che si allarga; sui titoli su più righe
+   procede riga dopo riga). L'elemento in linea lo crea @butik/ui/reveal. */
+@keyframes motion-disegna {
+  from {
+    background-size: 0% 3px;
+  }
+  to {
+    background-size: 100% 3px;
+  }
+}
+
+/* Riempimento `backwards`, mai `both`: a fine animazione non resta nessuna
+   trasformazione. Anche una trasformazione neutra fa da riferimento per gli
+   elementi posizionati dentro (il pannello del menu mobile, la guida del
+   metodo) e sovrascrive quella propria dell'elemento. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal='attesa']:not(h2) {
+    opacity: 0;
+  }
+  [data-reveal='in']:not(h2) {
+    transform-origin: bottom;
+    animation: motion-battito 600ms var(--ease-bounce) var(--d, 0ms) backwards;
+  }
+
+  @media (max-width: 767px) {
+    [data-reveal-effetto='scivola'] > [data-reveal='in'] {
+      animation-name: motion-scivola;
+    }
+  }
+
+  h2[data-reveal] > [data-reveal-linea] {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 3px;
+    padding-bottom: 0.12em;
+  }
+  h2[data-reveal='in'] > [data-reveal-linea] {
+    animation: motion-disegna 800ms cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0ms) both;
+  }
+}
+
+/* ── Hero: entrata al caricamento ───────────────────────────────────────
+   Le hero sono già in vista all'apertura: niente osservatore, l'entrata parte
+   al caricamento. data-battito = sale con il rimbalzo, dopo il ritardo
+   --ritardo (per metterli in sequenza); data-assesta = foto che si assesta.
+   Spente nelle prove A e C di /lab/motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
+    transform-origin: bottom;
+    animation: motion-battito 600ms var(--ease-bounce) var(--ritardo, 150ms) backwards;
+  }
+  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
+    animation: motion-assesta 900ms var(--ease-out) backwards;
+  }
+}
+
+/* ── Transizioni fra pagine ───────────────────────────────────────────────
+   Gli elementi con un nome di transizione (immagine e titolo di un progetto
+   dall'elenco all'header, card di un servizio) passano da una pagina
+   all'altra rimbalzando all'arrivo, come le barre. La pagina (root) resta
+   con la dissolvenza del router. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Rimbalzo vero, non solo un rallentamento: arriva, supera la
+     destinazione dell'8%, torna un po' indietro e si assesta. */
+  ::view-transition-group(*) {
+    animation-duration: 800ms;
+    animation-timing-function: linear(0, 0.55 22%, 0.9 38%, 1.08 52%, 0.97 68%, 1.015 82%, 1);
+  }
+  ::view-transition-group(root) {
+    animation-duration: revert;
+    animation-timing-function: revert;
+  }
+}
