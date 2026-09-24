@@ -61,8 +61,15 @@ it.
     builds.
   - **Review and adoption.** Reviewers compare `/` and `/b/` page by page. A
     passage chosen from B reaches the site by copying it into `production` in
-    the Studio and publishing. `anteprima` holds B for as long as a review is
-    open.
+    the Studio and publishing. The hosted Studio edits `production`; B is
+    edited with a local Studio on `anteprima`
+    (`SANITY_STUDIO_DATASET=anteprima pnpm --filter @butik/studio dev`) or
+    through the `testi.ts` import. Each build has its own dataset override
+    (`SANITY_DATASET` for A, `SANITY_DATASET_B` for B).
+  - **Lifecycle.** `anteprima` holds B for as long as a review is open. When it
+    closes, `build:b` comes out of the `build` script in
+    `apps/web/package.json` (and the `anteprima` webhook, if any, is removed):
+    `/b/` disappears with the next deploy, and `anteprima` can be emptied.
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
@@ -167,8 +174,12 @@ quota, which on the Free plan blocks the project when exceeded.
 - Vendor dependency on Sanity (its API at build time, its Studio for editing).
 - Two schemas to keep aligned (Zod ↔ Sanity).
 - Two datasets with the same schema while a B review is open: a schema change
-  deployed to the Studio applies to both, and a build fails if `anteprima`
-  does not satisfy the Zod schemas.
+  deployed to the Studio applies to both. A and B ship in one deploy, so a B
+  build that fails (`anteprima` not satisfying the Zod schemas, or a link the
+  `base-path` guard rejects) also stops a `production` publish from reaching
+  `/`.
+- B pages carry both `noindex` and a canonical to A: `noindex` keeps B out of
+  the index, the canonical names the page that stands for it.
 - `astro dev` serves version A only; B is checked on a build
   (`pnpm --filter @butik/web build:b`, then any static server on `dist/`).
 - Free-plan limits: 20 seats with only Administrator and Viewer roles, 10k

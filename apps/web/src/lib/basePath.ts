@@ -2,8 +2,9 @@
 // da solo quello che passa dalla sua pipeline (/_astro/, url() nel CSS), non gli
 // href scritti nel codice né quelli che arrivano da Sanity. A fine build, se la
 // base non è '/', si riscrivono gli attributi href/src/action che iniziano con
-// '/' in tutto l'HTML di dist/, poi una guardia fa fallire la build se un link
-// porta ancora fuori dalla base. L'unica eccezione voluta è un tag marcato
+// '/' in tutto l'HTML di dist/ (e i link <a> assoluti verso il sito stesso,
+// che un contenuto può contenere), poi una guardia fa fallire la build se un
+// link porta ancora fuori dalla base. L'unica eccezione voluta è un tag marcato
 // `data-versione-a` (il rimando alla versione pubblicata).
 import type { AstroIntegration } from 'astro';
 import { readdir, readFile, writeFile } from 'node:fs/promises';
@@ -12,6 +13,7 @@ import { fileURLToPath } from 'node:url';
 
 const ECCEZIONE = 'data-versione-a';
 const TAG = /<[a-zA-Z][^>]*>/g;
+const LINK = /^<a\s/i;
 
 async function* html(dir: string): AsyncGenerator<string> {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
@@ -43,6 +45,9 @@ export function basePath(): AstroIntegration {
         const assoluto = origin
           ? new RegExp(`\\shref=["']${escape(origin)}(/(?!${b}(?:[/"'?#]))[^"']*)`, 'g')
           : undefined;
+        const assolutoDaPrefissare = origin
+          ? new RegExp(`(\\shref=["']${escape(origin)})/(?!${b}(?:[/"'?#]))`, 'g')
+          : undefined;
 
         const fuori: string[] = [];
         let riscritti = 0;
@@ -50,14 +55,18 @@ export function basePath(): AstroIntegration {
           const prima = await readFile(file, 'utf8');
           const dopo = prima.replace(TAG, (tag) => {
             if (tag.includes(ECCEZIONE)) return tag;
-            return tag.replace(daPrefissare, (_, attr) => (riscritti++, `${attr}${base}/`));
+            let t = tag.replace(daPrefissare, (_, attr) => (riscritti++, `${attr}${base}/`));
+            if (assolutoDaPrefissare && LINK.test(t)) {
+              t = t.replace(assolutoDaPrefissare, (_, attr) => (riscritti++, `${attr}${base}/`));
+            }
+            return t;
           });
           if (dopo !== prima) await writeFile(file, dopo);
 
           for (const tag of dopo.match(TAG) ?? []) {
             if (tag.includes(ECCEZIONE)) continue;
             for (const m of tag.matchAll(radice)) fuori.push(`${relative(root, file)}: ${m[1]}`);
-            if (assoluto && tag.startsWith('<a')) {
+            if (assoluto && LINK.test(tag)) {
               for (const m of tag.matchAll(assoluto)) fuori.push(`${relative(root, file)}: ${origin}${m[1]}`);
             }
           }
