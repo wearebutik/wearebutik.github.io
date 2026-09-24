@@ -81,7 +81,7 @@
       :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))
       > :not([data-no-reveal]) {
       animation: motion-interruttore linear both;
-      animation-timeline: view(block 0% var(--motion-inset, 12%));
+      animation-timeline: view(block 0% var(--motion-inset, 0%));
       animation-range: entry 0% entry 1%;
     }
 
@@ -121,7 +121,7 @@
     /* ── Titoli di sezione ────────────────────────────────────────────── */
     .page-main:not(:has([data-motion='a'], [data-motion='c'])) section:not(.hero) :has(> h2:not(.prose h2)) {
       animation: motion-interruttore linear both;
-      animation-timeline: view(block 0% var(--motion-inset, 12%));
+      animation-timeline: view(block 0% var(--motion-inset, 0%));
       animation-range: entry 0% entry 1%;
     }
 
