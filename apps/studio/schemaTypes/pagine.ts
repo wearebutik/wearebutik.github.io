@@ -3,7 +3,7 @@
 // structure.ts). Ogni tipo rispecchia il ramo corrispondente dello schema Zod
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
-import { hrefField, linkSegnaposto, urlSicuro } from './testo';
+import { hrefField, urlSicuro } from './testo';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
 // Stringhe e testi sono obbligatori: lo schema Zod del sito li richiede tutti,
@@ -17,7 +17,7 @@ const str = (name: string, title: string, group?: string) =>
     // I campi URL (…Href, LinkedIn) finiscono in un href: solo schemi ammessi.
     validation: (r) =>
       /Href$|^linkedin$/.test(name)
-        ? [r.required().custom(urlSicuro), r.custom(linkSegnaposto).warning()]
+        ? r.required().custom(urlSicuro)
         : r.required(),
   });
 const txt = (name: string, title: string, group?: string) =>
