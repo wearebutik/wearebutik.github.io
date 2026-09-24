@@ -11,8 +11,9 @@
  * partire con data-reveal="in" e il ritardo --d. Senza script nulla è armato;
  * con prefers-reduced-motion lo script non arma niente. Una pagina si spegne
  * con la prop `reveal={false}` di BaseLayout (es. contatti), un elemento con
- * data-no-reveal. L'hero della home ha la sua entrata al caricamento, nel
- * suo componente.
+ * data-no-reveal. Le hero (home, schede servizio) hanno l'entrata al
+ * caricamento qui sotto (data-battito, data-assesta) e sono escluse dalle
+ * animazioni allo scroll (data-hero).
  */
 
 /* Barra di equalizzatore: sale dal basso, supera appena e si assesta. */
@@ -27,6 +28,23 @@
   }
   100% {
     opacity: 1;
+    transform: none;
+  }
+}
+
+/* Foto di un'hero: parte leggermente ingrandita e si assesta con un
+   rimbalzo verso l'alto (mai sotto la misura piena: niente bordi scoperti). */
+@keyframes motion-assesta {
+  0% {
+    transform: scale(1.12);
+  }
+  55% {
+    transform: none;
+  }
+  75% {
+    transform: scale(1.02);
+  }
+  100% {
     transform: none;
   }
 }
@@ -61,6 +79,21 @@
   }
   h2[data-reveal='in'] {
     animation: motion-sottolinea 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--d, 0ms) both;
+  }
+}
+
+/* ── Hero: entrata al caricamento ───────────────────────────────────────
+   Le hero sono già in vista all'apertura: niente osservatore, l'entrata parte
+   al caricamento. data-battito = sale con il rimbalzo, dopo il ritardo
+   --ritardo (per metterli in sequenza); data-assesta = foto che si assesta.
+   Spente nelle prove A e C di /lab/motion. */
+@media (prefers-reduced-motion: no-preference) {
+  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
+    transform-origin: bottom;
+    animation: motion-battito 600ms cubic-bezier(0.34, 1.4, 0.64, 1) var(--ritardo, 150ms) both;
+  }
+  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
+    animation: motion-assesta 900ms var(--ease-out) both;
   }
 }
 

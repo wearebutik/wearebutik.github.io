@@ -23,8 +23,8 @@ export interface RevealOptions {
 
 const DEFAULTS: Required<RevealOptions> = {
   groupSelector:
-    "section:not(.hero) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))",
-  headingSelector: 'section:not(.hero) h2:not(.prose h2)',
+    "section:not(.hero, [data-hero]) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol))",
+  headingSelector: 'section:not(.hero, [data-hero]) h2:not(.prose h2)',
   step: 120,
   delay: 150,
 };

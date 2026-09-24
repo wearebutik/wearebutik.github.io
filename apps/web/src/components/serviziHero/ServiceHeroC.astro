@@ -20,9 +20,9 @@ const seal = content.proof?.[0];
 const { eyebrow, headline, outcomes, ctaPrimary, ctaSecondary } = content;
 ---
 
-<section class="service-hero-c">
+<section class="service-hero-c" data-hero>
   <!-- ── Atmosfera: immagine del servizio come sfondo ─────────────────── -->
-  <div class="backdrop" aria-hidden={imageAlt ? undefined : 'true'}>
+  <div class="backdrop" aria-hidden={imageAlt ? undefined : 'true'} data-assesta>
     {isMeta ? (
       <Image
         src={image}
@@ -52,7 +52,7 @@ const { eyebrow, headline, outcomes, ctaPrimary, ctaSecondary } = content;
 
   <!-- ── Contenuto: card-offerta in basso a sinistra (desktop) ────────── -->
   <div class="content">
-    <div class="offer-card">
+    <div class="offer-card" data-battito style="--ritardo: 150ms">
       <!-- Sigillo di credibilità sull'angolo -->
       {seal && (
         <div class="offer-seal">

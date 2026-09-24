@@ -17,7 +17,7 @@ const { content, image, imageAlt = '' } = Astro.props;
 const isLocalImage = typeof image !== 'string' || isRemote(image);
 ---
 
-<section class="hero-grid">
+<section class="hero-grid" data-hero>
   <!-- IMMAGINE — mobile sopra, desktop a destra -->
   <div class="hero-media">
     {isLocalImage ? (
@@ -31,6 +31,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
         loading="eager"
         fetchpriority="high"
         class="hero-media-img"
+        data-assesta
       />
     ) : (
       <img
@@ -39,6 +40,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
         loading="eager"
         fetchpriority="high"
         class="hero-media-img"
+        data-assesta
       />
     )}
     <!-- blend morbido verso il pannello scuro: dal basso su mobile, da sinistra su desktop -->
@@ -50,16 +52,16 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
     <div class="hero-panel-inner">
       <Eyebrow tone="invert">{content.eyebrow}</Eyebrow>
 
-      <h1 class="hero-headline">
+      <h1 class="hero-headline" data-battito style="--ritardo: 150ms">
         {content.headline}
       </h1>
 
-      <p class="hero-sub">
+      <p class="hero-sub" data-battito style="--ritardo: 270ms">
         {content.sub}
       </p>
 
       <!-- PROOF CHIP -->
-      <ul class="hero-proof-list" role="list">
+      <ul class="hero-proof-list" role="list" data-battito style="--ritardo: 390ms">
         {content.proof.map((p) => (
           <li class="hero-proof-item">
             <span class="hero-proof-value">
@@ -73,7 +75,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
       </ul>
 
       <!-- CTA -->
-      <div class="hero-cta-row">
+      <div class="hero-cta-row" data-battito style="--ritardo: 510ms">
         <Button href={content.ctaPrimary.href}>{content.ctaPrimary.label}</Button>
 
         {content.ctaSecondary && (
@@ -100,6 +102,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
 
   .hero-media {
     position: relative;
+    overflow: clip; /* la foto si assesta da un ingrandimento: resta nella sua colonna */
     order: 1;
     height: 14rem;
   }
