@@ -3,8 +3,8 @@
  * ImageBlock — wrapper sottile app-side. La presentazione (figure, img,
  * caption) vive in @butik/ui/ImageBlock, molecola React condivisa (ADR-0008
  * amendment 2026-07-21). Questo wrapper resta .astro per risolvere
- * l'immagine (`resolveAsset`, `getImage()` — entrambi Astro/Vite-only, non
- * eseguibili dentro un'isola React né in Storybook).
+ * l'immagine (`getImage()`, Astro/Vite-only, non
+ * eseguibile dentro un'isola React né in Storybook).
  *
  * La prop `height` (personalizzazione dell'altezza del box) non era usata da
  * nessun contenuto reale (5/5 usi con l'altezza di default) — rimossa;
@@ -12,7 +12,7 @@
  */
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { imageSize, isRemote, resolveAsset } from '#lib/media';
+import { imageSize, isRemote } from '#lib/media';
 import ImageBlock from '@butik/ui/ImageBlock';
 
 interface Props {
@@ -22,7 +22,7 @@ interface Props {
 }
 
 const { src, alt = '', caption } = Astro.props;
-const resolved = typeof src === 'string' ? resolveAsset(src) : src;
+const resolved = src;
 
 const resolvedImg =
   typeof resolved === 'string' && !isRemote(resolved)

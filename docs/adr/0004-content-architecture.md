@@ -70,10 +70,11 @@ it.
 
 ### Sitepins (git-native CMS)
 
-Content as Markdown in the repo, edited through Sitepins. It keeps content in git
-with no external service, but the editor handles MDX bodies poorly (imports leak
-into the editor as paragraphs, components show up as code blocks), and every
-schema exists twice, in Zod and in `.sitepins/schema/**`. It is being phased out.
+Content as Markdown/MDX in the repo, edited through Sitepins: content stays in
+git with no external service. The editor handles MDX bodies poorly (imports
+leak into the editor as paragraphs, components show up as code blocks), media
+paths need a convention of their own to resolve in both Astro and the editor,
+and every schema exists twice, in Zod and in `.sitepins/schema/**`.
 
 ### Strapi Cloud
 

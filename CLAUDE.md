@@ -6,13 +6,14 @@ is the index and the review contract.
 ## What this is
 
 butik's website — **Astro 6**, built **static** (`astro build`) and host-agnostic,
-deployed today to GitHub Pages. Content is git-native via **Sitepins** + Astro
-content collections. Node ≥ 24.
+deployed today to GitHub Pages. Content lives in **Sanity** (read at build time
+into Astro content collections; Studio in `apps/studio`). Node ≥ 24.
 
 It's a **pnpm + turbo monorepo** (ADR-0007):
 
 ```
 apps/web/            # the Astro site (@butik/web)
+apps/studio/         # Sanity Studio (@butik/studio) — schemas, editing UI
 apps/functions/      # Cloudflare/serverless functions (@butik/functions) — added on demand
 packages/ui-tokens/  # @butik/ui-tokens — design tokens (CSS custom properties)
 packages/ui/         # @butik/ui — shared component catalogue (CSS Modules + tokens)
@@ -20,7 +21,7 @@ docs/ .claude/ reference/ design/   # repo-wide, at root
 ```
 
 Build from root: `pnpm build` (turbo). Site-only: `pnpm --filter @butik/web build`.
-`.sitepins/` stays at root, pointing at `apps/web/src/**`.
+Studio: `pnpm --filter @butik/studio dev` (local), `… deploy` (butik.sanity.studio).
 
 ## Where decisions live
 
@@ -84,7 +85,7 @@ change and lead with blockers:
 |---|---|
 | `adr-check` | code vs `docs/adr/` (+ guidances); unrecorded decisions |
 | `design-check` | tokens vs raw values, AA contrast, focus, motion |
-| `content-check` | Zod ↔ Sitepins drift; hardcoded copy |
+| `content-check` | Zod ↔ Sanity schema drift; hardcoded copy |
 | `consent-check` | tracking gated by consent; opt-out-by-default; Consent Mode |
 | `story-check` | shared components represented in the workshop (lab/ or Storybook) |
 

@@ -9,7 +9,7 @@
  */
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { imageSize, isRemote, resolveAsset } from '#lib/media';
+import { imageSize, isRemote } from '#lib/media';
 import ImageRight from '@butik/ui/ImageRight';
 
 interface Props {
@@ -19,7 +19,7 @@ interface Props {
 }
 
 const { src, alt = '', caption } = Astro.props;
-const resolved = typeof src === 'string' ? resolveAsset(src) : src;
+const resolved = src;
 
 const resolvedImg =
   typeof resolved === 'string' && !isRemote(resolved)
