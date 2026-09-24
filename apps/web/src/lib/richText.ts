@@ -15,6 +15,9 @@ interface Block {
   markDefs?: { _key: string; _type: string; href?: string }[];
 }
 
+// Stessi schemi ammessi dallo Studio (apps/studio/schemaTypes/testo.ts).
+const SAFE_HREF = /^(https?:|mailto:|tel:|\/|#|\?)/i;
+
 const escape = (s: string) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
@@ -22,7 +25,11 @@ function spanHtml(span: Span, markDefs: Block['markDefs'] = []): string {
   let html = escape(span.text ?? '').replace(/\n/g, '<br />');
   for (const mark of [...(span.marks ?? [])].reverse()) {
     const def = markDefs.find((d) => d._key === mark);
-    if (def?._type === 'link') html = `<a href="${escape(def.href ?? '')}" class="copy-link">${html}</a>`;
+    if (def?._type === 'link') {
+      // Solo schemi sicuri: un href come `javascript:` resta testo, senza link.
+      const href = (def.href ?? '').trim();
+      if (SAFE_HREF.test(href)) html = `<a href="${escape(href)}" class="copy-link">${html}</a>`;
+    }
     else if (mark === 'strong') html = `<strong class="copy-strong">${html}</strong>`;
     else if (mark === 'em') html = `<em>${html}</em>`;
   }

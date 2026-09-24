@@ -3,6 +3,7 @@
 // riordina; l'intestazione (eyebrow) è facoltativa e ha il default del
 // componente.
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { hrefField, urlSicuro } from './testo';
 
 const eyebrow = (predefinito: string) =>
   defineField({
@@ -38,7 +39,7 @@ export const cosaFacciamo = defineType({
                 name: 'link',
                 title: 'Link',
                 type: 'object',
-                fields: [{ name: 'href', title: 'URL', type: 'string', validation: (r) => r.required() }],
+                fields: [hrefField()],
               },
             ],
           },
@@ -139,7 +140,7 @@ export const ctaProgetti = defineType({
   fields: [
     defineField({ name: 'title', title: 'Titolo', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'schede', title: 'Schede citate', type: 'string' }),
-    defineField({ name: 'href', title: 'URL', type: 'string', description: 'Se vuoto: /progetti' }),
+    defineField({ name: 'href', title: 'URL', type: 'string', description: 'Se vuoto: /progetti', validation: (r) => r.custom(urlSicuro) }),
     defineField({ name: 'label', title: 'Etichetta', type: 'string', description: 'Se vuoto: "Vedi tutti i progetti"' }),
   ],
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Rimando ai progetti', subtitle }) },

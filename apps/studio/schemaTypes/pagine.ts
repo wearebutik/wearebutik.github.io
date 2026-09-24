@@ -3,12 +3,20 @@
 // structure.ts). Ogni tipo rispecchia il ramo corrispondente dello schema Zod
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
+import { hrefField, urlSicuro } from './testo';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
 // Stringhe e testi sono obbligatori: lo schema Zod del sito li richiede tutti,
 // e Sanity non pubblica un documento con un campo obbligatorio vuoto (ADR-0004).
 const str = (name: string, title: string, group?: string) =>
-  defineField({ name, title, type: 'string', group, validation: (r) => r.required() });
+  defineField({
+    name,
+    title,
+    type: 'string',
+    group,
+    // I campi URL (…Href, LinkedIn) finiscono in un href: solo schemi ammessi.
+    validation: (r) => (/Href$|^linkedin$/.test(name) ? r.required().custom(urlSicuro) : r.required()),
+  });
 const txt = (name: string, title: string, group?: string) =>
   defineField({ name, title, type: 'text', rows: 3, group, validation: (r) => r.required() });
 // Liste: il sito le richiede, almeno una voce.
@@ -72,7 +80,7 @@ export const testoLegale = defineType({
             name: 'link',
             title: 'Link',
             type: 'object',
-            fields: [{ name: 'href', title: 'URL', type: 'string', validation: (r) => r.required() }],
+            fields: [hrefField()],
           },
         ],
       },
