@@ -19,17 +19,13 @@ const navLinks = [
 const ctaHref = '/contatti';
 const ctaLabel = 'Lavoriamo insieme';
 
-// Variante del menu mobile, solo per le prove in /lab/menu (BaseLayout).
-const { menu } = Astro.props as { menu?: 'a' | 'b' };
-
 const currentPath = Astro.url.pathname;
 // Solo la home va in overlay sopra l'hero. Vincolo da rispettare se un giorno
 // si estende: l'overlay è guidato da una scroll-driven animation, che ha
 // bisogno di un range di scroll — su una pagina più corta del viewport la
 // timeline non avanza e l'header resterebbe fermo sullo stato trasparente.
 const isHome = currentPath === '/';
-// Le prove del menu (/lab/menu) mostrano la home: header come in home.
-const overlay = isHome || Boolean(menu);
+const overlay = isHome;
 
 function isActive(href: string) {
   if (href === '/') return currentPath === '/';
@@ -57,7 +53,6 @@ function isActive(href: string) {
 <header
   id="site-header"
   data-overlay={overlay ? 'true' : 'false'}
-  data-menu={menu}
   class:list={['site-header', overlay ? '' : 'site-header-solid']}
 >
   <div class="header-inner">
@@ -167,8 +162,7 @@ function isActive(href: string) {
     }
   }
 
-  .nav-link,
-  .mobile-link {
+  .nav-link {
     font-family: var(--font-display);
     font-size: var(--font-size-xs);
     line-height: calc(1 / 0.75);
@@ -180,12 +174,8 @@ function isActive(href: string) {
   .nav-link {
     transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
   }
-  .mobile-link {
-    padding-block: var(--space-3);
-  }
   .nav-link:hover,
-  .nav-link.nav-link-active,
-  .mobile-link.mobile-link-active {
+  .nav-link.nav-link-active {
     color: var(--color-accent-text);
   }
 
@@ -362,26 +352,6 @@ function isActive(href: string) {
     height: var(--space-6);
   }
 
-  .mobile-panel {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    border-top: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
-    background-color: var(--color-bg);
-  }
-  .mobile-nav-list {
-    display: flex;
-    flex-direction: column;
-    padding-inline: var(--space-6);
-    padding-block: var(--space-4);
-    gap: var(--space-1);
-  }
-  .site-header :global(.mobile-cta) {
-    width: 100%;
-    margin-top: var(--space-3);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .site-header[data-overlay='true'],
     .site-header[data-overlay='true'] .nav-link,
@@ -421,80 +391,41 @@ function isActive(href: string) {
       animation-delay: 1440ms;
     }
   }
-  /* ── Prove del menu mobile (/lab/menu) ──────────────────────────────
-     Due varianti attive solo con data-menu (BaseLayout menu="a" | "b"); il
-     sito resta sul menu di sempre. Stesso <details> nativo, niente script:
-     cambia solo l'aspetto. In entrambe l'icona diventa una X da aperto e le
-     voci entrano una dopo l'altra con il rimbalzo. */
-  .mobile-toggle-close {
-    display: none;
-    width: var(--space-6);
-    height: var(--space-6);
-  }
-  .site-header[data-menu] .mobile-nav[open] .mobile-toggle-icon {
-    display: none;
-  }
-  .site-header[data-menu] .mobile-nav[open] .mobile-toggle-close {
-    display: block;
-  }
-  .site-header[data-menu] .mobile-nav[open] > summary {
-    position: relative;
-    z-index: 2;
-  }
-  /* In A il pannello scuro copre anche l'header: la X è bianca. In B resta
-     del colore dell'header (bianca sopra l'hero, scura da scrollato). */
-  .site-header[data-menu='a'] .mobile-nav[open] > summary {
-    color: var(--color-fg-invert);
-  }
-  .site-header[data-menu] .mobile-link {
-    color: var(--color-fg-invert);
-    text-shadow: none;
-  }
-  .site-header[data-menu] .mobile-link.mobile-link-active {
-    color: var(--color-highlight);
-  }
-  .site-header[data-menu] :global(.mobile-cta) {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-fg-invert);
-  }
-  @keyframes menu-voce {
-    0% { opacity: 0; transform: translateX(-20px); }
-    60% { opacity: 1; transform: translateX(3px); }
-    100% { opacity: 1; transform: none; }
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .site-header[data-menu] .mobile-nav[open] .mobile-nav-list > * {
-      animation: menu-voce 480ms cubic-bezier(0.34, 1.4, 0.64, 1) 60ms backwards;
-    }
-    .site-header[data-menu] .mobile-nav[open] .mobile-nav-list > :nth-child(2) { animation-delay: 130ms; }
-    .site-header[data-menu] .mobile-nav[open] .mobile-nav-list > :nth-child(3) { animation-delay: 200ms; }
-    .site-header[data-menu] .mobile-nav[open] .mobile-nav-list > :nth-child(4) { animation-delay: 270ms; }
-    .site-header[data-menu] .mobile-nav[open] .mobile-nav-list > :nth-child(5) { animation-delay: 340ms; }
-  }
-
-  /* A · a tutto schermo: vetro scuro sopra la pagina, voci grandi nel
-     carattere dei titoli, pulsante rosso in fondo. */
-  .site-header[data-menu='a'] .mobile-panel {
+  /* ── Menu mobile a tutto schermo ────────────────────────────────────
+     <details> nativo. Da aperto, un pannello di vetro scuro copre la pagina
+     (la foto o il contenuto si intravedono sfocati), le voci grandi entrano
+     una dopo l'altra con il rimbalzo, il pulsante è rosso e l'icona diventa
+     una X. Lo scorrimento della pagina si blocca finché è aperto (script in
+     fondo). Il pannello è assoluto nell'header, che è sticky in cima: copre
+     lo schermo intero. Il fondo al 65% tiene il testo bianco sopra 6:1 anche
+     sulle pagine chiare. */
+  .mobile-panel {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1;
     height: 100dvh;
-    border-top: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background-color: color-mix(in srgb, var(--color-fg) 78%, transparent);
-    backdrop-filter: blur(16px); /* come le card in vetro, più fitto */
-    -webkit-backdrop-filter: blur(16px);
+    background-color: color-mix(in srgb, var(--color-fg) 65%, transparent);
+    /* Riflesso in alto, come una lastra di vetro. */
+    background-image: linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--color-fg-invert) 10%, transparent),
+      transparent 45%
+    );
+    backdrop-filter: blur(24px) saturate(1.2); /* vetro: nessun token blur */
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
   }
-  .site-header[data-menu='a'] .mobile-nav-list {
+  .mobile-nav-list {
+    display: flex;
+    flex-direction: column;
     padding-inline: var(--space-8);
     gap: var(--space-2);
   }
-  .site-header[data-menu='a'] .mobile-link {
+  .mobile-link {
     font-family: var(--font-heading);
     font-size: var(--text-4xl);
     font-weight: 700;
@@ -502,33 +433,65 @@ function isActive(href: string) {
     text-transform: none;
     line-height: 1.15;
     padding-block: var(--space-2);
+    color: var(--color-fg-invert);
   }
-  .site-header[data-menu='a'] :global(.mobile-cta) {
+  .mobile-link.mobile-link-active {
+    color: var(--color-highlight);
+  }
+  .site-header :global(.mobile-cta) {
+    width: 100%;
     margin-top: var(--space-8);
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-fg-invert);
   }
 
-  /* B · tendina scura: stessa struttura di oggi, in vetro scuro, voci più
-     grandi separate da linee sottili. */
-  .site-header[data-menu='b'] .mobile-panel {
-    border-top: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
-    background-color: color-mix(in srgb, var(--color-fg) 82%, transparent);
-    backdrop-filter: blur(16px); /* come le card in vetro, più fitto */
-    -webkit-backdrop-filter: blur(16px);
+  .mobile-toggle-close {
+    display: none;
+    width: var(--space-6);
+    height: var(--space-6);
   }
-  .site-header[data-menu='b'] .mobile-nav-list {
-    gap: 0;
-    padding-block: var(--space-2) var(--space-6);
+  .mobile-nav[open] .mobile-toggle-icon {
+    display: none;
   }
-  .site-header[data-menu='b'] .mobile-link {
-    font-family: var(--font-heading);
-    font-size: var(--font-size-xl);
-    font-weight: 700;
-    letter-spacing: 0;
-    text-transform: none;
-    padding-block: var(--space-4);
-    border-bottom: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
+  .mobile-nav[open] .mobile-toggle-close {
+    display: block;
   }
-  .site-header[data-menu='b'] :global(.mobile-cta) {
-    margin-top: var(--space-6);
+  .mobile-nav[open] > summary {
+    position: relative;
+    z-index: 2;
+    color: var(--color-fg-invert);
+  }
+
+  @keyframes menu-voce {
+    0% { opacity: 0; transform: translateX(-20px); }
+    60% { opacity: 1; transform: translateX(3px); }
+    100% { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .mobile-nav[open] .mobile-nav-list > * {
+      animation: menu-voce 480ms cubic-bezier(0.34, 1.4, 0.64, 1) 60ms backwards;
+    }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(2) { animation-delay: 130ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(3) { animation-delay: 200ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(4) { animation-delay: 270ms; }
+    .mobile-nav[open] .mobile-nav-list > :nth-child(5) { animation-delay: 340ms; }
   }
 </style>
+
+<script>
+  // Menu mobile aperto: la pagina sotto non scorre. Si rilega a ogni pagina
+  // (il ClientRouter rimpiazza l'header) e si sblocca prima dello swap.
+  function initMenu() {
+    const menu = document.getElementById('mobile-menu') as HTMLDetailsElement | null;
+    if (!menu || menu.dataset.bound) return;
+    menu.dataset.bound = 'true';
+    menu.addEventListener('toggle', () => {
+      document.documentElement.style.overflow = menu.open ? 'hidden' : '';
+    });
+  }
+  document.addEventListener('astro:page-load', initMenu);
+  document.addEventListener('astro:before-swap', () => {
+    document.documentElement.style.overflow = '';
+  });
+</script>

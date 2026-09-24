@@ -24,8 +24,6 @@ interface Props {
   noindex?: boolean;
   /** Animazioni d'ingresso (styles/motion.css + @butik/ui/reveal); false per spegnerle. */
   reveal?: boolean;
-  /** Solo per le prove in /lab/menu: variante del menu mobile. */
-  menu?: 'a' | 'b';
 }
 
 const {
@@ -34,7 +32,6 @@ const {
   ogImage,
   noindex = false,
   reveal = true,
-  menu,
 } = Astro.props;
 
 const siteBase = Astro.site ?? Astro.url.origin;
@@ -141,7 +138,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
       />
     )}
-    <Header menu={menu} />
+    <Header />
     <main class="page-main" data-reveal-off={reveal ? undefined : ''}>
       <slot />
     </main>
