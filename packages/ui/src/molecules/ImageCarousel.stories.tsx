@@ -34,6 +34,18 @@ export const TwoSlides: Story = {
   args: { images: sampleImages.slice(0, 2) },
 };
 
+// Galleria lunga (i progetti ne hanno fino a 13) su mobile: i pallini vanno
+// a capo e il pulsante "Avanti" resta nello schermo.
+export const ManySlidesMobile: Story = {
+  args: { images: Array.from({ length: 13 }, (_, i) => sampleImages[i % sampleImages.length]) },
+  globals: { viewport: { value: 'mobile1' } },
+  play: async ({ canvasElement }) => {
+    const next = within(canvasElement).getByRole('button', { name: 'Immagine successiva' });
+    const { right } = next.getBoundingClientRect();
+    await expect(right).toBeLessThanOrEqual(canvasElement.ownerDocument.documentElement.clientWidth);
+  },
+};
+
 // Una sola immagine: la barra di controllo non viene resa affatto — non ci
 // sarebbe nulla fra cui girare.
 export const SingleSlide: Story = {
