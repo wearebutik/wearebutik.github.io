@@ -62,13 +62,38 @@ export const OnPhoto: Story = {
   ],
 };
 
-// Il tono default eredita --accent dal contesto: è così che le card dei
-// servizi danno a ogni categoria il proprio colore senza toccare l'atomo.
+// Il tono default eredita --accent (cerchio) e --accent-ink (testo in hover)
+// dal contesto: è così che le card dei servizi danno a ogni categoria il
+// proprio colore senza toccare l'atomo. Qui una coppia reale di
+// ServiceExpanded (viola, uguale per cerchio e testo), con i token a cui
+// puntano gli alias --color-butik-* del sito.
 export const AccentFromContext: Story = {
   args: { tone: 'default', children: 'Scopri il turismo musicale' },
   decorators: [
     (Story) => (
-      <div style={{ ['--accent' as string]: 'var(--color-accent-2)' }}>
+      <div
+        style={{
+          ['--accent' as string]: 'var(--color-accent-2)',
+          ['--accent-ink' as string]: 'var(--color-accent-2)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+// La coppia rossa: cerchio sul rosso di brand, testo sul rosso "ink".
+export const AccentFromContextRed: Story = {
+  args: { tone: 'default', children: 'Scopri la progettazione culturale' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          ['--accent' as string]: 'var(--color-accent)',
+          ['--accent-ink' as string]: 'var(--color-accent-text)',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -86,4 +111,47 @@ export const AccentViaComponentHook: Story = {
       </div>
     ),
   ],
+};
+
+// Stati d'interazione, forzati con storybook-addon-pseudo-states.
+// Hover: il testo prende l'accento "ink", il cerchio della freccia si riempie
+// e la freccia scorre di 2px.
+export const OnLightHover: Story = {
+  ...OnLight,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const OnLightFocusVisible: Story = {
+  ...OnLight,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+export const OnDarkHover: Story = {
+  ...OnDark,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const OnDarkFocusVisible: Story = {
+  ...OnDark,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+export const OnPhotoHover: Story = {
+  ...OnPhoto,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const AccentFromContextHover: Story = {
+  ...AccentFromContext,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const AccentFromContextFocusVisible: Story = {
+  ...AccentFromContext,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+export const AccentFromContextRedHover: Story = {
+  ...AccentFromContextRed,
+  parameters: { pseudo: { hover: true } },
 };

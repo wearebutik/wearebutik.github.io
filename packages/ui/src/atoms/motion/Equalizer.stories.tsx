@@ -38,6 +38,13 @@ export const Large: Story = { args: { size: 'lg' } };
 // Con play="hover" le barre partono solo al passaggio del puntatore.
 export const OnHover: Story = { args: { play: 'hover', size: 'lg' } };
 
+// Lo stato attivo di play="hover": le barre si animano solo sotto il
+// puntatore, qui forzato con storybook-addon-pseudo-states.
+export const OnHoverActive: Story = {
+  args: { play: 'hover', size: 'lg' },
+  parameters: { pseudo: { hover: true } },
+};
+
 // Tre barre: la versione più compatta, per accostarla a un'etichetta.
 export const FewBars: Story = { args: { bars: 3, size: 'sm' } };
 

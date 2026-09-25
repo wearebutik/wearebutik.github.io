@@ -110,3 +110,12 @@ export const WrapsAround: Story = {
   },
 };
 
+// Stati d'interazione dei controlli (frecce e puntini), forzati con
+// storybook-addon-pseudo-states.
+export const ControlsHover: Story = {
+  parameters: { pseudo: { hover: true } },
+};
+
+export const ControlsFocusVisible: Story = {
+  parameters: { pseudo: { focusVisible: true } },
+};

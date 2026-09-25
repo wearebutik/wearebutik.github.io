@@ -2,12 +2,21 @@
 // gli specimen usano un'immagine placeholder statica al posto degli asset
 // reali (risolti a build-time solo lato apps/web via getImage()).
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import HeroBanner from './HeroBanner';
 
 const placeholderSrc =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#463a52"/></svg>'
+  );
+
+// Foto bianca: il caso peggiore per il contrasto del testo. Lo scrim deve
+// tenere leggibili titolo e sottotitolo anche qui.
+const brightSrc =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#ffffff"/></svg>'
   );
 
 const meta = {
@@ -39,5 +48,39 @@ export const LongTitle: Story = {
   args: {
     title: 'Un titolo molto lungo che deve andare a capo su più righe restando leggibile',
     subtitle: 'E un sottotitolo altrettanto descrittivo per verificare la gerarchia visiva.',
+  },
+};
+
+// Sottotitolo su foto bianca: il caso peggiore per lo scrim, da guardare a
+// occhio. Il pannello a11y non basta: sul testo sopra un gradiente axe dà
+// color-contrast "incomplete", non un esito.
+export const BrightImage: Story = {
+  args: {
+    src: brightSrc,
+    subtitle: 'Un sottotitolo che espande il contesto in una riga o due.',
+  },
+};
+
+// Arrivo con il morph della view transition: il sito marca la sezione con
+// data-morph (BaseLayout) e l'entrata al caricamento si salta. Lo stato finale
+// è lo stesso di WithSubtitle, senza movimento d'ingresso.
+export const MorphArrival: Story = {
+  ...WithSubtitle,
+  decorators: [
+    (Story) => {
+      const ref = (el: HTMLDivElement | null) => {
+        const banner = el?.querySelector<HTMLElement>('[data-hero-banner]');
+        if (banner) banner.dataset.morph = '';
+      };
+      return (
+        <div ref={ref}>
+          <Story />
+        </div>
+      );
+    },
+  ],
+  play: async ({ canvasElement }) => {
+    const banner = canvasElement.querySelector<HTMLElement>('[data-hero-banner]');
+    await expect(banner?.dataset.morph).toBe('');
   },
 };

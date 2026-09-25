@@ -10,7 +10,11 @@ const config: StorybookConfig = {
   // a11y (issue #29): pannello di audit accessibilità per storia, basato su
   // axe-core. Verifica ARIA/contrasto/focus direttamente nel workshop, oltre
   // a design-check.
-  addons: ['@storybook/addon-a11y'],
+  // pseudo-states (issue #44): forza :hover / :focus-visible / :active su una
+  // storia via `parameters.pseudo`, cosi' gli stati d'interazione hanno uno
+  // specimen fisso (e Chromatic li sorveglia). Gli eventi simulati delle play
+  // function non attivano le pseudo-classi CSS.
+  addons: ['@storybook/addon-a11y', 'storybook-addon-pseudo-states'],
   framework: {
     name: '@storybook/react-vite',
     options: {},

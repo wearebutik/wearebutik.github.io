@@ -71,3 +71,31 @@ export const ShortText: Story = { args: { children: 'oggi' } };
 export const LongText: Story = {
   args: { children: 'progettazione culturale su base musicale' },
 };
+
+// Come nel titolo dell'hero della home: trigger="load", tono accent, dentro
+// l'h1 bianco sopra la foto con lo scrim.
+export const OnLoadOnPhoto: Story = {
+  args: { trigger: 'load', tone: 'accent', children: 'la musica' },
+  render: (args) => (
+    <div
+      style={{
+        padding: 'var(--space-8)',
+        backgroundColor: 'var(--color-bg-invert)',
+        backgroundImage:
+          'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+      }}
+    >
+      <h1
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: 'var(--font-size-section-title)',
+          fontWeight: 700,
+          color: 'var(--color-fg-invert)',
+          margin: 0,
+        }}
+      >
+        Attiviamo territori attraverso <Underline {...args} />
+      </h1>
+    </div>
+  ),
+};
