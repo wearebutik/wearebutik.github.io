@@ -43,7 +43,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
 
 <style>
   .metodo-steps {
-    margin: 2.5rem 0; /* my-10: --spacing * 10, nessun token combacia */
+    margin: var(--space-10) 0;
   }
 
   .metodo-intro {
@@ -101,7 +101,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
       font-size: var(--font-size-lg);
     }
     .metodo-step {
-      gap: 1.25rem; /* gap-5: --spacing * 5, nessun token combacia */
+      gap: var(--space-5);
     }
     .step-title {
       font-size: var(--font-size-lg);

@@ -21,6 +21,7 @@
 }
 
 .link:hover {
+  /* design-lint-disable red-as-text: icona SVG in currentColor, non testo */
   color: var(--color-accent);
 }
 

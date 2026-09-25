@@ -2,6 +2,7 @@
 // fondo chiaro (ServiceExpanded) e fondo scuro (Hero della home) — e il
 // ritono per contesto via --accent, che le card dei servizi già impostano.
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import ArrowLink from './ArrowLink';
 
 const meta = {
@@ -154,4 +155,41 @@ export const AccentFromContextFocusVisible: Story = {
 export const AccentFromContextRedHover: Story = {
   ...AccentFromContextRed,
   parameters: { pseudo: { hover: true } },
+};
+
+// La coppia scura: cerchio e testo sul colore del testo, per le categorie
+// che non hanno un accento proprio (alias --color-butik-dark → --color-fg).
+export const AccentFromContextDark: Story = {
+  args: { tone: 'default', children: 'Scopri gli eventi' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          ['--accent' as string]: 'var(--color-fg)',
+          ['--accent-ink' as string]: 'var(--color-fg)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+// In hover il cerchio si riempie di scuro: la freccia deve restare leggibile.
+export const AccentFromContextDarkHover: Story = {
+  ...AccentFromContextDark,
+  parameters: { pseudo: { hover: true } },
+};
+
+// className si UNISCE alle classi interne (gancio per i chiamanti app-side).
+// Nessuna regola dell'app copiata qui: la `play` controlla che il link porti
+// sia la classe interna sia quella passata.
+export const WithClassName: Story = {
+  args: { tone: 'default', className: 'story-arrow-link-hook' },
+  play: async ({ canvasElement }) => {
+    const link = within(canvasElement).getByRole('link', { name: 'Scopri la progettazione culturale' });
+    await expect(link.classList).toContain('story-arrow-link-hook');
+    // link + classe passata (il tono default non aggiunge classi).
+    await expect(link.classList.length).toBe(2);
+  },
 };

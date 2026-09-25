@@ -38,6 +38,7 @@
   white-space: nowrap;
 }
 .dot {
+  /* design-lint-disable red-as-text: pallino separatore, non testo */
   color: var(--color-accent);
   font-size: 0.5em;
 }

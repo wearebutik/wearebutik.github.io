@@ -10,6 +10,18 @@ on:
     branches: [main]
 
 jobs:
+  # Parte meccanica delle regole di design (ADR-0005 #design-tokens): rossi
+  # per ruolo e maiuscoletto fuori da Eyebrow/MetaLabel. Solo Node, niente
+  # install. Vedi tools/design-lint/README.md.
+  design-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+      - run: node tools/design-lint/index.mjs
+
   # Pubblica Storybook su Chromatic: review/commenti su ogni PR (link in fondo
   # al check) + visual regression sulla build pubblicata (ADR-0008, issue #27).
   # Questo job assorbe anche la verifica "Storybook builda ad ogni PR": se la

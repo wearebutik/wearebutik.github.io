@@ -102,7 +102,7 @@ const servizi: ServizioCard[] = [
   }
 
   .servizi-container {
-    max-width: 80rem; /* max-w-7xl, nessun token (stesso letterale di Header.astro) */
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6); /* px-6 = 1.5rem */
     padding-block: var(--space-16); /* py-16 = 4rem */
@@ -115,7 +115,7 @@ const servizi: ServizioCard[] = [
 
   .servizi-heading {
     text-align: center;
-    margin-bottom: 2.5rem; /* mb-10 = 2.5rem, nessun token */
+    margin-bottom: var(--space-10);
   }
   @media (min-width: 768px) {
     .servizi-heading {
@@ -147,7 +147,7 @@ const servizi: ServizioCard[] = [
     display: flex;
     flex-direction: column;
     gap: var(--space-3); /* gap-3 = 0.75rem */
-    padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+    padding: var(--space-5);
     transition:
       border-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
@@ -171,7 +171,7 @@ const servizi: ServizioCard[] = [
     .servizi-card {
       flex-direction: column;
       gap: var(--space-3); /* gap-3 = 0.75rem */
-      padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+      padding: var(--space-5);
     }
     .servizi-card--first {
       grid-column: span 1 / span 1; /* lg:col-span-1 */

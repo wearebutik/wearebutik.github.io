@@ -109,7 +109,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     position: relative;
     overflow: hidden;
     background-color: var(--color-bg);
-    padding-top: 2.5rem; /* pt-10: nessun token combacia (tra --space-8 e --space-12) */
+    padding-top: var(--space-10);
     padding-bottom: 3.5rem; /* pb-14: nessun token combacia (tra --space-12 e --space-16) */
   }
 
@@ -135,7 +135,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
   .partner-mobile {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem; /* gap-5: nessun token combacia (tra --space-4 e --space-6) */
+    gap: var(--space-5);
   }
 
   @media (min-width: 768px) {
@@ -159,7 +159,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
 
   .partner-track-row-mobile {
     align-items: flex-start;
-    gap: 1.25rem; /* gap-5: nessun token combacia (tra --space-4 e --space-6) */
+    gap: var(--space-5);
   }
 
   .partner-card {
@@ -182,6 +182,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
 
   /* Nome del partner in basso, mostrato su hover della card (vedi script). */
   .partner-label {
+    /* design-lint-disable small-caps: nome del partner in hover, decorativo, fuori dai due ruoli */
     position: absolute;
     inset-inline: 0;
     bottom: var(--space-4);
@@ -213,7 +214,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     align-items: center;
     justify-content: center;
     height: var(--space-16);
-    padding-inline: 1.25rem; /* px-5: nessun token combacia (tra --space-4 e --space-6) */
+    padding-inline: var(--space-5);
     background-color: var(--color-white);
     border-radius: 0.75rem; /* rounded-xl: nessun token combacia (--radius-md .5rem / --radius-lg 1rem) */
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-fg) 5%, transparent);
@@ -233,7 +234,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
     line-height: 1.25; /* leading-tight, presente sullo stesso elemento: vince su text-* */
     letter-spacing: 0.025em; /* tracking-wide */
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--color-fg) 55%, transparent);
+    /* 70%: a 10px serve 4.5:1, su --color-bg e sul bianco. */
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
   }
 
   @keyframes butik-marquee {

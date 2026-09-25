@@ -113,7 +113,7 @@ for (let y = 0; y < H; y += SEGV) {
     overflow: clip;
   }
   .metodo-container {
-    max-width: 80rem;
+    max-width: var(--container-max);
     margin-left: auto;
     margin-right: auto;
     padding-left: var(--space-6);
@@ -304,7 +304,7 @@ for (let y = 0; y < H; y += SEGV) {
       display: flex;
       align-items: flex-start;
       gap: 1.5rem;
-      padding-bottom: 2.5rem;
+      padding-bottom: var(--space-10);
       z-index: 1;
     }
     .vino-step:last-child { padding-bottom: 0; }
@@ -338,7 +338,7 @@ for (let y = 0; y < H; y += SEGV) {
       text-align: center;
     }
     .vino-content {
-      margin-top: 1.25rem;
+      margin-top: var(--space-5);
       width: min(14rem, 95%);
     }
     /* l'onda parte dal bordo destro del disco e arriva a quello sinistro del

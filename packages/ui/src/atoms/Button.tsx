@@ -18,8 +18,9 @@ export interface ButtonProps {
   /**
    * Tonalità di colore, per l'uso su sfondi diversi dal default.
    * `dark` (solo `primary`): sfondo `--color-fg` invece dell'accent rosso —
-   * CTA su header/hero chiari. `invert` (solo `ghost`): bordo/testo
-   * `--color-fg-invert` — outline leggibile su sfondi scuri (hero fotografici).
+   * CTA su header/hero chiari. `invert`: per sfondi scuri o fotografici — con
+   * `primary` resta rosso e l'anello di focus diventa bianco; con `ghost`
+   * bordo/testo `--color-fg-invert`.
    * `accent` (solo `ghost`): bordo/testo colore accent invece del foreground
    * scuro — outline colorato su sfondo chiaro (es. CtaProgetti). Omessa:
    * colori classici (primary = accent, ghost = foreground scuro).

@@ -74,7 +74,7 @@ const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Ast
   }
 
   .about-container {
-    max-width: 80rem; /* max-w-7xl, nessun token con questo valore */
+    max-width: var(--container-max);
     margin-left: auto;
     margin-right: auto;
     padding-left: var(--space-6);
@@ -133,6 +133,7 @@ const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Ast
   }
 
   .about-cta {
+    /* design-lint-disable small-caps: CTA, fuori dai due ruoli */
     display: inline-block;
     width: 100%;
     margin-top: var(--space-8);

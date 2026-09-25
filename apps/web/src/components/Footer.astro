@@ -139,15 +139,14 @@ const year = new Date().getFullYear();
   }
 
   .footer-container {
-    max-width: 80rem;
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
 
   .footer-panel {
     border: 1px solid color-mix(in srgb, var(--color-fg) 15%, transparent);
-    /* 1.25rem (px-5): non c'è un token --space-* con questo valore. */
-    padding-inline: 1.25rem;
+    padding-inline: var(--space-5);
     padding-block: var(--space-6);
   }
 

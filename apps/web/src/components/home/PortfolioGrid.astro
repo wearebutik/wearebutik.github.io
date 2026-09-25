@@ -84,9 +84,7 @@ const { progetti } = Astro.props;
   }
 
   .portfolio-container {
-    /* Tailwind max-w-7xl: nessun token con questo valore (stesso letterale
-       già usato da Header.astro). */
-    max-width: 80rem;
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
@@ -96,7 +94,7 @@ const { progetti } = Astro.props;
   }
   @media (min-width: 768px) {
     .portfolio-header {
-      margin-bottom: 2.5rem; /* mb-10 = 2.5rem, nessun token */
+      margin-bottom: var(--space-10);
     }
   }
 
@@ -154,13 +152,28 @@ const { progetti } = Astro.props;
     position: absolute;
     inset-inline: 0;
     bottom: 0;
-    padding: 1.25rem; /* p-5 = 1.25rem, nessun token */
+    padding: var(--space-5);
+    /* Scrim ancorato al testo, come HeroBanner: dentro il blocco il fondo non
+       scende sotto il 70% (titolo ~7.3:1, sottotitolo ~5.4:1 su foto bianca),
+       con o senza chip. La sfumatura verso la foto sta sopra il blocco. */
     background: linear-gradient(
       to top,
       color-mix(in srgb, var(--color-fg) 90%, transparent),
-      color-mix(in srgb, var(--color-fg) 60%, transparent),
+      color-mix(in srgb, var(--color-fg) 70%, transparent)
+    );
+  }
+  .portfolio-card-overlay::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 100%;
+    height: var(--space-16);
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--color-fg) 70%, transparent),
       transparent
     );
+    pointer-events: none;
   }
   @media (min-width: 768px) {
     .portfolio-card-overlay {
@@ -169,6 +182,7 @@ const { progetti } = Astro.props;
   }
 
   .portfolio-card-category {
+    /* design-lint-disable small-caps: chip con fondo proprio, fuori dai due ruoli */
     display: inline-block;
     font-family: var(--font-display);
     font-size: var(--font-size-xs); /* text-xs = 0.75rem */
@@ -218,6 +232,7 @@ const { progetti } = Astro.props;
   }
 
   .portfolio-cta-link {
+    /* design-lint-disable small-caps: CTA, fuori dai due ruoli */
     display: block;
     border: 2px solid var(--color-accent);
     color: var(--color-accent-text);

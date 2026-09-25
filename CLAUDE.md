@@ -64,6 +64,16 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
   so static-first (ADR-0002) holds. The **workshop is Storybook**
   (`@storybook/react-vite`, scoped to `packages/ui`); it's a dev tool and never runs
   in the site build. App-level page composition stays `.astro` (e.g. `CtaBanner`).
+  Use a catalogue component as it is: `className` is for layout and local
+  effects, never to repaint it into a variant the catalogue doesn't know, and
+  app code doesn't reimplement what an atom does. Every state the site reaches
+  (props, context hooks like `--accent`, empty data, hover/focus, photo
+  backgrounds) has a story.
+- **Design roles** (`docs/guidances/design-approach.md`): red text is
+  `--color-accent-text`, a red surface with text is `--color-accent-fill`,
+  `--color-accent` only for what carries no text. Text over a photo holds AA on
+  a white photo, on a scrim anchored to the text. The small-caps label is
+  `Eyebrow` (opens a section) or `MetaLabel` (metadata), never hand-written.
 - **Client scripts run under view transitions**: `BaseLayout` renders
   `<ClientRouter />`, so a component `<script>` executes once per session while
   the DOM is swapped on every navigation. Wire behaviour up in an idempotent
@@ -79,15 +89,17 @@ Read the ADRs before making an architectural change. Cite them by file + anchor
 ## Reviews (skills to run)
 
 On every code review / PR review, run the report-only skills that apply to the
-change and lead with blockers:
+change and lead with blockers. Check the diff **and the code that landed on
+`main` while the PR was open**: a rule the PR introduces applies to that code
+too, and fixing it belongs in the same PR.
 
 | Skill | Checks |
 |---|---|
 | `adr-check` | code vs `docs/adr/` (+ guidances); unrecorded decisions |
-| `design-check` | tokens vs raw values, AA contrast, focus, motion |
+| `design-check` | tokens, roles of the reds, text over photos, small caps, repainted/duplicated components, AA, focus, motion |
 | `content-check` | Zod ↔ Sanity schema drift; hardcoded copy |
 | `consent-check` | tracking gated by consent; opt-out-by-default; Consent Mode |
-| `story-check` | shared components represented in the workshop (lab/ or Storybook) |
+| `story-check` | every state the site reaches of a `@butik/ui` component has a story |
 
 Write skills (ask before writing): `product-decision` (scaffold a PDR),
 `design-explore` (throwaway `lab/` prototypes, incl. the ADR-0005 workshop pilot).
@@ -102,7 +114,7 @@ Read-only review personas in `.claude/agents/`: `architect` (Ada), `design-syste
   **Italian** — it's raw editorial input (the site copy is Italian by nature).
   Commit messages follow the repo's existing Italian convention
   (`feat(scope): …`), no `Co-Authored-By` trailers.
-- **Verify before claiming**: run the build (`pnpm build`) before saying a
-  change is safe; never call a check "passing" without running it.
+- **Verify before claiming**: run the build (`pnpm build`) and `pnpm lint:design`
+  before saying a change is safe; never call a check "passing" without running it.
 - **Open items** (ADR-0003): linter/formatter (Biome) and `@astrojs/check` are not
   yet installed — a follow-up.

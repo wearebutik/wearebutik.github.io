@@ -1,6 +1,6 @@
 /**
  * TapeReels — due bobine da mangianastri collegate dal nastro, che girano in
- * loop. Accento-firma nostalgico, alternativo a Vinyl ed Equalizer.
+ * loop. Accento-firma nostalgico, alternativo a Equalizer.
  *
  * Atomo di motion del catalogo @butik/ui (ADR-0008): CSS Modules sui token di
  * @butik/ui-tokens (ADR-0005). Decorativo, animazione tutta CSS.

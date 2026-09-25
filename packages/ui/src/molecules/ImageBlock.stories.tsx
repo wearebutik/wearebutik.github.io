@@ -53,3 +53,9 @@ export const Portrait: Story = {
     caption: 'Ritratto: il frame tiene la fascia centrale e taglia alto e basso.',
   },
 };
+
+// Ritratto su mobile: il frame è più basso e più stretto, il ritaglio cambia.
+export const PortraitMobile: Story = {
+  ...Portrait,
+  globals: { viewport: { value: 'mobile1' } },
+};

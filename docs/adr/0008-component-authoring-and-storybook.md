@@ -49,6 +49,33 @@ support stops being a drawback.
   React Button plus a historical note of the trade-off; `story-check` now tracks
   coverage against Storybook.
 
+### Using the catalogue {#catalogue-usage}
+
+The catalogue is only a source of truth if the site uses it as it is, and if the
+workshop shows what the site shows.
+
+- **Every state the site reaches has a story.** A state of a `@butik/ui`
+  component is reachable when a call site in `apps/web` can produce it: a prop
+  value or combination (fallbacks included), a context hook the site sets
+  around the island (`--accent`, `--accent-ink`, `--meta-label-color`…), empty
+  or boundary data, hover and focus-visible (forced with
+  `storybook-addon-pseudo-states`), a photographic background, an arrival state
+  set by the site (`data-morph`). A story shows its state visibly: a `className`
+  specimen sits on a background where the effect shows, and a `play` function
+  asserts what a picture cannot. `story-check` maps coverage from the call sites.
+- **`className` is for layout and local effects, not for variants.** The hook
+  exists for what only the context knows: a width, a margin, a scroll-driven
+  state, a focus ring legible on the surrounding panel. Changing the colours,
+  borders or shape of a component from outside creates a variant the catalogue
+  does not know and no story shows. A new look becomes a prop of the component,
+  with its story.
+- **The app does not reimplement what an atom does.** One behaviour has one
+  implementation. When two exist, the one that renders static wins
+  ([ADR-0002](./0002-runtime-and-delivery.md)): either the static behaviour is
+  the atom's (`Underline` draws with CSS only) or the atom goes, and the site's
+  version stays (the count-up of `Numbers.astro`, the vinyl discs of the Metodo
+  section).
+
 ## Alternatives considered
 
 ### Astro-native gallery (the pilot's recommendation)
@@ -63,6 +90,13 @@ survives, trimmed, as an in-site smoke test.
 
 Rejected: `.astro` has no first-class Storybook support and no framework-agnostic
 component testing story. The team preferred a widely-supported island format.
+
+### Let the app restyle catalogue components through `className`
+
+Rejected: it is the fastest way to get a one-off look, and each one is a
+variant that Storybook, Chromatic and `design-check` never see. The header's
+mobile CTA was a `tone="dark"` Button repainted red from outside; it is now the
+`primary` Button it imitated.
 
 ### A different island framework (Svelte / Vue / Solid)
 

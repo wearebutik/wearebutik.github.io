@@ -30,6 +30,17 @@
   color: var(--color-fg-invert);
 }
 
+/* Primary su foto o fondo scuro: stesso rosso, anello di focus bianco. Il
+   rosso dell'anello sopra un velo scuro resta sotto il 3:1 (1.1–1.7:1
+   nell'hero della home). */
+.primary_invert {
+  background: var(--color-accent-fill);
+  color: var(--color-fg-invert);
+}
+.primary_invert:focus-visible {
+  outline-color: var(--color-fg-invert);
+}
+
 .primary_dark {
   background: var(--color-fg);
   color: var(--color-fg-invert);

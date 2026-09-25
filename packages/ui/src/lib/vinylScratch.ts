@@ -1,6 +1,6 @@
 // ── Scratch + inerzia per dischi-vinile ────────────────────────────────────
-// Logica condivisa dall'atomo Vinyl del catalogo e dalla sezione Metodo del
-// sito: vive in @butik/ui perché la usano entrambi i package (ADR-0007).
+// Logica dei dischi della sezione Metodo del sito (apps/web): vive in @butik/ui
+// come libreria di motion condivisa (ADR-0010), senza componente React.
 //
 // Ogni "nodo" è l'area che riceve il puntatore; dentro c'è un disco che ruota.
 // La rotazione è guidata da requestAnimationFrame, non dall'animazione CSS (che

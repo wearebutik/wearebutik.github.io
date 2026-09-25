@@ -163,9 +163,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
   }
 
   .testimonials-container {
-    /* Tailwind max-w-7xl: nessun token con questo valore (stesso letterale
-       già usato da Header.astro/Footer.astro). */
-    max-width: 80rem;
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
@@ -203,6 +201,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
   }
 
   .testimonial-rating__star {
+    /* design-lint-disable red-as-text: stella del voto, non testo */
     color: var(--color-accent);
     width: var(--space-4);
     height: var(--space-4);
@@ -289,8 +288,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
     }
 
     .testimonials-heading {
-      /* Tailwind mb-10: nessun token --space-* con questo valore. */
-      margin-bottom: 2.5rem;
+      margin-bottom: var(--space-10);
     }
 
     #testimonials-track {

@@ -22,6 +22,12 @@ type Story = StoryObj<typeof meta>;
 // Doppia CTA (es. home, servizi/index).
 export const WithSecondaryCta: Story = {};
 
+// Doppia CTA su mobile: le due azioni vanno a capo e si impilano.
+export const WithSecondaryCtaMobile: Story = {
+  ...WithSecondaryCta,
+  globals: { viewport: { value: 'mobile1' } },
+};
+
 // Solo CTA primaria, senza body (es. chi-siamo).
 export const PrimaryOnly: Story = {
   args: {

@@ -24,8 +24,7 @@ const { items, eyebrow = 'Di cosa ci occupiamo' } = Astro.props;
 
 <style>
   .occupiamo-section {
-    /* 2.5rem (my-10): nessun token corrispondente in ui-tokens. */
-    margin-block: 2.5rem;
+    margin-block: var(--space-10);
   }
 
   /* Tailwind space-y-*: margin-block-end su tutti tranne l'ultimo. */

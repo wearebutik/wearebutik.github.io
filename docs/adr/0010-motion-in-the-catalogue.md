@@ -53,11 +53,11 @@ layout that no longer exists, which is worse than no text at all.
   rule for anything that is not shared.
 - **`prefers-reduced-motion` is respected everywhere**, unchanged from ADR-0005.
   This is the part of `#motion` that is not superseded, only relocated.
-- **Motion atoms that need the client say so.** Most are pure CSS and render to
-  static HTML with no directive. The one that observes entry into the viewport
-  (`Underline` in its default `trigger="view"`) needs `client:visible` in Astro,
-  or it sits at its initial state; its docblock says it.
-  `Underline trigger="load"` is CSS-only.
+- **Motion atoms are CSS-only.** They render to static HTML with no client
+  directive (`Underline` draws on page load with a CSS animation). Behaviour
+  that needs a script lives in `packages/ui/src/lib/` and is wired by the
+  `.astro` that uses it (`vinylScratch` for the Metodo section), not in a
+  hydrated island.
 - **The site-wide entrance system is shared motion logic**: `@butik/ui/reveal`
   lives in `packages/ui/src/lib/` like `vinylScratch`. Its styles live in the
   app (`apps/web/src/styles/motion.css`) because they target the site's markup

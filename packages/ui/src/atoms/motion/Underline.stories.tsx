@@ -1,4 +1,5 @@
-// Storie dell'Underline: toni, lunghezza del testo e uso dentro un titolo.
+// Storie dell'Underline: toni, lunghezza del testo, uso dentro un titolo e su
+// foto. Il tratto si disegna al caricamento (solo CSS).
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import Underline from './Underline';
 
@@ -61,10 +62,6 @@ export const InHeading: Story = {
 };
 
 // Una parola sola: il tratto si comprime.
-// Al caricamento, solo CSS: come nel titolo dell'hero della home, dove il
-// componente è reso a HTML statico senza direttiva client.
-export const OnLoad: Story = { args: { trigger: 'load' } };
-
 export const ShortText: Story = { args: { children: 'oggi' } };
 
 // Frase lunga: il tratto si allunga mantenendo la stessa irregolarità.
@@ -72,10 +69,10 @@ export const LongText: Story = {
   args: { children: 'progettazione culturale su base musicale' },
 };
 
-// Come nel titolo dell'hero della home: trigger="load", tono accent, dentro
-// l'h1 bianco sopra la foto con lo scrim.
-export const OnLoadOnPhoto: Story = {
-  args: { trigger: 'load', tone: 'accent', children: 'la musica' },
+// Come nel titolo dell'hero della home: tono accent, dentro l'h1 bianco sopra
+// la foto con lo scrim.
+export const OnPhoto: Story = {
+  args: { tone: 'accent', children: 'la musica' },
   render: (args) => (
     <div
       style={{
@@ -83,6 +80,36 @@ export const OnLoadOnPhoto: Story = {
         backgroundColor: 'var(--color-bg-invert)',
         backgroundImage:
           'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+      }}
+    >
+      <h1
+        style={{
+          fontFamily: 'var(--font-heading)',
+          fontSize: 'var(--font-size-section-title)',
+          fontWeight: 700,
+          color: 'var(--color-fg-invert)',
+          margin: 0,
+        }}
+      >
+        Attiviamo territori attraverso <Underline {...args} />
+      </h1>
+    </div>
+  ),
+};
+
+// Lo stesso titolo su una foto chiara, con il velo al 60% del colore del
+// testo che l'hero della home stende sulle foto (.hero-scrim): è il caso
+// peggiore per il contrasto del tratto rosso, perché il velo scurisce la foto
+// ma non la uniforma.
+export const OnBrightPhoto: Story = {
+  args: { tone: 'accent', children: 'la musica' },
+  render: (args) => (
+    <div
+      style={{
+        padding: 'var(--space-8)',
+        backgroundColor: 'var(--color-bg)',
+        backgroundImage:
+          'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 60%, transparent), color-mix(in srgb, var(--color-fg) 60%, transparent)), repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
       }}
     >
       <h1

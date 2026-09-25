@@ -1,7 +1,8 @@
 > **Recommended, not enforced.** The design vocabulary a linter can't fully
 > verify. Applies within the boundaries decided in
-> [ADR-0005](../adr/0005-design-system.md). The `design-check` skill covers the
-> mechanizable part (tokens vs raw values, contrast, focus).
+> [ADR-0005](../adr/0005-design-system.md). `pnpm lint:design`
+> (`tools/design-lint`, in CI) fails on the mechanical part: reds by role and the
+> small-caps recipe. The `design-check` skill covers the rest in review.
 
 # Design approach
 
@@ -47,8 +48,12 @@ surrounding `.astro` provides the spacing on its own elements.
 
 Outside both roles, and hand-written where they live: the category **chip** on
 the home portfolio cards (a tag with its own background), the regular-weight
-grey client line on the project cards, and the uppercase tracking of CTAs,
-form labels and filter chips.
+grey client line on the project cards, the red seal of the service hero, the
+proof row of the service hero (value and label on one line), the partner name
+shown on hover (decorative, `aria-hidden`), and the uppercase tracking of CTAs,
+buttons, links, navigation links, form labels and filter chips. Each of these rules
+names its role in a `design-lint-disable small-caps: <role>` comment, so a new
+copy without one fails CI.
 
 ## Accessibility
 
@@ -79,10 +84,8 @@ form labels and filter chips.
   one component lives with it — in the component's CSS Module under
   `packages/ui`, or in the `.astro` that owns the behaviour. Co-location is the
   point of CSS Modules; the shared `lib` is for what genuinely crosses components.
-- A motion atom that observes the viewport (`Underline` in its default
-  `trigger="view"`) needs `client:visible` in Astro; without a directive it renders
-  frozen at its initial state. `Underline trigger="load"` draws with CSS on page
-  load and needs no directive — use it for text already in view (a hero title).
+- Motion atoms are CSS-only and need no client directive. `Underline` draws on
+  page load — use it for text already in view (a hero title).
 - The count-up of the home's impact numbers is CSS-only, in
   `apps/web/src/components/home/Numbers.astro`: a counter on a custom property,
   started when the row enters the view. Without support or with reduced motion

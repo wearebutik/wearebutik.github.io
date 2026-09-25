@@ -72,3 +72,35 @@ export const Retoned: Story = {
     ),
   ],
 };
+
+// Su fondo scuro il contesto ritona il metadato sul verde highlight
+// (alias --color-butik-green → --color-highlight).
+export const OnDarkHighlight: Story = {
+  args: { children: 'Turismo musicale' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          background: 'var(--color-bg-invert)',
+          padding: 'var(--space-8)',
+          ['--meta-label-color' as string]: 'var(--color-highlight)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+// Ritonato sul colore del testo: il metadato perde l'accento e resta
+// distinto solo per il maiuscoletto.
+export const RetonedFg: Story = {
+  args: { children: 'Eventi' },
+  decorators: [
+    (Story) => (
+      <div style={{ ['--meta-label-color' as string]: 'var(--color-fg)' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};

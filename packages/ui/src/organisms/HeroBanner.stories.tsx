@@ -51,6 +51,12 @@ export const LongTitle: Story = {
   },
 };
 
+// Titolo lungo su mobile: il caso in cui il testo occupa più spazio della foto.
+export const LongTitleMobile: Story = {
+  ...LongTitle,
+  globals: { viewport: { value: 'mobile1' } },
+};
+
 // Sottotitolo su foto bianca: il caso peggiore per lo scrim, da guardare a
 // occhio. Il pannello a11y non basta: sul testo sopra un gradiente axe dà
 // color-contrast "incomplete", non un esito.
@@ -63,9 +69,13 @@ export const BrightImage: Story = {
 
 // Arrivo con il morph della view transition: il sito marca la sezione con
 // data-morph (BaseLayout) e l'entrata al caricamento si salta. Lo stato finale
-// è lo stesso di WithSubtitle, senza movimento d'ingresso.
+// non ha differenze visive da WithSubtitle (cambia solo il movimento
+// d'ingresso): questa storia è un test, non uno specimen. La `play` verifica
+// che l'attributo arrivi al componente; lo snapshot Chromatic è spento perché
+// duplicherebbe quello di WithSubtitle.
 export const MorphArrival: Story = {
   ...WithSubtitle,
+  parameters: { chromatic: { disableSnapshot: true } },
   decorators: [
     (Story) => {
       const ref = (el: HTMLDivElement | null) => {
