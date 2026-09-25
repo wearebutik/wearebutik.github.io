@@ -382,8 +382,7 @@ const serviziItems = servizi.map((s) => ({
      styles/motion.css): la foto si assesta, titolo, sottotitolo e pulsante
      salgono con il rimbalzo (data-battito, data-assesta), poi le card, una
      dopo l'altra, come barre di un equalizzatore.
-     A tempo dal caricamento: l'hero è già in vista. Esclusa nelle prove A e C
-     di /lab/motion, che hanno le loro regole. Le card sono di ServiceCard:
+     A tempo dal caricamento: l'hero è già in vista. Le card sono di ServiceCard:
      il selettore dei figli è :global, lo scope di Hero non le raggiunge. */
   @keyframes hero-in-dissolvi {
     from { opacity: 0; }
@@ -401,30 +400,30 @@ const serviziItems = servizi.map((s) => ({
   }
   @media (prefers-reduced-motion: no-preference) {
     /* Titolo, sottotitolo e pulsante: data-battito (styles/motion.css). */
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore {
+    .hero-explore {
       animation: hero-in-dissolvi var(--duration-enter) var(--ease-out) backwards;
     }
     /* 560 e 520ms: accordati a mano con i ritardi della sequenza d'ingresso. */
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(*) {
+    .hero-svc-cards > :global(*) {
       transform-origin: bottom;
       animation: hero-in-battito 560ms var(--ease-bounce) 520ms backwards;
     }
     /* Mobile: il riquadro compare in dissolvenza e le righe entrano una dopo
        l'altra scivolando da sinistra (le righe sono di ServiceLauncher). */
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list {
+    .hero-svc-list {
       animation: hero-in-dissolvi var(--duration-slower) var(--ease-out) 450ms backwards;
     }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li) {
+    .hero-svc-list :global(li) {
       animation: hero-in-scivola 520ms var(--ease-bounce) 550ms backwards;
     }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(2)) { animation-delay: 640ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(3)) { animation-delay: 730ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(4)) { animation-delay: 820ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li:nth-child(5)) { animation-delay: 910ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(2)) { animation-delay: 640ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(3)) { animation-delay: 760ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(4)) { animation-delay: 880ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(:nth-child(5)) { animation-delay: 1000ms; }
-    :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore { animation-delay: 1150ms; }
+    .hero-svc-list :global(li:nth-child(2)) { animation-delay: 640ms; }
+    .hero-svc-list :global(li:nth-child(3)) { animation-delay: 730ms; }
+    .hero-svc-list :global(li:nth-child(4)) { animation-delay: 820ms; }
+    .hero-svc-list :global(li:nth-child(5)) { animation-delay: 910ms; }
+    .hero-svc-cards > :global(:nth-child(2)) { animation-delay: 640ms; }
+    .hero-svc-cards > :global(:nth-child(3)) { animation-delay: 760ms; }
+    .hero-svc-cards > :global(:nth-child(4)) { animation-delay: 880ms; }
+    .hero-svc-cards > :global(:nth-child(5)) { animation-delay: 1000ms; }
+    .hero-explore { animation-delay: 1150ms; }
   }
 </style>

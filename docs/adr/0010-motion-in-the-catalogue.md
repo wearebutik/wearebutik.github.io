@@ -62,7 +62,7 @@ layout that no longer exists, which is worse than no text at all.
   lives in `packages/ui/src/lib/` like `vinylScratch`. Its styles live in the
   app (`apps/web/src/styles/motion.css`) because they target the site's markup
   (grids, section headings, heroes), not a catalogue component; there is no story
-  for it — the living reference is the site and `/lab/motion/b`.
+  for it — the living reference is the site.
 
 What does **not** change: motion never gets sprinkled inline across unrelated
 components. The invariant survives its address.
