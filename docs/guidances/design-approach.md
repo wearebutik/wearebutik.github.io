@@ -128,6 +128,17 @@ Example: the home header's overlay state uses a scroll-driven animation
 `@supports not (…)` the header is simply solid from the start: the overlay
 over the hero is lost, nothing else is.
 
+## The arrow in a circle {#arrow-circle}
+
+The drawn arrow in a circle that fills on hover is one atom,
+`@butik/ui/ArrowCircle`, and it is never a link itself: it sits inside one.
+`ArrowLink` renders it next to its text; a card that is a link as a whole (the
+service cards on the home hero) renders it directly. The interactive ancestor
+carries the `data-arrow-circle-host` attribute, and its `:hover` and
+`:focus-visible` fill the circle and move the arrow — an attribute rather than
+a class, so an `.astro` caller turns it on without a scoped rule reaching into
+the island (ADR-0008 `#astro-island-boundary`).
+
 ## Simplicity
 
 - YAGNI/KISS: don't abstract a component before it has 2-3 real uses.
@@ -143,5 +154,5 @@ over the hero is lost, nothing else is.
   leaves the same recipe copied into every card that needs it, with nothing
   tying the copies together.
 - **A non-link `ArrowLink` (`as="span"`)** for cards that are links as a whole.
-  No card on the site needs it today (the service cards render a real
-  `ArrowLink`), so it waits for a consumer.
+  A link component rendering something that is not a link carries text and
+  props the card does not need; the arrow alone is the atom `ArrowCircle`.

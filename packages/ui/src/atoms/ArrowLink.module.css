@@ -14,6 +14,8 @@
      dal contesto (le card dei servizi ne impostano uno per categoria) →
      accento globale. Colora il cerchio (elemento non testuale, soglia 3:1). */
   --al-accent: var(--arrow-link-accent, var(--accent, var(--color-accent)));
+  /* Il cerchio (ArrowCircle) prende lo stesso accento del link. */
+  --arrow-circle-accent: var(--al-accent);
   transition: color var(--duration-fast) var(--ease-out);
 }
 
@@ -29,47 +31,10 @@
   outline-offset: 4px;
 }
 
-/* Cerchio con la freccia: misure intere in px (28, 14, bordo 2) per restare
-   nitido. All'hover si riempie d'accento e la freccia diventa bianca. */
-.arrow {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--al-accent);
-  color: var(--al-accent);
-  transition: background-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
-}
-
-.arrow svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  transition: transform var(--duration-fast) var(--ease-out);
-}
-
-.link:hover .arrow,
-.link:focus-visible .arrow {
-  background-color: var(--al-accent);
-  color: var(--color-white);
-}
-
-.link:hover .arrow svg,
-.link:focus-visible .arrow svg {
-  transform: translateX(2px);
-}
-
-/* Su fondo scuro o fotografico: testo e cerchio bianchi; all'hover il
-   cerchio si riempie d'accento, come nelle card dell'hero. */
+/* Su fondo scuro o fotografico: testo bianco. Il cerchio (ArrowCircle col
+   tono invert) è bianco e all'hover si riempie d'accento, come nelle card
+   dell'hero. */
 .invert {
-  color: var(--color-fg-invert);
-}
-
-.invert .arrow {
-  border-color: var(--color-fg-invert);
   color: var(--color-fg-invert);
 }
 
@@ -77,23 +42,6 @@
   color: var(--color-fg-invert);
 }
 
-.invert:hover .arrow,
-.invert:focus-visible .arrow {
-  background-color: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-white);
-}
-
 .invert:focus-visible {
   outline-color: var(--color-fg-invert);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .arrow svg {
-    transition: none;
-  }
-  .link:hover .arrow svg,
-  .link:focus-visible .arrow svg {
-    transform: none;
-  }
 }

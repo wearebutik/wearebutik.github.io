@@ -9,6 +9,7 @@
     "chromatic": "chromatic --exit-zero-on-changes"
   },
   "exports": {
+    "./ArrowCircle": "./src/atoms/ArrowCircle.tsx",
     "./ArrowLink": "./src/atoms/ArrowLink.tsx",
     "./Button": "./src/atoms/Button.tsx",
     "./Eyebrow": "./src/atoms/Eyebrow.tsx",

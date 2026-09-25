@@ -9,6 +9,8 @@
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004):
 // in home dal campo `card` di ciascun documento servizio (Sanity).
 // L'icona resta config di design e vive qui, indicizzata per slug.
+import ArrowCircle from '@butik/ui/ArrowCircle';
+
 export interface ServiceCardData {
   /** Slug della collection `servizi`, usato per scegliere l'icona. */
   slug: string;
@@ -40,7 +42,7 @@ const icons: Record<string, string> = {
 };
 ---
 
-<a href={data.href} class="card group">
+<a href={data.href} class="card group" data-arrow-circle-host>
   <svg
     class="card__icon"
     viewBox="0 0 24 24"
@@ -57,11 +59,7 @@ const icons: Record<string, string> = {
   <h3 class="card__title">{data.title}</h3>
   <p class="card__desc">{data.desc}</p>
 
-  <span class="card__go" aria-hidden="true">
-    <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 8h11M9 4l4 4-4 4" />
-    </svg>
-  </span>
+  <ArrowCircle tone="invert" size="md" className="card__go" />
   </div>
 
 </a>
@@ -126,37 +124,14 @@ const icons: Record<string, string> = {
     line-height: 1.45;
     color: color-mix(in srgb, var(--color-white) 88%, transparent);
   }
-  /* Invito al click: freccia in un cerchio, sempre visibile (su tablet e
-     touch l'hover non c'è). All'hover/focus il cerchio si riempie di rosso
-     e la freccia avanza appena. */
-  .card__go {
+  /* Invito al click: ArrowCircle, sempre visibile (su tablet e touch l'hover
+     non c'è). La card porta data-arrow-circle-host: il suo hover/focus
+     riempie il cerchio di rosso e fa avanzare la freccia. Qui solo la
+     posizione; l'atomo è un'isola, il selettore passa per :global()
+     (ADR-0008 #astro-island-boundary). */
+  .card :global(.card__go) {
     align-self: flex-start;
     margin-top: var(--space-2);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    /* Misure intere in px (cerchio 32, freccia 16, tratto 2): la freccia
-       cade sulla griglia dei pixel e resta nitida. */
-    width: 2rem;
-    height: 2rem;
-    border-radius: var(--radius-full);
-    border: 2px solid var(--color-white);
-    color: var(--color-white);
-    transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
-  }
-  .card__go svg {
-    width: 1rem;
-    height: 1rem;
-    transition: transform var(--duration-fast) var(--ease-standard);
-  }
-  .card:hover .card__go,
-  .card:focus-visible .card__go {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-  }
-  .card:hover .card__go svg,
-  .card:focus-visible .card__go svg {
-    transform: translateX(2px);
   }
 
   /* Filigrana: glifo grande e tenue, tagliato dal bordo in basso a destra;
@@ -186,9 +161,7 @@ const icons: Record<string, string> = {
     .card:hover,
     .card:focus-visible,
     .card:hover .card__icon,
-    .card:focus-visible .card__icon,
-    .card:hover .card__go svg,
-    .card:focus-visible .card__go svg {
+    .card:focus-visible .card__icon {
       transform: none;
     }
   }
