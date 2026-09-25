@@ -56,7 +56,7 @@ const year = new Date().getFullYear();
             <div class="footer-contact">
               <MetaLabel as="p">{f.contattiLabel}</MetaLabel>
               <p class="footer-contact-emails">
-                <a href={`mailto:${f.pec}`} class="footer-link">{f.pec}</a><br />
+                <a href={`mailto:${f.pec}`} class="footer-link">{f.pec}</a>
                 <a href={`mailto:${f.email}`} class="footer-link">{f.email}</a>
               </p>
             </div>
@@ -207,6 +207,16 @@ const year = new Date().getFullYear();
     font-size: var(--font-size-sm);
     /* Tailwind text-sm porta con se anche il line-height. */
     line-height: calc(1.25 / 0.875);
+    /* Un indirizzo per riga, ciascuno alto almeno 24px (WCAG 2.5.8): i due
+       link stanno uno sotto l'altro. */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .footer-contact-emails .footer-link {
+    min-height: var(--space-6);
+    display: inline-flex;
+    align-items: center;
   }
 
   .footer-link {

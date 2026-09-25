@@ -46,7 +46,7 @@ const _unused = Image;
 
         <!-- Colonna destra: il registro (prova reale come indice) ───────── -->
         <div class="hero-col-ledger" data-battito style="--ritardo: 510ms">
-          <Eyebrow>{content.ledgerLabel}</Eyebrow>
+          {content.ledgerLabel && <Eyebrow>{content.ledgerLabel}</Eyebrow>}
           <ul class="ledger-list">
             {content.ledger.map((row) => (
               <li class="ledger-row">
@@ -69,7 +69,9 @@ const _unused = Image;
   <!-- Su mobile la barra scorre in orizzontale: tabindex e role="region" sul
        contenitore la rendono raggiungibile e scorrevole da tastiera, e la lista
        resta una lista. Il nome è l'etichetta del registro (le prove sono la
-       stessa materia), o l'eyebrow se manca. -->
+       stessa materia), o l'eyebrow se manca. Da desktop la barra non scorre ma
+       resta una fermata di Tab: limitarla al mobile chiederebbe JS o markup
+       doppio. -->
   <div
     class="proof-bar"
     tabindex="0"

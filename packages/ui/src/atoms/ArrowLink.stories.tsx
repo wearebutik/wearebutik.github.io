@@ -133,11 +133,33 @@ export const AccentFromContextRed: Story = {
 
 // --arrow-link-accent è il primo hook della catena di fallback e l'unico
 // pensato per il componente: --accent lo si eredita per caso, questo no.
+export const AccentViaComponentHookHover: Story = {
+  args: { tone: 'default', children: 'Scopri la formazione' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
+          ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: { pseudo: { hover: true } },
+};
+
 export const AccentViaComponentHook: Story = {
   args: { tone: 'default', children: 'Scopri la formazione' },
   decorators: [
     (Story) => (
-      <div style={{ ['--arrow-link-accent' as string]: 'var(--color-accent-2)' }}>
+      <div
+        style={{
+          ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
+          ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
+        }}
+      >
         <Story />
       </div>
     ),
@@ -221,6 +243,8 @@ export const AccentFromContextDarkHover: Story = {
 // sia la classe interna sia quella passata.
 export const WithClassName: Story = {
   args: { tone: 'default', className: 'story-arrow-link-hook' },
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const link = within(canvasElement).getByRole('link', { name: 'Scopri la progettazione culturale' });
     await expect(link.classList).toContain('story-arrow-link-hook');

@@ -7,6 +7,9 @@ const meta = {
   title: 'Atoms/Motion/Underline',
   component: Underline,
   tags: ['autodocs'],
+  // Il tratto si disegna con un'animazione CSS: Chromatic la ferma alla fine,
+  // cioè a sottolineatura disegnata, non all'inizio (tratto invisibile).
+  parameters: { chromatic: { pauseAnimationAtEnd: true } },
   argTypes: {
     tone: { control: 'inline-radio', options: ['accent', 'highlight', 'fg'] },
     children: { control: 'text' },

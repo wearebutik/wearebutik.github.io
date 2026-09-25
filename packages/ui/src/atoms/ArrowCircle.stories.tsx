@@ -122,6 +122,8 @@ export const OnPhotoFocusVisible: Story = {
 // La freccia è decorativa: fuori dall'albero di accessibilità, il nome del
 // link resta quello dell'host.
 export const Decorative: Story = {
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const link = within(canvasElement).getByRole('link', { name: 'Vai al servizio' });
     const circle = link.firstElementChild as HTMLElement;
@@ -134,6 +136,8 @@ export const Decorative: Story = {
 // che lo span porti la classe interna e quella passata.
 export const WithClassName: Story = {
   args: { className: 'story-arrow-circle-hook' },
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const link = within(canvasElement).getByRole('link', { name: 'Vai al servizio' });
     const circle = link.firstElementChild as HTMLElement;

@@ -63,6 +63,8 @@
   --font-size-2xl: 2.25rem;
   --font-size-3xl: 3rem;
   --font-size-4xl: 4.5rem;
+  /* Titolo di HeroBanner da desktop: fra 3xl e 4xl. */
+  --font-size-hero: 3.75rem;
 
   /* Titolo di sezione: scala fluida continua, senza salti tra breakpoint.
      Sostituisce la catena Tailwind `text-3xl md:text-4xl lg:text-5xl`
@@ -102,9 +104,12 @@
   /* Sfocatura del vetro sopra le foto (card e liste dell'hero, header). */
   --blur-glass: 12px;
   /* Altezze dei media (foto a tutta larghezza, carosello, card progetto). */
+  --media-h-xs: 14rem;
   --media-h-sm: 16rem;
   --media-h-md: 20rem;
   --media-h-lg: 31.25rem;
+  /* Altezza minima dell'header delle pagine (HeroBanner). */
+  --media-h-hero-min: 25rem;
   /* Sfocatura forte: pannello del menu mobile, fondo del carosello. */
   --blur-heavy: 24px;
 

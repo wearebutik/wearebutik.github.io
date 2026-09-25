@@ -104,7 +104,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
     position: relative;
     overflow: clip; /* la foto si assesta da un ingrandimento: resta nella sua colonna */
     order: 1;
-    height: 14rem;
+    height: var(--media-h-xs);
   }
   @media (min-width: 40rem) {
     .hero-media {

@@ -249,6 +249,8 @@ export const PrimaryOnDarkFocusVisible: Story = {
 // il <button> porti sia le classi interne sia quella passata.
 export const WithClassName: Story = {
   args: { variant: 'primary', children: 'Chiamaci', className: 'story-button-hook' },
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const button = within(canvasElement).getByRole('button', { name: 'Chiamaci' });
     await expect(button.classList).toContain('story-button-hook');
