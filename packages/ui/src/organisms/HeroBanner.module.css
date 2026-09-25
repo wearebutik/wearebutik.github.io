@@ -27,14 +27,6 @@
   object-fit: cover;
 }
 
-.gradient {
-  position: absolute;
-  inset: 0;
-  /* Nero puro intenzionale (non --color-dark): overlay fotografico, non un
-     colore di brand. */
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.3) 50%, transparent);
-}
-
 .content {
   position: relative;
   z-index: 10;
@@ -43,6 +35,29 @@
   padding-inline: var(--space-6);
   padding-bottom: var(--space-16);
   width: 100%;
+  --scrim-fade: var(--space-24);
+}
+
+/* Lo scrim sta sotto il testo, non sotto l'immagine: segue il blocco
+   titolo+sottotitolo ovunque finisca, qualunque sia `align-items` di .hero
+   e qualunque sia la foto. Dentro il blocco l'alpha non scende mai sotto
+   0.65: il sottotitolo (bianco all'80%) resta ≥ 5.18:1 anche su una foto
+   bianca, il titolo ≥ 6.98:1. Sopra il blocco sfuma a trasparente in
+   --scrim-fade. In orizzontale esce a tutta larghezza (.hero ha
+   overflow: hidden e lo taglia ai bordi). Nero puro intenzionale (non
+   --color-dark): overlay fotografico, non un colore di brand. */
+.content::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-block: calc(-1 * var(--scrim-fade)) 0;
+  inset-inline: -100vw;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.75),
+    rgba(0, 0, 0, 0.65) calc(100% - var(--scrim-fade)),
+    transparent
+  );
 }
 
 .title {

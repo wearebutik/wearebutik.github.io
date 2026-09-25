@@ -123,10 +123,11 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   }
   .onDark {
     --ink: #fff;
-    --muted: rgba(255, 255, 255, 0.65);
-    --rule: rgba(255, 255, 255, 0.2);
+    /* 80%: la frase regge 4.5:1 sul vetro scuro della lista, anche in hover. */
+    --muted: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
+    --rule: color-mix(in srgb, var(--color-fg-invert) 20%, transparent);
     --accent: var(--color-butik-green);
-    --row-hover: rgba(255, 255, 255, 0.1);
+    --row-hover: color-mix(in srgb, var(--color-fg-invert) 10%, transparent);
   }
 
   @media (prefers-reduced-motion: reduce) {

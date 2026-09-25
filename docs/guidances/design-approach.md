@@ -27,6 +27,16 @@
 ## Accessibility
 
 - **AA** contrast: ≥ 4.5:1 normal text, ≥ 3:1 large text / UI.
+- The red has three tokens, one per role. `--color-accent` (the brand red) is
+  for what carries no text: glyphs, dots, borders, focus outlines.
+  `--color-accent-text` is red **as text** on a light background (5.20:1 on
+  `--color-bg`). `--color-accent-fill` is a red **surface that carries text**
+  (buttons, badges, active chips, CTA hover states), always with
+  `--color-fg-invert` on top (5.68:1). White on the brand red is 4.77:1 —
+  passing, but with no margin for any future tweak of the red.
+- Text over a photograph sits on a scrim anchored to the text block, not to
+  the image: see `HeroBanner.module.css`, where the floor holds whatever the
+  alignment and the photo.
 - **Visible focus** on every interactive element (`:focus-visible` with a
   token-based outline); never `outline: none` without a replacement.
 - Non-native clickable elements have keyboard handling and correct roles; prefer

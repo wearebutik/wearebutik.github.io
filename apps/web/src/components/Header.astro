@@ -108,7 +108,7 @@ function isActive(href: string) {
               {link.label}
             </a>
           ))}
-          <Button href={ctaHref} tone="dark" className="mobile-cta">{ctaLabel}</Button>
+          <Button href={ctaHref} className="mobile-cta">{ctaLabel}</Button>
         </nav>
       </div>
     </details>
@@ -316,8 +316,8 @@ function isActive(href: string) {
     transition: background-color 300ms ease, border-color 300ms ease;
   }
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
+    background-color: var(--color-accent-fill);
+    border-color: var(--color-accent-fill);
   }
 
   /* Focus visibile — l'accent rosso non è leggibile sopra l'hero scurito
@@ -440,12 +440,11 @@ function isActive(href: string) {
   .mobile-link.mobile-link-active {
     color: var(--color-highlight);
   }
+  /* Il rosso pieno è il Button primary: l'header gli dà solo la larghezza
+     del pannello e lo scarto dalle voci. */
   .site-header :global(.mobile-cta) {
     width: 100%;
     margin-top: var(--space-8);
-    background-color: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-fg-invert);
   }
 
   .mobile-toggle-close {

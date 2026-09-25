@@ -57,7 +57,6 @@ export default function HeroBanner({
           className={styles.image}
           style={transitionStyle(transitionName)}
         />
-        <div className={styles.gradient} />
       </div>
 
       <div className={styles.content}>
