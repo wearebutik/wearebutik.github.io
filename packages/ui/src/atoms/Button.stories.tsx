@@ -134,10 +134,10 @@ export const ToneFallback: Story = {
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states: le
-// pseudo-classi CSS non si attivano con eventi simulati. L'hover è lo stesso
-// per tutte le varianti (il bottone sale di 1px, il colore non cambia): basta
-// una storia. Il focus invece cambia con il fondo, quindi una per tono.
-export const Hover: Story = {
+// pseudo-classi CSS non si attivano con eventi simulati. Hover (PDR-0005): il
+// primary rosso sale soltanto; il tono dark passa al rosso pieno; le ghost si
+// riempiono del colore del loro bordo. Il focus cambia con il fondo.
+export const PrimaryHover: Story = {
   args: { variant: 'primary', children: 'Chiamaci' },
   parameters: { pseudo: { hover: true } },
 };
@@ -226,4 +226,35 @@ export const WithClassName: Story = {
     // button + variante + classe passata.
     await expect(button.classList.length).toBe(3);
   },
+};
+
+export const DarkToneHover: Story = {
+  ...DarkTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const GhostHover: Story = {
+  ...Ghost,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const InvertToneHover: Story = {
+  ...InvertTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const AccentGhostToneHover: Story = {
+  ...AccentGhostTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+// Disabilitato: il form dei contatti lo imposta durante l'invio. Attenuato,
+// e l'hover non cambia colore.
+export const Disabled: Story = {
+  args: { tone: 'dark', type: 'submit', disabled: true, children: 'Invio in corso…' },
+};
+
+export const DisabledHover: Story = {
+  ...Disabled,
+  parameters: { pseudo: { hover: true } },
 };

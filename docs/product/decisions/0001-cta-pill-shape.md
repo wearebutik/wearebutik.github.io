@@ -1,6 +1,6 @@
 # PDR-0001: CTA a forma di pillola sito-wide
 
-- Status: accepted
+- Status: accepted (type and hover: [PDR-0005](./0005-cta-one-button.md))
 - Date: 2026-07-21
 - Reviewers: Gabriele Consiglio
 

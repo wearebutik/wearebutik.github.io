@@ -28,6 +28,8 @@ export interface ButtonProps {
   tone?: 'accent' | 'dark' | 'invert';
   /** Tipo del <button> (ignorato quando c'è `href`). */
   type?: 'button' | 'submit' | 'reset';
+  /** Disabilitato (solo <button>). Lo stato si può anche impostare da script. */
+  disabled?: boolean;
   /** Contenuto del bottone (testo, icona + testo, ...). */
   children?: ReactNode;
   /**
@@ -43,6 +45,7 @@ export default function Button({
   variant = 'primary',
   tone,
   type = 'button',
+  disabled,
   children,
   className,
 }: ButtonProps) {
@@ -54,7 +57,7 @@ export default function Button({
       {children}
     </a>
   ) : (
-    <button className={cls} type={type}>
+    <button className={cls} type={type} disabled={disabled}>
       {children}
     </button>
   );

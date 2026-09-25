@@ -6,8 +6,10 @@
  * livello app (`apps/web/src/components/CtaBanner.astro`, un wrapper
  * sottile) perché usa un alias app-only (`#lib/analytics/posthog.client`,
  * ADR-0007) non risolvibile da `packages/ui` — vedi ADR-0008 amendment
- * 2026-07-21. CSS Modules + token (ADR-0005).
+ * 2026-07-21. CSS Modules + token (ADR-0005). Le CTA sono `Button` (PDR-0001,
+ * PDR-0005): scura la primaria, ghost la secondaria.
  */
+import Button from '../atoms/Button';
 import styles from './CtaBanner.module.css';
 
 interface CtaLink {
@@ -32,13 +34,13 @@ export default function CtaBanner({ title, body, primaryCta, secondaryCta }: Cta
         </div>
 
         <div className={styles.actions}>
-          <a href={primaryCta.href} className={`${styles.cta} ${styles.primary}`}>
+          <Button href={primaryCta.href} tone="dark" className={styles.action}>
             {primaryCta.label}
-          </a>
+          </Button>
           {secondaryCta && (
-            <a href={secondaryCta.href} className={`${styles.cta} ${styles.secondary}`}>
+            <Button href={secondaryCta.href} variant="ghost" className={styles.action}>
               {secondaryCta.label}
-            </a>
+            </Button>
           )}
         </div>
       </div>

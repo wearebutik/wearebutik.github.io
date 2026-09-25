@@ -3,6 +3,7 @@
 // `pagine` (entry `home`), passati da index.astro. L'immagine viene da Sanity;
 // senza, resta l'asset locale.
 import { Image } from 'astro:assets';
+import Button from '@butik/ui/Button';
 
 import heroHome from '../../assets/hero-home.jpg';
 import { imageSize } from '#lib/media';
@@ -41,9 +42,9 @@ const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Ast
           {p3}
         </p>
 
-        <a href={ctaHref} class="about-cta">
-          {ctaLabel}
-        </a>
+        <div class="about-cta">
+          <Button href={ctaHref} tone="dark">{ctaLabel}</Button>
+        </div>
       </div>
 
       <div class="about-media">
@@ -132,29 +133,17 @@ const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Ast
     margin-bottom: 0;
   }
 
+  /* La CTA è un Button (PDR-0001, PDR-0005). Il contenitore ne decide lo
+     scarto e la larghezza: piena su mobile (la colonna stira il figlio),
+     naturale da tablet in su. */
   .about-cta {
-    /* design-lint-disable small-caps: CTA, fuori dai due ruoli */
-    display: inline-block;
-    width: 100%;
+    display: flex;
+    flex-direction: column;
     margin-top: var(--space-8);
-    padding: var(--space-4) var(--space-8);
-    background: var(--color-bg-invert);
-    color: var(--color-fg-invert);
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    line-height: calc(1 / 0.75);
-    font-weight: 700;
-    letter-spacing: 0.1em; /* tracking-widest, nessun token con questo valore */
-    text-transform: uppercase;
-    text-align: center;
-    transition: background-color var(--duration-fast) var(--ease-standard);
-  }
-  .about-cta:hover {
-    background: var(--color-accent-fill);
   }
   @media (min-width: 768px) {
     .about-cta {
-      width: auto;
+      display: block;
     }
   }
 
