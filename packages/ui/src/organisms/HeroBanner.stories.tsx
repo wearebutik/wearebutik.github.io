@@ -2,6 +2,7 @@
 // gli specimen usano un'immagine placeholder statica al posto degli asset
 // reali (risolti a build-time solo lato apps/web via getImage()).
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import HeroBanner from './HeroBanner';
 
 const placeholderSrc =
@@ -57,5 +58,29 @@ export const BrightImage: Story = {
   args: {
     src: brightSrc,
     subtitle: 'Un sottotitolo che espande il contesto in una riga o due.',
+  },
+};
+
+// Arrivo con il morph della view transition: il sito marca la sezione con
+// data-morph (BaseLayout) e l'entrata al caricamento si salta. Lo stato finale
+// è lo stesso di WithSubtitle, senza movimento d'ingresso.
+export const MorphArrival: Story = {
+  ...WithSubtitle,
+  decorators: [
+    (Story) => {
+      const ref = (el: HTMLDivElement | null) => {
+        const banner = el?.querySelector<HTMLElement>('[data-hero-banner]');
+        if (banner) banner.dataset.morph = '';
+      };
+      return (
+        <div ref={ref}>
+          <Story />
+        </div>
+      );
+    },
+  ],
+  play: async ({ canvasElement }) => {
+    const banner = canvasElement.querySelector<HTMLElement>('[data-hero-banner]');
+    await expect(banner?.dataset.morph).toBe('');
   },
 };

@@ -150,6 +150,16 @@ export const DarkToneHover: Story = {
   parameters: { pseudo: { hover: true } },
 };
 
+export const DarkToneFocusVisible: Story = {
+  args: { variant: 'primary', tone: 'dark', children: 'Lavoriamo insieme' },
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+export const InvertToneHover: Story = {
+  ...InvertTone,
+  parameters: { pseudo: { hover: true } },
+};
+
 // Su fondo scuro l'outline di focus passa al bianco (vedi Button.module.css).
 export const InvertToneFocusVisible: Story = {
   ...InvertTone,
