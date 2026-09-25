@@ -48,8 +48,14 @@ properties, owned by the **`@butik/ui-tokens`** package
 consumable by the site and, later, a component workshop. The site loads them once
 (`import '@butik/ui-tokens/tokens.css'` in the base layout). Components **consume**
 tokens; they don't redefine them and don't use raw values where a token exists.
-The `design-check` skill watches this discipline (tokens vs raw values, AA
-contrast, visible focus).
+Colour tokens name a **role**, and a component picks by what the colour does:
+the red has three (`--color-accent` for what carries no text,
+`--color-accent-text` for red text, `--color-accent-fill` for a red surface
+carrying text), defined with their contrast in the
+[design-approach guidance](../guidances/design-approach.md#accessibility).
+The `design-check` skill watches this discipline (tokens vs raw values, roles,
+AA contrast, visible focus), and `tools/design-lint` fails CI on its mechanical
+part.
 
 Shared components live in the **`@butik/ui`** package (CSS Modules + tokens), grown
 from `apps/web/src/components` as they are migrated. During the Tailwind→CSS
