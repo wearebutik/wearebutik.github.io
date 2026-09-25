@@ -117,10 +117,13 @@ copy without one fails CI.
 - **The home enters once per session** ([PDR-0002](../product/decisions/0002-motion-musical-rhythm.md)):
   `BaseLayout` records the visit in `sessionStorage` (`butik:home-vista`) and, on
   a router navigation back to the home, sets `data-entrata-saltata` on the new
-  `<html>` in `astro:before-swap`. Anything that enters on load turns its
-  entrance off under that attribute (`[data-entrata-saltata] …`), the reveal is
-  not armed, and a catalogue atom that draws on load (`Underline`) honours it
-  too. A full load never carries it.
+  `<html>` before the swap ([client-scripts.md](client-scripts.md#when-a-script-is-the-right-tool)).
+  Under that attribute every entrance on the home is off — on load and on
+  scroll: the hero, the header, the count-up of the numbers, the reveal (not
+  armed) and the catalogue atom that draws on load (`Underline`). A full load
+  never carries it. Only the home sets it: a component that enters on load
+  elsewhere (`HeroBanner`) does not honour it yet, and needs the same rule and a
+  story before the skip reaches its page.
 - **Entrance animations end clean**: fill mode `backwards`, never `both`. A
   leftover identity transform becomes the containing block of positioned
   descendants (it collapsed the mobile menu panel) and overrides the element's own

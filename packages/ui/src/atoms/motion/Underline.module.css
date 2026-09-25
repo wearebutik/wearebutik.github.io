@@ -33,9 +33,9 @@
   }
 }
 
-/* Entrata saltata: un antenato con data-entrata-saltata (il sito lo mette su
-   <html> quando la pagina è già stata vista nella sessione) chiede il tratto
-   già disegnato, come con reduced-motion. */
+/* Entrata saltata: un antenato con data-entrata-saltata chiede il tratto già
+   disegnato, come con reduced-motion. Il sito lo mette su <html> quando si
+   torna in home già vista nella sessione (BaseLayout). */
 :global([data-entrata-saltata]) .svg path {
   animation: none;
   stroke-dashoffset: 0;

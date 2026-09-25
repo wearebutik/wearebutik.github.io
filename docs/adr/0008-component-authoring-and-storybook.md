@@ -60,7 +60,8 @@ workshop shows what the site shows.
   around the island (`--accent`, `--accent-ink`, `--meta-label-color`…), empty
   or boundary data, hover and focus-visible (forced with
   `storybook-addon-pseudo-states`), a photographic background, an arrival state
-  set by the site (`data-morph`). A story shows its state visibly: a `className`
+  set by the site (`data-morph` on the component, `data-entrata-saltata` on an
+  ancestor). A story shows its state visibly: a `className`
   specimen sits on a background where the effect shows, and a `play` function
   asserts what a picture cannot. `story-check` maps coverage from the call sites.
 - **`className` is for layout and local effects, not for variants.** The hook
