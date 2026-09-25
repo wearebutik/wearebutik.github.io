@@ -28,7 +28,6 @@
     "./Waveform": "./src/atoms/motion/Waveform.tsx",
     "./Marquee": "./src/atoms/motion/Marquee.tsx",
     "./BeatPulse": "./src/atoms/motion/BeatPulse.tsx",
-    "./CountUp": "./src/atoms/motion/CountUp.tsx",
     "./Vinyl": "./src/atoms/motion/Vinyl.tsx",
     "./TapeReels": "./src/atoms/motion/TapeReels.tsx",
     "./FlowDivider": "./src/atoms/motion/FlowDivider.tsx",

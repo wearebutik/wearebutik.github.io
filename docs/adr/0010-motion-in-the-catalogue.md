@@ -54,9 +54,9 @@ layout that no longer exists, which is worse than no text at all.
 - **`prefers-reduced-motion` is respected everywhere**, unchanged from ADR-0005.
   This is the part of `#motion` that is not superseded, only relocated.
 - **Motion atoms that need the client say so.** Most are pure CSS and render to
-  static HTML with no directive. The two that observe entry into the viewport
-  (`CountUp`, `Underline` in its default `trigger="view"`) need `client:visible`
-  in Astro, or they sit at their initial state; their docblocks say it.
+  static HTML with no directive. The one that observes entry into the viewport
+  (`Underline` in its default `trigger="view"`) needs `client:visible` in Astro,
+  or it sits at its initial state; its docblock says it.
   `Underline trigger="load"` is CSS-only.
 - **The site-wide entrance system is shared motion logic**: `@butik/ui/reveal`
   lives in `packages/ui/src/lib/` like `vinylScratch`. Its styles live in the

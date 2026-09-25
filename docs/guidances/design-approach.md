@@ -43,10 +43,14 @@
   one component lives with it — in the component's CSS Module under
   `packages/ui`, or in the `.astro` that owns the behaviour. Co-location is the
   point of CSS Modules; the shared `lib` is for what genuinely crosses components.
-- A motion atom that observes the viewport (`CountUp`, `Underline` in its default
+- A motion atom that observes the viewport (`Underline` in its default
   `trigger="view"`) needs `client:visible` in Astro; without a directive it renders
   frozen at its initial state. `Underline trigger="load"` draws with CSS on page
   load and needs no directive — use it for text already in view (a hero title).
+- The count-up of the home's impact numbers is CSS-only, in
+  `apps/web/src/components/home/Numbers.astro`: a counter on a custom property,
+  started when the row enters the view. Without support or with reduced motion
+  the final number shows, never a zero.
 - **Entrance motion is one system** ([PDR-0002](../product/decisions/0002-motion-musical-rhythm.md)):
   `@butik/ui/reveal` (armed by `BaseLayout` on every page) plus the styles in
   `apps/web/src/styles/motion.css`. Grid and list items bounce up once, the first
