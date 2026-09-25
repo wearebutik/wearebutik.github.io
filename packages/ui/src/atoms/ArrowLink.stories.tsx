@@ -1,6 +1,7 @@
 // Storie di ArrowLink per il workshop @butik/ui. Coprono i due toni reali —
 // fondo chiaro (ServiceExpanded) e fondo scuro (Hero della home) — e il
 // ritono per contesto via --accent, che le card dei servizi già impostano.
+import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import ArrowLink from './ArrowLink';
@@ -132,38 +133,30 @@ export const AccentFromContextRed: Story = {
 };
 
 // --arrow-link-accent è il primo hook della catena di fallback e l'unico
-// pensato per il componente: --accent lo si eredita per caso, questo no.
-export const AccentViaComponentHookHover: Story = {
-  args: { tone: 'default', children: 'Scopri la formazione' },
-  decorators: [
-    (Story) => (
-      <div
-        style={{
-          ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
-          ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
-        }}
-      >
-        <Story />
-      </div>
-    ),
-  ],
-  parameters: { pseudo: { hover: true } },
-};
+// pensato per il componente: --accent lo si eredita per caso, questo no. Qui il
+// contesto porta un --accent rosso e l'hook viola vince: cerchio e testo
+// (in hover) sono viola.
+const hookDecorator = (Story: () => ReactNode) => (
+  <div
+    style={{
+      ['--accent' as string]: 'var(--color-accent)',
+      ['--accent-ink' as string]: 'var(--color-accent-text)',
+      ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
+      ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
+    }}
+  >
+    <Story />
+  </div>
+);
 
 export const AccentViaComponentHook: Story = {
   args: { tone: 'default', children: 'Scopri la formazione' },
-  decorators: [
-    (Story) => (
-      <div
-        style={{
-          ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
-          ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
-        }}
-      >
-        <Story />
-      </div>
-    ),
-  ],
+  decorators: [hookDecorator],
+};
+
+export const AccentViaComponentHookHover: Story = {
+  ...AccentViaComponentHook,
+  parameters: { pseudo: { hover: true } },
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states.
@@ -236,6 +229,13 @@ export const AccentFromContextDark: Story = {
 export const AccentFromContextDarkHover: Story = {
   ...AccentFromContextDark,
   parameters: { pseudo: { hover: true } },
+};
+
+// Focus con la coppia scura (servizi 2 e 5 in /servizi/): l'anello prende
+// l'accento, qui quasi nero.
+export const AccentFromContextDarkFocusVisible: Story = {
+  ...AccentFromContextDark,
+  parameters: { pseudo: { focusVisible: true } },
 };
 
 // className si UNISCE alle classi interne (gancio per i chiamanti app-side).

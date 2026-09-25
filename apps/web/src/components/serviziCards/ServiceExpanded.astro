@@ -99,7 +99,10 @@ const icons: Record<string, string> = {
     position: absolute;
     inset: 0;
   }
-  .svc-exp:has(:global(.svc-exp__link):focus-visible) {
+  /* L'anello va sulla card quando il suo link ha il focus. Senza :global dentro
+     :has(), che Astro non traduce: il link è l'unico elemento focalizzabile
+     della card. */
+  .svc-exp:has(:focus-visible) {
     outline: 2px solid var(--accent, var(--color-accent));
     outline-offset: 4px;
   }
