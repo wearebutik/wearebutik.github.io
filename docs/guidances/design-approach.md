@@ -48,8 +48,10 @@ surrounding `.astro` provides the spacing on its own elements.
 
 Outside both roles, and hand-written where they live: the category **chip** on
 the home portfolio cards (a tag with its own background), the regular-weight
-grey client line on the project cards, and the uppercase tracking of CTAs,
-buttons, navigation links, form labels and filter chips. Each of these rules
+grey client line on the project cards, the red seal of the service hero, the
+proof row of the service hero (value and label on one line), the partner name
+shown on hover (decorative, `aria-hidden`), and the uppercase tracking of CTAs,
+buttons, links, navigation links, form labels and filter chips. Each of these rules
 names its role in a `design-lint-disable small-caps: <role>` comment, so a new
 copy without one fails CI.
 

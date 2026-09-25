@@ -26,6 +26,8 @@ component the PR never touched.
    (excluding `*.stories.tsx`). Exports that are libraries, not components
    (`packages/ui/src/lib/*`: `reveal`, `vinylScratch`), are out of scope.
 2. **Find the reachable states** from the call sites in `apps/web/src/**`
+   (`apps/web/src/pages/lab/**` is experimental and does not count as a call
+   site)
    (`grep -rn "@butik/ui/<Name>"`). Many islands are rendered through an
    `.astro` wrapper (`components/HeroBanner.astro`, `components/mdx/*`,
    `components/portabletext/Pt*`): follow the wrapper to **its** callers, where
@@ -45,7 +47,12 @@ component the PR never touched.
      component on one. A bright photo for text over images.
    - **Interaction**: hover and focus-visible, forced with
      `storybook-addon-pseudo-states` (`parameters.pseudo`); intermediate states
-     reached by clicking (a `play` function).
+     reached by clicking or scrolling (a `play` function that waits for the
+     state to settle before the snapshot). A hover that changes nothing
+     visible beyond a nudge (Button's `translateY(-1px)`) needs one story per
+     component, not one per variant.
+   - **Reduced motion**: when `prefers-reduced-motion` changes the final state
+     and not only skips the animation, that state is reachable too.
    - **Arrival and motion states** set by the site (`data-morph`). A state with no visual difference at rest is a **test**,
      not a picture: a `play` asserts it and `parameters.chromatic.disableSnapshot`
      keeps a duplicate snapshot out of Chromatic.
@@ -58,8 +65,11 @@ component the PR never touched.
 3. **Map coverage** against the `*.stories.tsx` of each component.
 4. **Stale**: stories for props, states or components that no longer exist.
 5. **Unused**: components exported by `@butik/ui` with no call site in the site,
-   and prop values no call site reaches. Not a coverage gap — a question for the
-   catalogue (keep, or remove as with `CountUp`).
+   prop values no call site reaches, and stories on a background or context the
+   site never uses. Not a coverage gap — a question for the catalogue.
+6. **Wrong at the call site**: when a reachable state is not only uncovered
+   but also wrong (a Button without `tone="invert"` on a dark panel), report
+   the missing story here and mark it "also for design-check".
 
 ## Output format
 
@@ -82,5 +92,6 @@ component the PR never touched.
 - <Component>: <stories>.
 ```
 
-Severities: **warning** (a reachable state with no story, a story that does not
-show its state), **note** (stale story, optional edge case).
+Each section lists warnings before notes. Severities: **warning** (a reachable
+state with no story, a story that does not show its state), **note** (stale
+story, unused, optional edge case).

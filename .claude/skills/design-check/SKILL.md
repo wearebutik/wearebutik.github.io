@@ -42,9 +42,10 @@ Two modes:
   `red`/`white`) and `px`/`rem` for spacing, radius or font-size that should use
   `var(--…)`. Allowed: `0`, `1px` borders, percentages, `currentColor`,
   `color-mix()` of tokens. A photographic overlay or a shadow (`rgba(0,0,0,…)`)
-  is allowed when a comment says so. A recurring raw value with no matching
-  token goes **once** under "Missing tokens", with its count and two examples —
-  not as one violation per occurrence.
+  is allowed when a comment says so. Group repeated values: a raw value that
+  has a token is **one** violation listing its count and locations; a recurring
+  raw value with no matching token goes **once** under "Missing tokens", with
+  its count and two examples.
 - **Fluid type**: `--text-*` in `apps/web/src/styles/global.css` are fluid
   sizes (`clamp(…)`). A hand-written `clamp()` identical to one of them, or a
   comment claiming "no token" where one exists, is a violation.
@@ -69,8 +70,8 @@ Per [design-approach `#accessibility`](../../../docs/guidances/design-approach.m
 Flag text on `--color-accent` / `--color-butik-red`, red text in
 `--color-accent` / `--color-butik-red`, and hand-written reds (`#e21929`,
 `#cc1523`). Where custom properties cannot be read (Satori in
-`lib/og/render.ts`), the hex must match the token of the role, with a comment
-naming it.
+`lib/og/render.ts`), every hex constant matches a token, with a comment naming
+it.
 
 ### 3. Text over photographs
 
@@ -78,9 +79,13 @@ Text on an image holds AA **whatever the photo and the layout**: the scrim or
 panel sits under the text block (as in `HeroBanner.module.css`), not at a
 position of a gradient that depends on where the text lands.
 
-- **Pattern first**: a gradient that is still transparent (or below 0.65 of
-  `--color-fg`) where the text block starts is a `blocker` by itself — the
-  text's position depends on content and viewport, so no estimate saves it.
+- **Pattern first**: what matters is the **total** opacity of everything under
+  the text (veil + gradient + panel). A uniform veil holds the same everywhere,
+  so compute it once. A gradient whose total drops below the level the text
+  needs somewhere inside the text block is a `blocker` by itself — the text's
+  position depends on content and viewport, so no estimate saves it. As a
+  reference, white text at 80% needs ~0.65 of `--color-fg` over a white photo;
+  full white needs less.
 - **Then compute** for every text on a photo (heroes, glass panels, lists over a
   hero, carousel captions, cards, OG images in `lib/og/render.ts`): the contrast
   on the **worst photo for that text colour** (white for light text, black for
@@ -98,8 +103,9 @@ once, in `Eyebrow` and `MetaLabel`. Grep for `text-transform: uppercase` with
 `letter-spacing: 0.1em` outside those two atoms. For each copy decide the role:
 opens a section → `Eyebrow`; metadata over or next to a value → `MetaLabel`
 (re-toned with `--meta-label-color`, spacing and `aria-hidden` on a wrapping
-element). Chips, CTAs, form labels and filters are outside both roles — the
-guidance lists them.
+element). The roles outside both are listed in the guidance; a
+`design-lint-disable small-caps` naming a role that is **not** in that list is
+a `note`: either the guidance gains the role or the copy is one of the two.
 
 ### 5. Catalogue components used as they are
 
@@ -120,26 +126,38 @@ local effects (a scroll state, a width), not a way to make a new variant:
   hand-drawn stroke of `Underline`. One
   implementation stays; say which by static-first (ADR-0002): the one that
   needs no hydration wins.
-- **Dead variants**: a prop value or tone no call site uses is a `note`; if it
-  also fails a check, say so — the fix may be removing it.
+- **Dead variants**: a prop value or tone no call site uses — in `@butik/ui` or
+  in an app `.astro` component — is a `note`; if it also fails a check, say so:
+  the fix may be removing it.
+- **Repeated app patterns**: the same hand-written look in three or more app
+  components with no atom behind it (e.g. a rectangular dark CTA) is a `note`:
+  a candidate variant or atom, not a violation.
 
 ### 6. Accessibility
 
 - **AA contrast** (≥ 4.5:1 normal text, ≥ 3:1 large text and UI): compute from
   the real token hex values; report pairs below threshold.
-- **Dimmed text**: grep `color-mix(in srgb, var(--color-fg…) N%` and
-  `opacity:` on text. Secondary text (placeholders, captions, small print,
+- **Dimmed text**: grep `color-mix(` with a percentage on a foreground colour
+  (any colour space: `in srgb`, `in oklab`; any colour: `var(--color-fg…)`,
+  `currentcolor`), and `opacity:` on text — including `reset.css`, which sets
+  the default placeholder. Secondary text (placeholders, captions, small print,
   muted lines) below ~65% of the foreground is where AA fails most often;
-  compute each.
-- **Visible focus**: every interactive element has `:focus-visible` with a
-  token-based outline, legible on its background (white on dark panels); no
-  `outline: none` without a replacement.
+  compute each. A placeholder that is the only visible label is text.
+- **Non-text contrast** (WCAG 1.4.11, 3:1): what identifies a control or its
+  state — an input's border when the field and the page have about the same
+  colour, a toggle's on/off, an icon-only button, the focus ring itself.
+- **Visible focus**: every interactive element has a `:focus-visible` outline
+  on tokens, legible on its background (white on dark panels). No visible
+  indicator at all (`outline: none` without a replacement) → `blocker`; the
+  browser's default ring left in place → `warning` (visible, but not the
+  system's and not checked against the background).
 - **Keyboard**: non-native clickable elements have keyboard handling + roles;
   prefer native elements. Labels associated with controls; correct `aria-*`.
 
 ### 7. Motion
 
-- Every animation respects `prefers-reduced-motion`.
+- Every animation and transition that moves or scales (including hover zooms)
+  respects `prefers-reduced-motion`.
 - Reusable motion accents are atoms in `packages/ui/src/atoms/motion/`; motion
   logic shared across components lives in `packages/ui/src/lib/`; motion that
   belongs to one component lives with it (ADR-0010).
@@ -147,7 +165,9 @@ local effects (a scroll state, a width), not a way to make a new variant:
   element's base state: `both` leaves an identity transform that becomes a
   containing block. An animation that *draws* something the base state doesn't
   have (an underline growing `background-size`, a counter on `--n`) needs
-  `both`, with a comment saying why.
+  `both`. So does a **state** animation driven by scroll on a custom property
+  (`--header-solid`, `--in-vista`): it is not an entrance. A `both` without a
+  comment saying which case it is → `note`.
 - A CSS feature that is not Baseline is gated with `@supports` and degrades to
   readable text and working controls (design-approach `#browser-support`).
 
@@ -160,13 +180,23 @@ local effects (a scroll state, a width), not a way to make a new variant:
 - [severity] <rule>. Evidence: path:line. Fix: …
 
 ## Missing tokens
-- <value> at path:line — recurring, add a token.
+- <value> — N× (path:line, path:line). Add: <token name>.
+
+## Contrast
+| Where | Pair (text / background, worst case) | Ratio | Needs |
+|---|---|---|---|
+| path:line | … | x.xx:1 | 4.5 / 3 |
 
 ## Passing checks (brief)
 - <rule>: holds.
 ```
 
-Severities: **blocker** (fails AA, text on a photo below threshold, no focus,
-Tailwind), **warning** (wrong red for the role, hand-written small caps,
-component repainted from outside or duplicated, raw value where a token
-exists), **note** (lab/, minor).
+Violations are ordered blocker → warning → note. The contrast table lists every
+pair computed, passing or not, so two runs can be compared.
+
+Severities: **blocker** (fails AA text or 1.4.11, text on a photo below
+threshold, no visible focus, Tailwind), **warning** (browser-default focus,
+wrong red for the role, hand-written small caps, component repainted from
+outside or duplicated, raw value where a token exists, motion without a
+reduced-motion path), **note** (lab/, dead variants, repeated patterns,
+undocumented `both`, minor).
