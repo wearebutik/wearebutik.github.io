@@ -7,6 +7,7 @@
 import { getCollection, getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import BaseLayout from '#layouts/BaseLayout.astro';
+import Eyebrow from '@butik/ui/Eyebrow';
 import { sanityImageUrl, type SanityImage } from '#lib/sanity';
 import { imageSize } from '#lib/media';
 
@@ -100,7 +101,7 @@ const dubbi: { titolo: string; testo: string }[] = [
 
 <BaseLayout title="Revisione foto e testi — Lab" description="Revisione interna di foto e testi prima della pubblicazione." noindex>
   <section class="rev-hero">
-    <p class="rev-eyebrow">Interno · non indicizzato</p>
+    <Eyebrow>Interno · non indicizzato</Eyebrow>
     <h1 class="rev-title">Revisione foto e testi</h1>
     <p class="rev-lead">
       Le foto assegnate a ogni pagina, con il loro testo alternativo, e i punti ancora da decidere.
@@ -163,15 +164,6 @@ const dubbi: { titolo: string; testo: string }[] = [
     border-top: 1px solid color-mix(in oklab, var(--color-fg) 10%, transparent);
   }
 
-  .rev-eyebrow {
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    letter-spacing: 0.1em; /* come l'eyebrow di lab/index */
-    text-transform: uppercase;
-    color: var(--color-accent-text);
-    margin-bottom: var(--space-3);
-  }
   .rev-title {
     font-family: var(--font-heading);
     font-size: var(--text-4xl);

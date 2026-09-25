@@ -1,11 +1,13 @@
 /**
  * Eyebrow — atomo del catalogo @butik/ui.
  *
- * Estrae il titoletto maiuscolo che precede i titoli di sezione, oggi
- * duplicato come markup quasi identico in 11+ file (`Metodo`, `Testimonials`,
- * `MetodoSteps`, `CosaFacciamo`, `BandiVinti`, `DiCosaCiOccupiamo`, `AdattoA`,
- * `ServiceHeroA/B/C`, `pages/partners.astro`). CSS Modules + token
- * (ADR-0005), componente presentazionale (ADR-0008).
+ * Il titoletto maiuscolo che apre una sezione: sta sopra il titolo della
+ * sezione, direttamente o tramite `SectionHeading`. Il metadato dentro una
+ * card (categoria, ruolo, "Cliente") ha la stessa grammatica ma è un altro
+ * ruolo, e usa `MetaLabel`: i due possono divergere
+ * (docs/guidances/design-approach.md#two-small-caps-roles).
+ *
+ * CSS Modules + token (ADR-0005), componente presentazionale (ADR-0008).
  */
 import type { ReactNode } from 'react';
 import styles from './Eyebrow.module.css';

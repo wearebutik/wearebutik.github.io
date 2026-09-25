@@ -1,4 +1,5 @@
 ---
+import MetaLabel from '@butik/ui/MetaLabel';
 // Copy content-driven (ADR-0004): metriche e label arrivano dalla collezione
 // `pagine` (entry `home`) come array, passate da index.astro.
 //
@@ -41,7 +42,7 @@ const items = [
         <div class:list={['metric', { 'metric--mmw': m.eyebrow }]}>
           <dt class="sr-only">{m.eyebrow ? `${m.label} — ${m.eyebrow}` : m.label}</dt>
           <dd>
-            {m.eyebrow && <span class="metric-eyebrow" aria-hidden="true">{m.eyebrow}</span>}
+            {m.eyebrow && <span class="metric-eyebrow" aria-hidden="true"><MetaLabel>{m.eyebrow}</MetaLabel></span>}
             <span class="metric-value">
               {/* Tutto su una riga: niente spazi fra numero e suffisso. */}
               {m.count ? (
@@ -136,15 +137,15 @@ const items = [
     display: none;
   }
 
+  /* Il nome dell'evento sopra il valore è un metadato: MetaLabel, ritonato
+     sull'highlight come i numeri (regge 4.5:1 su --color-bg-invert). Lo
+     span Astro porta aria-hidden, lo scarto e la posizione su desktop, che
+     l'isola non prende (ADR-0008 #astro-island-boundary). Flex e non block:
+     così la riga è quella di MetaLabel, senza la riga del corpo attorno. */
   .metric-eyebrow {
-    display: block;
+    display: flex;
     margin-bottom: var(--space-2);
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    letter-spacing: 0.1em; /* come le etichette del sito */
-    text-transform: uppercase;
-    color: var(--color-highlight);
+    --meta-label-color: var(--color-highlight);
   }
 
   .metric-value {

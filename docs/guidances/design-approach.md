@@ -24,6 +24,32 @@
   with `tools/visual-diff`.
   ([ADR-0005](../adr/0005-design-system.md#css-modules)).
 
+## Small caps: two roles {#two-small-caps-roles}
+
+The small uppercase label (display font, `--font-size-xs`, bold, 0.1em
+tracking, red text) serves two roles, and each has its own component in
+`@butik/ui`:
+
+- **`Eyebrow`** opens a section: it sits above the section's heading, directly
+  or through `SectionHeading`. It is a page-structure element.
+- **`MetaLabel`** is metadata inside a card or a record: a project's category, a
+  team member's role, the "Cliente"/"Anno" fields of a project. It opens
+  nothing and may come before or after the title it belongs to.
+
+The two start from the same recipe and are free to diverge: a change of scale
+for section eyebrows does not reach card metadata. Pick by role, not by look.
+A context that re-tones the metadata sets `--meta-label-color`, holding 4.5:1
+on its background.
+
+Neither component takes margins from the page: the island's DOM is out of
+reach of Astro's scoped styles (ADR-0008 `#astro-island-boundary`), so the
+surrounding `.astro` provides the spacing on its own elements.
+
+Outside both roles, and hand-written where they live: the category **chip** on
+the home portfolio cards (a tag with its own background), the regular-weight
+grey client line on the project cards, and the uppercase tracking of CTAs,
+form labels and filter chips.
+
 ## Accessibility
 
 - **AA** contrast: ≥ 4.5:1 normal text, ≥ 3:1 large text / UI.
@@ -95,3 +121,15 @@ over the hero is lost, nothing else is.
 - YAGNI/KISS: don't abstract a component before it has 2-3 real uses.
 - New code reads like the code around it: same comment density, same naming
   conventions.
+
+## Discarded directions
+
+- **One `Eyebrow` with a role prop** (`role="section" | "meta"`). It keeps a
+  single import, but the metadata role would live inside a component named
+  after the other role, and every divergence would become a branch in it.
+- **A written rule only, metadata left hand-written.** Smallest change, but it
+  leaves the same recipe copied into every card that needs it, with nothing
+  tying the copies together.
+- **A non-link `ArrowLink` (`as="span"`)** for cards that are links as a whole.
+  No card on the site needs it today (the service cards render a real
+  `ArrowLink`), so it waits for a consumer.

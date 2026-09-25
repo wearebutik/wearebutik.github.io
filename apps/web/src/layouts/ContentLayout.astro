@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import HeroBanner from '../components/HeroBanner.astro';
+import MetaLabel from '@butik/ui/MetaLabel';
 import type { ImageMetadata } from 'astro';
 
 interface Props {
@@ -46,19 +47,19 @@ const {
       <div class="meta-bar-inner">
         {client && (
           <div>
-            <span class="meta-label">Cliente</span>
+            <MetaLabel as="p">Cliente</MetaLabel>
             <span class="meta-value">{client}</span>
           </div>
         )}
         {year && (
           <div>
-            <span class="meta-label">Anno</span>
+            <MetaLabel as="p">Anno</MetaLabel>
             <span class="meta-value">{year}</span>
           </div>
         )}
         {category && (
           <div>
-            <span class="meta-label">Categoria</span>
+            <MetaLabel as="p">Categoria</MetaLabel>
             <span class="meta-value">{category}</span>
           </div>
         )}
@@ -89,18 +90,11 @@ const {
     gap: var(--space-8);
   }
 
-  .meta-label {
-    display: block;
-    margin-bottom: var(--space-1);
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    font-weight: 700;
-    letter-spacing: 0.1em; /* tracking-widest — nessun token per letter-spacing */
-    text-transform: uppercase;
-    color: var(--color-accent-text);
-  }
-
+  /* Blocco sotto l'etichetta (MetaLabel): lo scarto lo dà il valore, perché
+     l'isola non riceve gli stili scoped del layout (ADR-0008). */
   .meta-value {
+    display: block;
+    margin-top: var(--space-2);
     font-family: var(--font-sans);
     font-size: var(--font-size-sm);
     color: var(--color-fg);

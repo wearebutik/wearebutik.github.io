@@ -7,6 +7,7 @@ import { soloLinkValidi } from '#lib/links';
 import SocialLinks from '@butik/ui/SocialLinks';
 import SectionHeading from '@butik/ui/SectionHeading';
 import Eyebrow from '@butik/ui/Eyebrow';
+import MetaLabel from '@butik/ui/MetaLabel';
 
 // Copy editoriale content-driven via collezione `pagine` (ADR-0004): il testo
 // attorno al form è editabile dallo Studio Sanity. La logica del form Web3Forms qui
@@ -116,23 +117,23 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
 
         <div class="contact-info">
           <div>
-            <p class="info-label">{c.emailLabel}</p>
+            <MetaLabel as="p">{c.emailLabel}</MetaLabel>
             <a href={`mailto:${c.emailValue}`} class="info-link">{c.emailValue}</a>
           </div>
 
           <div>
-            <p class="info-label">{c.pecLabel}</p>
+            <MetaLabel as="p">{c.pecLabel}</MetaLabel>
             <a href={`mailto:${c.pecValue}`} class="info-link">{c.pecValue}</a>
           </div>
 
           <div>
-            <p class="info-label">{c.sedeLabel}</p>
+            <MetaLabel as="p">{c.sedeLabel}</MetaLabel>
             <address class="address-block" set:html={richTextHtml(c.sedeAddress)}>
             </address>
           </div>
 
           <div>
-            <p class="info-label info-label--social">{c.seguiciLabel}</p>
+            <MetaLabel as="p">{c.seguiciLabel}</MetaLabel>
             <SocialLinks socials={socials} />
           </div>
         </div>
@@ -308,19 +309,20 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
     margin-block-end: var(--space-6);
   }
 
-  .info-label {
-    display: block;
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    line-height: calc(1 / 0.75);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-fg);
-    margin-bottom: var(--space-1);
+  /* Ogni recapito: etichetta (MetaLabel, qui in --color-fg) sopra il valore.
+     Lo scarto lo dà il gap del contenitore, perché l'etichetta e
+     SocialLinks sono isole e gli stili scoped non le raggiungono (ADR-0008). */
+  .contact-info {
+    --meta-label-color: var(--color-fg);
   }
-  .info-label--social {
-    margin-bottom: var(--space-2);
+  .contact-info > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+  .contact-info > div:last-child {
+    gap: var(--space-2);
   }
 
   .info-link {
