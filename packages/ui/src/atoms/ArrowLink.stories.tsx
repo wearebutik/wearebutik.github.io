@@ -1,6 +1,7 @@
 // Storie di ArrowLink per il workshop @butik/ui. Coprono i due toni reali —
 // fondo chiaro (ServiceExpanded) e fondo scuro (Hero della home) — e il
 // ritono per contesto via --accent, che le card dei servizi già impostano.
+import type { ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { expect, within } from 'storybook/test';
 import ArrowLink from './ArrowLink';
@@ -54,13 +55,43 @@ export const OnPhoto: Story = {
           padding: 'var(--space-8)',
           backgroundColor: 'var(--color-bg-invert)',
           backgroundImage:
-            'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 55%, transparent), color-mix(in srgb, var(--color-fg) 55%, transparent)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
         }}
       >
         <Story />
       </div>
     ),
   ],
+};
+
+// Lo stesso tono su foto chiara, con il velo al 60% che l'hero della home
+// stende sulle foto: il caso peggiore per testo bianco e anello di focus.
+export const OnBrightPhoto: Story = {
+  args: { tone: 'invert', children: 'Esplora tutti i servizi' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundColor: 'var(--color-bg)',
+          backgroundImage:
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 60%, transparent), color-mix(in srgb, var(--color-fg) 60%, transparent)), repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const OnBrightPhotoHover: Story = {
+  ...OnBrightPhoto,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const OnBrightPhotoFocusVisible: Story = {
+  ...OnBrightPhoto,
+  parameters: { pseudo: { focusVisible: true } },
 };
 
 // Il tono default eredita --accent (cerchio) e --accent-ink (testo in hover)
@@ -102,16 +133,30 @@ export const AccentFromContextRed: Story = {
 };
 
 // --arrow-link-accent è il primo hook della catena di fallback e l'unico
-// pensato per il componente: --accent lo si eredita per caso, questo no.
+// pensato per il componente: --accent lo si eredita per caso, questo no. Qui il
+// contesto porta un --accent rosso e l'hook viola vince: cerchio e testo
+// (in hover) sono viola.
+const hookDecorator = (Story: () => ReactNode) => (
+  <div
+    style={{
+      ['--accent' as string]: 'var(--color-accent)',
+      ['--accent-ink' as string]: 'var(--color-accent-text)',
+      ['--arrow-link-accent' as string]: 'var(--color-accent-2)',
+      ['--arrow-link-accent-ink' as string]: 'var(--color-accent-2)',
+    }}
+  >
+    <Story />
+  </div>
+);
+
 export const AccentViaComponentHook: Story = {
   args: { tone: 'default', children: 'Scopri la formazione' },
-  decorators: [
-    (Story) => (
-      <div style={{ ['--arrow-link-accent' as string]: 'var(--color-accent-2)' }}>
-        <Story />
-      </div>
-    ),
-  ],
+  decorators: [hookDecorator],
+};
+
+export const AccentViaComponentHookHover: Story = {
+  ...AccentViaComponentHook,
+  parameters: { pseudo: { hover: true } },
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states.
@@ -140,6 +185,11 @@ export const OnDarkFocusVisible: Story = {
 export const OnPhotoHover: Story = {
   ...OnPhoto,
   parameters: { pseudo: { hover: true } },
+};
+
+export const OnPhotoFocusVisible: Story = {
+  ...OnPhoto,
+  parameters: { pseudo: { focusVisible: true } },
 };
 
 export const AccentFromContextHover: Story = {
@@ -181,11 +231,20 @@ export const AccentFromContextDarkHover: Story = {
   parameters: { pseudo: { hover: true } },
 };
 
+// Focus con la coppia scura (servizi 2 e 5 in /servizi/): l'anello prende
+// l'accento, qui quasi nero.
+export const AccentFromContextDarkFocusVisible: Story = {
+  ...AccentFromContextDark,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
 // className si UNISCE alle classi interne (gancio per i chiamanti app-side).
 // Nessuna regola dell'app copiata qui: la `play` controlla che il link porti
 // sia la classe interna sia quella passata.
 export const WithClassName: Story = {
   args: { tone: 'default', className: 'story-arrow-link-hook' },
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const link = within(canvasElement).getByRole('link', { name: 'Scopri la progettazione culturale' });
     await expect(link.classList).toContain('story-arrow-link-hook');

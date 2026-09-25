@@ -29,5 +29,9 @@ const { node: n } = Astro.props;
 {n._type === 'bandiVinti' && <BandiVinti bandi={n.bandi ?? []} eyebrow={n.eyebrow} />}
 {n._type === 'ctaProgetti' && <CtaProgetti title={n.title} schede={n.schede} href={n.href} label={n.label} />}
 {n._type === 'ctaBanner' && (
-  <CtaBanner title={n.title} body={n.body} primaryCta={n.primaryCta} secondaryCta={n.secondaryCta} />
+  // not-prose come gli altri blocchi: il banner non prende margini e pesi
+  // della prosa. I colori delle CTA li tiene il Button (varianti a 0,2,0).
+  <div class="not-prose">
+    <CtaBanner title={n.title} body={n.body} primaryCta={n.primaryCta} secondaryCta={n.secondaryCta} />
+  </div>
 )}

@@ -76,7 +76,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
 
       <!-- CTA -->
       <div class="hero-cta-row" data-battito style="--ritardo: 510ms">
-        <Button href={content.ctaPrimary.href}>{content.ctaPrimary.label}</Button>
+        <Button href={content.ctaPrimary.href} tone="invert">{content.ctaPrimary.label}</Button>
 
         {content.ctaSecondary && (
           <Button href={content.ctaSecondary.href} variant="ghost" tone="invert">
@@ -104,11 +104,11 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
     position: relative;
     overflow: clip; /* la foto si assesta da un ingrandimento: resta nella sua colonna */
     order: 1;
-    height: 14rem;
+    height: var(--media-h-xs);
   }
   @media (min-width: 40rem) {
     .hero-media {
-      height: 16rem;
+      height: var(--media-h-sm);
     }
   }
   @media (min-width: 64rem) {
@@ -165,13 +165,13 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
       order: 1;
       padding-left: var(--space-16);
       padding-right: var(--space-16);
-      padding-top: 5rem;
-      padding-bottom: 5rem;
+      padding-top: var(--space-20);
+      padding-bottom: var(--space-20);
     }
   }
 
   .hero-panel-inner {
-    max-width: 36rem;
+    max-width: var(--measure-xl);
   }
 
   /* lo stile globale di h1 forza color butik-dark: qui serve bianco su scuro */
@@ -197,7 +197,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
 
   .hero-sub {
     margin-top: var(--space-5);
-    max-width: 28rem;
+    max-width: var(--measure-md);
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
     line-height: 1.5;

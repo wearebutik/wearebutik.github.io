@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import ImageRight from './ImageRight';
+// Storie di ImageSide: la figura è la stessa a sinistra e a destra (il lato è
+// l'ordine nel wrapper .astro), quindi le storie non hanno una variante di lato.
+import ImageSide from './ImageSide';
 
 const placeholderSrc =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#3b5a8a"/></svg>'
+    '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#2f5233"/></svg>'
   );
 
 // Ritratto 9:16 con tre fasce etichettate: rende visibile come la colonna
@@ -22,14 +24,14 @@ const portraitSrc =
   );
 
 const meta = {
-  title: 'Molecules/ImageRight',
-  component: ImageRight,
+  title: 'Molecules/ImageSide',
+  component: ImageSide,
   tags: ['autodocs'],
   args: {
     src: placeholderSrc,
     alt: '',
   },
-} satisfies Meta<typeof ImageRight>;
+} satisfies Meta<typeof ImageSide>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
@@ -38,12 +40,21 @@ export const NoCaption: Story = {};
 
 export const WithCaption: Story = {
   args: {
-    caption: 'Vista dall’alto dello spazio espositivo.',
+    caption: 'Dettaglio dell’allestimento.',
   },
 };
 
-// Sorgente verticale alta: verifica il ritaglio nella colonna immagine.
+// Sorgente verticale alta, nella larghezza che ha sul sito da 768px in su
+// (mezza riga, accanto al testo): l'immagine non si ritaglia, cresce in
+// altezza.
 export const Portrait: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: '24rem' }}>
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     src: portraitSrc,
     width: 900,

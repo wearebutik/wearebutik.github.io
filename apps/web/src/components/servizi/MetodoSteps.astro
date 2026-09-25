@@ -50,7 +50,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
     /* font-family e color li impone `.prose p, .prose li` di global.css, con
        specificita' (0,1,1) che batte le utility: dichiararli qui vincerebbe
        (0,2,0) e cambierebbe la resa. Vedi ADR-0005 e l'issue #46. */
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     line-height: 1.625; /* leading-relaxed vince sul line-height di text-base/text-lg */
     margin-bottom: var(--space-6);
   }
@@ -79,7 +79,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
     /* font-family e color li impone `.prose p, .prose li` di global.css, con
        specificita' (0,1,1) che batte le utility: dichiararli qui vincerebbe
        (0,2,0) e cambierebbe la resa. Vedi ADR-0005 e l'issue #46. */
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     font-weight: 700;
     line-height: 1.375; /* leading-snug vince sul line-height di text-base/text-lg */
     text-transform: none;
@@ -91,7 +91,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
     /* font-family e color li impone `.prose p, .prose li` di global.css, con
        specificita' (0,1,1) che batte le utility: dichiararli qui vincerebbe
        (0,2,0) e cambierebbe la resa. Vedi ADR-0005 e l'issue #46. */
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     line-height: 1.625; /* leading-relaxed vince sul line-height di text-sm/text-base */
     margin-top: var(--space-1);
   }

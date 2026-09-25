@@ -28,7 +28,11 @@ const meta = {
     type: {
       control: 'inline-radio',
       options: ['button', 'submit', 'reset'],
-      description: 'Tipo del <button> (ignorato quando c’è href).',
+      description: 'Tipo del <button>. Solo senza href: con href il tipo non lo accetta.',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disabilitato (solo senza href): attenuato, niente hover.',
     },
     children: {
       control: 'text',
@@ -134,7 +138,9 @@ export const ToneFallback: Story = {
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states: le
-// pseudo-classi CSS non si attivano con eventi simulati.
+// pseudo-classi CSS non si attivano con eventi simulati. Hover (PDR-0005): il
+// primary rosso sale soltanto; il tono dark passa al rosso pieno; le ghost si
+// riempiono del colore del loro bordo. Il focus cambia con il fondo.
 export const PrimaryHover: Story = {
   args: { variant: 'primary', children: 'Chiamaci' },
   parameters: { pseudo: { hover: true } },
@@ -145,19 +151,9 @@ export const PrimaryFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
-export const DarkToneHover: Story = {
-  args: { variant: 'primary', tone: 'dark', children: 'Lavoriamo insieme' },
-  parameters: { pseudo: { hover: true } },
-};
-
 export const DarkToneFocusVisible: Story = {
   args: { variant: 'primary', tone: 'dark', children: 'Lavoriamo insieme' },
   parameters: { pseudo: { focusVisible: true } },
-};
-
-export const InvertToneHover: Story = {
-  ...InvertTone,
-  parameters: { pseudo: { hover: true } },
 };
 
 // Su fondo scuro l'outline di focus passa al bianco (vedi Button.module.css).
@@ -166,19 +162,9 @@ export const InvertToneFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
-export const GhostHover: Story = {
-  ...Ghost,
-  parameters: { pseudo: { hover: true } },
-};
-
 export const GhostFocusVisible: Story = {
   ...Ghost,
   parameters: { pseudo: { focusVisible: true } },
-};
-
-export const AccentGhostToneHover: Story = {
-  ...AccentGhostTone,
-  parameters: { pseudo: { hover: true } },
 };
 
 export const AccentGhostToneFocusVisible: Story = {
@@ -199,7 +185,7 @@ export const PrimaryOnPhoto: Story = {
           padding: 'var(--space-8)',
           backgroundColor: 'var(--color-bg-invert)',
           backgroundImage:
-            'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 55%, transparent), color-mix(in srgb, var(--color-fg) 55%, transparent)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
         }}
       >
         <Story />
@@ -211,6 +197,31 @@ export const PrimaryOnPhoto: Story = {
 // L'anello di focus bianco del tono invert, sul velo scuro.
 export const PrimaryOnPhotoFocusVisible: Story = {
   ...PrimaryOnPhoto,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+// Lo stesso su foto chiara, con il velo al 60% che l'hero della home stende
+// sulle foto: il caso peggiore per l'anello di focus bianco.
+export const PrimaryOnBrightPhoto: Story = {
+  ...PrimaryOnPhoto,
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundColor: 'var(--color-bg)',
+          backgroundImage:
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 60%, transparent), color-mix(in srgb, var(--color-fg) 60%, transparent)), repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const PrimaryOnBrightPhotoFocusVisible: Story = {
+  ...PrimaryOnBrightPhoto,
   parameters: { pseudo: { focusVisible: true } },
 };
 
@@ -238,10 +249,51 @@ export const PrimaryOnDarkFocusVisible: Story = {
 // il <button> porti sia le classi interne sia quella passata.
 export const WithClassName: Story = {
   args: { variant: 'primary', children: 'Chiamaci', className: 'story-button-hook' },
+  // Test, non un'immagine: a riposo è identica a Default.
+  parameters: { chromatic: { disableSnapshot: true } },
   play: async ({ canvasElement }) => {
     const button = within(canvasElement).getByRole('button', { name: 'Chiamaci' });
     await expect(button.classList).toContain('story-button-hook');
     // button + variante + classe passata.
     await expect(button.classList.length).toBe(3);
+  },
+};
+
+export const DarkToneHover: Story = {
+  ...DarkTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const GhostHover: Story = {
+  ...Ghost,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const InvertToneHover: Story = {
+  ...InvertTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+export const AccentGhostToneHover: Story = {
+  ...AccentGhostTone,
+  parameters: { pseudo: { hover: true } },
+};
+
+// Disabilitato: il form dei contatti lo imposta durante l'invio. Attenuato,
+// e l'hover non cambia colore.
+export const Disabled: Story = {
+  args: { tone: 'dark', type: 'submit', disabled: true, children: 'Invio in corso…' },
+};
+
+// In hover un bottone disabilitato non cambia: a vista è Disabled, quindi è un
+// test. La play verifica che il fondo resti quello scuro.
+export const DisabledHover: Story = {
+  ...Disabled,
+  parameters: { pseudo: { hover: true }, chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    // --color-fg (#071108): il fondo del tono dark a riposo, non il rosso
+    // dell'hover.
+    const button = within(canvasElement).getByRole('button');
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(7, 17, 8)');
   },
 };

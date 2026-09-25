@@ -30,7 +30,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
       {
         testimonials.map((t, i) => (
           <article class="testimonial-card" data-testimonial-index={i}>
-            <div class="testimonial-rating" aria-label={`Valutazione: ${t.rating} su 5`}>
+            <div class="testimonial-rating" role="img" aria-label={`Valutazione: ${t.rating} su 5`}>
               {
                 Array.from({ length: t.rating }).map(() => (
                   <svg
@@ -143,8 +143,10 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
       dot.addEventListener('click', () => {
         const card = cards[i];
         if (card) {
+          // Con reduced motion lo scorrimento è istantaneo, come in ImageCarousel.
+          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           card.scrollIntoView({
-            behavior: 'smooth',
+            behavior: reducedMotion ? 'auto' : 'smooth',
             inline: 'start',
             block: 'nearest',
           });
@@ -269,9 +271,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
     height: var(--space-2);
     border-radius: var(--radius-full);
     background-color: color-mix(in srgb, var(--color-fg) 55%, transparent);
-    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
-    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--duration-fast) var(--ease-standard);
   }
 
   .testimonial-dot__mark--active {

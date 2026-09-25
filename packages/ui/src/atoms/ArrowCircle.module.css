@@ -1,0 +1,73 @@
+/* Cerchio con la freccia: misure intere in px (28, 14, bordo 2; con `md`
+   32, 16) per restare nitido. Catena di fallback dell'accento: hook del
+   componente → accento ereditato dal contesto → accento globale. Colora il
+   cerchio (elemento non testuale, soglia 3:1). */
+.circle {
+  --ac-accent: var(--arrow-circle-accent, var(--accent, var(--color-accent)));
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--ac-accent);
+  color: var(--ac-accent);
+  transition: background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.circle svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.md {
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+.md svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+/* Su fondo scuro o fotografico: cerchio e freccia bianchi. */
+.invert {
+  border-color: var(--color-fg-invert);
+  color: var(--color-fg-invert);
+}
+
+/* Stato attivo: lo accende l'antenato interattivo che porta
+   `data-arrow-circle-host` (il link o la card), in hover o focus. Il cerchio
+   si riempie d'accento e la freccia diventa bianca; col tono invert si
+   riempie del rosso di brand. */
+:global([data-arrow-circle-host]:hover) .circle,
+:global([data-arrow-circle-host]:focus-visible) .circle {
+  background-color: var(--ac-accent);
+  color: var(--color-white);
+}
+
+:global([data-arrow-circle-host]:hover) .invert,
+:global([data-arrow-circle-host]:focus-visible) .invert {
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-white);
+}
+
+:global([data-arrow-circle-host]:hover) .circle svg,
+:global([data-arrow-circle-host]:focus-visible) .circle svg {
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circle svg {
+    transition: none;
+  }
+  :global([data-arrow-circle-host]:hover) .circle svg,
+  :global([data-arrow-circle-host]:focus-visible) .circle svg {
+    transform: none;
+  }
+}

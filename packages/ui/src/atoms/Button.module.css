@@ -13,7 +13,18 @@
   text-decoration: none;
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-out),
-    opacity var(--duration-fast) var(--ease-out);
+    opacity var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+/* Le varianti sono scritte come `.button.<variante>` (specificità 0,2,0): il
+   Button resta uguale anche dentro la prosa editoriale, dove prose.css (non
+   modificabile) colora e sottolinea i link con `.prose a` (0,1,1). */
+.button.button {
+  font-weight: 700;
+  text-decoration: none;
 }
 
 .button:focus-visible {
@@ -21,11 +32,11 @@
   outline-offset: 2px;
 }
 
-.button:hover {
+.button:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
-.primary {
+.button.primary {
   background: var(--color-accent-fill);
   color: var(--color-fg-invert);
 }
@@ -33,49 +44,74 @@
 /* Primary su foto o fondo scuro: stesso rosso, anello di focus bianco. Il
    rosso dell'anello sopra un velo scuro resta sotto il 3:1 (1.1–1.7:1
    nell'hero della home). */
-.primary_invert {
+.button.primary_invert {
   background: var(--color-accent-fill);
   color: var(--color-fg-invert);
 }
-.primary_invert:focus-visible {
+.button.primary_invert:focus-visible {
   outline-color: var(--color-fg-invert);
 }
 
-.primary_dark {
+.button.primary_dark {
   background: var(--color-fg);
   color: var(--color-fg-invert);
 }
+/* Hover (PDR-0005): la CTA scura passa al rosso pieno, le ghost si riempiono
+   del colore del loro bordo. Il primary è già rosso e sale soltanto. */
+.button.primary_dark:hover:not(:disabled) {
+  background: var(--color-accent-fill);
+}
 
-.ghost {
+.button.ghost {
   background: transparent;
   color: var(--color-fg);
   box-shadow: inset 0 0 0 1px var(--color-fg);
 }
 
-.ghost_invert {
+.button.ghost:hover:not(:disabled) {
+  background: var(--color-fg);
+  color: var(--color-fg-invert);
+}
+
+.button.ghost_invert {
   background: transparent;
   color: var(--color-fg-invert);
   box-shadow: inset 0 0 0 1px var(--color-fg-invert);
+}
+.button.ghost_invert:hover:not(:disabled) {
+  background: var(--color-fg-invert);
+  color: var(--color-fg);
 }
 
 /* Outline focus coerente col tono: l'accent rosso fisso non è leggibile su
    ogni sfondo scuro possibile (es. un'immagine fotografica) quanto lo è il
    bianco che il resto della variante già usa. */
-.ghost_invert:focus-visible {
+.button.ghost_invert:focus-visible {
   outline-color: var(--color-fg-invert);
 }
 
-.ghost_accent {
+.button.ghost_accent {
   background: transparent;
   color: var(--color-accent-text);
   box-shadow: inset 0 0 0 1px var(--color-accent);
+}
+.button.ghost_accent:hover:not(:disabled) {
+  background: var(--color-accent-fill);
+  color: var(--color-fg-invert);
+  box-shadow: inset 0 0 0 1px var(--color-accent-fill);
+}
+
+/* Disabilitato (es. il form dei contatti durante l'invio): fermo e attenuato. */
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .button {
     transition: none;
   }
-  .button:hover {
+  .button:hover:not(:disabled) {
     transform: none;
   }
 }

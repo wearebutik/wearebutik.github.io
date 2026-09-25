@@ -1,5 +1,6 @@
 ---
 import { richTextHtml } from '#lib/richText';
+import Button from '@butik/ui/Button';
 // Copy content-driven (ADR-0004): titolo, testo e micro-copy arrivano dalla
 // collezione `pagine` (entry `home`), passati da index.astro. Il messaggio di
 // successo viaggia in un data-attribute e viene letto dallo script inline.
@@ -48,17 +49,20 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
           aria-hidden="true"
         />
 
-        <button type="submit" class="newsletter-submit">
-          {button}
-        </button>
+        <Button type="submit" tone="dark">{button}</Button>
       </form>
 
       <p class="newsletter-privacy" set:html={richTextHtml(privacy)}></p>
     </div>
 
+    {/* Regione live sempre presente e vuota: gli screen reader annunciano il
+        testo che vi entra dopo. Con display:none al caricamento, mostrata e
+        riempita nello stesso momento, l'annuncio può andare perso.
+        tabindex=-1: riceve il fuoco quando il form sparisce. */}
     <p
       id="newsletter-status"
-      class="newsletter-status hidden"
+      class="newsletter-status"
+      tabindex="-1"
       role="status"
       aria-live="polite"
       data-success={success}
@@ -93,9 +97,11 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
         return;
       }
 
-      container.classList.add('hidden');
       status.textContent = status.dataset.success ?? '';
-      status.classList.remove('hidden');
+      container.classList.add('hidden');
+      // Il fuoco era sul submit, che sparisce con il form: senza spostarlo
+      // ricadrebbe sul body.
+      status.focus();
 
       trackEvent('newsletter_subscribed');
     });
@@ -116,8 +122,7 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
   }
 
   .newsletter-inner {
-    /* max-w-2xl: nessun token per i max-width in ui-tokens. */
-    max-width: 42rem;
+    max-width: var(--measure-2xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     text-align: center;
@@ -182,7 +187,9 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
     flex: 1 1 0%;
     padding-inline: var(--space-5);
     padding-block: var(--space-3);
-    border: 1px solid color-mix(in srgb, var(--color-fg) 30%, transparent);
+    /* 50%: il bordo identifica il campo bianco sulla pagina chiara, regge 3:1
+       su entrambi (WCAG 1.4.11). */
+    border: 1px solid color-mix(in srgb, var(--color-fg) 50%, transparent);
     background: var(--color-white);
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
@@ -193,6 +200,10 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
       padding-block: var(--space-4);
     }
   }
+  /* 70%: il placeholder è l'unica etichetta visibile del campo. */
+  .newsletter-input::placeholder {
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+  }
   /* Anello di focus come i campi di /contatti/: il solo cambio di bordo da
      1px non basta a vedere dove si è. */
   .newsletter-input:focus-visible {
@@ -201,38 +212,14 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
     border-color: var(--color-accent);
   }
 
-  /* Nome mantenuto uguale allo script: initNewsletter fa classList.add/remove
-     su 'hidden' sia sull'honeypot che su container e status. */
+  /* Nome mantenuto uguale allo script: initNewsletter fa classList.add su
+     'hidden' per il container; la usa anche l'honeypot. */
   .hidden {
     display: none;
   }
 
-  .newsletter-submit {
-    /* design-lint-disable small-caps: bottone, fuori dai due ruoli */
-    background: var(--color-bg-invert);
-    color: var(--color-fg-invert);
-    padding-inline: var(--space-8);
-    padding-block: var(--space-3);
-    font-family: var(--font-display);
-    font-size: var(--font-size-xs);
-    line-height: calc(1 / 0.75);
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    /* transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
-    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
-    width: 100%;
-  }
-  @media (min-width: 768px) {
-    .newsletter-submit {
-      padding-block: var(--space-4);
-      width: auto;
-    }
-  }
-  .newsletter-submit:hover {
-    background: var(--color-accent-fill);
-  }
+  /* Il submit è un Button (PDR-0001, PDR-0005): il form in colonna lo
+     allarga su mobile, in riga gli dà l'altezza del campo. */
 
   .newsletter-privacy {
     font-family: var(--font-sans);

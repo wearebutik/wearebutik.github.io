@@ -9,6 +9,7 @@
     "chromatic": "chromatic --exit-zero-on-changes"
   },
   "exports": {
+    "./ArrowCircle": "./src/atoms/ArrowCircle.tsx",
     "./ArrowLink": "./src/atoms/ArrowLink.tsx",
     "./Button": "./src/atoms/Button.tsx",
     "./Eyebrow": "./src/atoms/Eyebrow.tsx",
@@ -20,8 +21,7 @@
     "./SectionHeading": "./src/molecules/SectionHeading.tsx",
     "./HeroBanner": "./src/organisms/HeroBanner.tsx",
     "./ImageBlock": "./src/molecules/ImageBlock.tsx",
-    "./ImageLeft": "./src/molecules/ImageLeft.tsx",
-    "./ImageRight": "./src/molecules/ImageRight.tsx",
+    "./ImageSide": "./src/molecules/ImageSide.tsx",
     "./ImageCarousel": "./src/molecules/ImageCarousel.tsx",
     "./vinylScratch": "./src/lib/vinylScratch.ts",
     "./reveal": "./src/lib/reveal.ts",

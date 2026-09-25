@@ -143,7 +143,7 @@ const serviziItems = servizi.map((s) => ({
 
       <!-- Da mobile: lista compatta, tutti i servizi sopra la piega. -->
       <div class="hero-svc-list">
-        <ServiceLauncher items={serviziItems} tone="onDark" />
+        <ServiceLauncher items={serviziItems} />
       </div>
 
       <div class="hero-explore">
@@ -219,7 +219,7 @@ const serviziItems = servizi.map((s) => ({
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    padding-top: 7rem; /* pt-28, nessun token */
+    padding-top: var(--space-28);
     padding-bottom: var(--space-4);
     width: 100%;
   }
@@ -233,7 +233,7 @@ const serviziItems = servizi.map((s) => ({
   .hero-textcol {
     position: relative;
     text-align: center;
-    max-width: 56rem; /* max-w-4xl, nessun token */
+    max-width: var(--measure-4xl);
     margin-inline: auto;
   }
 
@@ -261,7 +261,7 @@ const serviziItems = servizi.map((s) => ({
     font-size: var(--font-size-base);
     line-height: calc(1.5 / 1); /* line-height che text-base porta con sé */
     margin-top: var(--space-5);
-    max-width: 42rem; /* max-w-2xl, nessun token */
+    max-width: var(--measure-2xl);
     margin-inline: auto;
   }
   @media (min-width: 768px) {
@@ -292,24 +292,24 @@ const serviziItems = servizi.map((s) => ({
     }
     .hero-lead {
       padding-top: 5.5rem; /* respiro sotto l'header, senza riempire lo schermo */
-      padding-bottom: 1.5rem; /* aria tra il bottone CTA e le card */
+      padding-bottom: var(--space-6); /* aria tra il bottone CTA e le card */
     }
     .hero-title {
-      font-size: 2rem;
+      font-size: 2rem; /* fra --font-size-xl e --font-size-2xl: taglia dell'hero su mobile */
       line-height: 1.05;
     }
     .hero-subtitle {
-      margin-top: 0.6rem;
+      margin-top: var(--space-2-5);
     }
     .hero-cta {
-      margin-top: 1rem;
+      margin-top: var(--space-4);
     }
   }
 
   .hero-title,
   .hero-subtitle {
-    color: #ffffff;
-    text-shadow: 0 2px 20px rgba(7, 17, 8, 0.6);
+    color: var(--color-fg-invert);
+    text-shadow: 0 2px 20px color-mix(in srgb, var(--color-fg) 60%, transparent);
   }
 
   .hero-svc-wrap {
@@ -402,8 +402,9 @@ const serviziItems = servizi.map((s) => ({
   @media (prefers-reduced-motion: no-preference) {
     /* Titolo, sottotitolo e pulsante: data-battito (styles/motion.css). */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore {
-      animation: hero-in-dissolvi 600ms var(--ease-out) backwards;
+      animation: hero-in-dissolvi var(--duration-enter) var(--ease-out) backwards;
     }
+    /* 560 e 520ms: accordati a mano con i ritardi della sequenza d'ingresso. */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(*) {
       transform-origin: bottom;
       animation: hero-in-battito 560ms var(--ease-bounce) 520ms backwards;
@@ -411,7 +412,7 @@ const serviziItems = servizi.map((s) => ({
     /* Mobile: il riquadro compare in dissolvenza e le righe entrano una dopo
        l'altra scivolando da sinistra (le righe sono di ServiceLauncher). */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list {
-      animation: hero-in-dissolvi 500ms var(--ease-out) 450ms backwards;
+      animation: hero-in-dissolvi var(--duration-slower) var(--ease-out) 450ms backwards;
     }
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li) {
       animation: hero-in-scivola 520ms var(--ease-bounce) 550ms backwards;

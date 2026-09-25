@@ -11,4 +11,15 @@
   font-size: var(--font-size-sm);
   font-weight: 700;
   color: var(--color-fg-invert);
+  /* Anello di contesto: trasparente finché il chiamante non imposta
+     --number-badge-ring. */
+  box-shadow: 0 0 0 4px var(--number-badge-ring, transparent);
+}
+
+/* Misura piccola, per il pallino sovrapposto al disco: 2.1rem e cifra a
+   0.85rem, fra i gradini della scala (nessun token corrispondente). */
+.sm {
+  height: 2.1rem;
+  width: 2.1rem;
+  font-size: 0.85rem;
 }

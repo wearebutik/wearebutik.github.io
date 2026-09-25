@@ -7,6 +7,9 @@ const meta = {
   title: 'Atoms/Motion/Underline',
   component: Underline,
   tags: ['autodocs'],
+  // Il tratto si disegna con un'animazione CSS: Chromatic la ferma alla fine,
+  // cioè a sottolineatura disegnata, non all'inizio (tratto invisibile).
+  parameters: { chromatic: { pauseAnimationAtEnd: true } },
   argTypes: {
     tone: { control: 'inline-radio', options: ['accent', 'highlight', 'fg'] },
     children: { control: 'text' },
@@ -79,7 +82,7 @@ export const OnPhoto: Story = {
         padding: 'var(--space-8)',
         backgroundColor: 'var(--color-bg-invert)',
         backgroundImage:
-          'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+          'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 55%, transparent), color-mix(in srgb, var(--color-fg) 55%, transparent)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
       }}
     >
       <h1

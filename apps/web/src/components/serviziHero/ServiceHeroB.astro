@@ -46,7 +46,7 @@ const _unused = Image;
 
         <!-- Colonna destra: il registro (prova reale come indice) ───────── -->
         <div class="hero-col-ledger" data-battito style="--ritardo: 510ms">
-          <Eyebrow>{content.ledgerLabel}</Eyebrow>
+          {content.ledgerLabel && <Eyebrow>{content.ledgerLabel}</Eyebrow>}
           <ul class="ledger-list">
             {content.ledger.map((row) => (
               <li class="ledger-row">
@@ -66,7 +66,18 @@ const _unused = Image;
   </div>
 
   <!-- Barra prova full-bleed ───────────────────────────────────────────── -->
-  <div class="proof-bar">
+  <!-- Su mobile la barra scorre in orizzontale: tabindex e role="region" sul
+       contenitore la rendono raggiungibile e scorrevole da tastiera, e la lista
+       resta una lista. Il nome è l'etichetta del registro (le prove sono la
+       stessa materia), o l'eyebrow se manca. Da desktop la barra non scorre ma
+       resta una fermata di Tab: limitarla al mobile chiederebbe JS o markup
+       doppio. -->
+  <div
+    class="proof-bar"
+    tabindex="0"
+    role="region"
+    aria-label={content.ledgerLabel || content.eyebrow || 'Risultati'}
+  >
     <ul class="proof-list">
       {content.proofBar.map((item, i) => (
         <li class="proof-item">
@@ -109,7 +120,7 @@ const _unused = Image;
   }
   @media (min-width: 64rem) {
     .hero-container {
-      padding-block: 5rem; /* py-20: nessun token per 5rem */
+      padding-block: var(--space-20);
     }
   }
 
@@ -158,7 +169,7 @@ const _unused = Image;
 
   .hero-lead {
     margin-top: var(--space-6);
-    max-width: 36rem; /* max-w-xl: nessun token per 36rem */
+    max-width: var(--measure-xl);
     font-family: var(--font-sans);
     font-size: var(--font-size-lg);
     line-height: calc(1.75 / 1.125);
@@ -186,11 +197,9 @@ const _unused = Image;
     text-decoration-line: underline;
     text-underline-offset: 4px;
     text-decoration-color: color-mix(in oklab, var(--color-fg) 30%, transparent);
-    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
     transition:
-      color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
-      text-decoration-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+      color var(--duration-fast) var(--ease-standard),
+      text-decoration-color var(--duration-fast) var(--ease-standard);
   }
   .hero-cta-secondary:hover {
     color: var(--color-accent-text);
@@ -216,13 +225,13 @@ const _unused = Image;
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-bottom-color: color-mix(in oklab, var(--color-fg) 15%, transparent);
-    padding-block: 0.625rem; /* py-2.5: nessun token per 0.625rem */
+    padding-block: var(--space-2-5);
   }
 
   /* Allineo le chiavi corte ("2018", "MMW", "15+") su una colonna costante. */
   .ledger-key {
     flex-shrink: 0;
-    width: 5rem; /* w-20: nessun token per 5rem */
+    width: var(--space-20);
     font-family: var(--font-display);
     font-size: var(--font-size-sm);
     line-height: calc(1.25 / 0.875);
@@ -248,23 +257,35 @@ const _unused = Image;
   .proof-bar {
     background-color: var(--color-bg-invert);
     color: var(--color-fg-invert);
+    overflow-x: auto;
+  }
+  /* Anello bianco sulla barra scura (19:1; il rosso farebbe 4:1). Rientra
+     perché la barra è a filo dei bordi dello schermo. */
+  .proof-bar:focus-visible {
+    outline: 2px solid var(--color-fg-invert);
+    outline-offset: calc(-1 * var(--space-1));
   }
 
   .proof-list {
-    margin-inline: auto;
+    margin: 0 auto;
+    list-style: none;
     display: flex;
+    width: max-content;
+    min-width: 100%;
     max-width: var(--container-max);
     align-items: center;
     gap: var(--space-6);
-    overflow-x: auto;
     padding-inline: var(--space-6);
     padding-block: var(--space-5);
   }
   @media (min-width: 48rem) {
+    .proof-bar {
+      overflow: visible;
+    }
     .proof-list {
+      width: auto;
       justify-content: center;
       gap: 0;
-      overflow: visible;
       padding-block: var(--space-6);
     }
   }

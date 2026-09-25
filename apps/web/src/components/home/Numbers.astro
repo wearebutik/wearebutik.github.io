@@ -5,10 +5,11 @@ import MetaLabel from '@butik/ui/MetaLabel';
 //
 // Una riga sola: i numeri di butik e, per ultimo, il dato più forte della
 // Milano Music Week (l'ultima voce di `mmwMetrics`), evidenziato. Quando la
-// sezione entra in vista i numeri contano da zero al valore, una volta sola:
-// un IntersectionObserver aggiunge una classe, il conteggio è un'animazione
-// CSS a tempo (contatore su una custom property). Senza JavaScript, o con
-// reduced-motion, il numero resta fermo al valore finale.
+// sezione entra in vista i numeri contano da zero al valore. È tutto CSS,
+// nessuno script: una view timeline accende --in-vista e una style query su
+// quella proprietà avvia il conteggio (dettagli nello <style>). Con
+// reduced-motion, o nei browser senza view timeline o senza style query, il
+// numero resta fermo al valore finale.
 type Metric = {
   value: string;
   label: string;
@@ -35,7 +36,7 @@ const items = [
 ].map((m) => ({ ...m, count: parse(m.value) }));
 ---
 
-<section class="numbers" aria-label="Numeri e impatto" data-numbers>
+<section class="numbers" aria-label="Numeri e impatto">
   <dl class="numbers-grid">
     {
       items.map((m) => (
@@ -178,7 +179,12 @@ const items = [
         segue lo scroll: parte, dura 1.4s, finisce.
      Risalendo sopra la sezione l'interruttore torna a 0 e il conteggio si
      riarma. Il numero vero passa ai lettori di schermo, il contatore è
-     aria-hidden. */
+     aria-hidden.
+     Il cancello è doppio. @supports verifica la view timeline, ma non sa
+     verificare le style query: il passaggio dal numero vero al contatore
+     sta quindi dentro una style query sempre vera (--conta: 1, dichiarata
+     sulla sezione). Un browser che non le capisce salta il blocco e mostra
+     il numero vero, invece di un contatore fermo a 0. */
   @property --in-vista {
     syntax: '<integer>';
     initial-value: 0;
@@ -208,56 +214,36 @@ const items = [
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
       .numbers {
+        --conta: 1;
         animation: interruttore linear both;
         animation-timeline: view();
         animation-range: entry 30% entry 31%;
       }
-      .metric-num {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        overflow: hidden;
-        clip-path: inset(50%);
-        white-space: nowrap;
-      }
-      .metric-count {
-        display: inline;
-        counter-reset: n var(--n);
-      }
-      .metric-count::after {
-        content: counter(n);
+      @container style(--conta: 1) {
+        .metric-num {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          margin: -1px;
+          overflow: hidden;
+          clip-path: inset(50%);
+          white-space: nowrap;
+        }
+        .metric-count {
+          display: inline;
+          counter-reset: n var(--n);
+        }
+        .metric-count::after {
+          content: counter(n);
+        }
       }
       @container style(--in-vista: 1) {
         .metric-count {
+          /* `both`: il contatore resta al valore finale, che non è lo stato
+             di base (--n parte da 0). */
           animation: conta 1400ms var(--ease-out) both;
         }
       }
     }
   }
 </style>
-
-<script>
-  // Arma i contatori (a 0) e li fa partire quando la sezione entra in vista.
-  // Idempotente sotto il ClientRouter: gira a ogni astro:page-load, il flag
-  // `data-armed` evita di rilegare lo stesso nodo (docs/guidances/client-scripts.md).
-  function initNumbers() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!('IntersectionObserver' in window)) return;
-    document.querySelectorAll<HTMLElement>('[data-numbers]:not([data-armed])').forEach((section) => {
-      section.dataset.armed = '';
-      const io = new IntersectionObserver(
-        (entries) => {
-          if (entries.some((e) => e.isIntersecting)) {
-            section.dataset.counting = '';
-            io.disconnect();
-          }
-        },
-        { threshold: 0.4 },
-      );
-      io.observe(section);
-      document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
-    });
-  }
-  document.addEventListener('astro:page-load', initNumbers);
-</script>

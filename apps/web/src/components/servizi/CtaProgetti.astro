@@ -42,8 +42,7 @@ const { title, schede, href = '/progetti', label = 'Vedi tutti i progetti' } = A
        (0,2,0) e cambierebbe la resa. Vedi ADR-0005 e l'issue #46. */
     text-transform: none;
     letter-spacing: -0.01em;
-    /* text-xl: nessun token combacia con 1.25rem esatti */
-    font-size: 1.25rem;
+    font-size: var(--font-size-title-sm);
     font-weight: 700;
     /* leading-tight vince sul line-height implicito di text-xl/text-2xl */
     line-height: 1.25;

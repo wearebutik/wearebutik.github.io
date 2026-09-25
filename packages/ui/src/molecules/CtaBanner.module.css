@@ -51,7 +51,7 @@
 }
 
 .content {
-  max-width: 42rem; /* ex max-w-2xl: vincolo di misura di lettura */
+  max-width: var(--measure-2xl);
 }
 
 .title {
@@ -68,7 +68,9 @@
   }
 }
 
-.body {
+/* `.banner .body` (0,2,0): dentro la prosa, `.prose p` (0,1,1, in prose.css
+   non modificabile) porterebbe il testo al 100%. */
+.banner .body {
   margin-top: var(--space-3);
   font-family: var(--font-sans);
   font-size: var(--font-size-base);
@@ -89,56 +91,13 @@
   }
 }
 
-.cta {
-  /* design-lint-disable small-caps: CTA, fuori dai due ruoli */
-  display: inline-block;
+/* Le CTA sono Button: qui solo la larghezza, piena su mobile. */
+.action {
   width: 100%;
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-full); /* allineato al linguaggio pillola di @butik/ui/Button */
-  font-family: var(--font-display);
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-align: center;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: background-color var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
 }
 
 @media (min-width: 768px) {
-  .cta {
+  .action {
     width: auto;
-  }
-}
-
-.cta:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
-}
-
-.primary {
-  background: var(--color-fg);
-  color: var(--color-fg-invert);
-}
-
-.primary:hover {
-  background: var(--color-accent-fill);
-}
-
-.secondary {
-  background: transparent;
-  color: var(--color-fg);
-  border: 1px solid var(--color-fg);
-}
-
-.secondary:hover {
-  background: var(--color-fg);
-  color: var(--color-fg-invert);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cta {
-    transition: none;
   }
 }

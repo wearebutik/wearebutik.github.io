@@ -80,10 +80,10 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
 
 <style>
   .svc-intro {
-    max-width: 64rem; /* max-w-5xl, nessun token */
+    max-width: var(--measure-5xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    padding-top: 5rem; /* pt-20, nessun token */
+    padding-top: var(--space-20);
     padding-bottom: var(--space-8);
     text-align: center;
   }
@@ -115,7 +115,7 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
        text-base/text-lg, non i valori di riga di quelle taglie. */
     line-height: 1.625;
     color: var(--color-butik-body);
-    max-width: 42rem; /* max-w-2xl, nessun token */
+    max-width: var(--measure-2xl);
     margin-inline: auto;
   }
   @media (min-width: 768px) {
@@ -131,7 +131,7 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    padding-bottom: 5rem; /* pb-20, nessun token */
+    padding-bottom: var(--space-20);
   }
 
   .svc-filters {
@@ -143,17 +143,17 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
   }
 
   .svc-filter {
-    padding: 0.5rem 0.9rem;
+    padding: var(--space-2) 0.9rem;
     border: 1px solid color-mix(in srgb, var(--color-butik-dark) 18%, transparent);
     font-family: var(--font-display);
-    font-size: 0.6875rem;
+    font-size: var(--font-size-2xs);
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--color-butik-dark);
     background: transparent;
     cursor: pointer;
-    transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+    transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
   }
   .svc-filter:hover {
     border-color: var(--color-butik-red);
@@ -162,7 +162,7 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
   .svc-filter.is-active {
     background: var(--color-accent-fill);
     border-color: var(--color-accent-fill);
-    color: #fff;
+    color: var(--color-fg-invert);
   }
   .svc-filter:focus-visible {
     outline: 2px solid var(--color-butik-red);

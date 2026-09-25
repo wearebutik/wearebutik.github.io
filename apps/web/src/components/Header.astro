@@ -121,7 +121,11 @@ function isActive(href: string) {
     top: 0;
     z-index: 50;
   }
+  /* Header pieno (pagine interne): --header-solid a 1 come dopo lo scroll in
+     home, così le regole che la leggono (l'anello di focus) valgono per il
+     fondo chiaro. */
   .site-header-solid {
+    --header-solid: 1;
     background-color: var(--color-bg);
     border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
   }
@@ -130,7 +134,7 @@ function isActive(href: string) {
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    height: 5rem;
+    height: var(--space-20);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -175,7 +179,7 @@ function isActive(href: string) {
     color: var(--color-fg);
   }
   .nav-link {
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .nav-link:hover,
   .nav-link.nav-link-active {
@@ -224,7 +228,7 @@ function isActive(href: string) {
     animation-name: header-scroll;
     animation-duration: auto;
     animation-timing-function: steps(1, end);
-    animation-fill-mode: both;
+    animation-fill-mode: both; /* animazione di stato legata allo scroll, non un'entrata */
     animation-timeline: scroll(root block);
     animation-range: 60px 61px;
 
@@ -236,7 +240,7 @@ function isActive(href: string) {
       color-mix(in srgb, var(--color-fg) 10%, transparent) calc(var(--header-solid) * 100%),
       transparent
     );
-    transition: background-color 300ms ease, border-bottom-color 300ms ease;
+    transition: background-color var(--duration-slow) var(--ease-standard), border-bottom-color var(--duration-slow) var(--ease-standard);
   }
 
   /* Fallback: senza scroll-driven animations (oggi Firefox — animation-timeline
@@ -259,7 +263,7 @@ function isActive(href: string) {
     filter: drop-shadow(0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     ));
-    transition: filter 300ms ease;
+    transition: filter var(--duration-slow) var(--ease-standard);
   }
 
   .site-header[data-overlay='true'] .nav-link {
@@ -269,7 +273,7 @@ function isActive(href: string) {
     text-shadow: 0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     );
-    transition: color 300ms ease, text-shadow 300ms ease;
+    transition: color var(--duration-slow) var(--ease-standard), text-shadow var(--duration-slow) var(--ease-standard);
   }
   /* Come le regole sorelle qui sopra, interpola fra i due stati invece di
      fissare un colore: da solido serve l'accent scurito (5.20:1 su --color-bg),
@@ -279,17 +283,19 @@ function isActive(href: string) {
     color: color-mix(
       in srgb, var(--color-accent-text) calc(var(--header-solid) * 100%), var(--color-highlight)
     );
-    transition: color 300ms ease;
+    transition: color var(--duration-slow) var(--ease-standard);
   }
 
-  .site-header[data-overlay='true'] .mobile-toggle {
+  /* Solo a menu chiuso: da aperto la X sta sul pannello scuro e prende il
+     bianco pieno della regola `.mobile-nav[open] > summary`, senza ombra. */
+  .site-header[data-overlay='true'] .mobile-nav:not([open]) > .mobile-toggle {
     color: color-mix(
       in srgb, var(--color-fg) calc(var(--header-solid) * 100%), var(--color-fg-invert)
     );
     filter: drop-shadow(0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     ));
-    transition: color 300ms ease, filter 300ms ease;
+    transition: color var(--duration-slow) var(--ease-standard), filter var(--duration-slow) var(--ease-standard);
   }
 
   /* Il riempimento in overlay è uno scrim SCURO, non chiaro. Con il vetro
@@ -310,21 +316,31 @@ function isActive(href: string) {
       var(--color-fg) calc(var(--header-solid) * 100%),
       color-mix(in srgb, var(--color-fg-invert) 45%, transparent)
     );
-    /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%, sfocatura
-       12px); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
-    backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
-    -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * 12px));
-    transition: background-color 300ms ease, border-color 300ms ease;
+    /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%,
+       --blur-glass); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
+    backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
+    -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
+    /* Lento per il passaggio da vetro a pieno con lo scroll; il sollevamento
+       resta quello del Button. */
+    transition: background-color var(--duration-slow) var(--ease-standard),
+      border-color var(--duration-slow) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-out);
   }
+  /* Entrando in hover vale la transizione di questa regola: rapida come negli
+     altri Button. */
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
     background-color: var(--color-accent-fill);
     border-color: var(--color-accent-fill);
+    transition: background-color var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   /* Focus visibile — l'accent rosso non è leggibile sopra l'hero scurito
      (1.1÷2.0:1, sotto il 3:1 di WCAG 1.4.11): in overlay l'anello diventa
      bianco, come già fa Button per il tono `invert`. I .nav-link non
      dichiaravano alcuno stile di focus e restavano al ring di default. */
+  .site-header .logo-link:focus-visible,
   .site-header .nav-link:focus-visible,
   .mobile-nav > summary:focus-visible,
   .site-header :global(.header-cta:focus-visible) {
@@ -358,9 +374,10 @@ function isActive(href: string) {
   @media (prefers-reduced-motion: reduce) {
     .site-header[data-overlay='true'],
     .site-header[data-overlay='true'] .nav-link,
-    .site-header[data-overlay='true'] .mobile-toggle,
+    .site-header[data-overlay='true'] .mobile-nav:not([open]) > .mobile-toggle,
     .site-header[data-overlay='true'] :global(.site-logo),
-    .site-header[data-overlay='true'] :global(.header-cta) {
+    .site-header[data-overlay='true'] :global(.header-cta),
+    .site-header[data-overlay='true'] :global(.header-cta:hover) {
       transition: none;
     }
   }
@@ -385,7 +402,7 @@ function isActive(href: string) {
   }
   @media (prefers-reduced-motion: no-preference) {
     .site-header[data-overlay='true'] .header-inner > * {
-      animation: header-scende 600ms var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
+      animation: header-scende var(--duration-enter) var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
     }
     .site-header[data-overlay='true'] .header-inner > :nth-child(2) {
       animation-delay: 1320ms;
@@ -419,8 +436,8 @@ function isActive(href: string) {
       color-mix(in srgb, var(--color-fg-invert) 10%, transparent),
       transparent 45%
     );
-    backdrop-filter: blur(24px) saturate(1.2); /* vetro: nessun token blur */
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
+    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
   }
   .mobile-nav-list {
     display: flex;

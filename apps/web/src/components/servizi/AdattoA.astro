@@ -28,14 +28,14 @@ const { text, eyebrow = 'Adatto a' } = Astro.props;
     /* font-family e color li impone `.prose p, .prose li` di global.css, con
        specificita' (0,1,1) che batte le utility: dichiararli qui vincerebbe
        (0,2,0) e cambierebbe la resa. Vedi ADR-0005 e l'issue #46. */
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     /* leading-relaxed vince sul line-height implicito di text-base/md:text-lg */
     line-height: 1.625;
   }
 
   @media (min-width: 768px) {
     .callout-text {
-      font-size: 1.125rem;
+      font-size: var(--font-size-lg);
     }
   }
 </style>

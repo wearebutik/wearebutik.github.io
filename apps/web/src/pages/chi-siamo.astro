@@ -36,28 +36,35 @@ const founders = c.founders;
 // Obiettivi di Sviluppo Sostenibile (Agenda ONU 2030): num + titolo sono copy
 // editoriale (array in collezione); colore/icona restano config di design qui —
 // i colori sono quelli ufficiali SDG (tutti e 17), mappati per numero obiettivo.
+// `ink` è il colore del numero sul quadrato: fra bianco e --color-fg quello
+// col contrasto WCAG più alto su quel colore (in commento il rapporto). Il
+// numero è testo normale (--font-size-lg bold, sotto la soglia del testo
+// grande) e supera 4.5:1 su tutti i 17 colori; il margine più stretto è il
+// rosso dell'obiettivo 1 (bianco 4.52:1, --color-fg 4.25:1).
 // Fallback neutro per qualsiasi num fuori range 1-17 (refuso nello Studio):
 // niente stile mancante silenzioso (issue #26 — W4).
-const sdgStyle: Record<number, { color: string; icon: string }> = {
-  1: { color: '#E5243B', icon: '🚫' },
-  2: { color: '#DDA63A', icon: '🌾' },
-  3: { color: '#4C9F38', icon: '🩺' },
-  4: { color: '#C5192D', icon: '📚' },
-  5: { color: '#FF3A21', icon: '♀️' },
-  6: { color: '#26BDE2', icon: '💧' },
-  7: { color: '#FCC30B', icon: '⚡' },
-  8: { color: '#A21942', icon: '🎯' },
-  9: { color: '#FD6925', icon: '🏗️' },
-  10: { color: '#DD1367', icon: '⚖️' },
-  11: { color: '#FD9D24', icon: '🏙️' },
-  12: { color: '#BF8B2E', icon: '♻️' },
-  13: { color: '#3F7E44', icon: '🌍' },
-  14: { color: '#0A97D9', icon: '🐟' },
-  15: { color: '#56C02B', icon: '🌳' },
-  16: { color: '#00689D', icon: '🕊️' },
-  17: { color: '#19486A', icon: '🤝' },
+const WHITE = 'var(--color-white)';
+const DARK = 'var(--color-fg)';
+const sdgStyle: Record<number, { color: string; ink: string; icon: string }> = {
+  1: { color: '#E5243B', ink: WHITE, icon: '🚫' }, // 4.52:1
+  2: { color: '#DDA63A', ink: DARK, icon: '🌾' }, // 8.78:1
+  3: { color: '#4C9F38', ink: DARK, icon: '🩺' }, // 5.79:1
+  4: { color: '#C5192D', ink: WHITE, icon: '📚' }, // 5.91:1
+  5: { color: '#FF3A21', ink: DARK, icon: '♀️' }, // 5.38:1
+  6: { color: '#26BDE2', ink: DARK, icon: '💧' }, // 8.66:1
+  7: { color: '#FCC30B', ink: DARK, icon: '⚡' }, // 11.85:1
+  8: { color: '#A21942', ink: WHITE, icon: '🎯' }, // 7.63:1
+  9: { color: '#FD6925', ink: DARK, icon: '🏗️' }, // 6.61:1
+  10: { color: '#DD1367', ink: WHITE, icon: '⚖️' }, // 4.81:1
+  11: { color: '#FD9D24', ink: DARK, icon: '🏙️' }, // 9.17:1
+  12: { color: '#BF8B2E', ink: DARK, icon: '♻️' }, // 6.36:1
+  13: { color: '#3F7E44', ink: WHITE, icon: '🌍' }, // 4.91:1
+  14: { color: '#0A97D9', ink: DARK, icon: '🐟' }, // 5.89:1
+  15: { color: '#56C02B', ink: DARK, icon: '🌳' }, // 8.21:1
+  16: { color: '#00689D', ink: WHITE, icon: '🕊️' }, // 6.06:1
+  17: { color: '#19486A', ink: WHITE, icon: '🤝' }, // 9.65:1
 };
-const sdgFallbackStyle = { color: '#6B7280', icon: '🌐' };
+const sdgFallbackStyle = { color: '#6B7280', ink: WHITE, icon: '🌐' }; // 4.83:1
 const sdg = c.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }));
 import { isLinkSegnaposto } from '#lib/links';
 ---
@@ -104,7 +111,7 @@ import { isLinkSegnaposto } from '#lib/links';
             <div class="sdg-card">
               <span
                 class="sdg-icon"
-                style={`background-color: ${o.color}`}
+                style={`background-color: ${o.color}; color: ${o.ink}`}
                 aria-hidden="true"
               >
                 <span class="sdg-emoji">{o.icon}</span>
@@ -213,14 +220,14 @@ import { isLinkSegnaposto } from '#lib/links';
 <style>
   /* ── Chi siamo (intro) ──────────────────────────────────────────────── */
   .intro-section {
-    max-width: 48rem; /* max-w-3xl, nessun token max-width in ui-tokens */
+    max-width: var(--measure-3xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     padding-block: var(--space-16);
   }
   @media (min-width: 768px) {
     .intro-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
 
@@ -251,20 +258,20 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .mission-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .mission-container {
-    max-width: 64rem; /* max-w-5xl, nessun token */
+    max-width: var(--measure-5xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
   .mission-lead {
-    max-width: 48rem; /* max-w-3xl, nessun token */
+    max-width: var(--measure-3xl);
   }
   .mission-statement {
     font-family: var(--font-heading);
-    font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+    font-size: var(--font-size-xl);
     line-height: 1.375; /* leading-snug vince su text-2xl/3xl */
     font-weight: 700;
     color: var(--color-fg);
@@ -288,7 +295,7 @@ import { isLinkSegnaposto } from '#lib/links';
     font-size: var(--font-size-base);
     line-height: 1.625; /* leading-relaxed */
     color: var(--color-fg);
-    max-width: 48rem; /* max-w-3xl, nessun token */
+    max-width: var(--measure-3xl);
   }
   .sdg-grid {
     display: grid;
@@ -324,10 +331,10 @@ import { isLinkSegnaposto } from '#lib/links';
     justify-content: center;
     width: var(--space-16);
     height: var(--space-16);
-    color: var(--color-white);
+    /* il colore del numero arriva inline per obiettivo (sdgStyle.ink) */
   }
   .sdg-emoji {
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1; /* leading-none */
   }
   .sdg-num {
@@ -353,18 +360,18 @@ import { isLinkSegnaposto } from '#lib/links';
 
   /* ── Il nostro team ───────────────────────────────────────────────────── */
   .team-section {
-    max-width: 72rem; /* max-w-6xl, nessun token */
+    max-width: var(--measure-6xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     padding-block: var(--space-16);
   }
   @media (min-width: 768px) {
     .team-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .team-lead {
-    max-width: 48rem; /* max-w-3xl, nessun token */
+    max-width: var(--measure-3xl);
   }
   .team-copy {
     font-family: var(--font-sans);
@@ -412,7 +419,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   .founder-name {
     font-family: var(--font-heading);
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1.25; /* leading-tight vince su text-xl */
     font-weight: 700;
     color: var(--color-fg);
@@ -446,7 +453,7 @@ import { isLinkSegnaposto } from '#lib/links';
     letter-spacing: 0.1em; /* tracking-widest */
     text-transform: uppercase;
     color: var(--color-fg);
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .founder-linkedin:hover {
     color: var(--color-accent-text);
@@ -464,7 +471,7 @@ import { isLinkSegnaposto } from '#lib/links';
     color: color-mix(in srgb, var(--color-fg) 70%, transparent);
     text-decoration: underline;
     word-break: break-all;
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .founder-email:hover {
     color: var(--color-accent-text);
@@ -478,32 +485,32 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .quote-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .quote-figure {
-    max-width: 48rem; /* max-w-3xl, nessun token */
+    max-width: var(--measure-3xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     text-align: center;
   }
   .quote-mark {
     /* design-lint-disable red-as-text: virgolette SVG, aria-hidden, non testo */
-    width: 2.5rem; /* w-10, nessun token */
-    height: 2.5rem; /* h-10, nessun token */
+    width: var(--space-10);
+    height: var(--space-10);
     margin-inline: auto;
     margin-bottom: var(--space-6);
     color: var(--color-accent);
   }
   .quote-text {
     font-family: var(--font-heading);
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1.375; /* leading-snug */
     font-weight: 700;
   }
   @media (min-width: 768px) {
     .quote-text {
-      font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+      font-size: var(--font-size-xl);
     }
   }
   .quote-author {

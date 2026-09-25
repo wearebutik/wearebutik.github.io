@@ -51,14 +51,20 @@
   --font-heading: "League Spartan", sans-serif;
   --font-display: "League Spartan", sans-serif;
 
+  /* Corpo minimo: sigilli, nomi dei partner, chip di filtro. */
+  --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.5rem;
+  /* Titolo piccolo (card, voci di elenco): fra lg e xl. */
+  --font-size-title-sm: 1.25rem;
   --font-size-2xl: 2.25rem;
   --font-size-3xl: 3rem;
   --font-size-4xl: 4.5rem;
+  /* Titolo di HeroBanner da desktop: fra 3xl e 4xl. */
+  --font-size-hero: 3.75rem;
 
   /* Titolo di sezione: scala fluida continua, senza salti tra breakpoint.
      Sostituisce la catena Tailwind `text-3xl md:text-4xl lg:text-5xl`
@@ -67,7 +73,9 @@
 
   /* ── Spacing scale ──────────────────────────────────────────────────── */
   --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
   --space-2: 0.5rem;
+  --space-2-5: 0.625rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.25rem;
@@ -76,24 +84,63 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
+  --space-20: 5rem;
   --space-24: 6rem;
+  /* Respiro sotto l'header in overlay, sopra il contenuto degli hero. */
+  --space-28: 7rem;
 
   /* ── Layout ─────────────────────────────────────────────────────────── */
   /* Larghezza massima del contenitore delle sezioni. */
   --container-max: 80rem;
+  /* Larghezze di misura (colonne di testo, blocchi centrati): scala di
+     Tailwind da cui vengono (max-w-md … max-w-6xl). */
+  --measure-md: 28rem;
+  --measure-xl: 36rem;
+  --measure-2xl: 42rem;
+  --measure-3xl: 48rem;
+  --measure-4xl: 56rem;
+  --measure-5xl: 64rem;
+  --measure-6xl: 72rem;
   /* Sfocatura del vetro sopra le foto (card e liste dell'hero, header). */
   --blur-glass: 12px;
+  /* Altezze dei media (foto a tutta larghezza, carosello, card progetto). */
+  --media-h-xs: 14rem;
+  --media-h-sm: 16rem;
+  --media-h-md: 20rem;
+  --media-h-lg: 31.25rem;
+  /* Altezza minima dell'header delle pagine (HeroBanner). */
+  --media-h-hero-min: 25rem;
+  /* Sfocatura forte: pannello del menu mobile, fondo del carosello. */
+  --blur-heavy: 24px;
 
   /* ── Radii ──────────────────────────────────────────────────────────── */
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
+  /* Tessere dei loghi partner: fra md e lg. */
+  --radius-tile: 0.75rem;
   --radius-full: 9999px;
+
+  /* ── Shadows ────────────────────────────────────────────────────────── */
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   /* ── Motion ─────────────────────────────────────────────────────────── */
   --duration-fast: 150ms;
   --duration-base: 250ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  /* Entrate al caricamento e in vista (ritmo musicale, PDR-0002). */
+  --duration-enter: 600ms;
+  --duration-settle: 900ms;
+  /* Tratti che si disegnano (sottolineature). */
+  --duration-draw: 800ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Curva standard delle transizioni di stato (hover, colore). */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Tratti che si disegnano (sottolineature). */
+  --ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
   /* Rimbalzo delle animazioni d'ingresso "ritmo musicale": supera appena e si assesta. */
   --ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
 }
