@@ -53,13 +53,13 @@
   position: relative;
   display: block;
   width: 100%;
-  height: 20rem; /* ex h-80 */
+  height: var(--media-h-md);
   object-fit: contain;
 }
 
 @media (min-width: 768px) {
   .image {
-    height: 500px; /* ex md:h-[500px]: valore letterale, non un token di design */
+    height: var(--media-h-lg);
   }
 }
 

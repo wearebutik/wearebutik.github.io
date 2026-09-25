@@ -66,16 +66,17 @@ const _unused = Image;
   </div>
 
   <!-- Barra prova full-bleed ───────────────────────────────────────────── -->
-  <!-- Su mobile la lista scorre in orizzontale: tabindex e role="region" la
-       rendono raggiungibile e scorrevole da tastiera. Il nome è l'etichetta del
-       registro (le prove sono la stessa materia), o l'eyebrow se manca. -->
-  <div class="proof-bar">
-    <ul
-      class="proof-list"
-      tabindex="0"
-      role="region"
-      aria-label={content.ledgerLabel || content.eyebrow}
-    >
+  <!-- Su mobile la barra scorre in orizzontale: tabindex e role="region" sul
+       contenitore la rendono raggiungibile e scorrevole da tastiera, e la lista
+       resta una lista. Il nome è l'etichetta del registro (le prove sono la
+       stessa materia), o l'eyebrow se manca. -->
+  <div
+    class="proof-bar"
+    tabindex="0"
+    role="region"
+    aria-label={content.ledgerLabel || content.eyebrow || 'Risultati'}
+  >
+    <ul class="proof-list">
       {content.proofBar.map((item, i) => (
         <li class="proof-item">
           {i > 0 && (
@@ -254,29 +255,35 @@ const _unused = Image;
   .proof-bar {
     background-color: var(--color-bg-invert);
     color: var(--color-fg-invert);
-  }
-
-  .proof-list {
-    margin-inline: auto;
-    display: flex;
-    max-width: var(--container-max);
-    align-items: center;
-    gap: var(--space-6);
     overflow-x: auto;
-    padding-inline: var(--space-6);
-    padding-block: var(--space-5);
   }
   /* Anello bianco: sulla barra scura l'accent non arriva al 3:1. Rientra
-     nel padding perché la barra è a filo dei bordi dello schermo. */
-  .proof-list:focus-visible {
+     perché la barra è a filo dei bordi dello schermo. */
+  .proof-bar:focus-visible {
     outline: 2px solid var(--color-fg-invert);
     outline-offset: calc(-1 * var(--space-1));
   }
+
+  .proof-list {
+    margin: 0 auto;
+    list-style: none;
+    display: flex;
+    width: max-content;
+    min-width: 100%;
+    max-width: var(--container-max);
+    align-items: center;
+    gap: var(--space-6);
+    padding-inline: var(--space-6);
+    padding-block: var(--space-5);
+  }
   @media (min-width: 48rem) {
+    .proof-bar {
+      overflow: visible;
+    }
     .proof-list {
+      width: auto;
       justify-content: center;
       gap: 0;
-      overflow: visible;
       padding-block: var(--space-6);
     }
   }

@@ -200,6 +200,31 @@ export const PrimaryOnPhotoFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
+// Lo stesso su foto chiara, con il velo al 60% che l'hero della home stende
+// sulle foto: il caso peggiore per l'anello di focus bianco.
+export const PrimaryOnBrightPhoto: Story = {
+  ...PrimaryOnPhoto,
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundColor: 'var(--color-bg)',
+          backgroundImage:
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 60%, transparent), color-mix(in srgb, var(--color-fg) 60%, transparent)), repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const PrimaryOnBrightPhotoFocusVisible: Story = {
+  ...PrimaryOnBrightPhoto,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
 // Primary su fondo pieno scuro (es. menu mobile): anche qui tone="invert",
 // per l'anello di focus bianco.
 export const PrimaryOnDark: Story = {

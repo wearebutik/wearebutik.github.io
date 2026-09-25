@@ -44,9 +44,8 @@ const { items, eyebrow = 'Di cosa ci occupiamo' } = Astro.props;
 
   .occupiamo-bullet {
     margin-top: var(--space-2);
-    /* 0.375rem (h-1.5/w-1.5): nessun token corrispondente in ui-tokens. */
-    height: 0.375rem;
-    width: 0.375rem;
+    height: var(--space-1-5);
+    width: var(--space-1-5);
     flex-shrink: 0;
     border-radius: var(--radius-full);
     background-color: var(--color-accent);

@@ -219,7 +219,7 @@ const serviziItems = servizi.map((s) => ({
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    padding-top: 7rem; /* pt-28, nessun token */
+    padding-top: var(--space-28);
     padding-bottom: var(--space-4);
     width: 100%;
   }
@@ -295,11 +295,11 @@ const serviziItems = servizi.map((s) => ({
       padding-bottom: var(--space-6); /* aria tra il bottone CTA e le card */
     }
     .hero-title {
-      font-size: 2rem;
+      font-size: 2rem; /* fra --font-size-xl e --font-size-2xl: taglia dell'hero su mobile */
       line-height: 1.05;
     }
     .hero-subtitle {
-      margin-top: 0.6rem;
+      margin-top: var(--space-2-5);
     }
     .hero-cta {
       margin-top: var(--space-4);
@@ -404,6 +404,7 @@ const serviziItems = servizi.map((s) => ({
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore {
       animation: hero-in-dissolvi var(--duration-enter) var(--ease-out) backwards;
     }
+    /* 560 e 520ms: accordati a mano con i ritardi della sequenza d'ingresso. */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(*) {
       transform-origin: bottom;
       animation: hero-in-battito 560ms var(--ease-bounce) 520ms backwards;
@@ -411,7 +412,7 @@ const serviziItems = servizi.map((s) => ({
     /* Mobile: il riquadro compare in dissolvenza e le righe entrano una dopo
        l'altra scivolando da sinistra (le righe sono di ServiceLauncher). */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list {
-      animation: hero-in-dissolvi 500ms var(--ease-out) 450ms backwards;
+      animation: hero-in-dissolvi var(--duration-slower) var(--ease-out) 450ms backwards;
     }
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-list :global(li) {
       animation: hero-in-scivola 520ms var(--ease-bounce) 550ms backwards;

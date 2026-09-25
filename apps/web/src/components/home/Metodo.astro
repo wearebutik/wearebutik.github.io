@@ -283,10 +283,10 @@ for (let y = 0; y < H; y += SEGV) {
     .vino-rail {
       display: block;
       position: absolute;
-      top: 2rem;
-      bottom: 2rem;
+      top: var(--space-8);
+      bottom: var(--space-8);
       left: 2.75rem;
-      width: 2rem;
+      width: var(--space-8);
       transform: translateX(-50%);
       overflow: hidden;
       color: color-mix(in srgb, var(--color-butik-red) 65%, transparent);
@@ -346,7 +346,7 @@ for (let y = 0; y < H; y += SEGV) {
       top: 3.25rem;
       left: calc(50% + var(--vino-r) + var(--vino-pad));
       right: var(--vino-end);
-      height: 2rem;
+      height: var(--space-8);
       transform: translateY(-50%);
     }
   }

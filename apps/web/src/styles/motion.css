@@ -108,7 +108,7 @@
   /* `both` e non `backwards`: l'animazione disegna la linea, che nello stato
      di base non c'è (background-size 0%). */
   h2[data-reveal='in'] > [data-reveal-linea] {
-    animation: motion-disegna 800ms var(--ease-draw) var(--d, 0ms) both;
+    animation: motion-disegna var(--duration-draw) var(--ease-draw) var(--d, 0ms) both;
   }
 }
 
@@ -136,7 +136,7 @@
   /* Rimbalzo vero, non solo un rallentamento: arriva, supera la
      destinazione dell'8%, torna un po' indietro e si assesta. */
   ::view-transition-group(*) {
-    animation-duration: 800ms;
+    animation-duration: 800ms; /* durata del morph fra pagine, un solo uso */
     animation-timing-function: linear(0, 0.55 22%, 0.9 38%, 1.08 52%, 0.97 68%, 1.015 82%, 1);
   }
   ::view-transition-group(root) {

@@ -83,6 +83,11 @@ export const OnBrightPhoto: Story = {
   ],
 };
 
+export const OnBrightPhotoHover: Story = {
+  ...OnBrightPhoto,
+  parameters: { pseudo: { hover: true } },
+};
+
 export const OnBrightPhotoFocusVisible: Story = {
   ...OnBrightPhoto,
   parameters: { pseudo: { focusVisible: true } },

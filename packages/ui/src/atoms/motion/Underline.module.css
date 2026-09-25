@@ -25,7 +25,7 @@
   stroke-linecap: round;
   stroke-dasharray: 320;
   stroke-dashoffset: 320;
-  animation: disegna 750ms var(--ease-draw) 400ms forwards;
+  animation: disegna var(--duration-draw) var(--ease-draw) 400ms forwards;
 }
 @keyframes disegna {
   to {

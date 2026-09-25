@@ -121,7 +121,11 @@ function isActive(href: string) {
     top: 0;
     z-index: 50;
   }
+  /* Header pieno (pagine interne): --header-solid a 1 come dopo lo scroll in
+     home, così le regole che la leggono (l'anello di focus) valgono per il
+     fondo chiaro. */
   .site-header-solid {
+    --header-solid: 1;
     background-color: var(--color-bg);
     border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
   }
@@ -130,7 +134,7 @@ function isActive(href: string) {
     max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    height: 5rem;
+    height: var(--space-20);
     display: flex;
     align-items: center;
     justify-content: space-between;

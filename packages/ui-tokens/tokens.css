@@ -71,6 +71,7 @@
 
   /* ── Spacing scale ──────────────────────────────────────────────────── */
   --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
   --space-2: 0.5rem;
   --space-2-5: 0.625rem;
   --space-3: 0.75rem;
@@ -83,6 +84,8 @@
   --space-16: 4rem;
   --space-20: 5rem;
   --space-24: 6rem;
+  /* Respiro sotto l'header in overlay, sopra il contenuto degli hero. */
+  --space-28: 7rem;
 
   /* ── Layout ─────────────────────────────────────────────────────────── */
   /* Larghezza massima del contenitore delle sezioni. */
@@ -98,6 +101,10 @@
   --measure-6xl: 72rem;
   /* Sfocatura del vetro sopra le foto (card e liste dell'hero, header). */
   --blur-glass: 12px;
+  /* Altezze dei media (foto a tutta larghezza, carosello, card progetto). */
+  --media-h-sm: 16rem;
+  --media-h-md: 20rem;
+  --media-h-lg: 31.25rem;
   /* Sfocatura forte: pannello del menu mobile, fondo del carosello. */
   --blur-heavy: 24px;
 
@@ -122,6 +129,8 @@
   /* Entrate al caricamento e in vista (ritmo musicale, PDR-0002). */
   --duration-enter: 600ms;
   --duration-settle: 900ms;
+  /* Tratti che si disegnano (sottolineature). */
+  --duration-draw: 800ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Curva standard delle transizioni di stato (hover, colore). */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);

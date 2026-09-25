@@ -180,7 +180,7 @@ function buildBleed(card: OgCard, handle: string, hero: string): Node {
   content.push(h('div', { display: 'flex', marginTop: 36 }, [footerRow(card, handle, LIGHT)]));
 
   // Scrim ancorato al testo, come HeroBanner sul sito: sotto il blocco il fondo
-  // non scende sotto 0.72 (eyebrow verde ~7.5:1, titolo ~11:1 su foto bianca),
+  // non scende sotto 0.72 (eyebrow verde 6.8:1, titolo 7.2:1, meta 5.7:1 su foto bianca),
   // qualunque sia la lunghezza del titolo. Sopra il blocco, una fascia sfuma
   // verso la foto.
   return h('div', { width: 1200, height: 630, display: 'flex', position: 'relative' }, [

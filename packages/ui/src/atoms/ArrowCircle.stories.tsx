@@ -54,8 +54,9 @@ export const DefaultFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
-// L'accento del tono default si eredita dal contesto (--accent), come nelle
-// card dei servizi con un colore per categoria.
+// L'accento del tono default si eredita dal contesto (--accent): è l'ultimo
+// anello della catena prima dell'accento globale. Nel sito il colore per
+// categoria arriva attraverso ArrowLink (vedi ArrowLink/AccentFromContext).
 export const AccentFromContext: Story = {
   decorators: [
     (Story) => (
@@ -125,5 +126,18 @@ export const Decorative: Story = {
     const link = within(canvasElement).getByRole('link', { name: 'Vai al servizio' });
     const circle = link.firstElementChild as HTMLElement;
     await expect(circle.getAttribute('aria-hidden')).toBe('true');
+  },
+};
+
+// className si unisce alle classi interne: è il gancio con cui la card dei
+// servizi posiziona il cerchio (ServiceCard, `card__go`). La play controlla
+// che lo span porti la classe interna e quella passata.
+export const WithClassName: Story = {
+  args: { className: 'story-arrow-circle-hook' },
+  play: async ({ canvasElement }) => {
+    const link = within(canvasElement).getByRole('link', { name: 'Vai al servizio' });
+    const circle = link.firstElementChild as HTMLElement;
+    await expect(circle.classList).toContain('story-arrow-circle-hook');
+    await expect(circle.classList.length).toBe(2);
   },
 };

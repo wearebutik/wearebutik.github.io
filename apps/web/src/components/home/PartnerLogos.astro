@@ -182,7 +182,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 5rem; /* h-20: nessun token combacia (tra --space-16 e --space-24) */
+    height: var(--space-20);
     padding-inline: var(--space-8);
     background-color: var(--color-white);
     border-radius: var(--radius-tile);
@@ -190,7 +190,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
   }
 
   .partner-card-logo {
-    max-height: 2.5rem; /* max-h-10: nessun token combacia (tra --space-8 e --space-12) */
+    max-height: var(--space-10);
     width: auto;
     pointer-events: none;
   }
@@ -220,7 +220,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
-    width: 7rem; /* w-28: nessun token combacia (tra --space-16 e --space-24) */
+    width: var(--space-28);
   }
 
   .partner-item-frame {
