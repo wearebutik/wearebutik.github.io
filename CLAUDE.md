@@ -114,7 +114,7 @@ Read-only review personas in `.claude/agents/`: `architect` (Ada), `design-syste
   **Italian** — it's raw editorial input (the site copy is Italian by nature).
   Commit messages follow the repo's existing Italian convention
   (`feat(scope): …`), no `Co-Authored-By` trailers.
-- **Verify before claiming**: run the build (`pnpm build`) before saying a
-  change is safe; never call a check "passing" without running it.
+- **Verify before claiming**: run the build (`pnpm build`) and `pnpm lint:design`
+  before saying a change is safe; never call a check "passing" without running it.
 - **Open items** (ADR-0003): linter/formatter (Biome) and `@astrojs/check` are not
   yet installed — a follow-up.

@@ -11,7 +11,8 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "preview": "turbo run preview",
-    "web": "pnpm --filter @butik/web"
+    "web": "pnpm --filter @butik/web",
+    "lint:design": "node tools/design-lint/index.mjs"
   },
   "devDependencies": {
     "turbo": "^2.10.4"

@@ -1,7 +1,8 @@
 > **Recommended, not enforced.** The design vocabulary a linter can't fully
 > verify. Applies within the boundaries decided in
-> [ADR-0005](../adr/0005-design-system.md). The `design-check` skill covers the
-> mechanizable part (tokens vs raw values, contrast, focus).
+> [ADR-0005](../adr/0005-design-system.md). `pnpm lint:design`
+> (`tools/design-lint`, in CI) fails on the mechanical part: reds by role and the
+> small-caps recipe. The `design-check` skill covers the rest in review.
 
 # Design approach
 
@@ -48,7 +49,9 @@ surrounding `.astro` provides the spacing on its own elements.
 Outside both roles, and hand-written where they live: the category **chip** on
 the home portfolio cards (a tag with its own background), the regular-weight
 grey client line on the project cards, and the uppercase tracking of CTAs,
-form labels and filter chips.
+buttons, navigation links, form labels and filter chips. Each of these rules
+names its role in a `design-lint-disable small-caps: <role>` comment, so a new
+copy without one fails CI.
 
 ## Accessibility
 

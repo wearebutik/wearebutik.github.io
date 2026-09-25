@@ -20,6 +20,11 @@ Scope: `packages/ui/**`, `packages/ui-tokens/**`, `apps/web/src/components/**`,
 
 ## What to look at
 
+Run `pnpm lint:design` first (`tools/design-lint`): it fails on hand-written reds,
+`color:` on the brand red and the small-caps recipe outside `Eyebrow`/`MetaLabel`.
+Report its output as it is, then judge what it cannot: the role behind each
+`design-lint-disable` comment, red surfaces carrying text, text over photos.
+
 In a PR review, check **the diff and the code that landed on the base branch
 while the PR was open** (`git diff <merge-base>..origin/main` against the rules
 the PR introduces). A rule a PR brings in applies to the code written alongside

@@ -1,4 +1,5 @@
 .link {
+  /* design-lint-disable small-caps: link con freccia, fuori dai due ruoli */
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);

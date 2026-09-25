@@ -90,6 +90,7 @@
 }
 
 .cta {
+  /* design-lint-disable small-caps: CTA, fuori dai due ruoli */
   display: inline-block;
   width: 100%;
   padding: var(--space-3) var(--space-6);
