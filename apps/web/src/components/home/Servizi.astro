@@ -149,8 +149,8 @@ const servizi: ServizioCard[] = [
     gap: var(--space-3); /* gap-3 = 0.75rem */
     padding: var(--space-5);
     transition:
-      border-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+      border-color var(--duration-fast) var(--ease-standard),
+      box-shadow var(--duration-fast) var(--ease-standard);
   }
   .servizi-card:hover {
     border-color: color-mix(in srgb, var(--color-fg) 30%, transparent);
@@ -234,7 +234,7 @@ const servizi: ServizioCard[] = [
   }
   @media (min-width: 768px) {
     .servizi-card-title {
-      font-size: 1.25rem; /* text-xl = 1.25rem, nessun token (--font-size-xl è 1.5rem) */
+      font-size: var(--font-size-title-sm);
     }
   }
   @media (min-width: 1024px) {

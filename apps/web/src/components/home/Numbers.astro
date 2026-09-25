@@ -230,6 +230,8 @@ const items = [
       }
       @container style(--in-vista: 1) {
         .metric-count {
+          /* `both`: il contatore resta al valore finale, che non è lo stato
+             di base (--n parte da 0). */
           animation: conta 1400ms var(--ease-out) both;
         }
       }

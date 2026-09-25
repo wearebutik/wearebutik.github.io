@@ -54,13 +54,13 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   .row {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 0.6rem;
+    gap: var(--space-3);
+    padding: var(--space-3) 0.6rem;
     margin: 0 -0.6rem;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     text-decoration: none;
     color: var(--ink);
-    transition: background-color 140ms ease;
+    transition: background-color var(--duration-fast) ease;
   }
   .row:hover,
   .row:active,
@@ -78,7 +78,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   }
   .row-title {
     font-family: var(--font-heading);
-    font-size: 1rem;
+    font-size: var(--font-size-base);
     font-weight: 700;
     letter-spacing: -0.005em;
     line-height: 1.15;
@@ -97,7 +97,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     line-height: 1;
     color: var(--accent);
     opacity: 0.55;
-    transition: opacity 140ms ease, transform 140ms ease;
+    transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
   }
   .row:hover .row-chev,
   .row:focus-visible .row-chev {
@@ -123,7 +123,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     --row-hover: color-mix(in srgb, var(--color-butik-dark) 6%, transparent);
   }
   .onDark {
-    --ink: #fff;
+    --ink: var(--color-fg-invert);
     /* 80%: la frase regge 4.5:1 sul vetro scuro della lista, anche in hover. */
     --muted: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
     --rule: color-mix(in srgb, var(--color-fg-invert) 20%, transparent);

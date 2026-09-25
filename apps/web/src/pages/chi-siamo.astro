@@ -220,7 +220,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .intro-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
 
@@ -251,7 +251,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .mission-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .mission-container {
@@ -264,7 +264,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   .mission-statement {
     font-family: var(--font-heading);
-    font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+    font-size: var(--font-size-xl);
     line-height: 1.375; /* leading-snug vince su text-2xl/3xl */
     font-weight: 700;
     color: var(--color-fg);
@@ -327,7 +327,7 @@ import { isLinkSegnaposto } from '#lib/links';
     color: var(--color-white);
   }
   .sdg-emoji {
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1; /* leading-none */
   }
   .sdg-num {
@@ -360,7 +360,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .team-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .team-lead {
@@ -412,7 +412,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   .founder-name {
     font-family: var(--font-heading);
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1.25; /* leading-tight vince su text-xl */
     font-weight: 700;
     color: var(--color-fg);
@@ -446,7 +446,7 @@ import { isLinkSegnaposto } from '#lib/links';
     letter-spacing: 0.1em; /* tracking-widest */
     text-transform: uppercase;
     color: var(--color-fg);
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .founder-linkedin:hover {
     color: var(--color-accent-text);
@@ -464,7 +464,7 @@ import { isLinkSegnaposto } from '#lib/links';
     color: color-mix(in srgb, var(--color-fg) 70%, transparent);
     text-decoration: underline;
     word-break: break-all;
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .founder-email:hover {
     color: var(--color-accent-text);
@@ -478,7 +478,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .quote-section {
-      padding-block: 5rem; /* py-20, nessun token */
+      padding-block: var(--space-20);
     }
   }
   .quote-figure {
@@ -497,13 +497,13 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   .quote-text {
     font-family: var(--font-heading);
-    font-size: 1.25rem; /* text-xl, nessun token (--font-size-xl vale 1.5rem) */
+    font-size: var(--font-size-title-sm);
     line-height: 1.375; /* leading-snug */
     font-weight: 700;
   }
   @media (min-width: 768px) {
     .quote-text {
-      font-size: 1.5rem; /* text-2xl, nessun token (--font-size-2xl vale 2.25rem) */
+      font-size: var(--font-size-xl);
     }
   }
   .quote-author {

@@ -269,9 +269,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
     height: var(--space-2);
     border-radius: var(--radius-full);
     background-color: color-mix(in srgb, var(--color-fg) 55%, transparent);
-    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
-    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--duration-fast) var(--ease-standard);
   }
 
   .testimonial-dot__mark--active {

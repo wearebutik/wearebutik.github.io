@@ -212,9 +212,7 @@ const year = new Date().getFullYear();
   .footer-link {
     color: var(--color-fg);
     text-decoration: underline;
-    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .footer-link:hover {
     color: var(--color-accent-text);
@@ -237,7 +235,7 @@ const year = new Date().getFullYear();
     /* Tailwind text-sm porta con se anche il line-height. */
     line-height: calc(1.25 / 0.875);
     color: var(--color-fg);
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .footer-nav-link:hover {
     color: var(--color-accent-text);
@@ -264,7 +262,7 @@ const year = new Date().getFullYear();
   }
 
   .footer-bottom-link {
-    transition: color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: color var(--duration-fast) var(--ease-standard);
   }
   .footer-bottom-link:hover {
     color: var(--color-accent-text);

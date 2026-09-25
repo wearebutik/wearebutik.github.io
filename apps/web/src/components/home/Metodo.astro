@@ -124,8 +124,8 @@ for (let y = 0; y < H; y += SEGV) {
   }
   @media (min-width: 768px) {
     .metodo-section {
-      padding-top: 5rem;
-      padding-bottom: 5rem;
+      padding-top: var(--space-20);
+      padding-bottom: var(--space-20);
     }
     .metodo-heading {
       margin-bottom: var(--space-16);
@@ -194,7 +194,7 @@ for (let y = 0; y < H; y += SEGV) {
     height: 44%;
     border-radius: 50%;
     background: var(--color-butik-red);
-    color: #fff;
+    color: var(--color-fg-invert);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -210,19 +210,19 @@ for (let y = 0; y < H; y += SEGV) {
     height: 2.1rem;
     border-radius: 9999px;
     background: var(--color-accent-fill);
-    color: #fff;
+    color: var(--color-fg-invert);
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 0.85rem;
-    box-shadow: 0 0 0 4px #fff;
+    box-shadow: 0 0 0 4px var(--color-white);
     pointer-events: none;
   }
   .vino-title {
     font-family: var(--font-heading);
-    font-size: 1.125rem;
+    font-size: var(--font-size-lg);
     line-height: calc(1.75 / 1.125);
     font-weight: 700;
     text-transform: none !important;
@@ -231,7 +231,7 @@ for (let y = 0; y < H; y += SEGV) {
   }
   .vino-description {
     font-family: var(--font-sans);
-    font-size: 0.875rem;
+    font-size: var(--font-size-sm);
     /* leading-relaxed vince su text-sm: line-height esplicito, non quello che
        la utility text-sm porterebbe con sé */
     line-height: 1.625;
@@ -303,7 +303,7 @@ for (let y = 0; y < H; y += SEGV) {
       position: relative;
       display: flex;
       align-items: flex-start;
-      gap: 1.5rem;
+      gap: var(--space-6);
       padding-bottom: var(--space-10);
       z-index: 1;
     }
@@ -313,7 +313,7 @@ for (let y = 0; y < H; y += SEGV) {
       height: 5.5rem;
       z-index: 1;
     }
-    .vino-content { padding-top: 0.75rem; }
+    .vino-content { padding-top: var(--space-3); }
     .vino-link { display: none; }
   }
 

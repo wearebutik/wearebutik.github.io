@@ -109,7 +109,7 @@ const _unused = Image;
   }
   @media (min-width: 64rem) {
     .hero-container {
-      padding-block: 5rem; /* py-20: nessun token per 5rem */
+      padding-block: var(--space-20);
     }
   }
 
@@ -186,11 +186,9 @@ const _unused = Image;
     text-decoration-line: underline;
     text-underline-offset: 4px;
     text-decoration-color: color-mix(in oklab, var(--color-fg) 30%, transparent);
-    /* Tailwind transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
     transition:
-      color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1),
-      text-decoration-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+      color var(--duration-fast) var(--ease-standard),
+      text-decoration-color var(--duration-fast) var(--ease-standard);
   }
   .hero-cta-secondary:hover {
     color: var(--color-accent-text);

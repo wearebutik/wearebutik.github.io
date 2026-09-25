@@ -84,7 +84,7 @@ const icons: Record<string, string> = {
     -webkit-backdrop-filter: blur(var(--blur-glass));
     color: var(--color-white);
     text-decoration: none;
-    transition: transform 160ms ease, background-color 160ms ease, border-color 160ms ease;
+    transition: transform var(--duration-fast) ease, background-color var(--duration-fast) ease, border-color var(--duration-fast) ease;
   }
   .card:hover,
   .card:focus-visible {
@@ -103,7 +103,7 @@ const icons: Record<string, string> = {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking).
@@ -142,12 +142,12 @@ const icons: Record<string, string> = {
     border-radius: var(--radius-full);
     border: 2px solid var(--color-white);
     color: var(--color-white);
-    transition: background-color 160ms ease, border-color 160ms ease;
+    transition: background-color var(--duration-fast) ease, border-color var(--duration-fast) ease;
   }
   .card__go svg {
     width: 1rem;
     height: 1rem;
-    transition: transform 160ms ease;
+    transition: transform var(--duration-fast) ease;
   }
   .card:hover .card__go,
   .card:focus-visible .card__go {
@@ -170,7 +170,7 @@ const icons: Record<string, string> = {
     height: 8.5rem;
     color: var(--color-accent);
     opacity: 0.35;
-    transition: opacity 160ms ease, transform 300ms ease;
+    transition: opacity var(--duration-fast) ease, transform var(--duration-slow) ease;
   }
   .card:hover .card__icon,
   .card:focus-visible .card__icon {
@@ -181,7 +181,7 @@ const icons: Record<string, string> = {
   @media (prefers-reduced-motion: reduce) {
     .card,
     .card__icon {
-      transition: background-color 160ms ease, border-color 160ms ease, opacity 160ms ease;
+      transition: background-color var(--duration-fast) ease, border-color var(--duration-fast) ease, opacity var(--duration-fast) ease;
     }
     .card:hover,
     .card:focus-visible,

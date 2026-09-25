@@ -82,6 +82,15 @@ h3, h4, h5, h6 {
   text-transform: uppercase;
 }
 
+/* Focus di base su token per tutto ciò che è interattivo: il rosso regge 3:1
+   sui fondi chiari (4.36:1) e su quello scuro (4.03:1). `:where()` ha
+   specificità zero, quindi ogni componente con un anello suo (bianco sulle
+   foto e sui pannelli scuri) lo sovrascrive. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* ── Classi per il copy editoriale ────────────────────────────────────────
    Il testo delle collection contiene HTML inline scritto dalla redazione via
    CMS (link, parole in evidenza). Prima usava le utility di Tailwind; ora ha

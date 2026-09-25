@@ -5,7 +5,7 @@
   height: 1.4em;
 }
 .sm { font-size: var(--font-size-xs); }
-.md { font-size: 1.25rem; }
+.md { font-size: var(--font-size-title-sm); }
 .lg { font-size: var(--font-size-2xl); }
 
 .eq i {

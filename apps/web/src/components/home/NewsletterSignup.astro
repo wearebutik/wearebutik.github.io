@@ -182,7 +182,9 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
     flex: 1 1 0%;
     padding-inline: var(--space-5);
     padding-block: var(--space-3);
-    border: 1px solid color-mix(in srgb, var(--color-fg) 30%, transparent);
+    /* 50%: il bordo identifica il campo bianco sulla pagina chiara, regge 3:1
+       su entrambi (WCAG 1.4.11). */
+    border: 1px solid color-mix(in srgb, var(--color-fg) 50%, transparent);
     background: var(--color-white);
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
@@ -195,6 +197,10 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
   }
   /* Anello di focus come i campi di /contatti/: il solo cambio di bordo da
      1px non basta a vedere dove si è. */
+  /* 70%: il placeholder è l'unica etichetta visibile del campo. */
+  .newsletter-input::placeholder {
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+  }
   .newsletter-input:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
@@ -219,9 +225,7 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
     font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    /* transition-colors: durata = --duration-fast, ma l'easing
-       (cubic-bezier(0.4, 0, 0.2, 1)) non coincide con --ease-out del repo. */
-    transition: background-color var(--duration-fast) cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color var(--duration-fast) var(--ease-standard);
     width: 100%;
   }
   @media (min-width: 768px) {

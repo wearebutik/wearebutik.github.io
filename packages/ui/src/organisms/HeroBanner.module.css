@@ -91,7 +91,7 @@
 
 @media (min-width: 768px) {
   .subtitle {
-    font-size: 1.25rem;
+    font-size: var(--font-size-title-sm);
   }
 }
 

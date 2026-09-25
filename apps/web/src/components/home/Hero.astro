@@ -292,7 +292,7 @@ const serviziItems = servizi.map((s) => ({
     }
     .hero-lead {
       padding-top: 5.5rem; /* respiro sotto l'header, senza riempire lo schermo */
-      padding-bottom: 1.5rem; /* aria tra il bottone CTA e le card */
+      padding-bottom: var(--space-6); /* aria tra il bottone CTA e le card */
     }
     .hero-title {
       font-size: 2rem;
@@ -302,13 +302,13 @@ const serviziItems = servizi.map((s) => ({
       margin-top: 0.6rem;
     }
     .hero-cta {
-      margin-top: 1rem;
+      margin-top: var(--space-4);
     }
   }
 
   .hero-title,
   .hero-subtitle {
-    color: #ffffff;
+    color: var(--color-fg-invert);
     text-shadow: 0 2px 20px rgba(7, 17, 8, 0.6);
   }
 
