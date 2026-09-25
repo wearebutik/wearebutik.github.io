@@ -33,7 +33,7 @@ One entrance language across the site, "musical rhythm":
 
 Implementation: `@butik/ui/reveal` + `apps/web/src/styles/motion.css`, token
 `--ease-bounce` (see [design-approach.md#motion](../../guidances/design-approach.md#motion)).
-Prototypes: `/lab/motion/a`, `/lab/motion/b` (this one), `/lab/motion/c`.
+The three directions (A, B, C) were compared as prototypes on the real home; B is the site's system.
 
 ## Rationale
 

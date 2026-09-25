@@ -115,14 +115,13 @@
 /* ── Hero: entrata al caricamento ───────────────────────────────────────
    Le hero sono già in vista all'apertura: niente osservatore, l'entrata parte
    al caricamento. data-battito = sale con il rimbalzo, dopo il ritardo
-   --ritardo (per metterli in sequenza); data-assesta = foto che si assesta.
-   Spente nelle prove A e C di /lab/motion. */
+   --ritardo (per metterli in sequenza); data-assesta = foto che si assesta. */
 @media (prefers-reduced-motion: no-preference) {
-  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
+  [data-battito] {
     transform-origin: bottom;
     animation: motion-battito var(--duration-enter) var(--ease-bounce) var(--ritardo, 150ms) backwards;
   }
-  .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
+  [data-assesta] {
     animation: motion-assesta var(--duration-settle) var(--ease-out) backwards;
   }
 }
