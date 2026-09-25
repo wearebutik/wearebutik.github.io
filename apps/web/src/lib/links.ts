@@ -1,20 +1,12 @@
 import { getCollection } from 'astro:content';
+import { PAGINE_STATICHE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
 
-// Link segnaposto: `#` da solo, indirizzi di esempio, promemoria. Stessa
-// regola dell'avviso nello Studio (apps/studio/schemaTypes/testo.ts,
-// `linkSegnaposto`): lì il valore resta e viene segnalato in giallo finché
-// qualcuno non mette la destinazione vera; qui il sito non lo mostra, perché
-// un link che non porta da nessuna parte è peggio dell'assenza del link.
-const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
-
-/** true se l'indirizzo è un segnaposto e il link non va mostrato. */
-export function isLinkSegnaposto(href: string | undefined | null): boolean {
-  return !href || SEGNAPOSTO.test(href.trim());
-}
-
-
-// Pagine statiche del sito (src/pages, senza lab e og).
-const PAGINE_STATICHE = ['/', '/chi-siamo', '/servizi', '/progetti', '/contatti', '/partners', '/privacy', '/termini'];
+// Le regole dei link (pagine statiche, segnaposto) sono condivise con lo
+// Studio (@butik/site-config/links): lì un link che non porta da nessuna parte
+// resta e viene segnalato in giallo finché qualcuno non mette la destinazione
+// vera; qui il sito non lo mostra, perché un link che non porta da nessuna
+// parte è peggio dell'assenza del link.
+export { isLinkSegnaposto };
 
 let pagine: Promise<Set<string>> | undefined;
 
@@ -39,10 +31,8 @@ function pagineEsistenti(): Promise<Set<string>> {
  */
 export async function linkValido(href: string | undefined | null): Promise<boolean> {
   if (isLinkSegnaposto(href)) return false;
-  const h = href!.trim();
-  if (!h.startsWith('/') || h.startsWith('//')) return true;
-  const percorso = h.replace(/[?#].*$/, '').replace(/(.)\/$/, '$1');
-  return (await pagineEsistenti()).has(percorso);
+  const percorso = percorsoInterno(href!);
+  return percorso === null || (await pagineEsistenti()).has(percorso);
 }
 
 /** Filtra una lista di link lasciando solo quelli validi. */

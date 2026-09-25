@@ -62,9 +62,12 @@ const keyframes =
   n > 1
     ? `@keyframes hero-xfade{0%,${pct(p)}{opacity:1}${pct(p + f)},${pct(100 - f)}{opacity:0}100%{opacity:1}}`
     : '';
+// Nello style solo durata e ritardo: l'animazione è nel CSS, dove la pausa
+// (animation-play-state) può fermarla. Con una foto sola le variabili non ci
+// sono e l'animazione non parte.
 const slideStyle = (i: number) =>
   n > 1
-    ? `animation: hero-xfade ${cycle}s linear ${i === 0 ? 0 : -(n - i) * SLIDE_S}s infinite;`
+    ? `--xfade-durata: ${cycle}s; --xfade-ritardo: ${i === 0 ? 0 : -(n - i) * SLIDE_S}s;`
     : undefined;
 
 // Accento tipografico: l'ultima parola del titolo sottolineata, disegnata al
@@ -183,6 +186,7 @@ const serviziItems = servizi.map((s) => ({
     height: 100%;
     object-fit: cover;
     opacity: 0;
+    animation: hero-xfade var(--xfade-durata) linear var(--xfade-ritardo) infinite;
   }
   /* Senza animazione (reduced-motion, o una sola foto) resta la prima. */
   .hero-slide:first-child {
@@ -192,6 +196,15 @@ const serviziItems = servizi.map((s) => ({
     .hero-slide {
       animation: none !important;
     }
+  }
+  /* Il loop si ferma (WCAG 2.2.2), come il marquee dei partner: con il fuoco
+     da tastiera dentro l'hero, e con un tocco o un click sulla foto fuori da
+     link e pulsanti (data-paused, vedi script; il successivo lo riavvia).
+     Niente pausa all'hover, a differenza del marquee: l'hero occupa lo
+     schermo e il puntatore ci sta sopra quasi sempre, il loop non girerebbe. */
+  .hero:focus-within .hero-slide,
+  .hero[data-paused='true'] .hero-slide {
+    animation-play-state: paused;
   }
 
   .hero-scrim {
@@ -427,3 +440,22 @@ const serviziItems = servizi.map((s) => ({
     .hero-explore { animation-delay: 1150ms; }
   }
 </style>
+
+<script>
+  // Pausa del loop delle foto con un tocco o un click sull'hero, ripresa con
+  // il successivo (lo stato è in data-paused, lo stile nel CSS qui sopra). I
+  // tocchi su link e pulsanti restano loro. Il ClientRouter rimpiazza l'hero a
+  // ogni navigazione: si aggancia di nuovo su astro:page-load, e il flag
+  // evita un secondo ascoltatore sullo stesso nodo.
+  function initHeroPausa() {
+    const hero = document.querySelector<HTMLElement>('[data-hero-section]');
+    if (!hero || hero.dataset.pausaPronta) return;
+    hero.dataset.pausaPronta = 'true';
+    hero.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a, button')) return;
+      hero.dataset.paused = hero.dataset.paused === 'true' ? 'false' : 'true';
+    });
+  }
+
+  document.addEventListener('astro:page-load', initHeroPausa);
+</script>

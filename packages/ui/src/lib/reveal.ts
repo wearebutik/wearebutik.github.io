@@ -25,10 +25,10 @@ export interface RevealOptions {
 const MAX_PASSI = 6;
 
 const DEFAULTS: Required<RevealOptions> = {
-  // Contenitori riconosciuti dal nome (griglie, liste, card, elenchi numerati)
-  // o dichiarati con data-reveal-group (es. la fascia dei loghi partner).
-  groupSelector:
-    "section:not(.hero, [data-hero]) :is([class*='grid'], [class*='list'], [class*='cards'], ol:not(.prose ol), [data-reveal-group])",
+  // Contenitori dichiarati con data-reveal-group (griglie di card, liste,
+  // la fascia dei loghi partner) e gli elenchi numerati fuori dalla prosa.
+  // Il nome della classe non conta: rinominarla non accende né spegne niente.
+  groupSelector: "section:not(.hero, [data-hero]) :is([data-reveal-group], ol:not(.prose ol))",
   headingSelector: 'section:not(.hero, [data-hero]) h2:not(.prose h2)',
   step: 120,
   delay: 150,

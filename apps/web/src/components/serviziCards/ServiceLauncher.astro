@@ -71,7 +71,7 @@ const { items } = Astro.props;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: var(--space-1);
   }
   .row-title {
     font-family: var(--font-heading);
@@ -115,7 +115,7 @@ const { items } = Astro.props;
     /* 80%: la frase regge 4.5:1 sul vetro scuro della lista, anche in hover. */
     --muted: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
     --rule: color-mix(in srgb, var(--color-fg-invert) 20%, transparent);
-    --accent: var(--color-butik-green);
+    --accent: var(--color-highlight);
     --row-hover: color-mix(in srgb, var(--color-fg-invert) 10%, transparent);
   }
 

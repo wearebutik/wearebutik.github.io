@@ -76,22 +76,22 @@ const icons: Record<string, string> = {
     height: 100%;
     padding: var(--space-5) var(--space-5) 1.4rem;
     border-radius: var(--radius-lg);
-    border: 1px solid color-mix(in srgb, var(--color-white) 25%, transparent);
-    background-color: color-mix(in srgb, var(--color-butik-dark) 35%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-fg-invert) 25%, transparent);
+    background-color: color-mix(in srgb, var(--color-bg-invert) 35%, transparent);
     backdrop-filter: blur(var(--blur-glass));
     -webkit-backdrop-filter: blur(var(--blur-glass));
-    color: var(--color-white);
+    color: var(--color-fg-invert);
     text-decoration: none;
     transition: transform var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
   }
   .card:hover,
   .card:focus-visible {
     transform: translateY(-3px);
-    background-color: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
-    border-color: var(--color-white);
+    background-color: color-mix(in srgb, var(--color-bg-invert) 55%, transparent);
+    border-color: var(--color-fg-invert);
   }
   .card:focus-visible {
-    outline: 2px solid var(--color-white);
+    outline: 2px solid var(--color-fg-invert);
     outline-offset: 3px;
   }
 
@@ -113,7 +113,7 @@ const icons: Record<string, string> = {
     line-height: 1.15;
     letter-spacing: -0.005em;
     text-transform: none;
-    color: var(--color-white);
+    color: var(--color-fg-invert);
     margin: 0;
   }
   .card__desc {
@@ -122,7 +122,7 @@ const icons: Record<string, string> = {
     font-family: var(--font-sans);
     font-size: var(--font-size-sm);
     line-height: 1.45;
-    color: color-mix(in srgb, var(--color-white) 88%, transparent);
+    color: color-mix(in srgb, var(--color-fg-invert) 88%, transparent);
   }
   /* Invito al click: ArrowCircle, sempre visibile (su tablet e touch l'hover
      non c'è). La card porta data-arrow-circle-host: il suo hover/focus

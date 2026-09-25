@@ -22,7 +22,7 @@ const { steps, intro, eyebrow = 'Il nostro metodo' } = Astro.props;
 <section class="not-prose metodo-steps">
   <Eyebrow>{eyebrow}</Eyebrow>
   {intro && <p class="metodo-intro">{intro}</p>}
-  <ol class="metodo-list">
+  <ol class="metodo-list" data-reveal-group>
     {steps.map((step, i) => (
       <li class="metodo-step">
         <NumberBadge number={i + 1} />

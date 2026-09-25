@@ -22,7 +22,7 @@ const { progetti } = Astro.props;
         </p>
       </div>
 
-      <div class="portfolio-grid">
+      <div class="portfolio-grid" data-reveal-group>
         {progetti.map((p) => (
           <a
             href={`/progetti/${p.id}`}

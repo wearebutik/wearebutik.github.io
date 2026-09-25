@@ -4,6 +4,7 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { sanityCdnGuard } from './src/lib/sanityCdnGuard.ts';
 import { basePath } from './src/lib/basePath.ts';
+import { pagineGuard } from './src/lib/pagineGuard.ts';
 
 // Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
 // (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
@@ -31,5 +32,5 @@ export default defineConfig({
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
-  integrations: [react(), mdx(), sanityCdnGuard(), basePath()],
+  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), pagineGuard()],
 });

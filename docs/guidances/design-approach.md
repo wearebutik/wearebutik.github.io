@@ -99,9 +99,9 @@ copy without one fails CI.
   `@butik/ui/reveal` (armed by `BaseLayout` on every page) plus the styles in
   `apps/web/src/styles/motion.css`. Grid and list items bounce up once, the first
   time they enter; items entering together follow each other; section `h2`s get a
-  red line drawn under them. A component opts in with `data-reveal-group` when its
-  container is not a grid/list/cards by name, opts an element out with
-  `data-no-reveal`, picks the sideways variant with `data-reveal-effetto="scivola"`;
+  red line drawn under them. A container opts its children in with
+  `data-reveal-group` (numbered lists outside the prose are in by tag; class names
+  play no part), an element opts out with `data-no-reveal`, picks the sideways variant with `data-reveal-effetto="scivola"`;
   a page opts out with `BaseLayout reveal={false}`.
 - **Heroes enter on load, not on scroll**: `data-hero` on the section (excluded from
   the reveal), `data-battito` + `--ritardo` on the pieces that bounce up in
