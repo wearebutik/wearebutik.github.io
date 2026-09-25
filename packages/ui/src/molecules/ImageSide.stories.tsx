@@ -44,8 +44,17 @@ export const WithCaption: Story = {
   },
 };
 
-// Sorgente verticale alta: verifica il ritaglio nella colonna immagine.
+// Sorgente verticale alta, nella larghezza che ha sul sito da 768px in su
+// (mezza riga, accanto al testo): l'immagine non si ritaglia, cresce in
+// altezza.
 export const Portrait: Story = {
+  decorators: [
+    (Story) => (
+      <div style={{ maxWidth: '24rem' }}>
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     src: portraitSrc,
     width: 900,

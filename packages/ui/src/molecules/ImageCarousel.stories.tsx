@@ -119,3 +119,21 @@ export const ControlsHover: Story = {
 export const ControlsFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
+
+// Didascalia su foto bianca: il caso peggiore per la fascia al 65% su cui sta
+// il testo (le foto arrivano da Sanity, può essere qualunque foto).
+export const BrightImageCaption: Story = {
+  args: {
+    images: [
+      {
+        src:
+          'data:image/svg+xml;utf8,' +
+          encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#ffffff"/></svg>'
+          ),
+        alt: '',
+        caption: 'Una didascalia sopra una foto bianca.',
+      },
+    ],
+  },
+};

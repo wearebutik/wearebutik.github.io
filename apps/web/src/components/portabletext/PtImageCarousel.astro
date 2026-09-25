@@ -10,6 +10,8 @@ type Props = PtProps<{ _type: 'imageCarousel'; images?: Figura[] }>;
 const { images = [] } = Astro.props.node;
 ---
 
-<ImageCarousel
-  images={images.map((i) => ({ src: sanityImageUrl(i), alt: i.alt, caption: i.caption }))}
-/>
+{images.length > 0 && (
+  <ImageCarousel
+    images={images.map((i) => ({ src: sanityImageUrl(i), alt: i.alt, caption: i.caption }))}
+  />
+)}

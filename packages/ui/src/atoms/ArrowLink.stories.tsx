@@ -63,6 +63,31 @@ export const OnPhoto: Story = {
   ],
 };
 
+// Lo stesso tono su foto chiara, con il velo al 60% che l'hero della home
+// stende sulle foto: il caso peggiore per testo bianco e anello di focus.
+export const OnBrightPhoto: Story = {
+  args: { tone: 'invert', children: 'Esplora tutti i servizi' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundColor: 'var(--color-bg)',
+          backgroundImage:
+            'linear-gradient(0deg, color-mix(in srgb, var(--color-fg) 60%, transparent), color-mix(in srgb, var(--color-fg) 60%, transparent)), repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const OnBrightPhotoFocusVisible: Story = {
+  ...OnBrightPhoto,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
 // Il tono default eredita --accent (cerchio) e --accent-ink (testo in hover)
 // dal contesto: è così che le card dei servizi danno a ogni categoria il
 // proprio colore senza toccare l'atomo. Qui una coppia reale di

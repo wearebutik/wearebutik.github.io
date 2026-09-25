@@ -28,7 +28,11 @@ const meta = {
     type: {
       control: 'inline-radio',
       options: ['button', 'submit', 'reset'],
-      description: 'Tipo del <button> (ignorato quando c’è href).',
+      description: 'Tipo del <button>. Solo senza href: con href il tipo non lo accetta.',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disabilitato (solo senza href): attenuato, niente hover.',
     },
     children: {
       control: 'text',

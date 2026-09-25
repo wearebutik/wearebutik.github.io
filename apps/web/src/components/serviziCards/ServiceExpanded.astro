@@ -59,9 +59,11 @@ const icons: Record<string, string> = {
     <span class="svc-exp__index" aria-hidden="true">{idx}</span>
   </div>
 
-  <MetaLabel as="p">
-    {hero?.eyebrow}
-  </MetaLabel>
+  {hero?.eyebrow && (
+    <MetaLabel as="p">
+      {hero.eyebrow}
+    </MetaLabel>
+  )}
   <h3 class="svc-exp__title">
     {title}
   </h3>
