@@ -36,7 +36,7 @@ export const AfterTitle: Story = {
   decorators: [
     (Story) => (
       <div style={{ fontFamily: 'var(--font-heading)' }}>
-        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: '1.25rem', color: 'var(--color-fg)' }}>
+        <h3 style={{ margin: '0 0 var(--space-1)', fontSize: 'var(--font-size-lg)', color: 'var(--color-fg)' }}>
           Nome Cognome
         </h3>
         <Story />
