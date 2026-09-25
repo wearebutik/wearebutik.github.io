@@ -57,6 +57,12 @@ export const LongTitleMobile: Story = {
   globals: { viewport: { value: 'mobile1' } },
 };
 
+// Titolo lungo su tablet: fra 768 e 1024px il titolo cambia taglia.
+export const LongTitleTablet: Story = {
+  ...LongTitle,
+  globals: { viewport: { value: 'tablet' } },
+};
+
 // Sottotitolo su foto bianca: il caso peggiore per lo scrim, da guardare a
 // occhio. Il pannello a11y non basta: sul testo sopra un gradiente axe dà
 // color-contrast "incomplete", non un esito.
@@ -92,5 +98,22 @@ export const MorphArrival: Story = {
   play: async ({ canvasElement }) => {
     const banner = canvasElement.querySelector<HTMLElement>('[data-hero-banner]');
     await expect(banner?.dataset.morph).toBe('');
+  },
+};
+
+// Con transitionName (le pagine progetto e servizio): il nome della view
+// transition arriva come stile inline su foto, titolo e sottotitolo, perché
+// `transition:name` di Astro non entra nell'isola (ADR-0008
+// #astro-island-boundary). A riposo non cambia nulla: è un test.
+export const WithTransitionName: Story = {
+  ...WithSubtitle,
+  args: { ...WithSubtitle.args, transitionName: 'progetto-esempio' },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const banner = canvasElement.querySelector<HTMLElement>('[data-hero-banner]');
+    const img = banner?.querySelector<HTMLElement>('img');
+    const title = banner?.querySelector<HTMLElement>('h1');
+    await expect(img?.style.viewTransitionName).toBe('progetto-esempio');
+    await expect(title?.style.viewTransitionName).toBe('progetto-esempio-title');
   },
 };

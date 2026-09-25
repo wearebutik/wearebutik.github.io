@@ -134,8 +134,10 @@ export const ToneFallback: Story = {
 };
 
 // Stati d'interazione, forzati con storybook-addon-pseudo-states: le
-// pseudo-classi CSS non si attivano con eventi simulati.
-export const PrimaryHover: Story = {
+// pseudo-classi CSS non si attivano con eventi simulati. L'hover è lo stesso
+// per tutte le varianti (il bottone sale di 1px, il colore non cambia): basta
+// una storia. Il focus invece cambia con il fondo, quindi una per tono.
+export const Hover: Story = {
   args: { variant: 'primary', children: 'Chiamaci' },
   parameters: { pseudo: { hover: true } },
 };
@@ -145,19 +147,9 @@ export const PrimaryFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
-export const DarkToneHover: Story = {
-  args: { variant: 'primary', tone: 'dark', children: 'Lavoriamo insieme' },
-  parameters: { pseudo: { hover: true } },
-};
-
 export const DarkToneFocusVisible: Story = {
   args: { variant: 'primary', tone: 'dark', children: 'Lavoriamo insieme' },
   parameters: { pseudo: { focusVisible: true } },
-};
-
-export const InvertToneHover: Story = {
-  ...InvertTone,
-  parameters: { pseudo: { hover: true } },
 };
 
 // Su fondo scuro l'outline di focus passa al bianco (vedi Button.module.css).
@@ -166,19 +158,9 @@ export const InvertToneFocusVisible: Story = {
   parameters: { pseudo: { focusVisible: true } },
 };
 
-export const GhostHover: Story = {
-  ...Ghost,
-  parameters: { pseudo: { hover: true } },
-};
-
 export const GhostFocusVisible: Story = {
   ...Ghost,
   parameters: { pseudo: { focusVisible: true } },
-};
-
-export const AccentGhostToneHover: Story = {
-  ...AccentGhostTone,
-  parameters: { pseudo: { hover: true } },
 };
 
 export const AccentGhostToneFocusVisible: Story = {

@@ -53,6 +53,13 @@ export const BodyWithoutSecondary: Story = {
   },
 };
 
+// Senza CTA secondaria su mobile (chi-siamo, sezioni dei servizi): sotto i
+// 768px il contenuto va in colonna.
+export const BodyWithoutSecondaryMobile: Story = {
+  ...BodyWithoutSecondary,
+  globals: { viewport: { value: 'mobile1' } },
+};
+
 // Il caso speculare: due CTA senza body.
 export const SecondaryWithoutBody: Story = {
   args: { body: undefined },

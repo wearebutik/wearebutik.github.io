@@ -142,6 +142,11 @@ export const OnPhotoHover: Story = {
   parameters: { pseudo: { hover: true } },
 };
 
+export const OnPhotoFocusVisible: Story = {
+  ...OnPhoto,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
 export const AccentFromContextHover: Story = {
   ...AccentFromContext,
   parameters: { pseudo: { hover: true } },
