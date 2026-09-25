@@ -115,7 +115,8 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
   /* ── Tone tokens ───────────────────────────────────────────────────── */
   .onLight {
     --ink: var(--color-butik-dark);
-    --muted: color-mix(in srgb, var(--color-butik-dark) 55%, transparent);
+    /* 70%: la frase regge 4.5:1 sul fondo chiaro, anche in hover. */
+    --muted: color-mix(in srgb, var(--color-butik-dark) 70%, transparent);
     --rule: color-mix(in srgb, var(--color-butik-dark) 15%, transparent);
     --accent: var(--color-butik-red);
     --accent-text: var(--color-butik-red-ink);

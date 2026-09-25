@@ -156,8 +156,8 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
   }
   @media (min-width: 40rem) {
     .hero-panel {
-      padding-left: 2.5rem;
-      padding-right: 2.5rem;
+      padding-left: var(--space-10);
+      padding-right: var(--space-10);
     }
   }
   @media (min-width: 64rem) {
@@ -177,26 +177,26 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
   /* lo stile globale di h1 forza color butik-dark: qui serve bianco su scuro */
   .hero-headline {
     color: var(--color-fg-invert);
-    margin-top: 1.25rem;
+    margin-top: var(--space-5);
     font-family: var(--font-display);
     font-weight: 700;
     /* leading-[1.05] vinceva su text-4xl/5xl/6xl: line-height fisso a ogni taglia */
     line-height: 1.05;
-    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+    font-size: var(--text-4xl);
   }
   @media (min-width: 48rem) {
     .hero-headline {
-      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+      font-size: var(--text-5xl);
     }
   }
   @media (min-width: 64rem) {
     .hero-headline {
-      font-size: clamp(2.5rem, 1.5rem + 4.5vw, 3.75rem);
+      font-size: var(--text-6xl);
     }
   }
 
   .hero-sub {
-    margin-top: 1.25rem;
+    margin-top: var(--space-5);
     max-width: 28rem;
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
@@ -248,7 +248,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
   }
 
   .hero-cta-row {
-    margin-top: 2.5rem;
+    margin-top: var(--space-10);
     display: flex;
     flex-direction: column;
     gap: var(--space-4);

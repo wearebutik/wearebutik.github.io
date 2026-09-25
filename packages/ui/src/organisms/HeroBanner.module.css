@@ -30,7 +30,7 @@
 .content {
   position: relative;
   z-index: 10;
-  max-width: 80rem; /* ex max-w-7xl: vincolo di layout, non un token di design */
+  max-width: var(--container-max);
   margin-inline: auto;
   padding-inline: var(--space-6);
   padding-bottom: var(--space-16);

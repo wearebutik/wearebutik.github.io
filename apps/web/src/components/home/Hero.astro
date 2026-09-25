@@ -129,7 +129,7 @@ const serviziItems = servizi.map((s) => ({
         </p>
 
         <div class="hero-cta" data-battito style="--ritardo: 390ms">
-          <Button href={ctaHref}>{ctaLabel}</Button>
+          <Button href={ctaHref} tone="invert">{ctaLabel}</Button>
         </div>
       </div>
     </div>
@@ -216,7 +216,7 @@ const serviziItems = servizi.map((s) => ({
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: 80rem; /* max-w-7xl, nessun token */
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
     padding-top: 7rem; /* pt-28, nessun token */
@@ -260,7 +260,7 @@ const serviziItems = servizi.map((s) => ({
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
     line-height: calc(1.5 / 1); /* line-height che text-base porta con sé */
-    margin-top: 1.25rem; /* mt-5, nessun token */
+    margin-top: var(--space-5);
     max-width: 42rem; /* max-w-2xl, nessun token */
     margin-inline: auto;
   }
@@ -314,7 +314,7 @@ const serviziItems = servizi.map((s) => ({
 
   .hero-svc-wrap {
     position: relative;
-    max-width: 80rem; /* max-w-7xl, nessun token */
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
     padding-bottom: var(--space-6);
@@ -358,8 +358,8 @@ const serviziItems = servizi.map((s) => ({
      la lista, non il punto del gradiente dell'hero in cui cade. */
   .hero-svc-list {
     background-color: color-mix(in srgb, var(--color-butik-dark) 35%, transparent);
-    backdrop-filter: blur(12px); /* nessun token blur */
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(var(--blur-glass));
+    -webkit-backdrop-filter: blur(var(--blur-glass));
     border: 1px solid color-mix(in srgb, var(--color-white) 15%, transparent);
     padding-inline: var(--space-4);
     padding-block: var(--space-1);
@@ -374,7 +374,7 @@ const serviziItems = servizi.map((s) => ({
   }
   @media (min-width: 768px) {
     .hero-explore {
-      margin-top: 1.25rem; /* mt-5, nessun token */
+      margin-top: var(--space-5);
     }
   }
 

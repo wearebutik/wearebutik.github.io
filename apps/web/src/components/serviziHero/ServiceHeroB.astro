@@ -98,7 +98,7 @@ const _unused = Image;
   .hero-container {
     margin-inline: auto;
     width: 100%;
-    max-width: 80rem; /* max-w-7xl: nessun --container-* con questo valore in ui-tokens */
+    max-width: var(--container-max);
     padding-inline: var(--space-6);
     padding-block: var(--space-12);
   }
@@ -138,21 +138,21 @@ const _unused = Image;
   /* h1 globale impone color butik-dark + font-heading: il claim lo eredita
      correttamente, qui irrigidiamo solo leading e tracking per l'oversize. */
   .hero-claim {
-    margin-top: 1.25rem; /* mt-5: nessun token per 1.25rem */
+    margin-top: var(--space-5);
     font-weight: 900; /* font-black: nessun --font-weight-* in ui-tokens */
-    font-size: clamp(1.9rem, 1.35rem + 2.4vw, 2.25rem);
+    font-size: var(--text-4xl);
     line-height: 1;
     letter-spacing: -0.02em;
     text-wrap: balance;
   }
   @media (min-width: 48rem) {
     .hero-claim {
-      font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+      font-size: var(--text-5xl);
     }
   }
   @media (min-width: 64rem) {
     .hero-claim {
-      font-size: clamp(2.5rem, 1.5rem + 4.5vw, 3.75rem);
+      font-size: var(--text-6xl);
     }
   }
 
@@ -253,12 +253,12 @@ const _unused = Image;
   .proof-list {
     margin-inline: auto;
     display: flex;
-    max-width: 80rem; /* max-w-7xl: nessun token per 80rem */
+    max-width: var(--container-max);
     align-items: center;
     gap: var(--space-6);
     overflow-x: auto;
     padding-inline: var(--space-6);
-    padding-block: 1.25rem; /* py-5: nessun token per 1.25rem */
+    padding-block: var(--space-5);
   }
   @media (min-width: 48rem) {
     .proof-list {
@@ -288,7 +288,7 @@ const _unused = Image;
   }
 
   .proof-sep {
-    margin-inline: 1.25rem; /* mx-5: nessun token per 1.25rem */
+    margin-inline: var(--space-5);
     color: var(--color-highlight);
   }
   @media (min-width: 48rem) {

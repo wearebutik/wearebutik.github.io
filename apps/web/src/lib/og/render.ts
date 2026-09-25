@@ -173,16 +173,25 @@ function buildBleed(card: OgCard, handle: string, hero: string): Node {
   if (card.meta?.length) content.push(metaLine(card.meta, LIGHT, 0.85, 16));
   content.push(h('div', { display: 'flex', marginTop: 36 }, [footerRow(card, handle, LIGHT)]));
 
+  // Scrim ancorato al testo, come HeroBanner sul sito: sotto il blocco il fondo
+  // non scende sotto 0.72 (eyebrow verde ~7.5:1, titolo ~11:1 su foto bianca),
+  // qualunque sia la lunghezza del titolo. Sopra il blocco, una fascia sfuma
+  // verso la foto.
   return h('div', { width: 1200, height: 630, display: 'flex', position: 'relative' }, [
     img(hero, { position: 'absolute', top: 0, left: 0, width: 1200, height: 630, objectFit: 'cover' }),
     h('div', {
-      position: 'absolute', top: 0, left: 0, width: 1200, height: 630,
-      backgroundImage: `linear-gradient(to top, rgba(7,17,8,0.94) 0%, rgba(7,17,8,0.55) 42%, rgba(7,17,8,0.12) 100%)`,
-    }),
-    h('div', {
       position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
-      width: 1200, height: 630, padding: '64px 80px',
-    }, content),
+      width: 1200, height: 630,
+    }, [
+      h('div', {
+        display: 'flex', width: 1200, height: 96,
+        backgroundImage: 'linear-gradient(to top, rgba(7,17,8,0.72), rgba(7,17,8,0))',
+      }),
+      h('div', {
+        display: 'flex', flexDirection: 'column', width: 1200, padding: '0 80px 64px',
+        backgroundImage: 'linear-gradient(to top, rgba(7,17,8,0.94), rgba(7,17,8,0.72))',
+      }, content),
+    ]),
   ]);
 }
 

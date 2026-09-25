@@ -69,7 +69,6 @@ const { title, schede, href = '/progetti', label = 'Vedi tutti i progetti' } = A
   /* Button è un'isola React (ADR-0008 #astro-island-boundary): il suo root
      non riceve l'attributo di scoping di Astro, serve :global() sul discendente. */
   .cta-panel :global(.cta-action) {
-    /* mt-5 = 1.25rem: nessun token combacia */
-    margin-top: 1.25rem;
+    margin-top: var(--space-5);
   }
 </style>

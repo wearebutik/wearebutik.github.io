@@ -71,7 +71,7 @@ const items = [
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-8) var(--space-6);
     align-items: start;
-    max-width: 80rem; /* come l'hero: nessun token per le larghezze massime */
+    max-width: var(--container-max);
     margin-inline: auto;
     padding-inline: var(--space-6);
   }
@@ -151,8 +151,7 @@ const items = [
   .metric-value {
     display: block;
     font-family: var(--font-heading);
-    /* Scala dei numeri d'impatto: nessun token combacia col clamp. */
-    font-size: clamp(2.2rem, 1.4rem + 3.4vw, 3rem);
+    font-size: var(--text-5xl);
     font-weight: 900;
     line-height: 1;
     color: var(--color-highlight);

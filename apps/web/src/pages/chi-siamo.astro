@@ -236,7 +236,7 @@ import { isLinkSegnaposto } from '#lib/links';
     }
   }
   .intro-copy > p:not(:last-child) {
-    margin-bottom: 1.25rem; /* space-y-5, nessun token */
+    margin-bottom: var(--space-5);
   }
 
   /* ── Missione + SDG ───────────────────────────────────────────────────
@@ -271,8 +271,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   @media (min-width: 768px) {
     .mission-statement {
-      /* text-3xl, sovrascritto dal @theme del sito con questo clamp() */
-      font-size: clamp(1.6rem, 1.25rem + 1.5vw, 1.875rem);
+      font-size: var(--text-3xl);
     }
   }
 
@@ -294,7 +293,7 @@ import { isLinkSegnaposto } from '#lib/links';
   .sdg-grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1.25rem; /* gap-5, nessun token */
+    gap: var(--space-5);
     margin-top: var(--space-8);
   }
   @media (min-width: 640px) {
@@ -305,12 +304,12 @@ import { isLinkSegnaposto } from '#lib/links';
   .sdg-card {
     display: flex;
     align-items: center;
-    gap: 1.25rem; /* gap-5, nessun token */
+    gap: var(--space-5);
     /* border-butik-dark/15: scuro, oklab e srgb danno lo stesso pixel */
     border: 1px solid color-mix(in srgb, var(--color-fg) 15%, transparent);
     /* bg-butik-light/50: chiaro, qui oklab e srgb NON coincidono */
     background-color: color-mix(in oklab, var(--color-bg) 50%, transparent);
-    padding: 1.25rem; /* p-5, nessun token */
+    padding: var(--space-5);
   }
   @media (min-width: 768px) {
     .sdg-card {
@@ -379,7 +378,7 @@ import { isLinkSegnaposto } from '#lib/links';
     }
   }
   .team-copy > p:not(:last-child) {
-    margin-bottom: 1.25rem; /* space-y-5, nessun token */
+    margin-bottom: var(--space-5);
   }
 
   .founders-grid {
@@ -391,7 +390,7 @@ import { isLinkSegnaposto } from '#lib/links';
   @media (min-width: 768px) {
     .founders-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 2.5rem; /* gap-10, nessun token */
+      gap: var(--space-10);
       margin-top: var(--space-16);
     }
   }
@@ -402,7 +401,7 @@ import { isLinkSegnaposto } from '#lib/links';
   }
   .founder-photo {
     overflow: hidden;
-    margin-bottom: 1.25rem; /* mb-5, nessun token */
+    margin-bottom: var(--space-5);
     aspect-ratio: 4 / 5;
     background-color: var(--color-bg);
   }
@@ -433,7 +432,7 @@ import { isLinkSegnaposto } from '#lib/links';
     display: flex;
     align-items: center;
     gap: var(--space-4);
-    margin-top: 1.25rem; /* mt-5, nessun token */
+    margin-top: var(--space-5);
   }
   .founder-linkedin {
     /* design-lint-disable small-caps: link, fuori dai due ruoli */

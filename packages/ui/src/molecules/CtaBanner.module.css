@@ -13,7 +13,7 @@
  */
 
 .banner {
-  max-width: 80rem; /* ex max-w-7xl: vincolo di layout, non un token di design */
+  max-width: var(--container-max);
   margin-inline: auto;
   padding-block: var(--space-8);
   padding-inline: var(--space-6);

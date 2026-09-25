@@ -31,9 +31,8 @@ const { bandi, eyebrow = 'Bandi vinti' } = Astro.props;
 
 <style>
   .bandi-vinti {
-    /* 2.5rem non ha un token corrispondente in ui-tokens */
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-10);
   }
 
   .bandi-list {
