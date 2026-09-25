@@ -171,6 +171,10 @@ the island (ADR-0008 `#astro-island-boundary`).
 - **A written rule only, metadata left hand-written.** Smallest change, but it
   leaves the same recipe copied into every card that needs it, with nothing
   tying the copies together.
+- **A visible pause button on the home hero's photo loop.** It is the most
+  discoverable way to meet WCAG 2.2.2, but it adds a control to a hero whose
+  photos are background; the loop pauses on keyboard focus and on a tap or
+  click on the photo instead.
 - **A non-link `ArrowLink` (`as="span"`)** for cards that are links as a whole.
   A link component rendering something that is not a link carries text and
   props the card does not need; the arrow alone is the atom `ArrowCircle`.
