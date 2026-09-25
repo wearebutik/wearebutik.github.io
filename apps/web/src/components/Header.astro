@@ -108,7 +108,7 @@ function isActive(href: string) {
               {link.label}
             </a>
           ))}
-          <Button href={ctaHref} tone="dark" className="mobile-cta">{ctaLabel}</Button>
+          <Button href={ctaHref} className="mobile-cta">{ctaLabel}</Button>
         </nav>
       </div>
     </details>
@@ -440,12 +440,11 @@ function isActive(href: string) {
   .mobile-link.mobile-link-active {
     color: var(--color-highlight);
   }
+  /* Il rosso pieno è il Button primary: l'header gli dà solo la larghezza
+     del pannello e lo scarto dalle voci. */
   .site-header :global(.mobile-cta) {
     width: 100%;
     margin-top: var(--space-8);
-    background-color: var(--color-accent-fill);
-    border-color: var(--color-accent-fill);
-    color: var(--color-fg-invert);
   }
 
   .mobile-toggle-close {
