@@ -7,8 +7,9 @@
 import type { AstroIntegration } from 'astro';
 import { PAGINE_STATICHE, SEZIONI_CON_SCHEDE } from '@butik/site-config/links';
 
-// Pagine fuori dal sito pubblico: la galleria sperimentale e le immagini OG.
-const ESCLUSE = /^\/(lab|og)(\/|$)/;
+// Pagine che non sono destinazioni di un link: la galleria sperimentale, le
+// immagini OG e le pagine d'errore.
+const ESCLUSE = /^\/(lab|og|404|500)(\/|$)/;
 
 export function pagineGuard(): AstroIntegration {
   let build = false;

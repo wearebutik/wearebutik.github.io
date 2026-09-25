@@ -28,8 +28,8 @@ const DEFAULTS: Required<RevealOptions> = {
   // Contenitori dichiarati con data-reveal-group (griglie di card, liste,
   // la fascia dei loghi partner) e gli elenchi numerati fuori dalla prosa.
   // Il nome della classe non conta: rinominarla non accende né spegne niente.
-  groupSelector: "section:not(.hero, [data-hero]) :is([data-reveal-group], ol:not(.prose ol))",
-  headingSelector: 'section:not(.hero, [data-hero]) h2:not(.prose h2)',
+  groupSelector: "section:not([data-hero]) :is([data-reveal-group], ol:not(.prose ol))",
+  headingSelector: 'section:not([data-hero]) h2:not(.prose h2)',
   step: 120,
   delay: 150,
 };

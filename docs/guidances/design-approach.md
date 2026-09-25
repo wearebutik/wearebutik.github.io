@@ -65,6 +65,8 @@ copy without one fails CI.
   (buttons, badges, active chips, CTA hover states), always with
   `--color-fg-invert` on top (5.68:1). White on the brand red is 4.77:1 —
   passing, but with no margin for any future tweak of the red.
+- The home hero's background photos are decorative (`alt=""`): the hero's text
+  carries the content, so the Studio does not ask for their alternative text.
 - Text over a photograph sits on a scrim anchored to the text block, not to
   the image: see `HeroBanner.module.css`, where the floor holds whatever the
   alignment and the photo.
@@ -106,6 +108,12 @@ copy without one fails CI.
 - **Heroes enter on load, not on scroll**: `data-hero` on the section (excluded from
   the reveal), `data-battito` + `--ritardo` on the pieces that bounce up in
   sequence, `data-assesta` on the photo that settles from a slight zoom.
+- **A loop that runs longer than 5 s can be paused** (WCAG 2.2.2): it pauses while
+  keyboard focus is inside it and toggles with a tap or click outside its links and
+  buttons (`data-paused`), as the partner marquee and the home hero photos do. A
+  strip pauses on hover too; a loop that fills the screen does not, or it would
+  never run under the pointer. The animation lives in CSS, not in an inline
+  `style` shorthand, which would override `animation-play-state`.
 - **Entrance animations end clean**: fill mode `backwards`, never `both`. A
   leftover identity transform becomes the containing block of positioned
   descendants (it collapsed the mobile menu panel) and overrides the element's own

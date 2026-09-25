@@ -92,6 +92,7 @@ const serviziItems = servizi.map((s) => ({
 <section
   class="hero hero-minh"
   data-hero-section
+  data-hero
 >
 
   <!-- ── Foto di sfondo in loop (decorative: il contenuto è nel testo) ── -->
@@ -161,7 +162,7 @@ const serviziItems = servizi.map((s) => ({
      spazio dell'header sticky sopra l'hero. */
   .hero {
     position: relative;
-    background-color: var(--color-fg);
+    background-color: var(--color-bg-invert);
     overflow: hidden;
     /* Risale sotto tutto l'header: 5rem più il suo bordo inferiore di 1px (con
        solo -5rem restava in cima una riga di 1px con lo sfondo chiaro). */
@@ -370,10 +371,10 @@ const serviziItems = servizi.map((s) => ({
   /* Vetro scuro come le card di ServiceCard: il contrasto delle righe lo dà
      la lista, non il punto del gradiente dell'hero in cui cade. */
   .hero-svc-list {
-    background-color: color-mix(in srgb, var(--color-butik-dark) 35%, transparent);
+    background-color: color-mix(in srgb, var(--color-bg-invert) 35%, transparent);
     backdrop-filter: blur(var(--blur-glass));
     -webkit-backdrop-filter: blur(var(--blur-glass));
-    border: 1px solid color-mix(in srgb, var(--color-white) 15%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
     padding-inline: var(--space-4);
     padding-block: var(--space-1);
     /* rounded-lg NON vale i .5rem di default di Tailwind: @butik/ui-tokens
@@ -444,7 +445,7 @@ const serviziItems = servizi.map((s) => ({
 <script>
   // Pausa del loop delle foto con un tocco o un click sull'hero, ripresa con
   // il successivo (lo stato è in data-paused, lo stile nel CSS qui sopra). I
-  // tocchi su link e pulsanti restano loro. Il ClientRouter rimpiazza l'hero a
+  // tocchi su link e pulsanti restano loro, come le selezioni di testo. Il ClientRouter rimpiazza l'hero a
   // ogni navigazione: si aggancia di nuovo su astro:page-load, e il flag
   // evita un secondo ascoltatore sullo stesso nodo.
   function initHeroPausa() {
@@ -453,6 +454,8 @@ const serviziItems = servizi.map((s) => ({
     hero.dataset.pausaPronta = 'true';
     hero.addEventListener('click', (e) => {
       if ((e.target as Element).closest('a, button')) return;
+      // Chi seleziona il testo del titolo non sta chiedendo una pausa.
+      if (window.getSelection()?.toString()) return;
       hero.dataset.paused = hero.dataset.paused === 'true' ? 'false' : 'true';
     });
   }

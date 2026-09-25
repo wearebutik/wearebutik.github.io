@@ -105,7 +105,13 @@ it.
   and internal paths to pages that do not exist — are kept in Sanity and flagged
   as warnings in the Studio, and the site does not render them
   (`apps/web/src/lib/links.ts`) until they resolve
-  ([PDR-0004](../product/decisions/0004-unresolved-links.md)).
+  ([PDR-0004](../product/decisions/0004-unresolved-links.md)). Both sides read
+  the same rules from `@butik/site-config/links`; the site's build checks its
+  page list against `src/pages`
+  ([ADR-0007](./0007-monorepo-and-workspace-layout.md#decision)).
+- **Format rules shared by Studio and Zod** (email addresses, social networks)
+  come from `@butik/site-config`, so a value the Studio accepts never fails
+  the build.
 - **Bulk content changes** go through repeatable scripts in
   `apps/studio/scripts/`: `foto.ts` uploads photos from an assignment file
   (resized, metadata stripped, deduplicated by content hash) and wires them to

@@ -1,4 +1,5 @@
 import { defineCollection, z } from 'astro:content';
+import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
 
@@ -188,7 +189,7 @@ const paginaChiSiamo = z.object({
     name: z.string(),
     role: z.string(),
     bio: z.string(),
-    email: z.string().email(),
+    email: z.string().regex(EMAIL),
     linkedin: z.string(),
     photo: z.string().optional().default(''),
   })),
@@ -211,9 +212,9 @@ const paginaContatti = z.object({
   headerIntro: z.string(),
   recapitiEyebrow: z.string(),
   emailLabel: z.string(),
-  emailValue: z.string().email(),
+  emailValue: z.string().regex(EMAIL),
   pecLabel: z.string(),
-  pecValue: z.string().email(),
+  pecValue: z.string().regex(EMAIL),
   sedeLabel: z.string(),
   sedeAddress: portableText,
   seguiciLabel: z.string(),
@@ -333,8 +334,8 @@ const paginaFooter = z.object({
   indirizzo: z.string(),
   partitaIva: z.string(),
   contattiLabel: z.string(),
-  pec: z.string().email(),
-  email: z.string().email(),
+  pec: z.string().regex(EMAIL),
+  email: z.string().regex(EMAIL),
   social: z.array(z.object({ rete: z.enum(RETI_SOCIAL), href: z.string() })).optional().default([]),
   colonna1: z.array(linkSchema).optional().default([]),
   colonna2: z.array(linkSchema).optional().default([]),

@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content';
-import { PAGINE_STATICHE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
+import { PAGINE_STATICHE, SEZIONI_CON_SCHEDE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
 
 // Le regole dei link (pagine statiche, segnaposto) sono condivise con lo
 // Studio (@butik/site-config/links): lì un link che non porta da nessuna parte
@@ -10,16 +10,18 @@ export { isLinkSegnaposto };
 
 let pagine: Promise<Set<string>> | undefined;
 
-/** Percorsi interni che esistono: pagine statiche + schede servizio e progetto. */
+/**
+ * Percorsi interni che esistono: pagine statiche + una scheda per documento
+ * pubblicato di ogni sezione (ogni sezione è anche una collection).
+ */
 function pagineEsistenti(): Promise<Set<string>> {
   pagine ??= (async () => {
-    const servizi = await getCollection('servizi', (e) => !e.data.draft);
-    const progetti = await getCollection('progetti', (e) => !e.data.draft);
-    return new Set([
-      ...PAGINE_STATICHE,
-      ...servizi.map((e) => `/servizi/${e.id}`),
-      ...progetti.map((e) => `/progetti/${e.id}`),
-    ]);
+    const schede = await Promise.all(
+      SEZIONI_CON_SCHEDE.map(async (s) =>
+        (await getCollection(s, (e) => !e.data.draft)).map((e) => `/${s}/${e.id}`),
+      ),
+    );
+    return new Set([...PAGINE_STATICHE, ...schede.flat()]);
   })();
   return pagine;
 }

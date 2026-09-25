@@ -17,6 +17,13 @@ export const SEZIONI_CON_SCHEDE = ['servizi', 'progetti'] as const;
 // promemoria.
 const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
 
+/**
+ * Indirizzo email (anche PEC): lo Studio lo chiede con questa regola e lo
+ * schema Zod del sito la ripete, così un valore pubblicato non fa fallire il
+ * build.
+ */
+export const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 /** true se l'indirizzo è vuoto o un segnaposto, e il link non va mostrato. */
 export function isLinkSegnaposto(href: string | undefined | null): boolean {
   return !href || SEGNAPOSTO.test(href.trim());

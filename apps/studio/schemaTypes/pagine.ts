@@ -3,6 +3,7 @@
 // structure.ts). Ogni tipo rispecchia il ramo corrispondente dello schema Zod
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
+import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { hrefField, urlSicuro } from './testo';
 
@@ -21,7 +22,7 @@ const str = (name: string, title: string, group?: string) =>
       /Href$|^linkedin$/.test(name)
         ? r.required().custom(urlSicuro)
         : /^(email|pec)(Value)?$/.test(name)
-          ? r.required().email()
+          ? r.required().regex(EMAIL, { name: 'email', invert: false }).error('Indirizzo email non valido')
           : r.required(),
   });
 const txt = (name: string, title: string, group?: string) =>
