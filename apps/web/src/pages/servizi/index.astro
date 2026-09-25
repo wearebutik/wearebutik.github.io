@@ -53,7 +53,7 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
       ))}
     </div>
 
-    <div class="svc-grid" data-svc-grid>
+    <div class="svc-grid" data-svc-grid data-reveal-group>
       {servizi.map((s, i) => (
         <div data-audience={s.data.audience.map((a) => a.id).join(' ')} class="svc-grid-item">
           <ServiceExpanded servizio={s} index={i + 1} />

@@ -1,0 +1,10 @@
+{
+  "name": "@butik/site-config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./links": "./src/links.ts",
+    "./social": "./src/social.ts"
+  }
+}

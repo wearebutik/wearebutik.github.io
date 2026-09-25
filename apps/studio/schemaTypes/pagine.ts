@@ -3,6 +3,8 @@
 // structure.ts). Ogni tipo rispecchia il ramo corrispondente dello schema Zod
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
+import { EMAIL } from '@butik/site-config/links';
+import { RETI_SOCIAL } from '@butik/site-config/social';
 import { hrefField, urlSicuro } from './testo';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
@@ -15,10 +17,13 @@ const str = (name: string, title: string, group?: string) =>
     type: 'string',
     group,
     // I campi URL (…Href, LinkedIn) finiscono in un href: solo schemi ammessi.
+    // Gli indirizzi email e PEC finiscono in un mailto: solo indirizzi validi.
     validation: (r) =>
       /Href$|^linkedin$/.test(name)
         ? r.required().custom(urlSicuro)
-        : r.required(),
+        : /^(email|pec)(Value)?$/.test(name)
+          ? r.required().regex(EMAIL, { name: 'email', invert: false }).error('Indirizzo email non valido')
+          : r.required(),
   });
 const txt = (name: string, title: string, group?: string) =>
   defineField({ name, title, type: 'text', rows: 3, group, validation: (r) => r.required() });
@@ -108,7 +113,7 @@ export const paginaHome = pagina(
     defineField({
       name: 'heroImages',
       title: 'Foto di sfondo',
-      description: 'Scorrono in loop con dissolvenza, nell\'ordine della lista. La prima resta ferma per chi riduce le animazioni.',
+      description: 'Scorrono in loop con dissolvenza, nell\'ordine della lista. La prima resta ferma per chi riduce le animazioni. Sono decorative: il testo dell\'hero dice già tutto, quindi non serve il testo alternativo.',
       type: 'array',
       group: 'hero',
       of: [defineArrayMember({ type: 'figura' })],
@@ -396,8 +401,8 @@ export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
 
 // Footer: non è una pagina ma un contenuto condiviso da tutte (e i social
 // anche dalla pagina Contatti). Niente SEO. Le icone dei social restano nel
-// codice (apps/web/src/data/socials.ts), qui si sceglie la rete.
-export const RETI_SOCIAL = ['facebook', 'instagram', 'linkedin', 'youtube', 'spotify', 'tiktok'] as const;
+// codice (apps/web/src/data/socials.ts), qui si sceglie la rete fra quelle
+// che il sito sa mostrare (@butik/site-config/social).
 
 export const paginaFooter = defineType({
   name: 'paginaFooter',

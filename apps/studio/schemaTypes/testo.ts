@@ -2,6 +2,7 @@
 // stringhe che sul sito portavano HTML inline (<strong>, <a>): l'editor usa i
 // pulsanti, il sito lo rende con astro-portabletext.
 import { defineArrayMember, defineType, type Rule } from 'sanity';
+import { haFormaDiPagina, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
 
 // URL ammessi nei link: http(s), mailto, tel, percorsi relativi e ancore. Il
 // sito rifiuta comunque gli altri schemi (apps/web/src/lib/richText.ts).
@@ -14,26 +15,19 @@ export const urlSicuro = (v: unknown) =>
     : 'Usa un indirizzo http(s)://, mailto:, tel: oppure un percorso che inizia con /';
 
 // Link che non portano da nessuna parte: `#` da solo, indirizzi di esempio,
-// promemoria. Non bloccano la pubblicazione (avviso giallo nello Studio, e in
-// `sanity documents validate --level warning`), ma vanno sistemati: un link
-// rotto è peggio dell'assenza del link (issue #40). L'avviso è applicato a
-// ogni campo stringa e testo dello schema da schemaTypes/index.ts.
-const SEGNAPOSTO = /^(#!?|javascript:void\(0\);?|https?:\/\/(www\.)?example\.(com|org)\b.*|todo|tbd|xxx)$/i;
-
-// Pagine interne che esistono sul sito (le schede servizio e progetto per
-// forma: /servizi/<slug>, /progetti/<slug>). Un percorso interno fuori da
-// questo elenco porta a un 404: il sito non lo mostra (apps/web/src/lib/links.ts).
-const PAGINA_INTERNA = /^\/(chi-siamo|servizi|progetti|contatti|partners|privacy|termini)?\/?$|^\/(servizi|progetti)\/[a-z0-9-]+\/?$/;
-
-/** Avviso per un URL segnaposto o per una pagina interna che non esiste. */
+// promemoria, pagine interne che non esistono. Non bloccano la pubblicazione
+// (avviso giallo nello Studio, e in `sanity documents validate --level
+// warning`), ma vanno sistemati: un link rotto è peggio dell'assenza del link
+// (issue #40), e il sito non lo mostra. Le regole sono le stesse del sito
+// (@butik/site-config/links). L'avviso è applicato a ogni campo stringa e
+// testo dello schema da schemaTypes/index.ts.
 export const linkSegnaposto = (v: unknown) => {
-  if (typeof v !== 'string') return true;
-  const t = v.trim();
-  if (SEGNAPOSTO.test(t)) return 'Link segnaposto: indica la destinazione vera, oppure togli il link e lascia il testo';
-  if (/^\/[^\s]*$/.test(t) && !t.startsWith('//')) {
-    const percorso = t.replace(/[?#].*$/, '');
-    if (!PAGINA_INTERNA.test(percorso)) return `La pagina ${percorso} non esiste sul sito: il link non viene mostrato finché non c'è`;
-  }
+  if (typeof v !== 'string' || v.trim() === '') return true;
+  if (isLinkSegnaposto(v)) return 'Link segnaposto: indica la destinazione vera, oppure togli il link e lascia il testo';
+  // L'avviso è su ogni campo di testo: conta solo un valore che è tutto un
+  // percorso ("/chi-siamo"), non una frase che comincia con una barra.
+  const percorso = /^\/\S*$/.test(v.trim()) ? percorsoInterno(v) : null;
+  if (percorso && !haFormaDiPagina(percorso)) return `La pagina ${percorso} non esiste sul sito: il link non viene mostrato finché non c'è`;
   return true;
 };
 

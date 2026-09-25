@@ -28,7 +28,7 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
 
   <!-- Grid -->
   <section class="projects-section">
-    <div class="projects-grid">
+    <div class="projects-grid" data-reveal-group>
       {progetti.map((p, i) => (
         <a href={`/progetti/${p.id}`} class="project-card">
           <div class="project-card__media">

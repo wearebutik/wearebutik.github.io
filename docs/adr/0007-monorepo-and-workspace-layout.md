@@ -30,10 +30,12 @@ butik is a **pnpm + turbo monorepo** (toolchain in
 ```
 apps/
   web/          # the Astro site (@butik/web) — src, public, .env, wrangler, astro.config
+  studio/       # Sanity Studio (@butik/studio) — schemas and editing UI (ADR-0004)
   functions/    # Cloudflare Workers / Pages Functions (@butik/functions) — added when the first one lands
 packages/
   ui-tokens/    # @butik/ui-tokens — design tokens as CSS custom properties
   ui/           # @butik/ui — shared component catalogue (React islands + CSS Modules + tokens, ADR-0008; Storybook workshop)
+  site-config/  # @butik/site-config — plain TS rules shared by site and Studio (pages that exist, placeholder links, social networks)
 docs/  .claude/  reference/  design/   # repo-wide, stay at root
 ```
 
@@ -43,6 +45,12 @@ docs/  .claude/  reference/  design/   # repo-wide, stay at root
   [ADR-0008](./0008-component-authoring-and-storybook.md) `packages/ui` components
   are **React islands** (`.tsx`), consumed by the site via `@astrojs/react` and
   authored in a **Storybook** workshop.
+- **Rules both apps enforce live in a package**: when the Studio warns about
+  something and the site acts on the same rule (a link to a page that does not
+  exist, a social network the footer cannot show), the rule is written once in
+  `@butik/site-config` — plain TypeScript, no framework — and both import it. The
+  site's build checks the page list against `src/pages`
+  (`apps/web/src/lib/pagineGuard.ts`). An app never imports from another app.
 - **What's at root, not in a package**: `docs/`, `.claude/`, `reference/`,
   `design/` are repo-wide (decisions, agent config, raw input, brand assets) and
   don't belong to any single app/package.

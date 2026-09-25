@@ -106,7 +106,7 @@ import { isLinkSegnaposto } from '#lib/links';
         <p class="sdg-intro">
           {c.sdgIntro}
         </p>
-        <div class="sdg-grid">
+        <div class="sdg-grid" data-reveal-group>
           {sdg.map((o) => (
             <div class="sdg-card">
               <span
@@ -143,7 +143,7 @@ import { isLinkSegnaposto } from '#lib/links';
       </div>
     </div>
 
-    <div class="founders-grid">
+    <div class="founders-grid" data-reveal-group>
       {founders.map((f) => (
         <article class="founder-card">
           <div class="founder-photo">

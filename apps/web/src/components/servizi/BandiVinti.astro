@@ -17,7 +17,7 @@ const { bandi, eyebrow = 'Bandi vinti' } = Astro.props;
 
 <section class="not-prose bandi-vinti">
   <Eyebrow>{eyebrow}</Eyebrow>
-  <ul class="bandi-list">
+  <ul class="bandi-list" data-reveal-group>
     {bandi.map((b) => (
       <li class="bando-row">
         <span class="bando-nome">{b.nome}</span>

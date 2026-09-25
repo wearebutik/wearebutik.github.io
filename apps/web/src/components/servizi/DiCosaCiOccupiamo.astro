@@ -12,7 +12,7 @@ const { items, eyebrow = 'Di cosa ci occupiamo' } = Astro.props;
 
 <section class="not-prose occupiamo-section">
   <Eyebrow>{eyebrow}</Eyebrow>
-  <ul class="occupiamo-list">
+  <ul class="occupiamo-list" data-reveal-group>
     {items.map((item) => (
       <li class="occupiamo-item">
         <span class="occupiamo-bullet"></span>

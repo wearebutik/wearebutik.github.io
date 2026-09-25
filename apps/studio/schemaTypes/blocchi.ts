@@ -9,7 +9,15 @@ export const figura = defineType({
   type: 'image',
   options: { hotspot: true },
   fields: [
-    defineField({ name: 'alt', title: 'Testo alternativo', type: 'string' }),
+    defineField({
+      name: 'alt',
+      title: 'Testo alternativo',
+      type: 'string',
+      // Le foto di sfondo dell'hero sono decorative: il sito non legge il testo
+      // alternativo (il contenuto dell'hero è nel testo), quindi il campo non
+      // si mostra. Vedi la descrizione di `heroImages` (pagine.ts).
+      hidden: ({ path }) => path[0] === 'heroImages',
+    }),
     defineField({ name: 'caption', title: 'Didascalia', type: 'string' }),
   ],
 });
