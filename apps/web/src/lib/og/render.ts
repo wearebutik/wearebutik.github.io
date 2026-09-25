@@ -23,7 +23,9 @@ const clear700 = readFileSync(fromRoot('src/assets/fonts-og/clear-sans-latin-700
 const logoSvg = readFileSync(fromRoot('src/assets/logos/bollo-rosso.svg'));
 const logoDataUri = `data:image/svg+xml;base64,${logoSvg.toString('base64')}`;
 
-const RED = '#e21929';
+// Satori non legge le custom property: è --color-red-deep, il rosso del testo
+// e dei fondi che portano testo (la pill del CTA, l'etichetta del tipo).
+const RED = '#cc1523';
 const DARK = '#071108';
 const LIGHT = '#fff2f1';
 const GREEN = '#d2ff28';

@@ -60,7 +60,9 @@
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  background: color-mix(in srgb, var(--color-fg) 50%, transparent);
+  /* 65%, come il minimo dello scrim di HeroBanner: la didascalia regge 4.5:1
+     anche su una foto bianca. */
+  background: color-mix(in srgb, var(--color-fg) 65%, transparent);
   color: var(--color-fg-invert);
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
