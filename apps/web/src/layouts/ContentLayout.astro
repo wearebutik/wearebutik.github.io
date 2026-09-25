@@ -77,7 +77,8 @@ const {
 
 <style>
   .meta-bar {
-    border-bottom: 1px solid oklch(96.7% 0.003 264.542); /* Tailwind gray-100 — nessun token corrispondente */
+    /* Il filetto del sistema (come header, footer, bandi). */
+    border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
   }
 
   .meta-bar-inner {
@@ -101,7 +102,7 @@ const {
   }
 
   .content-article {
-    max-width: 64rem;
+    max-width: var(--measure-5xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     padding-block: var(--space-16);

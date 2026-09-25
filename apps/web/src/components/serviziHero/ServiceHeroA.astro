@@ -171,7 +171,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
   }
 
   .hero-panel-inner {
-    max-width: 36rem;
+    max-width: var(--measure-xl);
   }
 
   /* lo stile globale di h1 forza color butik-dark: qui serve bianco su scuro */
@@ -197,7 +197,7 @@ const isLocalImage = typeof image !== 'string' || isRemote(image);
 
   .hero-sub {
     margin-top: var(--space-5);
-    max-width: 28rem;
+    max-width: var(--measure-md);
     font-family: var(--font-sans);
     font-size: var(--font-size-base);
     line-height: 1.5;

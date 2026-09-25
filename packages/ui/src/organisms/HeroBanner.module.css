@@ -65,7 +65,7 @@
   font-weight: 700;
   line-height: 1.1;
   color: var(--color-fg-invert);
-  max-width: 48rem; /* ex max-w-3xl */
+  max-width: var(--measure-3xl);
   font-size: var(--font-size-2xl);
 }
 
@@ -85,7 +85,7 @@
   margin-top: var(--space-4);
   font-family: var(--font-sans);
   color: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
-  max-width: 42rem; /* ex max-w-2xl */
+  max-width: var(--measure-2xl);
   font-size: var(--font-size-lg);
 }
 
@@ -134,12 +134,12 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .hero:not([data-morph]) .image {
-    animation: banner-foto 900ms var(--ease-out) backwards;
+    animation: banner-foto var(--duration-settle) var(--ease-out) backwards;
   }
   .hero:not([data-morph]) .title,
   .hero:not([data-morph]) .subtitle {
     transform-origin: bottom;
-    animation: banner-battito 600ms var(--ease-bounce) 200ms backwards;
+    animation: banner-battito var(--duration-enter) var(--ease-bounce) 200ms backwards;
   }
   .hero:not([data-morph]) .subtitle {
     animation-delay: 320ms;

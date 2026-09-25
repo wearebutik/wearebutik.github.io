@@ -89,7 +89,7 @@
   }
   [data-reveal='in']:not(h2) {
     transform-origin: bottom;
-    animation: motion-battito 600ms var(--ease-bounce) var(--d, 0ms) backwards;
+    animation: motion-battito var(--duration-enter) var(--ease-bounce) var(--d, 0ms) backwards;
   }
 
   @media (max-width: 767px) {
@@ -108,7 +108,7 @@
   /* `both` e non `backwards`: l'animazione disegna la linea, che nello stato
      di base non c'è (background-size 0%). */
   h2[data-reveal='in'] > [data-reveal-linea] {
-    animation: motion-disegna 800ms cubic-bezier(0.65, 0, 0.35, 1) var(--d, 0ms) both;
+    animation: motion-disegna 800ms var(--ease-draw) var(--d, 0ms) both;
   }
 }
 
@@ -120,10 +120,10 @@
 @media (prefers-reduced-motion: no-preference) {
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-battito] {
     transform-origin: bottom;
-    animation: motion-battito 600ms var(--ease-bounce) var(--ritardo, 150ms) backwards;
+    animation: motion-battito var(--duration-enter) var(--ease-bounce) var(--ritardo, 150ms) backwards;
   }
   .page-main:not(:has([data-motion='a'], [data-motion='c'])) [data-assesta] {
-    animation: motion-assesta 900ms var(--ease-out) backwards;
+    animation: motion-assesta var(--duration-settle) var(--ease-out) backwards;
   }
 }
 

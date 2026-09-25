@@ -26,9 +26,15 @@ const logoDataUri = `data:image/svg+xml;base64,${logoSvg.toString('base64')}`;
 // Satori non legge le custom property: è --color-red-deep, il rosso del testo
 // e dei fondi che portano testo (la pill del CTA, l'etichetta del tipo).
 const RED = '#cc1523';
-const DARK = '#071108';
-const LIGHT = '#fff2f1';
-const GREEN = '#d2ff28';
+const DARK = '#071108'; // --color-dark
+const LIGHT = '#fff2f1'; // --color-light
+const GREEN = '#d2ff28'; // --color-highlight
+
+/** DARK con trasparenza, per gli scrim (Satori non legge color-mix). */
+function darkAlpha(alpha: number): string {
+  const [r, g, b] = [1, 3, 5].map((i) => parseInt(DARK.slice(i, i + 2), 16));
+  return `rgba(${r},${g},${b},${alpha})`;
+}
 const SPARTAN = 'League Spartan';
 const CLEAR = 'Clear Sans';
 
@@ -185,11 +191,11 @@ function buildBleed(card: OgCard, handle: string, hero: string): Node {
     }, [
       h('div', {
         display: 'flex', width: 1200, height: 96,
-        backgroundImage: 'linear-gradient(to top, rgba(7,17,8,0.72), rgba(7,17,8,0))',
+        backgroundImage: `linear-gradient(to top, ${darkAlpha(0.72)}, ${darkAlpha(0)})`,
       }),
       h('div', {
         display: 'flex', flexDirection: 'column', width: 1200, padding: '0 80px 64px',
-        backgroundImage: 'linear-gradient(to top, rgba(7,17,8,0.94), rgba(7,17,8,0.72))',
+        backgroundImage: `linear-gradient(to top, ${darkAlpha(0.94)}, ${darkAlpha(0.72)})`,
       }, content),
     ]),
   ]);

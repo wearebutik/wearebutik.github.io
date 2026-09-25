@@ -51,6 +51,8 @@
   --font-heading: "League Spartan", sans-serif;
   --font-display: "League Spartan", sans-serif;
 
+  /* Corpo minimo: sigilli, nomi dei partner, chip di filtro. */
+  --font-size-2xs: 0.6875rem;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
@@ -70,6 +72,7 @@
   /* ── Spacing scale ──────────────────────────────────────────────────── */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
+  --space-2-5: 0.625rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
   --space-5: 1.25rem;
@@ -84,8 +87,19 @@
   /* ── Layout ─────────────────────────────────────────────────────────── */
   /* Larghezza massima del contenitore delle sezioni. */
   --container-max: 80rem;
+  /* Larghezze di misura (colonne di testo, blocchi centrati): scala di
+     Tailwind da cui vengono (max-w-md … max-w-6xl). */
+  --measure-md: 28rem;
+  --measure-xl: 36rem;
+  --measure-2xl: 42rem;
+  --measure-3xl: 48rem;
+  --measure-4xl: 56rem;
+  --measure-5xl: 64rem;
+  --measure-6xl: 72rem;
   /* Sfocatura del vetro sopra le foto (card e liste dell'hero, header). */
   --blur-glass: 12px;
+  /* Sfocatura forte: pannello del menu mobile, fondo del carosello. */
+  --blur-heavy: 24px;
 
   /* ── Radii ──────────────────────────────────────────────────────────── */
   --radius-sm: 0.25rem;
@@ -105,9 +119,14 @@
   --duration-base: 250ms;
   --duration-slow: 300ms;
   --duration-slower: 500ms;
+  /* Entrate al caricamento e in vista (ritmo musicale, PDR-0002). */
+  --duration-enter: 600ms;
+  --duration-settle: 900ms;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   /* Curva standard delle transizioni di stato (hover, colore). */
   --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Tratti che si disegnano (sottolineature). */
+  --ease-draw: cubic-bezier(0.65, 0, 0.35, 1);
   /* Rimbalzo delle animazioni d'ingresso "ritmo musicale": supera appena e si assesta. */
   --ease-bounce: cubic-bezier(0.34, 1.4, 0.64, 1);
 }

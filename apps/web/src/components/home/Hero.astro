@@ -233,7 +233,7 @@ const serviziItems = servizi.map((s) => ({
   .hero-textcol {
     position: relative;
     text-align: center;
-    max-width: 56rem; /* max-w-4xl, nessun token */
+    max-width: var(--measure-4xl);
     margin-inline: auto;
   }
 
@@ -261,7 +261,7 @@ const serviziItems = servizi.map((s) => ({
     font-size: var(--font-size-base);
     line-height: calc(1.5 / 1); /* line-height che text-base porta con sé */
     margin-top: var(--space-5);
-    max-width: 42rem; /* max-w-2xl, nessun token */
+    max-width: var(--measure-2xl);
     margin-inline: auto;
   }
   @media (min-width: 768px) {
@@ -309,7 +309,7 @@ const serviziItems = servizi.map((s) => ({
   .hero-title,
   .hero-subtitle {
     color: var(--color-fg-invert);
-    text-shadow: 0 2px 20px rgba(7, 17, 8, 0.6);
+    text-shadow: 0 2px 20px color-mix(in srgb, var(--color-fg) 60%, transparent);
   }
 
   .hero-svc-wrap {
@@ -402,7 +402,7 @@ const serviziItems = servizi.map((s) => ({
   @media (prefers-reduced-motion: no-preference) {
     /* Titolo, sottotitolo e pulsante: data-battito (styles/motion.css). */
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-explore {
-      animation: hero-in-dissolvi 600ms var(--ease-out) backwards;
+      animation: hero-in-dissolvi var(--duration-enter) var(--ease-out) backwards;
     }
     :global(.page-main:not(:has([data-motion='a'], [data-motion='c']))) .hero-svc-cards > :global(*) {
       transform-origin: bottom;

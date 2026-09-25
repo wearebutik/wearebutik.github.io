@@ -51,7 +51,7 @@
 }
 
 .content {
-  max-width: 42rem; /* ex max-w-2xl: vincolo di misura di lettura */
+  max-width: var(--measure-2xl);
 }
 
 .title {
