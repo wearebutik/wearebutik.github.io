@@ -6,7 +6,8 @@
 // che la card mostra da tablet in su.
 //
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004).
-// `tone` adatta i colori a sfondo chiaro o scuro (hero home = scuro).
+// Sta sull'hero della home, su vetro scuro: i colori sono quelli di un fondo
+// scuro.
 export interface ServiceLauncherItem {
   slug: string;
   title: string;
@@ -16,18 +17,14 @@ export interface ServiceLauncherItem {
 
 interface Props {
   items: ServiceLauncherItem[];
-  tone?: 'onLight' | 'onDark';
-  /** Se true, ogni voce punta all'ancora #slug nella stessa pagina. */
-  useAnchors?: boolean;
 }
-const { items, tone = 'onLight', useAnchors = false } = Astro.props;
-const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href);
+const { items } = Astro.props;
 ---
 
-<ul class:list={['launcher-list', tone]}>
+<ul class="launcher-list">
   {items.map((c) => (
     <li>
-      <a href={linkFor(c.slug, c.href)} class="row">
+      <a href={c.href} class="row">
         <span class="row-text">
           <span class="row-title">{c.title}</span>
           <span class="row-desc">{c.desc}</span>
@@ -112,17 +109,8 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     color: var(--accent-text, var(--accent));
   }
 
-  /* ── Tone tokens ───────────────────────────────────────────────────── */
-  .onLight {
-    --ink: var(--color-butik-dark);
-    /* 70%: la frase regge 4.5:1 sul fondo chiaro, anche in hover. */
-    --muted: color-mix(in srgb, var(--color-butik-dark) 70%, transparent);
-    --rule: color-mix(in srgb, var(--color-butik-dark) 15%, transparent);
-    --accent: var(--color-butik-red);
-    --accent-text: var(--color-butik-red-ink);
-    --row-hover: color-mix(in srgb, var(--color-butik-dark) 6%, transparent);
-  }
-  .onDark {
+  /* ── Colori (fondo scuro) ─────────────────────────────────────────── */
+  .launcher-list {
     --ink: var(--color-fg-invert);
     /* 80%: la frase regge 4.5:1 sul vetro scuro della lista, anche in hover. */
     --muted: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);

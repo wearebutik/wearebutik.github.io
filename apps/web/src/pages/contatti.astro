@@ -129,10 +129,12 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
             </address>
           </div>
 
-          <div>
-            <MetaLabel as="p">{c.seguiciLabel}</MetaLabel>
-            <SocialLinks socials={socials} />
-          </div>
+          {socials.length > 0 && (
+            <div>
+              <MetaLabel as="p">{c.seguiciLabel}</MetaLabel>
+              <SocialLinks socials={socials} />
+            </div>
+          )}
         </div>
       </aside>
     </div>

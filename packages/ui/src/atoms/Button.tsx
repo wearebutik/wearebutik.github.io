@@ -10,9 +10,7 @@
 import type { ReactNode } from 'react';
 import styles from './Button.module.css';
 
-export interface ButtonProps {
-  /** Se valorizzato, il bottone è un link <a>; altrimenti un <button>. */
-  href?: string;
+interface ButtonBaseProps {
   /** Variante visiva: piena (primary) o contorno (ghost). */
   variant?: 'primary' | 'ghost';
   /**
@@ -26,10 +24,6 @@ export interface ButtonProps {
    * colori classici (primary = accent, ghost = foreground scuro).
    */
   tone?: 'accent' | 'dark' | 'invert';
-  /** Tipo del <button> (ignorato quando c'è `href`). */
-  type?: 'button' | 'submit' | 'reset';
-  /** Disabilitato (solo <button>). Lo stato si può anche impostare da script. */
-  disabled?: boolean;
   /** Contenuto del bottone (testo, icona + testo, ...). */
   children?: ReactNode;
   /**
@@ -39,6 +33,24 @@ export interface ButtonProps {
    */
   className?: string;
 }
+
+/** Con `href` è un link <a>: `type` e `disabled` non esistono. */
+interface ButtonAsLinkProps extends ButtonBaseProps {
+  href: string;
+  type?: never;
+  disabled?: never;
+}
+
+/** Senza `href` è un <button>. */
+interface ButtonAsButtonProps extends ButtonBaseProps {
+  href?: undefined;
+  /** Tipo del <button>. */
+  type?: 'button' | 'submit' | 'reset';
+  /** Disabilitato. Lo stato si può anche impostare da script. */
+  disabled?: boolean;
+}
+
+export type ButtonProps = ButtonAsLinkProps | ButtonAsButtonProps;
 
 export default function Button({
   href,

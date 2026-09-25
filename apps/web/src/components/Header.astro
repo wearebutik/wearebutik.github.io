@@ -314,11 +314,20 @@ function isActive(href: string) {
        --blur-glass); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
     backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
     -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
-    transition: background-color var(--duration-slow) var(--ease-standard), border-color var(--duration-slow) var(--ease-standard);
+    /* Lento per il passaggio da vetro a pieno con lo scroll; il sollevamento
+       resta quello del Button. */
+    transition: background-color var(--duration-slow) var(--ease-standard),
+      border-color var(--duration-slow) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-out);
   }
+  /* Entrando in hover vale la transizione di questa regola: rapida come negli
+     altri Button. */
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
     background-color: var(--color-accent-fill);
     border-color: var(--color-accent-fill);
+    transition: background-color var(--duration-fast) var(--ease-standard),
+      border-color var(--duration-fast) var(--ease-standard),
+      transform var(--duration-fast) var(--ease-out);
   }
 
   /* Focus visibile — l'accent rosso non è leggibile sopra l'hero scurito
@@ -360,7 +369,8 @@ function isActive(href: string) {
     .site-header[data-overlay='true'] .nav-link,
     .site-header[data-overlay='true'] .mobile-toggle,
     .site-header[data-overlay='true'] :global(.site-logo),
-    .site-header[data-overlay='true'] :global(.header-cta) {
+    .site-header[data-overlay='true'] :global(.header-cta),
+    .site-header[data-overlay='true'] :global(.header-cta:hover) {
       transition: none;
     }
   }
