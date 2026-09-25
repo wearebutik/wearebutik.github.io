@@ -236,7 +236,7 @@ function isActive(href: string) {
       color-mix(in srgb, var(--color-fg) 10%, transparent) calc(var(--header-solid) * 100%),
       transparent
     );
-    transition: background-color var(--duration-slow) ease, border-bottom-color var(--duration-slow) ease;
+    transition: background-color var(--duration-slow) var(--ease-standard), border-bottom-color var(--duration-slow) var(--ease-standard);
   }
 
   /* Fallback: senza scroll-driven animations (oggi Firefox — animation-timeline
@@ -259,7 +259,7 @@ function isActive(href: string) {
     filter: drop-shadow(0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     ));
-    transition: filter var(--duration-slow) ease;
+    transition: filter var(--duration-slow) var(--ease-standard);
   }
 
   .site-header[data-overlay='true'] .nav-link {
@@ -269,7 +269,7 @@ function isActive(href: string) {
     text-shadow: 0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     );
-    transition: color var(--duration-slow) ease, text-shadow var(--duration-slow) ease;
+    transition: color var(--duration-slow) var(--ease-standard), text-shadow var(--duration-slow) var(--ease-standard);
   }
   /* Come le regole sorelle qui sopra, interpola fra i due stati invece di
      fissare un colore: da solido serve l'accent scurito (5.20:1 su --color-bg),
@@ -279,7 +279,7 @@ function isActive(href: string) {
     color: color-mix(
       in srgb, var(--color-accent-text) calc(var(--header-solid) * 100%), var(--color-highlight)
     );
-    transition: color var(--duration-slow) ease;
+    transition: color var(--duration-slow) var(--ease-standard);
   }
 
   .site-header[data-overlay='true'] .mobile-toggle {
@@ -289,7 +289,7 @@ function isActive(href: string) {
     filter: drop-shadow(0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     ));
-    transition: color var(--duration-slow) ease, filter var(--duration-slow) ease;
+    transition: color var(--duration-slow) var(--ease-standard), filter var(--duration-slow) var(--ease-standard);
   }
 
   /* Il riempimento in overlay è uno scrim SCURO, non chiaro. Con il vetro
@@ -314,7 +314,7 @@ function isActive(href: string) {
        --blur-glass); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
     backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
     -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
-    transition: background-color var(--duration-slow) ease, border-color var(--duration-slow) ease;
+    transition: background-color var(--duration-slow) var(--ease-standard), border-color var(--duration-slow) var(--ease-standard);
   }
   .site-header[data-overlay='true'] :global(.header-cta:hover) {
     background-color: var(--color-accent-fill);

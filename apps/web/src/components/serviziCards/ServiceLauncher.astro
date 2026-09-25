@@ -60,7 +60,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     border-radius: var(--radius-md);
     text-decoration: none;
     color: var(--ink);
-    transition: background-color var(--duration-fast) ease;
+    transition: background-color var(--duration-fast) var(--ease-standard);
   }
   .row:hover,
   .row:active,
@@ -97,7 +97,7 @@ const linkFor = (slug: string, href: string) => (useAnchors ? `#${slug}` : href)
     line-height: 1;
     color: var(--accent);
     opacity: 0.55;
-    transition: opacity var(--duration-fast) ease, transform var(--duration-fast) ease;
+    transition: opacity var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
   }
   .row:hover .row-chev,
   .row:focus-visible .row-chev {

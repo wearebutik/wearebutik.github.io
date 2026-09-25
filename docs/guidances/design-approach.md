@@ -69,7 +69,12 @@ copy without one fails CI.
   the image: see `HeroBanner.module.css`, where the floor holds whatever the
   alignment and the photo.
 - **Visible focus** on every interactive element (`:focus-visible` with a
-  token-based outline); never `outline: none` without a replacement.
+  token-based outline); never `outline: none` without a replacement. The site
+  sets a baseline in `global.css`: a `--color-accent` ring on everything
+  interactive, at zero specificity (`:where()`), which holds 3:1 on the light
+  and the dark backgrounds. On a photo or a dark panel the component sets its
+  own white ring. A `@butik/ui` component declares its own ring anyway: the
+  baseline is the site's, and Storybook does not load it.
 - Non-native clickable elements have keyboard handling and correct roles; prefer
   native elements.
 

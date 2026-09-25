@@ -113,7 +113,9 @@ export const WithTransitionName: Story = {
     const banner = canvasElement.querySelector<HTMLElement>('[data-hero-banner]');
     const img = banner?.querySelector<HTMLElement>('img');
     const title = banner?.querySelector<HTMLElement>('h1');
+    const subtitle = banner?.querySelector<HTMLElement>('p');
     await expect(img?.style.viewTransitionName).toBe('progetto-esempio');
     await expect(title?.style.viewTransitionName).toBe('progetto-esempio-title');
+    await expect(subtitle?.style.viewTransitionName).toBe('progetto-esempio-subtitle');
   },
 };

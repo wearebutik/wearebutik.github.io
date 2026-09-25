@@ -195,12 +195,12 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
       padding-block: var(--space-4);
     }
   }
-  /* Anello di focus come i campi di /contatti/: il solo cambio di bordo da
-     1px non basta a vedere dove si è. */
   /* 70%: il placeholder è l'unica etichetta visibile del campo. */
   .newsletter-input::placeholder {
     color: color-mix(in srgb, var(--color-fg) 70%, transparent);
   }
+  /* Anello di focus come i campi di /contatti/: il solo cambio di bordo da
+     1px non basta a vedere dove si è. */
   .newsletter-input:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
