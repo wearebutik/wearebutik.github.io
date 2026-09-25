@@ -46,8 +46,7 @@ component the PR never touched.
    - **Interaction**: hover and focus-visible, forced with
      `storybook-addon-pseudo-states` (`parameters.pseudo`); intermediate states
      reached by clicking (a `play` function).
-   - **Arrival and motion states** set by the site (`data-morph`,
-     `trigger="load"`). A state with no visual difference at rest is a **test**,
+   - **Arrival and motion states** set by the site (`data-morph`). A state with no visual difference at rest is a **test**,
      not a picture: a `play` asserts it and `parameters.chromatic.disableSnapshot`
      keeps a duplicate snapshot out of Chromatic.
    - **Viewports** where the layout changes: the `@media` breakpoints in the

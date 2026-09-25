@@ -29,7 +29,6 @@
     "./Waveform": "./src/atoms/motion/Waveform.tsx",
     "./Marquee": "./src/atoms/motion/Marquee.tsx",
     "./BeatPulse": "./src/atoms/motion/BeatPulse.tsx",
-    "./Vinyl": "./src/atoms/motion/Vinyl.tsx",
     "./TapeReels": "./src/atoms/motion/TapeReels.tsx",
     "./FlowDivider": "./src/atoms/motion/FlowDivider.tsx",
     "./Underline": "./src/atoms/motion/Underline.tsx",

@@ -71,9 +71,10 @@ workshop shows what the site shows.
   with its story.
 - **The app does not reimplement what an atom does.** One behaviour has one
   implementation. When two exist, the one that renders static wins
-  ([ADR-0002](./0002-runtime-and-delivery.md)): either it moves into the atom
-  (as `Underline trigger="load"`) or the atom goes (as `CountUp`, replaced by
-  the CSS-only count-up of `Numbers.astro`).
+  ([ADR-0002](./0002-runtime-and-delivery.md)): either the static behaviour is
+  the atom's (`Underline` draws with CSS only) or the atom goes, and the site's
+  version stays (the count-up of `Numbers.astro`, the vinyl discs of the Metodo
+  section).
 
 ## Alternatives considered
 

@@ -1,8 +1,7 @@
-// Storie dell'Underline: toni, lunghezza del testo e uso dentro un titolo.
+// Storie dell'Underline: toni, lunghezza del testo, uso dentro un titolo e su
+// foto. Il tratto si disegna al caricamento (solo CSS).
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
 import Underline from './Underline';
-import styles from './Underline.module.css';
 
 const meta = {
   title: 'Atoms/Motion/Underline',
@@ -62,21 +61,6 @@ export const InHeading: Story = {
   ),
 };
 
-// Al caricamento, solo CSS: come nel titolo dell'hero della home, dove il
-// componente è reso a HTML statico senza direttiva client. A fine animazione
-// il tratto è identico a Default (cambia solo cosa lo fa partire): questa
-// storia è un test, non uno specimen. La `play` verifica che il trigger
-// "load" metta la classe dell'animazione CSS; lo snapshot Chromatic è spento
-// perché duplicherebbe quello di Default.
-export const OnLoad: Story = {
-  args: { trigger: 'load' },
-  parameters: { chromatic: { disableSnapshot: true } },
-  play: async ({ canvasElement }) => {
-    const uline = canvasElement.querySelector<HTMLElement>(`.${styles.uline}`);
-    await expect(uline?.classList).toContain(styles.onLoad);
-  },
-};
-
 // Una parola sola: il tratto si comprime.
 export const ShortText: Story = { args: { children: 'oggi' } };
 
@@ -85,10 +69,10 @@ export const LongText: Story = {
   args: { children: 'progettazione culturale su base musicale' },
 };
 
-// Come nel titolo dell'hero della home: trigger="load", tono accent, dentro
-// l'h1 bianco sopra la foto con lo scrim.
-export const OnLoadOnPhoto: Story = {
-  args: { trigger: 'load', tone: 'accent', children: 'la musica' },
+// Come nel titolo dell'hero della home: tono accent, dentro l'h1 bianco sopra
+// la foto con lo scrim.
+export const OnPhoto: Story = {
+  args: { tone: 'accent', children: 'la musica' },
   render: (args) => (
     <div
       style={{
@@ -117,8 +101,8 @@ export const OnLoadOnPhoto: Story = {
 // testo che l'hero della home stende sulle foto (.hero-scrim): è il caso
 // peggiore per il contrasto del tratto rosso, perché il velo scurisce la foto
 // ma non la uniforma.
-export const OnLoadOnBrightPhoto: Story = {
-  args: { trigger: 'load', tone: 'accent', children: 'la musica' },
+export const OnBrightPhoto: Story = {
+  args: { tone: 'accent', children: 'la musica' },
   render: (args) => (
     <div
       style={{
