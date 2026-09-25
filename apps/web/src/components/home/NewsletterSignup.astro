@@ -55,9 +55,14 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
       <p class="newsletter-privacy" set:html={richTextHtml(privacy)}></p>
     </div>
 
+    {/* Regione live sempre presente e vuota: gli screen reader annunciano il
+        testo che vi entra dopo. Con display:none al caricamento, mostrata e
+        riempita nello stesso momento, l'annuncio può andare perso.
+        tabindex=-1: riceve il fuoco quando il form sparisce. */}
     <p
       id="newsletter-status"
-      class="newsletter-status hidden"
+      class="newsletter-status"
+      tabindex="-1"
       role="status"
       aria-live="polite"
       data-success={success}
@@ -92,9 +97,11 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
         return;
       }
 
-      container.classList.add('hidden');
       status.textContent = status.dataset.success ?? '';
-      status.classList.remove('hidden');
+      container.classList.add('hidden');
+      // Il fuoco era sul submit, che sparisce con il form: senza spostarlo
+      // ricadrebbe sul body.
+      status.focus();
 
       trackEvent('newsletter_subscribed');
     });
@@ -116,7 +123,7 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
 
   .newsletter-inner {
     /* max-w-2xl: nessun token per i max-width in ui-tokens. */
-    max-width: 42rem;
+    max-width: var(--measure-2xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
     text-align: center;
@@ -206,8 +213,8 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
     border-color: var(--color-accent);
   }
 
-  /* Nome mantenuto uguale allo script: initNewsletter fa classList.add/remove
-     su 'hidden' sia sull'honeypot che su container e status. */
+  /* Nome mantenuto uguale allo script: initNewsletter fa classList.add su
+     'hidden' per il container; la usa anche l'honeypot. */
   .hidden {
     display: none;
   }

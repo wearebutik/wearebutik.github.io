@@ -30,7 +30,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
       {
         testimonials.map((t, i) => (
           <article class="testimonial-card" data-testimonial-index={i}>
-            <div class="testimonial-rating" aria-label={`Valutazione: ${t.rating} su 5`}>
+            <div class="testimonial-rating" role="img" aria-label={`Valutazione: ${t.rating} su 5`}>
               {
                 Array.from({ length: t.rating }).map(() => (
                   <svg
@@ -143,8 +143,10 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
       dot.addEventListener('click', () => {
         const card = cards[i];
         if (card) {
+          // Con reduced motion lo scorrimento è istantaneo, come in ImageCarousel.
+          const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           card.scrollIntoView({
-            behavior: 'smooth',
+            behavior: reducedMotion ? 'auto' : 'smooth',
             inline: 'start',
             block: 'nearest',
           });

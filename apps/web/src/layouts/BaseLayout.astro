@@ -139,6 +139,9 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <ClientRouter />
   </head>
   <body class="page-body">
+    {/* Primo elemento a fuoco della pagina: salta l'header e porta a <main>.
+        Fuori schermo finché non riceve il fuoco da tastiera. */}
+    <a class="skip-link" href="#contenuto">Vai al contenuto</a>
     {/* GTM fallback per client senza JS (ADR-0006). */}
     {gtmId && (
       <noscript
@@ -154,7 +157,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       </p>
     )}
     <Header />
-    <main class="page-main" data-reveal-off={reveal ? undefined : ''}>
+    {/* tabindex=-1: il salto del link sposta anche il fuoco, non solo lo scroll. */}
+    <main id="contenuto" tabindex="-1" class="page-main" data-reveal-off={reveal ? undefined : ''}>
       <slot />
     </main>
     <Footer />
@@ -211,6 +215,34 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
 
   .page-main {
     flex: 1 1 0%;
+  }
+  /* <main> riceve il fuoco solo dal salto: nessun anello attorno alla pagina. */
+  .page-main:focus {
+    outline: none;
+  }
+
+  /* Sopra l'header sticky (z-index 50). */
+  .skip-link {
+    position: absolute;
+    top: var(--space-2);
+    left: var(--space-2);
+    z-index: 60;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    transform: translateY(calc(-100% - var(--space-4)));
+  }
+  .skip-link:focus {
+    transform: none;
+  }
+  .skip-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
   }
 
   .versione-b {

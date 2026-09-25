@@ -12,6 +12,9 @@ const { partners = defaultPartners } = Astro.props;
 // Desktop: una sola riga, lista duplicata per il loop continuo (translateX -50%).
 const desktopTrack = [...partners, ...partners];
 
+// La prima copia di ogni track è quella letta dagli screen reader; la seconda
+// esiste solo per il loop visivo ed è aria-hidden (`i >= n` nella map).
+
 // Mobile: due righe. Spezziamo i partner a metà e duplichiamo ciascuna riga.
 const half = Math.ceil(partners.length / 2);
 const mobileRowA = partners.slice(0, half);
@@ -20,17 +23,29 @@ const trackA = [...mobileRowA, ...mobileRowA];
 const trackB = [...mobileRowB, ...mobileRowB];
 ---
 
-<section class="partner-strip" data-partner-strip>
+{/* Il marquee si muove da solo: si ferma con l'hover, con il fuoco da
+    tastiera sulla strip (tabindex) e con un tocco/click, che lo mette in
+    pausa o lo riavvia (vedi script). */}
+<section
+  class="partner-strip"
+  data-partner-strip
+  tabindex="0"
+  aria-label="Partner"
+>
   {/* ---------- Desktop: marquee a riga singola ---------- */}
   <div class="partner-desktop">
     <div class="partner-track partner-track-row is-autoscroll" data-partner-track data-reveal-group>
       {
-        desktopTrack.map((partner) => (
-          <div class="partner-card" data-name={partner.name}>
+        desktopTrack.map((partner, i) => (
+          <div
+            class="partner-card"
+            data-name={partner.name}
+            aria-hidden={i >= partners.length ? 'true' : undefined}
+          >
             <Image
               src={partner.logo}
               {...imageSize(partner.logo, { height: 40 })}
-              alt=""
+              alt={i >= partners.length ? '' : partner.name}
               densities={[1, 2]}
               loading="eager"
               decoding="async"
@@ -54,8 +69,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
       style="--marquee-dur: 40s"
     >
       {
-        trackA.map((partner) => (
-          <div class="partner-item">
+        trackA.map((partner, i) => (
+          <div class="partner-item" aria-hidden={i >= mobileRowA.length ? 'true' : undefined}>
             <div class="partner-item-frame">
               <Image
                 src={partner.logo}
@@ -81,8 +96,8 @@ const trackB = [...mobileRowB, ...mobileRowB];
       style="--marquee-dur: 48s"
     >
       {
-        trackB.map((partner) => (
-          <div class="partner-item">
+        trackB.map((partner, i) => (
+          <div class="partner-item" aria-hidden={i >= mobileRowB.length ? 'true' : undefined}>
             <div class="partner-item-frame">
               <Image
                 src={partner.logo}
@@ -229,12 +244,12 @@ const trackB = [...mobileRowB, ...mobileRowB];
   .partner-item-name {
     text-align: center;
     font-family: var(--font-display);
-    font-size: 10px; /* text-[10px]: arbitrary, non porta line-height implicito */
+    font-size: var(--font-size-2xs);
     font-weight: 700;
     line-height: 1.25; /* leading-tight, presente sullo stesso elemento: vince su text-* */
     letter-spacing: 0.025em; /* tracking-wide */
     text-transform: uppercase;
-    /* 70%: a 10px serve 4.5:1, su --color-bg e sul bianco. */
+    /* 70%: a questa dimensione serve 4.5:1, su --color-bg e sul bianco. */
     color: color-mix(in srgb, var(--color-fg) 70%, transparent);
   }
 
@@ -266,9 +281,25 @@ const trackB = [...mobileRowB, ...mobileRowB];
     animation-name: butik-marquee-rev;
   }
 
-  /* On hover della strip (solo desktop, dove l'hover esiste): il marquee si ferma. */
-  .partner-strip:hover .partner-track.is-autoscroll {
+  /* Il marquee si ferma con l'hover (sotto), con il fuoco da tastiera sulla
+     strip e dopo un tocco/click (data-paused, vedi script). Il fuoco conta
+     solo se :focus-visible: toccare la strip la mette a fuoco, e con
+     :focus-within il secondo tocco non potrebbe più riavviarla. */
+  .partner-strip:focus-visible .partner-track.is-autoscroll,
+  .partner-strip[data-paused='true'] .partner-track.is-autoscroll {
     animation-play-state: paused;
+  }
+  /* Solo dove l'hover esiste: sui touch l':hover resta attaccato dopo un
+     tocco e impedirebbe al secondo tocco di riavviare il marquee. */
+  @media (hover: hover) {
+    .partner-strip:hover .partner-track.is-autoscroll {
+      animation-play-state: paused;
+    }
+  }
+
+  .partner-strip:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: calc(-1 * var(--space-1));
   }
 
   .partner-track.is-dragging {
@@ -469,6 +500,18 @@ const trackB = [...mobileRowB, ...mobileRowB];
     document
       .querySelectorAll<HTMLElement>('[data-partner-track]')
       .forEach(setupTrack);
+
+    // --- Pausa con un tocco/click sulla strip (e ripresa con il successivo) ---
+    // Un drag non arriva qui: il click che lo chiude viene fermato sulla track.
+    // Da tastiera la strip non riceve click (non è un bottone): lì la pausa
+    // viene dal fuoco, in CSS.
+    document.querySelectorAll<HTMLElement>('[data-partner-strip]').forEach((strip) => {
+      if (strip.dataset.partnerPauseReady) return;
+      strip.dataset.partnerPauseReady = '1';
+      strip.addEventListener('click', () => {
+        strip.dataset.paused = strip.dataset.paused === 'true' ? 'false' : 'true';
+      });
+    });
 
     // --- Desktop: nome del partner in basso, su hover della singola card ---
     document.querySelectorAll<HTMLElement>('[data-partner-strip]').forEach((strip) => {

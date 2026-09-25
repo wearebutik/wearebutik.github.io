@@ -282,7 +282,9 @@ function isActive(href: string) {
     transition: color var(--duration-slow) var(--ease-standard);
   }
 
-  .site-header[data-overlay='true'] .mobile-toggle {
+  /* Solo a menu chiuso: da aperto la X sta sul pannello scuro e prende il
+     bianco pieno della regola `.mobile-nav[open] > summary`, senza ombra. */
+  .site-header[data-overlay='true'] .mobile-nav:not([open]) > .mobile-toggle {
     color: color-mix(
       in srgb, var(--color-fg) calc(var(--header-solid) * 100%), var(--color-fg-invert)
     );
@@ -367,7 +369,7 @@ function isActive(href: string) {
   @media (prefers-reduced-motion: reduce) {
     .site-header[data-overlay='true'],
     .site-header[data-overlay='true'] .nav-link,
-    .site-header[data-overlay='true'] .mobile-toggle,
+    .site-header[data-overlay='true'] .mobile-nav:not([open]) > .mobile-toggle,
     .site-header[data-overlay='true'] :global(.site-logo),
     .site-header[data-overlay='true'] :global(.header-cta),
     .site-header[data-overlay='true'] :global(.header-cta:hover) {
@@ -395,7 +397,7 @@ function isActive(href: string) {
   }
   @media (prefers-reduced-motion: no-preference) {
     .site-header[data-overlay='true'] .header-inner > * {
-      animation: header-scende 600ms var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
+      animation: header-scende var(--duration-enter) var(--ease-bounce) 1200ms backwards; /* mai both: vedi styles/motion.css */
     }
     .site-header[data-overlay='true'] .header-inner > :nth-child(2) {
       animation-delay: 1320ms;
@@ -429,8 +431,8 @@ function isActive(href: string) {
       color-mix(in srgb, var(--color-fg-invert) 10%, transparent),
       transparent 45%
     );
-    backdrop-filter: blur(24px) saturate(1.2); /* vetro: nessun token blur */
-    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
+    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
   }
   .mobile-nav-list {
     display: flex;
