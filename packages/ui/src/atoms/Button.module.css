@@ -23,6 +23,7 @@
    Button resta uguale anche dentro la prosa editoriale, dove prose.css (non
    modificabile) colora e sottolinea i link con `.prose a` (0,1,1). */
 .button.button {
+  font-weight: 700;
   text-decoration: none;
 }
 

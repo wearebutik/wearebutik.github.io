@@ -254,7 +254,15 @@ export const Disabled: Story = {
   args: { tone: 'dark', type: 'submit', disabled: true, children: 'Invio in corso…' },
 };
 
+// In hover un bottone disabilitato non cambia: a vista è Disabled, quindi è un
+// test. La play verifica che il fondo resti quello scuro.
 export const DisabledHover: Story = {
   ...Disabled,
-  parameters: { pseudo: { hover: true } },
+  parameters: { pseudo: { hover: true }, chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    // --color-fg (#071108): il fondo del tono dark a riposo, non il rosso
+    // dell'hover.
+    const button = within(canvasElement).getByRole('button');
+    await expect(getComputedStyle(button).backgroundColor).toBe('rgb(7, 17, 8)');
+  },
 };
