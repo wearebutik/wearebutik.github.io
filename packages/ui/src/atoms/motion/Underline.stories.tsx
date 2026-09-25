@@ -1,6 +1,8 @@
 // Storie dell'Underline: toni, lunghezza del testo, uso dentro un titolo e su
-// foto. Il tratto si disegna al caricamento (solo CSS).
+// foto. Il tratto si disegna al caricamento (solo CSS), tranne quando la
+// pagina è già stata vista nella sessione (entrata saltata).
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 import Underline from './Underline';
 
 const meta = {
@@ -128,4 +130,25 @@ export const OnBrightPhoto: Story = {
       </h1>
     </div>
   ),
+};
+
+// Entrata saltata: il sito mette data-entrata-saltata su <html> quando la home
+// è già stata vista nella sessione, e il tratto arriva già disegnato. A riposo
+// è identico a Default (Chromatic lo ferma alla fine), quindi è un test.
+export const EntrataSaltata: Story = {
+  parameters: { chromatic: { disableSnapshot: true } },
+  decorators: [
+    (Story) => (
+      <div data-entrata-saltata="">
+        <Story />
+      </div>
+    ),
+  ],
+  play: async ({ canvasElement }) => {
+    const path = canvasElement.querySelector('svg path');
+    await expect(path).not.toBeNull();
+    const stile = getComputedStyle(path!);
+    await expect(stile.animationName).toBe('none');
+    await expect(stile.strokeDashoffset).toBe('0px');
+  },
 };

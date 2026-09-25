@@ -133,6 +133,11 @@ it; it rests on legitimate interest (measuring and keeping the site working).
   section itself already said "no analytics *cookie* before consent"
   (`privacy.astro#cookie`), which was accurate all along; only the two broader
   claims needed correcting.
+- **Interface state on the device**: a session-scoped, non-identifying value in
+  `sessionStorage` that only changes how the interface behaves — `butik:home-vista`
+  (`'1'`, the home entrance already played in this tab) — is strictly necessary
+  for the service the visitor asked for, is never sent anywhere and needs no
+  consent.
 - **Scope**: this update covers PostHog only. GTM/GA stay exactly as the
   2026-07-13 update left them (Consent Mode v2, `analytics_storage` denied by
   default) — Consent Mode already expresses a device-side default-deny posture

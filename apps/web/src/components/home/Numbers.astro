@@ -244,6 +244,12 @@ const items = [
           animation: conta 1400ms var(--ease-out) both;
         }
       }
+      /* Home già vista nella sessione (data-entrata-saltata su <html>, vedi
+         BaseLayout): niente conteggio, il numero finale c'è subito. */
+      :global([data-entrata-saltata]) .numbers {
+        --conta: 0;
+        animation: none;
+      }
     }
   }
 </style>

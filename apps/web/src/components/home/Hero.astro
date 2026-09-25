@@ -439,6 +439,14 @@ const serviziItems = servizi.map((s) => ({
     .hero-svc-cards > :global(:nth-child(4)) { animation-delay: 880ms; }
     .hero-svc-cards > :global(:nth-child(5)) { animation-delay: 1000ms; }
     .hero-explore { animation-delay: 1150ms; }
+    /* Home già vista nella sessione (data-entrata-saltata su <html>, vedi
+       BaseLayout): card, righe e link sono già al loro posto. */
+    :global([data-entrata-saltata]) .hero-explore,
+    :global([data-entrata-saltata]) .hero-svc-list,
+    :global([data-entrata-saltata]) .hero-svc-list :global(li),
+    :global([data-entrata-saltata]) .hero-svc-cards > :global(*) {
+      animation: none;
+    }
   }
 </style>
 

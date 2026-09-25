@@ -114,6 +114,16 @@ copy without one fails CI.
   strip pauses on hover too; a loop that fills the screen does not, or it would
   never run under the pointer. The animation lives in CSS, not in an inline
   `style` shorthand, which would override `animation-play-state`.
+- **The home enters once per session** ([PDR-0002](../product/decisions/0002-motion-musical-rhythm.md)):
+  `BaseLayout` records the visit in `sessionStorage` (`butik:home-vista`) and, on
+  a router navigation back to the home, sets `data-entrata-saltata` on the new
+  `<html>` before the swap ([client-scripts.md](client-scripts.md#when-a-script-is-the-right-tool)).
+  Under that attribute every entrance on the home is off — on load and on
+  scroll: the hero, the header, the count-up of the numbers, the reveal (not
+  armed) and the catalogue atom that draws on load (`Underline`). A full load
+  never carries it. Only the home sets it: a component that enters on load
+  elsewhere (`HeroBanner`) does not honour it yet, and needs the same rule and a
+  story before the skip reaches its page.
 - **Entrance animations end clean**: fill mode `backwards`, never `both`. A
   leftover identity transform becomes the containing block of positioned
   descendants (it collapsed the mobile menu panel) and overrides the element's own
@@ -161,6 +171,10 @@ the island (ADR-0008 `#astro-island-boundary`).
 - **A written rule only, metadata left hand-written.** Smallest change, but it
   leaves the same recipe copied into every card that needs it, with nothing
   tying the copies together.
+- **A visible pause button on the home hero's photo loop.** It is the most
+  discoverable way to meet WCAG 2.2.2, but it adds a control to a hero whose
+  photos are background; the loop pauses on keyboard focus and on a tap or
+  click on the photo instead.
 - **A non-link `ArrowLink` (`as="span"`)** for cards that are links as a whole.
   A link component rendering something that is not a link carries text and
   props the card does not need; the arrow alone is the atom `ArrowCircle`.

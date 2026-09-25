@@ -187,9 +187,36 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         if (presente) banner.dataset.morph = '';
       });
 
+      // Entrata della home solo alla prima visita della sessione (issue #83):
+      // tornando in home con il router, la pagina arriva già al suo posto —
+      // header, hero, card e animazioni allo scroll. Si decide in before-swap,
+      // sul documento nuovo, così l'entrata non si vede nemmeno per un
+      // fotogramma: il router copia gli attributi di <html>, e uscendo dalla
+      // home l'attributo sparisce. Un caricamento completo (prima apertura,
+      // ricarica) non passa di qui e ha l'entrata piena.
+      const HOME_VISTA = 'butik:home-vista';
+      const eHome = (doc: Document) => doc.querySelector('[data-hero-section]') !== null;
+      const leggi = () => {
+        try {
+          return sessionStorage.getItem(HOME_VISTA) === '1';
+        } catch {
+          return false;
+        }
+      };
+      document.addEventListener('astro:before-swap', (e) => {
+        if (eHome(e.newDocument) && leggi()) e.newDocument.documentElement.dataset.entrataSaltata = '';
+      });
+
       document.addEventListener('astro:page-load', () => {
+        if (eHome(document)) {
+          try {
+            sessionStorage.setItem(HOME_VISTA, '1');
+          } catch {
+            /* storage non disponibile: resta l'entrata di sempre */
+          }
+        }
         const main = document.querySelector<HTMLElement>('.page-main');
-        if (!main || 'revealOff' in main.dataset) return;
+        if (!main || 'revealOff' in main.dataset || 'entrataSaltata' in document.documentElement.dataset) return;
         const stop = initReveal(main);
         document.addEventListener('astro:before-swap', stop, { once: true });
       });
