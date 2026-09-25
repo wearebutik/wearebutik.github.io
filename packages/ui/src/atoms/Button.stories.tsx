@@ -2,7 +2,7 @@
 // (primary/ghost), modalità di resa (link vs button) e lunghezza del contenuto.
 // I controlli (knobs) di Storybook permettono di provare le prop dal vivo.
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { expect } from 'storybook/test';
+import { expect, within } from 'storybook/test';
 import Button from './Button';
 
 const meta = {
@@ -19,7 +19,7 @@ const meta = {
       control: 'inline-radio',
       options: [undefined, 'accent', 'dark', 'invert'],
       description:
-        'Tonalità: "dark" (solo primary, sfondo scuro invece di accent), "invert" (solo ghost, outline bianco per sfondi scuri) o "accent" (solo ghost, outline colorato su sfondo chiaro). Una combinazione che non esiste (es. primary + invert) non dà errore: il bottone ricade sulla variante senza tono — vedi la storia ToneFallback.',
+        'Tonalità: "dark" (solo primary, sfondo scuro invece di accent), "invert" (primary: stesso rosso con anello di focus bianco, per foto e fondi scuri; ghost: outline bianco per sfondi scuri) o "accent" (solo ghost, outline colorato su sfondo chiaro). Una combinazione che non esiste (es. primary + accent) non dà errore: il bottone ricade sulla variante senza tono — vedi la storia ToneFallback.',
     },
     href: {
       control: 'text',
@@ -113,16 +113,16 @@ export const AccentGhostTone: Story = {
   args: { variant: 'ghost', tone: 'accent', children: 'Vedi tutti i progetti' },
 };
 
-// Le combinazioni tono × variante che non esistono (primary + invert,
-// primary + accent, ghost + dark) non rompono il bottone: il componente
+// Le combinazioni tono × variante che non esistono (primary + accent,
+// ghost + dark) non rompono il bottone: il componente
 // ricade sulla variante senza tono (`styles[toneKey] ?? styles[variant]`).
 // Qui a sinistra la combinazione invalida, a destra il riferimento: la play
 // function verifica che rendano la stessa classe.
 export const ToneFallback: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 'var(--space-4)' }}>
-      <Button variant="primary" tone="invert">
-        primary + invert
+      <Button variant="primary" tone="accent">
+        primary + accent
       </Button>
       <Button variant="primary">primary</Button>
     </div>
@@ -184,4 +184,64 @@ export const AccentGhostToneHover: Story = {
 export const AccentGhostToneFocusVisible: Story = {
   ...AccentGhostTone,
   parameters: { pseudo: { focusVisible: true } },
+};
+
+// Primary sopra il mosaico fotografico velato, come la CTA dell'hero della
+// home. Il tono invert tiene lo stesso rosso ma porta l'anello di focus al
+// bianco: è il motivo del tono, perché l'anello di default si perderebbe sul
+// velo scuro. Stesso fondo di ArrowLink/OnPhoto (velo scuro su righe grigie).
+export const PrimaryOnPhoto: Story = {
+  args: { variant: 'primary', tone: 'invert', children: 'Chiamaci' },
+  decorators: [
+    (Story) => (
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundColor: 'var(--color-bg-invert)',
+          backgroundImage:
+            'linear-gradient(0deg, rgba(7,17,8,0.55), rgba(7,17,8,0.55)), repeating-linear-gradient(45deg, #8a8a8a 0 24px, #d8d8d8 24px 48px)',
+        }}
+      >
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+// L'anello di focus bianco del tono invert, sul velo scuro.
+export const PrimaryOnPhotoFocusVisible: Story = {
+  ...PrimaryOnPhoto,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+// Primary su fondo pieno scuro (es. menu mobile): anche qui tone="invert",
+// per l'anello di focus bianco.
+export const PrimaryOnDark: Story = {
+  args: { variant: 'primary', tone: 'invert', children: 'Chiamaci' },
+  decorators: [
+    (Story) => (
+      <div style={{ background: 'var(--color-bg-invert)', padding: 'var(--space-8)' }}>
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+export const PrimaryOnDarkFocusVisible: Story = {
+  ...PrimaryOnDark,
+  parameters: { pseudo: { focusVisible: true } },
+};
+
+// className si UNISCE alle classi interne: è il gancio con cui l'header
+// aggancia il proprio stato overlay-su-scroll senza reimplementare il
+// bottone. Nessuna regola dell'app copiata qui: la `play` controlla solo che
+// il <button> porti sia le classi interne sia quella passata.
+export const WithClassName: Story = {
+  args: { variant: 'primary', children: 'Chiamaci', className: 'story-button-hook' },
+  play: async ({ canvasElement }) => {
+    const button = within(canvasElement).getByRole('button', { name: 'Chiamaci' });
+    await expect(button.classList).toContain('story-button-hook');
+    // button + variante + classe passata.
+    await expect(button.classList.length).toBe(3);
+  },
 };
