@@ -25,10 +25,13 @@ Run `pnpm lint:design` first (`tools/design-lint`): it fails on hand-written red
 Report its output as it is, then judge what it cannot: the role behind each
 `design-lint-disable` comment, red surfaces carrying text, text over photos.
 
-In a PR review, check **the diff and the code that landed on the base branch
-while the PR was open** (`git diff <merge-base>..origin/main` against the rules
-the PR introduces). A rule a PR brings in applies to the code written alongside
-it, not only to the lines it touches.
+Two modes:
+
+- **PR review**: the diff **and the code that landed on the base branch while
+  the PR was open** (`git diff <merge-base>..origin/main`, against the rules the
+  PR introduces). A rule a PR brings in applies to the code written alongside
+  it, not only to the lines it touches.
+- **Full audit** (asked explicitly, or no PR): the whole scope above.
 
 ## What to check
 
@@ -38,9 +41,13 @@ it, not only to the lines it touches.
   inline `style=`, flag colours (`#hex`, `rgb(`, `rgba(`, `hsl(`, names like
   `red`/`white`) and `px`/`rem` for spacing, radius or font-size that should use
   `var(--…)`. Allowed: `0`, `1px` borders, percentages, `currentColor`,
-  `color-mix()` of tokens. A photographic overlay (`rgba(0,0,0,…)` on an image)
+  `color-mix()` of tokens. A photographic overlay or a shadow (`rgba(0,0,0,…)`)
   is allowed when a comment says so. A recurring raw value with no matching
-  token → "missing token".
+  token goes **once** under "Missing tokens", with its count and two examples —
+  not as one violation per occurrence.
+- **Fluid type**: `--text-*` in `apps/web/src/styles/global.css` are fluid
+  sizes (`clamp(…)`). A hand-written `clamp()` identical to one of them, or a
+  comment claiming "no token" where one exists, is a violation.
 - **Undefined tokens**: `var(--x)` used but defined neither in
   `packages/ui-tokens/tokens.css` nor as an app alias in
   `apps/web/src/styles/global.css` (exclude local custom properties). App
@@ -69,11 +76,19 @@ naming it.
 
 Text on an image holds AA **whatever the photo and the layout**: the scrim or
 panel sits under the text block (as in `HeroBanner.module.css`), not at a
-position of a gradient that depends on where the text lands. For every text on
-a photo (heroes, glass panels, lists over a hero, carousel captions, cards),
-compute the contrast on a **white photo** at the weakest point of the scrim,
-including hover states and semi-transparent text colours. Below threshold →
-`blocker`.
+position of a gradient that depends on where the text lands.
+
+- **Pattern first**: a gradient that is still transparent (or below 0.65 of
+  `--color-fg`) where the text block starts is a `blocker` by itself — the
+  text's position depends on content and viewport, so no estimate saves it.
+- **Then compute** for every text on a photo (heroes, glass panels, lists over a
+  hero, carousel captions, cards, OG images in `lib/og/render.ts`): the contrast
+  on the **worst photo for that text colour** (white for light text, black for
+  dark text) at the weakest point of the scrim or panel under the text,
+  including hover states and semi-transparent text colours.
+- **Focus rings on photos**: an atom's focus outline (e.g. Button's
+  `--color-accent`) over a photo or a dark veil must reach 3:1 there, not only
+  on the workshop's plain background. Check atoms in the context they are used.
 
 ### 4. Small caps: two roles
 
@@ -94,16 +109,28 @@ local effects (a scroll state, a width), not a way to make a new variant:
 - **Repainted from outside**: an `.astro` that uses `:global(.x)` on a
   `@butik/ui` component to change its colours, borders or shape → `warning`.
   Fix: the variant/tone the component already has, or a new prop with a story.
-  Layout (width, margin, position) and focus rings for the context are fine.
-- **Duplicated**: app code that reimplements what a `@butik/ui` atom does
-  (a count-up, an underline, an arrow link) → `warning`. One implementation
-  stays; say which by static-first (ADR-0002): the one that needs no hydration
-  wins.
+  Layout (width, margin, position) is fine, and so is a state only the context
+  knows that changes the look over time — the header's CTA turning from glass
+  over the hero to solid with the scroll (`--header-solid`) — per ADR-0008
+  `#catalogue-usage`.
+- **Duplicated**: code that reimplements what a `@butik/ui` atom does — in the
+  app (a vinyl disc, an underline, an arrow link) or inside the catalogue (a
+  molecule restyling its own pill instead of using `Button`) → `warning`. Same
+  behaviour *and* same look: a straight rule under a whole heading is not the
+  hand-drawn stroke of `Underline`. One
+  implementation stays; say which by static-first (ADR-0002): the one that
+  needs no hydration wins.
+- **Dead variants**: a prop value or tone no call site uses is a `note`; if it
+  also fails a check, say so — the fix may be removing it.
 
 ### 6. Accessibility
 
 - **AA contrast** (≥ 4.5:1 normal text, ≥ 3:1 large text and UI): compute from
   the real token hex values; report pairs below threshold.
+- **Dimmed text**: grep `color-mix(in srgb, var(--color-fg…) N%` and
+  `opacity:` on text. Secondary text (placeholders, captions, small print,
+  muted lines) below ~65% of the foreground is where AA fails most often;
+  compute each.
 - **Visible focus**: every interactive element has `:focus-visible` with a
   token-based outline, legible on its background (white on dark panels); no
   `outline: none` without a replacement.
@@ -116,7 +143,11 @@ local effects (a scroll state, a width), not a way to make a new variant:
 - Reusable motion accents are atoms in `packages/ui/src/atoms/motion/`; motion
   logic shared across components lives in `packages/ui/src/lib/`; motion that
   belongs to one component lives with it (ADR-0010).
-- Entrance animations use fill mode `backwards`, never `both`.
+- Entrance animations use fill mode `backwards` when their final state is the
+  element's base state: `both` leaves an identity transform that becomes a
+  containing block. An animation that *draws* something the base state doesn't
+  have (an underline growing `background-size`, a counter on `--n`) needs
+  `both`, with a comment saying why.
 - A CSS feature that is not Baseline is gated with `@supports` and degrades to
   readable text and working controls (design-approach `#browser-support`).
 

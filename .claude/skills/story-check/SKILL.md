@@ -23,14 +23,21 @@ component the PR never touched.
 ## Procedure
 
 1. **Enumerate the components**: `packages/ui/src/{atoms,molecules,organisms}/**/*.tsx`
-   (excluding `*.stories.tsx`) and the exports in `packages/ui/package.json`.
+   (excluding `*.stories.tsx`). Exports that are libraries, not components
+   (`packages/ui/src/lib/*`: `reveal`, `vinylScratch`), are out of scope.
 2. **Find the reachable states** from the call sites in `apps/web/src/**`
-   (`grep -rn "@butik/ui/<Name>"`), for each component:
+   (`grep -rn "@butik/ui/<Name>"`). Many islands are rendered through an
+   `.astro` wrapper (`components/HeroBanner.astro`, `components/mdx/*`,
+   `components/portabletext/Pt*`): follow the wrapper to **its** callers, where
+   the real props come from. Read the background from the CSS of the ancestors
+   at the call site. For each component:
    - **Props**: every value and combination used, including fallbacks (an
      invalid tone × variant) and optional props left out.
    - **Context hooks**: custom properties the site sets around the island
      (`--accent`, `--accent-ink`, `--meta-label-color`, `--arrow-link-accent`…),
-     with the real pairs the call site uses.
+     with the real pairs the call site uses. Storybook loads only
+     `@butik/ui-tokens`: translate app aliases (`--color-butik-*`, defined in
+     `apps/web/src/styles/global.css`) to the tokens they point to.
    - **Data edges**: empty lists, a single item, the longest list the content
      allows (e.g. every social network the Sanity schema accepts), long text,
      portrait images.
@@ -40,11 +47,20 @@ component the PR never touched.
      `storybook-addon-pseudo-states` (`parameters.pseudo`); intermediate states
      reached by clicking (a `play` function).
    - **Arrival and motion states** set by the site (`data-morph`,
-     `trigger="load"`), and viewports where layout changes (`globals.viewport`).
-   - **`className` hooks**: the story shows the effect on a background where it
-     is visible, and a `play` checks the class is merged.
+     `trigger="load"`). A state with no visual difference at rest is a **test**,
+     not a picture: a `play` asserts it and `parameters.chromatic.disableSnapshot`
+     keeps a duplicate snapshot out of Chromatic.
+   - **Viewports** where the layout changes: the `@media` breakpoints in the
+     component's `*.module.css` (`globals: { viewport: { value: 'mobile1' } }`).
+   - **`className` hooks**: a `play` checks the class is merged with the
+     internal ones. When the effect itself is the component's own (a filter on
+     the Logo), the story shows it on a background where it is visible; when it
+     is app CSS (the header's overlay state), the story does not copy it.
 3. **Map coverage** against the `*.stories.tsx` of each component.
 4. **Stale**: stories for props, states or components that no longer exist.
+5. **Unused**: components exported by `@butik/ui` with no call site in the site,
+   and prop values no call site reaches. Not a coverage gap — a question for the
+   catalogue (keep, or remove as with `CountUp`).
 
 ## Output format
 
@@ -52,13 +68,16 @@ component the PR never touched.
 # Storybook coverage
 
 ## Missing states
-- <Component> — <state>. Reached at: path:line. Add: <StoryName> (args / decorator / pseudo).
+- [severity] <Component> — <state>. Reached at: path:line. Add: <StoryName> (args / decorator / pseudo).
 
 ## Stories that don't show their state
-- <Component>/<Story> — <why it looks identical to another story>. Fix: …
+- [severity] <Component>/<Story> — <why it looks identical to another story>. Fix: …
 
 ## Stale stories
-- <Component>/<Story> — <prop/state no longer exists>.
+- [note] <Component>/<Story> — <prop/state no longer exists>.
+
+## Unused
+- [note] <Component> (or <Component>.<prop>=<value>) — no call site.
 
 ## Covered (brief)
 - <Component>: <stories>.

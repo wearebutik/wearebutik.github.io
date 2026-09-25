@@ -7,7 +7,7 @@
 //   red-hex       un rosso scritto a mano (#e21929, #cc1523) fuori dai token;
 //   red-as-text   `color:` sul rosso di brand (--color-accent / --color-butik-red),
 //                 che è il rosso dei glifi: il testo rosso è --color-accent-text;
-//   small-caps    la ricetta del maiuscoletto (font display, --font-size-xs,
+//   small-caps    la ricetta del maiuscoletto (font display, taglia xs o più piccola,
 //                 uppercase, 0.1em) fuori da Eyebrow e MetaLabel. CTA, bottoni e
 //                 link di navigazione hanno scala propria e non la toccano.
 //
@@ -44,7 +44,8 @@ const RED_AS_TEXT = /(?:^|[;{\s])color\s*:\s*var\(--color-(?:accent|butik-red)\)
 const UPPERCASE = /text-transform\s*:\s*uppercase/;
 const TRACKING = /letter-spacing\s*:\s*0?\.1em\b/;
 const DISPLAY_FONT = /font-family\s*:\s*var\(--font-display\)/;
-const XS_SIZE = /font-size\s*:\s*(?:var\(--font-size-xs\)|0?\.75rem)/;
+// --font-size-xs, o una taglia piccola scritta a mano (0.6rem–0.75rem, 10–12px).
+const XS_SIZE = /font-size\s*:\s*(?:var\(--font-size-xs\)|0?\.(?:6\d*|7[0-4]\d*|75)rem|1[0-2]px)\b/;
 
 function* walk(dir) {
   for (const name of readdirSync(dir)) {
