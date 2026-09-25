@@ -33,6 +33,14 @@
   }
 }
 
+/* Entrata saltata: un antenato con data-entrata-saltata (il sito lo mette su
+   <html> quando la pagina è già stata vista nella sessione) chiede il tratto
+   già disegnato, come con reduced-motion. */
+:global([data-entrata-saltata]) .svg path {
+  animation: none;
+  stroke-dashoffset: 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .svg path {
     animation: none;

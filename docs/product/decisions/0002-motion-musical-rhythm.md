@@ -24,6 +24,10 @@ One entrance language across the site, "musical rhythm":
 - **Heroes** (home, service pages, page banners) enter on load: the photo
   settles from a slight zoom, title, text and buttons bounce up in sequence. On
   the home the header arrives last, after the hero.
+- **The home enters once per session**: the full entrance plays on the first
+  visit of the session and on a full reload. Coming back to the home through
+  the site's navigation, the page arrives in place — header, hero, cards and the
+  scroll entrances — while the photo loop and the page transitions still run.
 - **Page transitions** with a shared element (project card → project banner)
   land with the same bounce; when the photo morphs in, the banner's own entrance
   is skipped.

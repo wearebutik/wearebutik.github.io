@@ -410,6 +410,10 @@ function isActive(href: string) {
     .site-header[data-overlay='true'] .header-inner > :nth-child(3) {
       animation-delay: 1440ms;
     }
+    /* Home già vista nella sessione (vedi BaseLayout): l'header c'è subito. */
+    :global([data-entrata-saltata]) .site-header[data-overlay='true'] .header-inner > * {
+      animation: none;
+    }
   }
   /* ── Menu mobile a tutto schermo ────────────────────────────────────
      <details> nativo. Da aperto, un pannello di vetro scuro copre la pagina

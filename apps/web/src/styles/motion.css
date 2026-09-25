@@ -124,6 +124,11 @@
   [data-assesta] {
     animation: motion-assesta var(--duration-settle) var(--ease-out) backwards;
   }
+  /* Home già vista nella sessione (data-entrata-saltata su <html>, vedi
+     BaseLayout): l'hero è già al suo posto. */
+  [data-entrata-saltata] :is([data-battito], [data-assesta]) {
+    animation: none;
+  }
 }
 
 /* ── Transizioni fra pagine ───────────────────────────────────────────────

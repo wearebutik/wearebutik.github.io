@@ -80,6 +80,13 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
   and reverses with the scroll; "once" needs an `IntersectionObserver`. It binds
   to the fresh `<main>` on every `astro:page-load` (a dataset flag guards
   re-entry) and disconnects on `astro:before-swap`.
+- **Deciding before the first paint** — whether the home skips its entrance
+  (`BaseLayout`) is decided in `astro:before-swap` on `e.newDocument`, like the
+  banner's `data-morph`: an attribute set there is in place when the new page is
+  first drawn, while one set on `astro:page-load` comes a frame late and the
+  entrance flashes. A script that must reach `before-swap` lives in `BaseLayout`,
+  loaded on every page: a component script only loads once its page is visited,
+  after the swap it would need to act on.
 - **Side effects outside the component** — the mobile menu in `Header.astro`
   locks page scroll, makes the page behind it `inert` and closes on Escape. A
   global side effect (`documentElement.style.overflow`) must be undone on

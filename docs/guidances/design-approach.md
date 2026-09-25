@@ -114,6 +114,13 @@ copy without one fails CI.
   strip pauses on hover too; a loop that fills the screen does not, or it would
   never run under the pointer. The animation lives in CSS, not in an inline
   `style` shorthand, which would override `animation-play-state`.
+- **The home enters once per session** ([PDR-0002](../product/decisions/0002-motion-musical-rhythm.md)):
+  `BaseLayout` records the visit in `sessionStorage` (`butik:home-vista`) and, on
+  a router navigation back to the home, sets `data-entrata-saltata` on the new
+  `<html>` in `astro:before-swap`. Anything that enters on load turns its
+  entrance off under that attribute (`[data-entrata-saltata] …`), the reveal is
+  not armed, and a catalogue atom that draws on load (`Underline`) honours it
+  too. A full load never carries it.
 - **Entrance animations end clean**: fill mode `backwards`, never `both`. A
   leftover identity transform becomes the containing block of positioned
   descendants (it collapsed the mobile menu panel) and overrides the element's own
