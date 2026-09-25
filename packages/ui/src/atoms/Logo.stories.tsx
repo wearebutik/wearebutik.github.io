@@ -2,6 +2,7 @@
 // lo specimen usa un data URI SVG statico al posto del bollo-rosso reale
 // (risolto a build-time solo lato apps/web via getImage()).
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect, within } from 'storybook/test';
 import Logo from './Logo';
 
 const placeholderSrc =
@@ -37,17 +38,29 @@ export const Footer: Story = {
 
 // className si UNISCE alle classi interne: è il gancio con cui l'header
 // applica i suoi effetti locali. Qui la stessa ombra dello stato overlay
-// dell'header (sopra un'immagine), con la classe definita nello specimen come
-// l'header la definisce con :global() — una regola scoped di Astro non
-// raggiungerebbe l'<img> dell'isola (ADR-0008 #astro-island-boundary).
+// dell'header, su una foto chiara dove l'ombra scura si vede, con la classe
+// definita nello specimen come l'header la definisce con :global() — una
+// regola scoped di Astro non raggiungerebbe l'<img> dell'isola (ADR-0008
+// #astro-island-boundary). La `play` controlla che l'<img> porti sia la
+// classe interna sia quella passata.
 export const WithClassName: Story = {
   args: { width: 45, height: 45, className: 'story-logo-overlay' },
   decorators: [
     (Story) => (
-      <div style={{ background: 'var(--color-bg-invert)', padding: 'var(--space-8)' }}>
-        <style>{`.story-logo-overlay { filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--color-fg) 45%, transparent)); height: 2.8125rem; width: auto; }`}</style>
+      <div
+        style={{
+          padding: 'var(--space-8)',
+          backgroundImage: 'repeating-linear-gradient(45deg, #d8d8d8 0 24px, #f4f4f4 24px 48px)',
+        }}
+      >
+        <style>{`.story-logo-overlay { filter: drop-shadow(0 1px 4px color-mix(in srgb, var(--color-fg) 45%, transparent)); }`}</style>
         <Story />
       </div>
     ),
   ],
+  play: async ({ canvasElement }) => {
+    const img = within(canvasElement).getByRole('img', { name: 'Butik' });
+    await expect(img.classList).toContain('story-logo-overlay');
+    await expect(img.classList.length).toBe(2);
+  },
 };

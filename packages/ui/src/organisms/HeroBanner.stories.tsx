@@ -50,8 +50,9 @@ export const LongTitle: Story = {
   },
 };
 
-// Sottotitolo su foto bianca: rende verificabile nel workshop (anche con il
-// pannello a11y) che lo scrim regga il caso peggiore.
+// Sottotitolo su foto bianca: il caso peggiore per lo scrim, da guardare a
+// occhio. Il pannello a11y non basta: sul testo sopra un gradiente axe dà
+// color-contrast "incomplete", non un esito.
 export const BrightImage: Story = {
   args: {
     src: brightSrc,
