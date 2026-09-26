@@ -9,6 +9,8 @@ interface Props {
   subtitle?: string;
   heroImage: ImageMetadata | string;
   heroAlt?: string;
+  /** Segnaposto sfocato della foto hero (LQIP), se c'è. */
+  heroLqip?: string;
   metaTitle?: string;
   metaDescription?: string;
   ogImage?: string;
@@ -24,6 +26,7 @@ const {
   subtitle,
   heroImage,
   heroAlt,
+  heroLqip,
   metaTitle,
   metaDescription,
   ogImage,
@@ -39,7 +42,7 @@ const {
   description={metaDescription ?? subtitle}
   ogImage={ogImage}
 >
-  <HeroBanner title={title} subtitle={subtitle} image={heroImage} imageAlt={heroAlt} transitionName={transitionName} />
+  <HeroBanner title={title} subtitle={subtitle} image={heroImage} imageAlt={heroAlt} transitionName={transitionName} placeholder={heroLqip} />
 
   <!-- Metadata bar (only for projects) -->
   {(client || year || category) && (

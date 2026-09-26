@@ -3,7 +3,9 @@
 // Astro (vedi `image.domains` in astro.config.mjs), non servite dalla CDN.
 import { createClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
+import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
+import { lqip } from './lqip';
 
 // Il projectId non è un segreto: è nell'URL di ogni asset pubblico.
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
@@ -51,17 +53,25 @@ type Doc = Record<string, unknown> & { id: string; _updatedAt: string };
  * documento, id = slug. `query` restituisce `id` e `_updatedAt`; `map` adatta
  * il documento allo schema Zod (es. immagini → URL, che Astro scarica in build).
  */
-function sanityLoader(name: string, query: string, map: (doc: Doc) => Record<string, unknown>): Loader {
+function sanityLoader(
+  name: string,
+  query: string,
+  map: (doc: Doc, logger: AstroIntegrationLogger) => Record<string, unknown> | Promise<Record<string, unknown>>,
+): Loader {
   return {
     name: `sanity-${name}`,
     load: async ({ store, parseData, generateDigest, logger }) => {
       const docs = await sanity.fetch<Doc[]>(query);
+      // In parallelo: `map` può scaricare qualcosa (i segnaposto LQIP).
+      const entries = await Promise.all(
+        docs.map(async (doc) => {
+          const { id, _updatedAt, ...rest } = withoutNulls(doc) as Doc;
+          const data = await parseData({ id, data: await map({ id, _updatedAt, ...rest }, logger) });
+          return { id, data, digest: generateDigest(String(_updatedAt)) };
+        }),
+      );
       store.clear();
-      for (const doc of docs) {
-        const { id, _updatedAt, ...rest } = withoutNulls(doc) as Doc;
-        const data = await parseData({ id, data: map({ id, _updatedAt, ...rest }) });
-        store.set({ id, data, digest: generateDigest(String(_updatedAt)) });
-      }
+      for (const entry of entries) store.set(entry);
       logger.info(`${docs.length} ${name} da Sanity`);
     },
   };
@@ -71,6 +81,13 @@ function sanityLoader(name: string, query: string, map: (doc: Doc) => Record<str
 // rimosso) si ignora: non deve rompere il build.
 const imageUrl = (image: unknown) =>
   (image as { asset?: unknown } | undefined)?.asset ? sanityImageUrl(image as SanityImage) : undefined;
+
+// Foto hero di progetti e servizi: l'URL che Astro scarica in build e il suo
+// segnaposto sfocato (LQIP), per le card dei listati e per l'hero.
+async function conSegnaposto(image: unknown, logger: AstroIntegrationLogger) {
+  const heroImage = imageUrl(image);
+  return { heroImage, heroLqip: heroImage ? await lqip(heroImage, logger) : undefined };
+}
 
 const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
   "id": slug.current,
@@ -82,9 +99,9 @@ const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current
 }`;
 
 export const progettiLoader = () =>
-  sanityLoader('progetti', PROGETTI_QUERY, ({ id, _updatedAt, heroImage, ogImage, ...rest }) => ({
+  sanityLoader('progetti', PROGETTI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, ...rest }, logger) => ({
     ...rest,
-    heroImage: imageUrl(heroImage),
+    ...(await conSegnaposto(heroImage, logger)),
     ogImage: imageUrl(ogImage),
   }));
 
@@ -97,9 +114,9 @@ const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current)
 }`;
 
 export const serviziLoader = () =>
-  sanityLoader('servizi', SERVIZI_QUERY, ({ id, _updatedAt, heroImage, ogImage, audience, ...rest }) => ({
+  sanityLoader('servizi', SERVIZI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, audience, ...rest }, logger) => ({
     ...rest,
-    heroImage: imageUrl(heroImage),
+    ...(await conSegnaposto(heroImage, logger)),
     ogImage: imageUrl(ogImage),
     // Nello Studio è una lista di id; lo schema Zod (e /servizi) vuole { id }.
     audience: ((audience as string[] | undefined) ?? []).map((a) => ({ id: a })),

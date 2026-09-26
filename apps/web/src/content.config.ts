@@ -15,6 +15,9 @@ const serviziCollection = defineCollection({
     title: z.string(),
     subtitle: z.string(),
     heroImage: z.string().url(),
+    // Segnaposto sfocato della foto hero (data: URI), calcolato dal loader a
+    // build time: non è un campo dello Studio (vedi lib/lqip.ts).
+    heroLqip: z.string().optional(),
     heroAlt: z.string().optional().default(''),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
@@ -66,6 +69,9 @@ const progettiCollection = defineCollection({
     title: z.string(),
     subtitle: z.string(),
     heroImage: z.string().url(),
+    // Segnaposto sfocato della foto hero (data: URI), calcolato dal loader a
+    // build time: non è un campo dello Studio (vedi lib/lqip.ts).
+    heroLqip: z.string().optional(),
     heroAlt: z.string().optional().default(''),
     client: z.string().optional(),
     year: z.number().optional(),

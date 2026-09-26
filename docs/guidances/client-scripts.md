@@ -92,6 +92,19 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
   global side effect (`documentElement.style.overflow`) must be undone on
   `astro:before-swap`, or the next page inherits it.
 
+- **Prefetching before hover** — Astro prefetches every internal link on
+  hover/focus (`prefetchAll`), which never happens on touch screens. A section
+  that wants more marks its container with `data-prefetch="viewport"` (links
+  are fetched when they enter the screen: card grids) or `data-prefetch="eager"`
+  (fetched once the page has loaded and the browser is idle: the home hero).
+  The attribute goes on the container because catalogue links (`Button`,
+  `ArrowLink`) do not forward attributes. `initPrefetch`
+  (`apps/web/src/lib/prefetch.client.ts`) is armed by `BaseLayout` on every
+  `astro:page-load` and disarmed on `astro:before-swap`; it honours
+  `data-astro-prefetch="false"` and `data-astro-reload`, and Astro's
+  `prefetch()` skips Save-Data and slow connections. Keep `eager` for a
+  handful of links.
+
 The rule above still holds: re-wire on `astro:page-load`, guard what may
 survive, tear down what outlives the page.
 

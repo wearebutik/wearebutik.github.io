@@ -173,18 +173,34 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         stacca l'osservatore prima dello swap. */}
     <script>
       import { initReveal } from '@butik/ui/reveal';
+      import { initPrefetch } from '#lib/prefetch.client';
 
       // Header delle pagine (HeroBanner): se la sua foto arriva con il morph
       // della view transition (stesso nome sulla pagina che si lascia, es. la
       // card del portfolio), si marca data-morph e l'entrata al caricamento si
       // salta: il rimbalzo lo fa già la transizione.
+      // La foto della card è già in cache: diventa il primo livello del
+      // segnaposto della foto dell'header, sopra l'LQIP, così il morph atterra
+      // su un'immagine nitida anche prima che arrivi quella a piena definizione.
       document.addEventListener('astro:before-swap', (e) => {
         const banner = e.newDocument.querySelector<HTMLElement>('[data-hero-banner]');
-        const nome = banner?.querySelector<HTMLElement>('img')?.style.viewTransitionName;
-        if (!banner || !nome) return;
-        const presente = [...document.querySelectorAll<HTMLElement>('[data-astro-transition-scope], [style*="view-transition-name"]')]
-          .some((el) => getComputedStyle(el).viewTransitionName === nome);
-        if (presente) banner.dataset.morph = '';
+        const foto = banner?.querySelector<HTMLElement>('img');
+        const nome = foto?.style.viewTransitionName;
+        if (!banner || !foto || !nome) return;
+        const origine = [...document.querySelectorAll<HTMLElement>('[data-astro-transition-scope], [style*="view-transition-name"]')]
+          .find((el) => getComputedStyle(el).viewTransitionName === nome);
+        if (!origine) return;
+        banner.dataset.morph = '';
+        if (origine instanceof HTMLImageElement && origine.complete && origine.naturalWidth > 0) {
+          const lqip = foto.style.getPropertyValue('--placeholder');
+          foto.style.setProperty('--placeholder', [`url("${origine.currentSrc}")`, lqip].filter(Boolean).join(', '));
+        }
+      });
+
+      // Prefetch anticipato delle sezioni marcate con data-prefetch.
+      document.addEventListener('astro:page-load', () => {
+        const stop = initPrefetch();
+        document.addEventListener('astro:before-swap', stop, { once: true });
       });
 
       // Entrata della home solo alla prima visita della sessione (issue #83):

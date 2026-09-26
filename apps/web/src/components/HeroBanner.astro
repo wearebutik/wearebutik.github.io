@@ -18,9 +18,11 @@ interface Props {
   image: ImageMetadata | string;
   imageAlt?: string;
   transitionName?: string;
+  /** Segnaposto sfocato (LQIP, data: URI) finché la foto non arriva. */
+  placeholder?: string;
 }
 
-const { title, subtitle, image, imageAlt = '', transitionName } = Astro.props;
+const { title, subtitle, image, imageAlt = '', transitionName, placeholder } = Astro.props;
 
 const resolved =
   typeof image === 'string' && !isRemote(image)
@@ -53,4 +55,5 @@ const resolved =
   height={resolved.height}
   imageAlt={imageAlt}
   transitionName={transitionName}
+  placeholder={placeholder}
 />
