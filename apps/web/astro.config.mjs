@@ -7,6 +7,7 @@ import { basePath } from './src/lib/basePath.ts';
 import { pagineGuard } from './src/lib/pagineGuard.ts';
 import { fontCritici } from './src/lib/fontCritici.ts';
 import { cssCritico } from './src/lib/cssCritico.ts';
+import { linkConBarra } from './src/lib/linkConBarra.ts';
 
 // Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
 // (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
@@ -43,5 +44,5 @@ export default defineConfig({
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
-  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), pagineGuard(), cssCritico(), fontCritici()],
+  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), linkConBarra(), pagineGuard(), cssCritico(), fontCritici()],
 });

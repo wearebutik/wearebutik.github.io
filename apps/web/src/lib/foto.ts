@@ -41,14 +41,33 @@ export interface Foto {
  * prima perché vince la prima condizione vera.
  */
 export function sizesMax2x(sizes: string): string {
-  const voci = sizes.split(',').map((v) => v.trim());
+  const voci = virgoleEsterne(sizes);
+  const hiDpi = '(min-resolution: 2.5dppx)';
   const ridotte = voci.map((v) => {
-    const m = v.match(/^(\(.*\))\s+(.+)$/);
+    // La lunghezza è l'ultimo termine; il resto, se c'è, è la condizione.
+    const m = v.match(/^(.*\))\s+([^\s()]+(?:\(.*\))?)$/);
     const [cond, len] = m ? [m[1], m[2]] : [undefined, v];
-    const hiDpi = '(min-resolution: 2.5dppx)';
-    return `${cond ? `${cond} and ${hiDpi}` : hiDpi} calc(${len} * 2 / 3)`;
+    // Fra parentesi: una condizione con `or`/`not` non si mescola ad `and`.
+    return `${cond ? `(${cond}) and ${hiDpi}` : hiDpi} calc(${len} * 2 / 3)`;
   });
   return [...ridotte, ...voci].join(', ');
+}
+
+/** Le voci di `sizes`, divise sulle virgole fuori dalle parentesi (min(), clamp()…). */
+function virgoleEsterne(s: string): string[] {
+  const voci: string[] = [];
+  let livello = 0;
+  let inizio = 0;
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '(') livello++;
+    else if (s[i] === ')') livello--;
+    else if (s[i] === ',' && livello === 0) {
+      voci.push(s.slice(inizio, i).trim());
+      inizio = i + 1;
+    }
+  }
+  voci.push(s.slice(inizio).trim());
+  return voci;
 }
 
 /** Risolve una foto (asset locale o URL Sanity) nelle sue sorgenti. */

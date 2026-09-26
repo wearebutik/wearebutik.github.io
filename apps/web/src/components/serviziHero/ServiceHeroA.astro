@@ -1,6 +1,7 @@
 ---
 import { fotoOPercorso } from '#lib/foto';
 import Foto from '#components/Foto.astro';
+import { placeholderStyle } from '#lib/lqip';
 import type { ImageMetadata } from 'astro';
 import type { ServiceHeroContent } from './types';
 import Eyebrow from '@butik/ui/Eyebrow';
@@ -10,8 +11,10 @@ interface Props {
   content: ServiceHeroContent;
   image: ImageMetadata | string;
   imageAlt?: string;
+  /** Segnaposto sfocato della foto (LQIP) finché non arriva. */
+  placeholder?: string;
 }
-const { content, image, imageAlt = '' } = Astro.props;
+const { content, image, imageAlt = '', placeholder } = Astro.props;
 // Asset locale o URL remoto (Sanity) passano dalla pipeline di Astro; un
 // percorso di public/ resta così com'è (vedi #lib/foto).
 const fotoHero = await fotoOPercorso(image, { widths: [800, 1200, 1600], sizes: '100vw' });
@@ -26,6 +29,7 @@ const fotoHero = await fotoOPercorso(image, { widths: [800, 1200, 1600], sizes: 
       loading="eager"
       fetchpriority="high"
       class="hero-media-img"
+      style={placeholderStyle(placeholder)}
       data-assesta
     />
     <!-- blend morbido verso il pannello scuro: dal basso su mobile, da sinistra su desktop -->
@@ -104,6 +108,12 @@ const fotoHero = await fotoOPercorso(image, { widths: [800, 1200, 1600], sizes: 
   }
 
   .hero-media-img {
+    /* Segnaposto sfocato (LQIP) finché la foto non arriva: stesso ritaglio
+       di object-fit: cover. */
+    background-image: var(--placeholder, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     position: absolute;
     inset: 0;
     height: 100%;

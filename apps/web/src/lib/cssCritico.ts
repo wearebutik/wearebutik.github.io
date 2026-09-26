@@ -2,7 +2,7 @@
 // file (/_astro/*.css, `inlineStylesheets: 'never'`); a fine build, per ogni
 // pagina, beasties lascia nella pagina solo le regole che corrispondono a un
 // elemento dell'HTML e carica i file completi senza bloccare il disegno
-// (media=print → all al load). I file restano interi: la seconda pagina, o
+// (rel=preload → stylesheet al load). I file restano interi: la seconda pagina, o
 // quella precaricata, trova in cache il CSS condiviso da tutte (token, reset,
 // header, footer, prose) invece di riceverlo di nuovo dentro l'HTML.
 import type { AstroIntegration } from 'astro';
@@ -40,7 +40,12 @@ export function cssCritico(): AstroIntegration {
         const beasties = new Beasties({
           path: root,
           publicPath: base,
-          preload: 'media',
+          // 'swap' (rel=preload → stylesheet al load) e non 'media': il
+          // ClientRouter, prima di mostrare la pagina nuova, aspetta che siano
+          // scaricati tutti i suoi rel=stylesheet che la pagina attuale non ha.
+          // Con il CSS critico già nella pagina l'attesa non serve, e su rete
+          // lenta costava centinaia di ms a ogni navigazione.
+          preload: 'swap',
           noscriptFallback: true,
           // Le <style> che Astro lascia nella pagina (keyframes generati,
           // stili is:inline) non si toccano: sono già solo di quella pagina.
@@ -55,9 +60,10 @@ export function cssCritico(): AstroIntegration {
         for (const file of await pagineHtml(root)) {
           const html = await readFile(file, 'utf8');
           const out = await beasties.process(html);
-          // Un foglio che beasties non trova resta <link> bloccante, senza CSS
-          // critico: meglio fermare il build che pubblicare la pagina più lenta.
-          const bloccanti = out.replace(/<noscript>.*?<\/noscript>/gs, '').match(/<link[^>]*rel="stylesheet"(?![^>]*media="print")[^>]*>/g);
+          // Un foglio che beasties non trova resta <link rel=stylesheet>
+          // bloccante, senza CSS critico: meglio fermare il build che pubblicare
+          // la pagina più lenta (e il ClientRouter lo aspetterebbe a ogni swap).
+          const bloccanti = out.replace(/<noscript>.*?<\/noscript>/gs, '').match(/<link[^>]*rel="stylesheet"[^>]*>/g);
           if (bloccanti) throw new Error(`css-critico: ${file.slice(root.length)} ha fogli bloccanti: ${bloccanti.join(' ')}`);
           await writeFile(file, out);
           prima += html.length;

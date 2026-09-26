@@ -57,7 +57,7 @@ const {
 // Il ritardo negativo mette ogni foto nella sua fase già al primo frame.
 const n = images.length;
 const fotoSlide = await Promise.all(
-  images.map((img) => foto(img.src, { widths: [768, 1280, 1920, 2560], sizes: '100vw' })),
+  images.map((img) => foto(img.src, { widths: [800, 1024, 1280, 1920, 2560], sizes: '100vw' })),
 );
 const cycle = n * SLIDE_S;
 const p = 100 / n;
@@ -125,7 +125,7 @@ const serviziItems = servizi.map((s) => ({
   </div>
   {/* Senza JS l'onload non gira e le foto differite non partono: resta la
       prima, mostrata subito e senza dissolvenza. */}
-  <noscript><style>.hero-slide-img { opacity: 1 !important; } .hero-slide:not(:first-child) { display: none; }</style></noscript>
+  <noscript><style>.hero-slide-img { opacity: 1 !important; } .hero-slide { animation: none !important; } .hero-slide:not(:first-child) { display: none; }</style></noscript>
 
   <!-- ── Overlay scuro per leggibilità ───────────────────────────────── -->
   <div class="hero-scrim" aria-hidden="true"></div>
@@ -506,9 +506,12 @@ const serviziItems = servizi.map((s) => ({
 
   document.addEventListener('astro:page-load', initHeroPausa);
 
-  // Le foto successive dello slideshow partono dopo il load (vedi <Foto differita>).
+  // Le foto successive dello slideshow partono dopo il load (vedi <Foto
+  // differita>). Con reduced-motion il loop non gira e resta la prima: le
+  // altre non servono.
   import { caricaFotoDifferite } from '#lib/fotoDifferite.client';
   document.addEventListener('astro:page-load', () => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const slides = document.querySelector('[data-hero-section] .hero-slides');
     if (slides) caricaFotoDifferite(slides);
   });

@@ -87,6 +87,11 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
   entrance flashes. A script that must reach `before-swap` lives in `BaseLayout`,
   loaded on every page: a component script only loads once its page is visited,
   after the swap it would need to act on.
+- **Downloads the browser would start too early** — photos that sit in the
+  viewport but are not shown yet (the home slideshow's later slides, transparent
+  until their turn) ignore `loading="lazy"`. `<Foto differita>` keeps their
+  `srcset`/`src` in `data-*`, and `lib/fotoDifferite.client.ts` restores them
+  after `load`. The script is idempotent and skips a root that was swapped out.
 - **Side effects outside the component** — the mobile menu in `Header.astro`
   locks page scroll, makes the page behind it `inert` and closes on Escape. A
   global side effect (`documentElement.style.overflow`) must be undone on
@@ -96,7 +101,8 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
   hover/focus (`prefetchAll`), which never happens on touch screens. A section
   that wants more marks its container with `data-prefetch="viewport"` (links
   are fetched when they enter the screen: card grids) or `data-prefetch="eager"`
-  (fetched once the page has loaded and the browser is idle: the home hero).
+  (fetched once the page has loaded and the browser is idle: the home hero and
+  the header, whose menu links would otherwise be fetched only on tap).
   The attribute goes on the container because catalogue links (`Button`,
   `ArrowLink`) do not forward attributes. `initPrefetch`
   (`apps/web/src/lib/prefetch.client.ts`) is armed by `BaseLayout` on every

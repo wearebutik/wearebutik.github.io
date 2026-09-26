@@ -46,8 +46,11 @@ don't constrain this choice.
 the built HTML:
 - `cssCritico.ts` (beasties) inlines the rules that match the page's elements,
   plus the states scripts add at runtime (`data-*`, `aria-*`, `[open]`, `.is-*`),
-  and loads the full files without blocking the first paint, so later pages find
-  the shared CSS in cache.
+  and loads the full files without blocking the first paint, as `rel=preload`
+  that turns into a stylesheet on load, so later pages find the shared CSS in
+  cache. Using `rel=preload` rather than `media=print` also keeps the ClientRouter
+  fast: before a swap it waits for every new `rel=stylesheet` of the incoming
+  page.
 - `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
   (the home hero), cut down to the characters they use.
 - `@font-face` rules are always inline (`styles/fonts.css`). They reach the text

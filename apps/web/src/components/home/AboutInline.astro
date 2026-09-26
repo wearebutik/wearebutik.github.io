@@ -20,7 +20,7 @@ interface Props {
 }
 
 const { title, p1, p2, p3, ctaLabel, ctaHref, image = heroHome, imageAlt } = Astro.props;
-const fotoAbout = await foto(image, { widths: [400, 700, 1000], sizes: '(max-width: 768px) 100vw, 50vw' });
+const fotoAbout = await foto(image, { widths: [400, 800, 1000], sizes: '(max-width: 768px) 100vw, 50vw' });
 ---
 
 <section class="about-inline">

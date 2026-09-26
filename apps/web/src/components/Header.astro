@@ -52,8 +52,12 @@ function isActive(href: string) {
   - il menu mobile è un <details>, disclosure nativa con semantica accessibile.
   Niente stato JS = niente da re-inizializzare a ogni navigazione.
 */}
+{/* data-prefetch="eager": le pagine del menu si scaricano dopo il load, a
+    browser fermo, così la navigazione principale è istantanea anche da
+    mobile, dove l'hover non c'è (lib/prefetch.client.ts). */}
 <header
   id="site-header"
+  data-prefetch="eager"
   data-overlay={overlay ? 'true' : 'false'}
   class:list={['site-header', overlay ? '' : 'site-header-solid']}
 >

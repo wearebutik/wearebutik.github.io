@@ -108,7 +108,7 @@ it.
   - Quality comes from the photo's role: hero or thumbnail.
   - `sizes` caps the density at 2×.
   - The AVIF encoder settings live in `astro.config.mjs` (`image.service`).
-  - The deploy workflow caches the optimized images (`node_modules/.astro/assets`), because AVIF makes a cold build several times slower.
+  - The deploy workflow caches the optimized images (`node_modules/.astro/assets`), because AVIF makes a cold build several times slower. Astro's cached file names do not account for the encoder settings: after changing `image.service`, delete `apps/web/node_modules/.astro/assets` locally.
 
   Logos and icons are not photos and keep `<Image>`.
 - **Image sizes** of Sanity images are read from the asset URL (`…-WxH.ext`,

@@ -15,7 +15,7 @@ const { progetti } = Astro.props;
 
 const fotoCard = await Promise.all(
   progetti.map((p) =>
-    foto(p.data.heroImage, { widths: [400, 700, 1000], sizes: '(max-width: 640px) 100vw, 50vw', ruolo: 'miniatura' }),
+    foto(p.data.heroImage, { widths: [400, 800, 1000], sizes: '(max-width: 640px) 100vw, 50vw', ruolo: 'miniatura' }),
   ),
 );
 ---
