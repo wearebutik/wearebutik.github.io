@@ -105,7 +105,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       </script>
     )}
 
-    <style is:inline set:html={fontFaces} />
+    {/* Inline, fuori dalla pipeline CSS di Vite: la base (/b/) va aggiunta qui. */}
+    <style is:inline set:html={fontFaces.replaceAll('url("/fonts/', `url("${BASE}/fonts/`)} />
     <!-- Preload font per spezzare la catena CSS → font -->
     <link rel="preload" href="/fonts/league-spartan-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/clear-sans-latin-400.woff2" as="font" type="font/woff2" crossorigin />

@@ -18,7 +18,10 @@ opensource. The site is static-first (ADR-0002), so consent is handled
 - **Cookie banner**: **`vanilla-cookieconsent` v3** (opensource,
   provider-agnostic). Configuration and init isolated in `src/lib/consent/`
   (config, init, wrapper), with a hook in the layout and a "cookie preferences"
-  button in the footer.
+  button in the footer. The banner's CSS loads only when the banner or the
+  preferences open. For that, `run()` starts with `autoShow: false` and our init
+  opens the banner itself when consent is missing, after loading the styles. It
+  skips bots and automated browsers, matching the library's `hideFromBots`.
 - **Categories**: `necessary` (readOnly, always on) and `analytics` (with
   `autoClear` of the provider's cookies). Further categories (e.g. `marketing`)
   are added if and when needed.

@@ -19,7 +19,7 @@ export async function lqip(src: string, logger?: { warn: (msg: string) => void }
   try {
     const url = new URL(src);
     url.searchParams.set('w', String(LATO * 4));
-    const res = await fetch(url);
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const { data, info } = await sharp(Buffer.from(await res.arrayBuffer()))
       .resize(LATO, LATO, { fit: 'inside' })

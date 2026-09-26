@@ -47,7 +47,6 @@ export function cssCritico(): AstroIntegration {
           reduceInlineStyles: false,
           pruneSource: false,
           allowRules: STATI,
-          fonts: true,
           keyframes: 'critical',
           logLevel: 'warn',
         });
@@ -56,6 +55,10 @@ export function cssCritico(): AstroIntegration {
         for (const file of await pagineHtml(root)) {
           const html = await readFile(file, 'utf8');
           const out = await beasties.process(html);
+          // Un foglio che beasties non trova resta <link> bloccante, senza CSS
+          // critico: meglio fermare il build che pubblicare la pagina più lenta.
+          const bloccanti = out.replace(/<noscript>.*?<\/noscript>/gs, '').match(/<link[^>]*rel="stylesheet"(?![^>]*media="print")[^>]*>/g);
+          if (bloccanti) throw new Error(`css-critico: ${file.slice(root.length)} ha fogli bloccanti: ${bloccanti.join(' ')}`);
           await writeFile(file, out);
           prima += html.length;
           dopo += out.length;

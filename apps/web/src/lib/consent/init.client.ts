@@ -14,13 +14,12 @@ import { consentConfig } from './config.client';
 
 let stili: Promise<void> | undefined;
 
-// Il <link> resta fra una pagina e l'altra (data-astro-transition-persist):
-// il ClientRouter altrimenti toglie dall'head ciò che la pagina nuova non ha.
+// Il ClientRouter toglie dall'head ciò che la pagina nuova non ha, compreso
+// questo <link>: se manca si rimette, il file è già in cache.
 function caricaStili(): Promise<void> {
   if (document.querySelector('link[data-cookieconsent-css]')) return stili ?? Promise.resolve();
   const link = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: cssUrl });
   link.dataset.cookieconsentCss = '';
-  link.dataset.astroTransitionPersist = 'cookieconsent-css';
   stili = new Promise((resolve) => {
     // Anche se il file non arriva il banner si apre: senza stili, ma il
     // consenso resta chiedibile.
