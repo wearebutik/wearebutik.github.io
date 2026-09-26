@@ -4,7 +4,7 @@
 // questa integrazione, a fine build, raccoglie i caratteri di quelle sezioni e
 // dell'header, ritaglia i font su quei soli caratteri (pochi KB) e li scrive
 // nella pagina come data: URI. Le facce aggiunte hanno gli stessi descrittori
-// di quelle di global.css e un unicode-range con i soli caratteri ritagliati:
+// di quelle di styles/fonts.css e un unicode-range con i soli caratteri ritagliati:
 // dichiarate dopo, vincono per quei caratteri, e il resto della pagina usa i
 // file completi come prima.
 import type { AstroIntegration } from 'astro';
@@ -15,12 +15,13 @@ import { parse } from 'node-html-parser';
 import subsetFont from 'subset-font';
 
 // Le facce che il testo in cima alla home usa davvero (misurato nel browser):
-// League Spartan solo a 700 (titoli, menu, pulsanti; il menu anche in
-// maiuscolo via CSS) e Clear Sans regolare (sottotitoli). League Spartan è un
-// font variabile: il ritaglio lo fissa a 700 e la faccia si dichiara a 700,
-// così gli altri pesi restano al file completo.
+// League Spartan (titoli, menu, pulsanti; il menu anche in maiuscolo via CSS)
+// e Clear Sans regolare (sottotitoli). League Spartan resta variabile e
+// dichiarato 100 900 come in fonts.css: fissato a 700 e dichiarato 700 pesa
+// ~5 KB in meno, ma con descrittori diversi il browser non compone le due
+// facce e il titolo dell'hero compariva ~300 ms più tardi (LCP, Slow 4G).
 const FACCE = [
-  { family: 'League Spartan', file: 'league-spartan-latin.woff2', weight: '700', asse: { wght: 700 }, maiuscole: true },
+  { family: 'League Spartan', file: 'league-spartan-latin.woff2', weight: '100 900', maiuscole: true },
   { family: 'Clear Sans', file: 'clear-sans-latin-400.woff2', weight: '400' },
 ];
 
@@ -71,10 +72,7 @@ export function fontCritici(): AstroIntegration {
             FACCE.map(async (f) => {
               // Il menu è in maiuscolo solo via CSS: l'HTML non lo dice.
               const chars = caratteri(f.maiuscole ? testo + testo.toUpperCase() : testo);
-              const woff2 = await subsetFont(sorgenti.get(f.file)!, chars, {
-                targetFormat: 'woff2',
-                ...(f.asse && { variationAxes: f.asse }),
-              });
+              const woff2 = await subsetFont(sorgenti.get(f.file)!, chars, { targetFormat: 'woff2' });
               return (
                 `@font-face{font-family:"${f.family}";font-style:normal;font-weight:${f.weight};font-display:swap;` +
                 `src:url(data:font/woff2;base64,${woff2.toString('base64')}) format("woff2");` +

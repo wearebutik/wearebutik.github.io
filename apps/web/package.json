@@ -39,6 +39,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "beasties": "^0.5.4",
     "node-html-parser": "^9.0.4",
     "satori": "^0.26.0",
     "subset-font": "^2.9.0"

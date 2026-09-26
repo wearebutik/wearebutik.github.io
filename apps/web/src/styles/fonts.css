@@ -1,0 +1,88 @@
+/* Font del sito: le facce vere e quelle di ripiego calibrate. BaseLayout le
+   scrive sempre nella pagina (import ?raw), non nel CSS in file: il CSS
+   critico (lib/cssCritico.ts) non sa che i font si usano, perché passano dai
+   token (var(--font-sans)), e le scarterebbe. */
+
+/* Font locali — nessuna dipendenza esterna */
+@font-face {
+  font-family: "Clear Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/clear-sans-latin-400.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Clear Sans";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/clear-sans-latin-400-italic.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Clear Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/clear-sans-latin-700.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "League Spartan";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/league-spartan-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Font di ripiego calibrati. Con font-display: swap il testo compare subito
+   in Arial e passa al font vero quando arriva: queste facce ridimensionano
+   Arial sulle metriche dei nostri font, così al cambio il testo non salta e
+   non va a capo in punti diversi. size-adjust pareggia la larghezza: per il
+   testo regolare è tarato misurando lo spostamento del testo al cambio font
+   su home, /progetti e /chi-siamo (mobile e desktop); gli override (divisi per size-adjust)
+   ricopiano ascent/descent dei file woff2 — per Clear Sans diversi fra 400 e
+   700. Senza Arial (Android) local() non trova niente e resta sans-serif. */
+@font-face {
+  font-family: "Clear Sans Fallback";
+  font-weight: 400;
+  src: local("Arial"), local("ArialMT");
+  size-adjust: 101.5%;
+  ascent-override: 99.48%;
+  descent-override: 32.18%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Clear Sans Fallback";
+  font-style: italic;
+  font-weight: 400;
+  src: local("Arial Italic"), local("Arial-ItalicMT");
+  size-adjust: 99.34%;
+  ascent-override: 103.91%;
+  descent-override: 32.88%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: "Clear Sans Fallback";
+  font-weight: 700;
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  size-adjust: 96.6%;
+  ascent-override: 111.5%;
+  descent-override: 33.82%;
+  line-gap-override: 0%;
+}
+
+/* League Spartan si usa quasi solo a 700 (titoli): una faccia sola, tarata lì. */
+@font-face {
+  font-family: "League Spartan Fallback";
+  font-weight: 100 900;
+  src: local("Arial Bold"), local("Arial-BoldMT");
+  size-adjust: 91.96%;
+  ascent-override: 76.12%;
+  descent-override: 23.92%;
+  line-gap-override: 0%;
+}
