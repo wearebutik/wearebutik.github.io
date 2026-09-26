@@ -7,9 +7,8 @@ import '../styles/reset.css';
 import '../styles/global.css';
 import '../styles/prose.css';
 import '../styles/motion.css';
-// Stili del cookie banner (ADR-0006). L'inizializzazione avviene lato client
-// nello <script> in fondo al layout.
-import 'vanilla-cookieconsent/dist/cookieconsent.css';
+// Gli stili del cookie banner (ADR-0006) si caricano solo quando il banner si
+// mostra: vedi lib/consent/init.client.ts.
 import { getImage } from 'astro:assets';
 import logo from '../assets/logos/bollo-rosso.svg';
 import { getAllOgCards, ogPngPathForRoute, normalizeRoute } from '../data/ogCards';
