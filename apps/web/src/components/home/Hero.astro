@@ -8,6 +8,7 @@ import ArrowLink from '@butik/ui/ArrowLink';
 import Underline from '@butik/ui/Underline';
 
 import { imageSize } from '#lib/media';
+import { placeholderStyle } from '#lib/lqip';
 
 // ── Foto di sfondo ──────────────────────────────────────────────────────
 // Foto a tutto sfondo da Sanity (pagina home), in loop con dissolvenza
@@ -30,7 +31,7 @@ interface ServizioCard {
 }
 
 interface Props {
-  images: { src: string; alt: string }[];
+  images: { src: string; alt: string; lqip?: string }[];
   title: string;
   subtitle: string;
   ctaLabel: string;
@@ -110,7 +111,7 @@ const serviziItems = servizi.map((s) => ({
         loading={i === 0 ? 'eager' : 'lazy'}
         fetchpriority={i === 0 ? 'high' : 'auto'}
         class="hero-slide"
-        style={slideStyle(i)}
+        style={[slideStyle(i), placeholderStyle(img.lqip)].filter(Boolean).join('; ') || undefined}
       />
     ))}
   </div>
@@ -187,6 +188,12 @@ const serviziItems = servizi.map((s) => ({
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Segnaposto sfocato (LQIP) finché la foto non arriva: stesso ritaglio
+       di object-fit: cover, e sfuma con la sua foto nel loop. */
+    background-image: var(--placeholder, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     opacity: 0;
     animation: hero-xfade var(--xfade-durata) linear var(--xfade-ritardo) infinite;
   }

@@ -122,7 +122,11 @@ const paginaHome = z.object({
   heroExploreLabel: z.string(),
   heroExploreHref: z.string(),
   // Foto di sfondo dell'hero, in loop. Facoltative: senza, fondo scuro.
-  heroImages: z.array(z.object({ src: z.string().url(), alt: z.string() })).optional().default([]),
+  // `lqip`: segnaposto sfocato calcolato dal loader, non un campo dello Studio.
+  heroImages: z
+    .array(z.object({ src: z.string().url(), alt: z.string(), lqip: z.string().optional() }))
+    .optional()
+    .default([]),
   // Numeri / impatto
   butikMetrics: z.array(metricSchema),
   mmwLabel: z.string(),

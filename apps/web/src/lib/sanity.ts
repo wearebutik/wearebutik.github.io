@@ -145,14 +145,20 @@ const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_
 type ConImmagine = Record<string, unknown>;
 
 export const pagineLoader = () =>
-  sanityLoader('pagine', PAGINE_QUERY, ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }) => ({
+  sanityLoader('pagine', PAGINE_QUERY, async ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }, logger) => ({
     ...rest,
     type: PAGINE_TYPE[_type as string],
     // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
+    // Le foto dell'hero della home portano anche il loro segnaposto (LQIP).
     ...(Array.isArray(rest.heroImages) && {
-      heroImages: (rest.heroImages as ConImmagine[])
-        .filter((i) => i.asset)
-        .map((i) => ({ src: imageUrl(i), alt: (i.alt as string) ?? '' })),
+      heroImages: await Promise.all(
+        (rest.heroImages as ConImmagine[])
+          .filter((i) => i.asset)
+          .map(async (i) => {
+            const src = imageUrl(i)!;
+            return { src, alt: (i.alt as string) ?? '', lqip: await lqip(src, logger) };
+          }),
+      ),
     }),
     ...(rest.heroImage !== undefined && { heroImage: imageUrl(rest.heroImage) }),
     ...(rest.aboutImage !== undefined && { aboutImage: imageUrl(rest.aboutImage) }),
