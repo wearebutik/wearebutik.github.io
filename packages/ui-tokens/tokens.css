@@ -47,9 +47,11 @@
   --color-highlight: var(--color-green);
 
   /* ── Typography ─────────────────────────────────────────────────────── */
-  --font-sans: "Clear Sans", sans-serif;
-  --font-heading: "League Spartan", sans-serif;
-  --font-display: "League Spartan", sans-serif;
+  /* I "Fallback" sono Arial calibrato sulle metriche del font, dichiarati dal sito
+     (apps/web/src/styles/fonts.css); dove mancano, come in Storybook, vale sans-serif. */
+  --font-sans: "Clear Sans", "Clear Sans Fallback", sans-serif;
+  --font-heading: "League Spartan", "League Spartan Fallback", sans-serif;
+  --font-display: "League Spartan", "League Spartan Fallback", sans-serif;
 
   /* Corpo minimo: sigilli, nomi dei partner, chip di filtro. */
   --font-size-2xs: 0.6875rem;

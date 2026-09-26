@@ -15,6 +15,9 @@ const serviziCollection = defineCollection({
     title: z.string(),
     subtitle: z.string(),
     heroImage: z.string().url(),
+    // Segnaposto sfocato della foto hero (data: URI), calcolato dal loader a
+    // build time: non è un campo dello Studio (vedi lib/lqip.ts).
+    heroLqip: z.string().optional(),
     heroAlt: z.string().optional().default(''),
     metaTitle: z.string().optional(),
     metaDescription: z.string().optional(),
@@ -66,6 +69,9 @@ const progettiCollection = defineCollection({
     title: z.string(),
     subtitle: z.string(),
     heroImage: z.string().url(),
+    // Segnaposto sfocato della foto hero (data: URI), calcolato dal loader a
+    // build time: non è un campo dello Studio (vedi lib/lqip.ts).
+    heroLqip: z.string().optional(),
     heroAlt: z.string().optional().default(''),
     client: z.string().optional(),
     year: z.number().optional(),
@@ -116,7 +122,11 @@ const paginaHome = z.object({
   heroExploreLabel: z.string(),
   heroExploreHref: z.string(),
   // Foto di sfondo dell'hero, in loop. Facoltative: senza, fondo scuro.
-  heroImages: z.array(z.object({ src: z.string().url(), alt: z.string() })).optional().default([]),
+  // `lqip`: segnaposto sfocato calcolato dal loader, non un campo dello Studio.
+  heroImages: z
+    .array(z.object({ src: z.string().url(), alt: z.string(), lqip: z.string().optional() }))
+    .optional()
+    .default([]),
   // Numeri / impatto
   butikMetrics: z.array(metricSchema),
   mmwLabel: z.string(),

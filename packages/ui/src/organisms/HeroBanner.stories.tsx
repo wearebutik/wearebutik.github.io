@@ -19,6 +19,23 @@ const brightSrc =
     '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"><rect width="1600" height="900" fill="#ffffff"/></svg>'
   );
 
+// Foto non ancora arrivata: un'immagine trasparente lascia vedere lo sfondo,
+// come fa il browser prima di aver disegnato la foto vera.
+const pendingSrc =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900"/>');
+
+// Un LQIP come quelli che il sito calcola a build time (lib/lqip.ts): qui una
+// miniatura disegnata a mano, con lo stesso filtro di sfocatura.
+const lqipSrc =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 11"><filter id="b"><feGaussianBlur stdDeviation="1"/>' +
+      '<feComponentTransfer><feFuncA type="discrete" tableValues="1 1"/></feComponentTransfer></filter>' +
+      '<g filter="url(#b)"><rect width="20" height="11" fill="#9db4c8"/><rect y="6" width="20" height="5" fill="#5f7a4e"/>' +
+      '<rect x="6" y="3" width="7" height="6" fill="#d9cbb2"/></g></svg>'
+  );
+
 const meta = {
   title: 'Organisms/HeroBanner',
   component: HeroBanner,
@@ -70,6 +87,21 @@ export const BrightImage: Story = {
   args: {
     src: brightSrc,
     subtitle: 'Un sottotitolo che espande il contesto in una riga o due.',
+  },
+};
+
+// Foto ancora in arrivo: si vede il segnaposto sfocato (prop `placeholder`),
+// con lo scrim che tiene il testo leggibile anche sopra di lui. È lo stato di
+// ogni hero di progetto e servizio su rete lenta.
+export const PlaceholderWhileLoading: Story = {
+  args: {
+    src: pendingSrc,
+    placeholder: lqipSrc,
+    subtitle: 'Un sottotitolo che espande il contesto in una riga o due.',
+  },
+  play: async ({ canvasElement }) => {
+    const img = canvasElement.querySelector<HTMLElement>('[data-hero-banner] img');
+    await expect(img?.style.getPropertyValue('--placeholder')).toContain('data:image/svg+xml');
   },
 };
 

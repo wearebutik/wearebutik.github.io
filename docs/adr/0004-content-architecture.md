@@ -76,6 +76,11 @@ it.
   URL: the `sanity-cdn-guard` integration (`apps/web/src/lib/sanityCdnGuard.ts`)
   scans `dist/` at the end of every build and fails it if the domain appears. This keeps public traffic off Sanity: on the Free plan there are no
   overages, and exceeding a quota blocks the project.
+  The one image that skips the pipeline is the **blurred placeholder (LQIP)**
+  of progetto and servizio hero photos and of the home hero slideshow: the loader downloads a small version
+  at build, shrinks it with `sharp` and inlines it in the HTML as a `data:`
+  URI (`apps/web/src/lib/lqip.ts`), so it is text in the page, never a URL.
+  A failed download leaves the placeholder out instead of failing the build.
 - **Publishing.** A publish in the Studio reaches the site through a new build
   and deploy: a Sanity webhook on published documents in `production` calls
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs

@@ -5,6 +5,8 @@ import react from '@astrojs/react';
 import { sanityCdnGuard } from './src/lib/sanityCdnGuard.ts';
 import { basePath } from './src/lib/basePath.ts';
 import { pagineGuard } from './src/lib/pagineGuard.ts';
+import { fontCritici } from './src/lib/fontCritici.ts';
+import { cssCritico } from './src/lib/cssCritico.ts';
 
 // Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
 // (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
@@ -17,8 +19,10 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true,
   },
+  // CSS in file esterni: nella pagina resta solo quello critico, estratto a
+  // fine build (src/lib/cssCritico.ts); i file completi restano in cache.
   build: {
-    inlineStylesheets: 'always',
+    inlineStylesheets: 'never',
   },
   image: {
     // Il BaseLayout rasterizza il logo SVG → PNG (getImage, format 'png') per la
@@ -32,5 +36,5 @@ export default defineConfig({
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
-  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), pagineGuard()],
+  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), pagineGuard(), cssCritico(), fontCritici()],
 });

@@ -25,10 +25,22 @@ export interface HeroBannerProps {
   imageAlt?: string;
   /** Nome della view transition Astro (morph tra pagine); opzionale. */
   transitionName?: string;
+  /**
+   * Segnaposto mostrato sotto la foto finché non arriva: di solito l'LQIP
+   * (miniatura sfocata come data: URI) calcolato dal chiamante a build time.
+   */
+  placeholder?: string;
 }
 
 function transitionStyle(name?: string): CSSProperties | undefined {
   return name ? ({ viewTransitionName: name } as CSSProperties) : undefined;
+}
+
+// Il segnaposto è lo sfondo della foto stessa, in una custom property: il sito
+// può anteporgli un altro livello (la foto della card già in cache, vedi
+// BaseLayout) senza conoscerne il resto.
+function placeholderStyle(placeholder?: string): CSSProperties | undefined {
+  return placeholder ? ({ '--placeholder': `url("${placeholder}")` } as CSSProperties) : undefined;
 }
 
 export default function HeroBanner({
@@ -41,6 +53,7 @@ export default function HeroBanner({
   height,
   imageAlt = '',
   transitionName,
+  placeholder,
 }: HeroBannerProps) {
   return (
     <section className={styles.hero} data-hero-banner>
@@ -55,7 +68,7 @@ export default function HeroBanner({
           loading="eager"
           fetchPriority="high"
           className={styles.image}
-          style={transitionStyle(transitionName)}
+          style={{ ...transitionStyle(transitionName), ...placeholderStyle(placeholder) }}
         />
       </div>
 

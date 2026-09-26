@@ -29,8 +29,10 @@ interface Props {
   image: ImageMetadata | string;
   imageAlt?: string;
   transitionName?: string;
+  /** Segnaposto sfocato della foto (LQIP): per ora solo il banner lo usa. */
+  placeholder?: string;
 }
-const { variant, content, title, subtitle, image, imageAlt = '', transitionName } = Astro.props;
+const { variant, content, title, subtitle, image, imageAlt = '', transitionName, placeholder } = Astro.props;
 
 // Senza contenuti hero dedicati le varianti A/B/C non hanno cosa mostrare:
 // si ricade sul banner invece di rendere una sezione vuota.
@@ -44,6 +46,7 @@ const resolved = variant !== 'banner' && !content ? 'banner' : variant;
     image={image}
     imageAlt={imageAlt}
     transitionName={transitionName}
+    placeholder={placeholder}
   />
 )}
 

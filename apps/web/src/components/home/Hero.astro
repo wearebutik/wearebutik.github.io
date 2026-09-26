@@ -8,6 +8,8 @@ import ArrowLink from '@butik/ui/ArrowLink';
 import Underline from '@butik/ui/Underline';
 
 import { imageSize } from '#lib/media';
+import { placeholderStyle } from '#lib/lqip';
+import { stili } from '#lib/viewTransition';
 
 // ── Foto di sfondo ──────────────────────────────────────────────────────
 // Foto a tutto sfondo da Sanity (pagina home), in loop con dissolvenza
@@ -30,7 +32,7 @@ interface ServizioCard {
 }
 
 interface Props {
-  images: { src: string; alt: string }[];
+  images: { src: string; alt: string; lqip?: string }[];
   title: string;
   subtitle: string;
   ctaLabel: string;
@@ -92,6 +94,8 @@ const serviziItems = servizi.map((s) => ({
 <section
   class="hero hero-minh"
   data-hero-section
+  data-prefetch="eager"
+  data-font-critici
   data-hero
 >
 
@@ -99,20 +103,26 @@ const serviziItems = servizi.map((s) => ({
   {keyframes && <style is:inline set:html={keyframes} />}
   <div class="hero-slides" aria-hidden="true" data-assesta>
     {images.map((img, i) => (
-      <Image
-        src={img.src}
-        {...imageSize(img.src)}
-        alt=""
-        widths={[768, 1280, 1920, 2560]}
-        sizes="100vw"
-        quality={72}
-        loading={i === 0 ? 'eager' : 'lazy'}
-        fetchpriority={i === 0 ? 'high' : 'auto'}
-        class="hero-slide"
-        style={slideStyle(i)}
-      />
+      <div class="hero-slide" style={stili(slideStyle(i), placeholderStyle(img.lqip))}>
+        {/* onload inline: l'evento arriva anche se la foto è già in cache o
+            finisce prima che parta un modulo JS. Vedi .hero-slide-img. */}
+        <Image
+          src={img.src}
+          {...imageSize(img.src)}
+          alt=""
+          widths={[768, 1280, 1920, 2560]}
+          sizes="100vw"
+          quality={72}
+          loading={i === 0 ? 'eager' : 'lazy'}
+          fetchpriority={i === 0 ? 'high' : 'auto'}
+          class="hero-slide-img"
+          onload="this.dataset.caricata=''"
+        />
+      </div>
     ))}
   </div>
+  {/* Senza JS l'onload non gira: la foto si mostra subito, senza dissolvenza. */}
+  <noscript><style>.hero-slide-img { opacity: 1 !important; }</style></noscript>
 
   <!-- ── Overlay scuro per leggibilità ───────────────────────────────── -->
   <div class="hero-scrim" aria-hidden="true"></div>
@@ -180,14 +190,34 @@ const serviziItems = servizi.map((s) => ({
     position: absolute;
     inset: 0;
   }
+  /* Ogni foto è un livello del loop: il contenitore porta la dissolvenza
+     incrociata e il segnaposto sfocato (LQIP), la foto vera ci appare sopra
+     con una dissolvenza sua quando è arrivata (data-caricata, dall'onload). */
   .hero-slide {
     position: absolute;
     inset: 0;
+    background-image: var(--placeholder, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    animation: hero-xfade var(--xfade-durata) linear var(--xfade-ritardo) infinite;
+  }
+  .hero-slide-img {
+    display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0;
-    animation: hero-xfade var(--xfade-durata) linear var(--xfade-ritardo) infinite;
+    transition: opacity var(--duration-slower) var(--ease-standard);
+  }
+  .hero-slide-img[data-caricata] {
+    opacity: 1;
+  }
+  /* Tornando in home con il router la foto è in cache: niente dissolvenza,
+     come per il resto dell'entrata (BaseLayout, data-entrata-saltata). */
+  :global(html[data-entrata-saltata]) .hero-slide-img {
+    transition: none;
   }
   /* Senza animazione (reduced-motion, o una sola foto) resta la prima. */
   .hero-slide:first-child {
@@ -196,6 +226,9 @@ const serviziItems = servizi.map((s) => ({
   @media (prefers-reduced-motion: reduce) {
     .hero-slide {
       animation: none !important;
+    }
+    .hero-slide-img {
+      transition: none;
     }
   }
   /* Il loop si ferma (WCAG 2.2.2), come il marquee dei partner: con il fuoco

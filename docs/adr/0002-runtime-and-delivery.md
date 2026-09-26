@@ -41,6 +41,21 @@ Cookie consent and analytics stay **client-side** (see
 [ADR-0006](./0006-analytics-and-consent.md)), so they need no server runtime and
 don't constrain this choice.
 
+**What ships in the page is decided at build.** Astro writes CSS to files
+(`inlineStylesheets: 'never'`), and integrations in `apps/web/src/lib/` rewrite
+the built HTML:
+- `cssCritico.ts` (beasties) inlines the rules that match the page's elements,
+  plus the states scripts add at runtime (`data-*`, `aria-*`, `[open]`, `.is-*`),
+  and loads the full files without blocking the first paint, so later pages find
+  the shared CSS in cache.
+- `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
+  (the home hero), cut down to the characters they use.
+- `@font-face` rules are always inline (`styles/fonts.css`). They reach the text
+  through tokens (`var(--font-sans)`), which the critical-CSS pass cannot follow.
+- The cookie banner's CSS loads only when the banner or the preferences open.
+
+Every step works on static files, with no runtime on the host.
+
 ## Alternatives considered
 
 ### Migrate everything to Cloudflare Pages/Workers with an SSR adapter
