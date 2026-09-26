@@ -48,9 +48,13 @@ the built HTML:
   plus the states scripts add at runtime (`data-*`, `aria-*`, `[open]`, `.is-*`),
   and loads the full files without blocking the first paint, as `rel=preload`
   that turns into a stylesheet on load, so later pages find the shared CSS in
-  cache. Using `rel=preload` rather than `media=print` also keeps the ClientRouter
-  fast: before a swap it waits for every new `rel=stylesheet` of the incoming
-  page.
+  cache. The ClientRouter waits for every new `rel=stylesheet` of the incoming
+  page before a swap. It does not wait for `rel=preload`, so navigations swap
+  as soon as the HTML is there.
+- `linkConBarra.ts` rewrites internal `<a href>` values that point to a page
+  to their trailing-slash form. GitHub Pages redirects `/servizi` to `/servizi/`
+  with a 301, which would cost a network round trip on every navigation and
+  prefetch. It runs after `basePath`, so it sees the `/b/` prefix.
 - `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
   (the home hero), cut down to the characters they use.
 - `@font-face` rules are always inline (`styles/fonts.css`). They reach the text

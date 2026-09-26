@@ -154,5 +154,8 @@
   ::view-transition-old(*):only-child,
   ::view-transition-new(*):only-child {
     animation-duration: var(--duration-base);
+    /* Non la molla del gruppo: sull'opacità il picco oltre 1 si taglia e la
+       dissolvenza diventa uno scatto. */
+    animation-timing-function: var(--ease-out);
   }
 }

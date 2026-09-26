@@ -41,15 +41,19 @@ export function linkConBarra(): AstroIntegration {
         let corretti = 0;
         for (const file of await pagineHtml(root)) {
           const html = await readFile(file, 'utf8');
-          // href interni (non //host) senza barra finale né estensione.
+          // href interni (non //host) senza barra finale né estensione; solo
+          // l'attributo href, non data-href o xlink:href.
           const percorsi = new Set(
-            [...html.matchAll(/<a\s[^>]*?href="(\/(?!\/)[^"?#]*?[^/"?#])(?:[?#][^"]*)?"/g)].map((m) => m[1]),
+            [...html.matchAll(/<a\s(?:[^>]*?\s)?href="(\/(?!\/)[^"?#]*?[^/"?#])(?:[?#][^"]*)?"/g)].map((m) => m[1]),
           );
           let out = html;
           for (const percorso of percorsi) {
             if (/\.[a-z0-9]+$/i.test(percorso) || !(await pagina(percorso))) continue;
             const prima = out;
-            out = out.replace(new RegExp(`(<a\\s[^>]*?href=")${percorso.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([?#"])`, 'g'), `$1${percorso}/$2`);
+            out = out.replace(
+              new RegExp(`(<a\\s(?:[^>]*?\\s)?href=")${percorso.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([?#"])`, 'g'),
+              (_, prima: string, dopo: string) => `${prima}${percorso}/${dopo}`,
+            );
             if (out !== prima) corretti++;
           }
           if (out !== html) await writeFile(file, out);

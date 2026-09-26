@@ -15,9 +15,11 @@ import { fileURLToPath } from 'node:url';
 // script aggiungono a runtime (foto arrivata, header allo scroll, entrate,
 // pausa del loop, carosello, filtri) e il menu mobile aperto (<details open>).
 // Senza di loro nel CSS critico un elemento resterebbe nel suo stato iniziale
-// — anche nascosto — finché non arriva il file completo. data-astro-cid-* no: è lo scoping di Astro, già
-// presente nell'HTML.
-const STATI = [/\[data-(?!astro-cid)/, /\[aria-/, /\[open\]/, /\.is-[a-z]/, /--(?:active|inactive)\b/, /\.hidden\b/, /\.text-butik-/];
+// — anche nascosto — finché non arriva il file completo. data-astro-cid-* no:
+// è lo scoping di Astro, già presente nell'HTML. Le regole ::view-transition-*
+// (motion.css) non corrispondono a nessun elemento ma servono a ogni
+// navigazione: stanno sempre nella pagina, senza dipendere dal file completo.
+const STATI = [/::view-transition/, /\[data-(?!astro-cid)/, /\[aria-/, /\[open\]/, /\.is-[a-z]/, /--(?:active|inactive)\b/, /\.hidden\b/, /\.text-butik-/];
 
 async function pagineHtml(dir: string): Promise<string[]> {
   const out: string[] = [];
