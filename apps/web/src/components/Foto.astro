@@ -1,0 +1,35 @@
+---
+/*
+ * Foto — <picture> con le sorgenti di #lib/foto (AVIF, poi WebP). Gli altri
+ * attributi (class, style, loading, onload, data-*…) vanno all'<img>, che resta
+ * l'elemento che si stila e si misura: <picture> ha display: contents e non
+ * entra nel layout.
+ *
+ * `differita`: srcset e src restano in data-* e non si scaricano finché uno
+ * script non li rimette (vedi l'hero della home, lib/fotoDifferite.client.ts).
+ */
+import type { HTMLAttributes } from 'astro/types';
+import type { Foto } from '#lib/foto';
+
+interface Props extends Omit<HTMLAttributes<'img'>, 'src' | 'srcset' | 'sizes'> {
+  foto: Foto;
+  alt: string;
+  differita?: boolean;
+}
+
+const { foto, alt, differita = false, ...img } = Astro.props;
+const attr = (nome: 'srcset' | 'src') => (differita ? `data-${nome}` : nome);
+---
+
+<picture style="display: contents">
+  {foto.sources.map((s) => <source type={s.type} sizes={foto.sizes} {...{ [attr('srcset')]: s.srcSet }} />)}
+  <img
+    {...img}
+    {...{ [attr('src')]: foto.src }}
+    sizes={foto.sizes}
+    width={foto.width}
+    height={foto.height}
+    alt={alt}
+    decoding={img.decoding ?? 'async'}
+  />
+</picture>

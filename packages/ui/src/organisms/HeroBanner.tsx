@@ -13,6 +13,7 @@
  */
 import type { CSSProperties } from 'react';
 import styles from './HeroBanner.module.css';
+import Picture, { type ImageSource } from '../lib/Picture';
 
 export interface HeroBannerProps {
   title: string;
@@ -30,6 +31,9 @@ export interface HeroBannerProps {
    * (miniatura sfocata come data: URI) calcolato dal chiamante a build time.
    */
   placeholder?: string;
+  /** Sorgenti per formato (es. AVIF, poi WebP) risolte dal chiamante: con
+   *  queste l'immagine è un <picture>; `src`/`srcSet` restano la riserva. */
+  sources?: ImageSource[];
 }
 
 function transitionStyle(name?: string): CSSProperties | undefined {
@@ -54,11 +58,13 @@ export default function HeroBanner({
   imageAlt = '',
   transitionName,
   placeholder,
+  sources,
 }: HeroBannerProps) {
   return (
     <section className={styles.hero} data-hero-banner>
       <div className={styles.imageWrap}>
-        <img
+        <Picture
+          sources={sources}
           src={src}
           srcSet={srcSet}
           sizes={sizes}

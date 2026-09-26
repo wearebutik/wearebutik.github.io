@@ -11,6 +11,7 @@
  */
 import { useRef, useState } from 'react';
 import styles from './ImageCarousel.module.css';
+import Picture, { type ImageSource } from '../lib/Picture';
 
 export interface CarouselImage {
   src: string;
@@ -20,6 +21,9 @@ export interface CarouselImage {
   height?: number;
   alt?: string;
   caption?: string;
+  /** Sorgenti per formato (es. AVIF, poi WebP) risolte dal chiamante: con
+   *  queste l'immagine è un <picture>; `src`/`srcSet` restano la riserva. */
+  sources?: ImageSource[];
 }
 
 export interface ImageCarouselProps {
@@ -84,7 +88,8 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
               {/* Sfondo: la stessa foto, sfocata, riempie lo spazio attorno
                   a una foto che non ne ha le proporzioni (es. verticale).
                   Stesso src/srcSet: il browser la scarica una volta sola. */}
-              <img
+              <Picture
+                sources={img.sources}
                 src={img.src}
                 srcSet={img.srcSet}
                 sizes={img.sizes}
@@ -92,7 +97,8 @@ export default function ImageCarousel({ images }: ImageCarouselProps) {
                 aria-hidden="true"
                 className={styles.backdrop}
               />
-              <img
+              <Picture
+                sources={img.sources}
                 src={img.src}
                 srcSet={img.srcSet}
                 sizes={img.sizes}

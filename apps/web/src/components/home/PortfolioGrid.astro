@@ -1,8 +1,8 @@
 ---
-import { imageSize } from '#lib/media';
 import { placeholderStyle } from '#lib/lqip';
 import { stili, vtName } from '#lib/viewTransition';
-import { Image } from 'astro:assets';
+import Foto from '#components/Foto.astro';
+import { foto } from '#lib/foto';
 import type { CollectionEntry } from 'astro:content';
 import SectionHeading from '@butik/ui/SectionHeading';
 import Button from '@butik/ui/Button';
@@ -12,6 +12,12 @@ interface Props {
 }
 
 const { progetti } = Astro.props;
+
+const fotoCard = await Promise.all(
+  progetti.map((p) =>
+    foto(p.data.heroImage, { widths: [400, 700, 1000], sizes: '(max-width: 640px) 100vw, 50vw', ruolo: 'miniatura' }),
+  ),
+);
 ---
 
 {progetti.length > 0 && (
@@ -25,19 +31,15 @@ const { progetti } = Astro.props;
       </div>
 
       <div class="portfolio-grid" data-reveal-group data-prefetch="viewport">
-        {progetti.map((p) => (
+        {progetti.map((p, i) => (
           <a
             href={`/progetti/${p.id}`}
             class="portfolio-card"
             aria-label={p.data.title}
           >
-            <Image
-              src={p.data.heroImage}
-              {...imageSize(p.data.heroImage)}
+            <Foto
+              foto={fotoCard[i]}
               alt={p.data.heroAlt}
-              widths={[400, 700, 1000]}
-              sizes="(max-width: 640px) 100vw, 50vw"
-              quality={72}
               loading="lazy"
               class="portfolio-card-image"
               style={stili(placeholderStyle(p.data.heroLqip), vtName(`progetto-${p.id}`))}

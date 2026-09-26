@@ -137,3 +137,26 @@ export const BrightImageCaption: Story = {
     ],
   },
 };
+
+// Con `sources` (AVIF, poi WebP, risolti dal sito con #lib/foto) ogni foto,
+// sfondo sfocato compreso, è un <picture>. A video non cambia nulla rispetto a
+// ThreeSlides: è un test, non uno specimen.
+export const WithSources: Story = {
+  args: {
+    images: sampleImages.map((img) => ({
+      ...img,
+      sources: [
+        { type: 'image/avif', srcSet: `${img.src} 1600w` },
+        { type: 'image/webp', srcSet: `${img.src} 1600w` },
+      ],
+    })),
+  },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const pictures = canvasElement.querySelectorAll('picture');
+    // Due per foto: lo sfondo sfocato e la foto.
+    await expect(pictures.length).toBe(sampleImages.length * 2);
+    const tipi = [...pictures[0].querySelectorAll('source')].map((s) => s.getAttribute('type'));
+    await expect(tipi).toEqual(['image/avif', 'image/webp']);
+  },
+};

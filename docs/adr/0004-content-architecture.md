@@ -103,6 +103,14 @@ it.
   the containing element keeps the page's scoped styles; legal bodies keep the
   heading ids Markdown used to generate, and the Cookie Policy heading keeps the
   fixed `#cookie` anchor the consent banner links to.
+- **Photos go through `apps/web/src/lib/foto.ts`**:
+  - Every photo ships as AVIF with a WebP fallback, in a `<picture>`: `Foto.astro` in pages, and the `sources` prop of the `@butik/ui` components that show photos.
+  - Quality comes from the photo's role: hero or thumbnail.
+  - `sizes` caps the density at 2×.
+  - The AVIF encoder settings live in `astro.config.mjs` (`image.service`).
+  - The deploy workflow caches the optimized images (`node_modules/.astro/assets`), because AVIF makes a cold build several times slower.
+
+  Logos and icons are not photos and keep `<Image>`.
 - **Image sizes** of Sanity images are read from the asset URL (`…-WxH.ext`,
   `imageSize()` in `apps/web/src/lib/media.ts`), not fetched with `inferSize`:
   one network error would otherwise fail the build.

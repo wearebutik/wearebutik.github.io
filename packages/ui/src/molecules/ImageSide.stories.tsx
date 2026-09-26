@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
+import { expect } from 'storybook/test';
 // Storie di ImageSide: la figura è la stessa a sinistra e a destra (il lato è
 // l'ordine nel wrapper .astro), quindi le storie non hanno una variante di lato.
 import ImageSide from './ImageSide';
@@ -60,5 +61,19 @@ export const Portrait: Story = {
     width: 900,
     height: 1600,
     caption: 'Ritratto: sorgente 9:16 nella colonna immagine.',
+  },
+};
+
+// Con `sources` (AVIF, poi WebP, risolti dal sito con #lib/foto) l'immagine è
+// un <picture>: il browser prende la prima sorgente che sa leggere. A video non
+// cambia nulla rispetto a WithCaption: è un test, non uno specimen.
+export const WithSources: Story = {
+  ...WithCaption,
+  args: { ...WithCaption.args, sources: [{ type: 'image/avif', srcSet: `${placeholderSrc} 1600w` }, { type: 'image/webp', srcSet: `${placeholderSrc} 1600w` }] },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const tipi = [...canvasElement.querySelectorAll('picture source')].map((s) => s.getAttribute('type'));
+    await expect(tipi.slice(0, 2)).toEqual(['image/avif', 'image/webp']);
+    await expect(canvasElement.querySelector('picture img')).not.toBeNull();
   },
 };

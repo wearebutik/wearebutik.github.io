@@ -9,6 +9,7 @@
  * 2026-07-21.
  */
 import styles from './ImageSide.module.css';
+import Picture, { type ImageSource } from '../lib/Picture';
 
 export interface ImageSideProps {
   src: string;
@@ -18,6 +19,9 @@ export interface ImageSideProps {
   height?: number;
   alt?: string;
   caption?: string;
+  /** Sorgenti per formato (es. AVIF, poi WebP) risolte dal chiamante: con
+   *  queste l'immagine è un <picture>; `src`/`srcSet` restano la riserva. */
+  sources?: ImageSource[];
 }
 
 export default function ImageSide({
@@ -28,10 +32,12 @@ export default function ImageSide({
   height,
   alt = '',
   caption,
+  sources,
 }: ImageSideProps) {
   return (
     <figure className={styles.figure}>
-      <img
+      <Picture
+        sources={sources}
         src={src}
         srcSet={srcSet}
         sizes={sizes}

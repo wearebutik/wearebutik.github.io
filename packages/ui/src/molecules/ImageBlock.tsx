@@ -8,6 +8,7 @@
  * 2026-07-21.
  */
 import styles from './ImageBlock.module.css';
+import Picture, { type ImageSource } from '../lib/Picture';
 
 export interface ImageBlockProps {
   src: string;
@@ -17,6 +18,9 @@ export interface ImageBlockProps {
   height?: number;
   alt?: string;
   caption?: string;
+  /** Sorgenti per formato (es. AVIF, poi WebP) risolte dal chiamante: con
+   *  queste l'immagine è un <picture>; `src`/`srcSet` restano la riserva. */
+  sources?: ImageSource[];
 }
 
 export default function ImageBlock({
@@ -27,13 +31,15 @@ export default function ImageBlock({
   height,
   alt = '',
   caption,
+  sources,
 }: ImageBlockProps) {
   return (
     <figure className={styles.figure}>
       {/* Il ritaglio ad altezza fissa vive sul contenitore dell'immagine, non
           sulla figure: sulla figure ritagliava via anche la didascalia. */}
       <div className={styles.frame}>
-        <img
+        <Picture
+          sources={sources}
           src={src}
           srcSet={srcSet}
           sizes={sizes}

@@ -25,6 +25,13 @@ export default defineConfig({
     inlineStylesheets: 'never',
   },
   image: {
+    // AVIF (vedi src/lib/foto.ts): crominanza 4:2:0 ed effort 6 invece dei
+    // default di sharp (4:4:4, 4). A parità di resa (SSIM, foto del sito a
+    // 1200 px) l'AVIF così pesa ~22% meno del WebP; con i default ~0%.
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: { avif: { chromaSubsampling: '4:2:0', effort: 6 } },
+    },
     // Il BaseLayout rasterizza il logo SVG → PNG (getImage, format 'png') per la
     // card OG. Da Astro 6.4 la rasterizzazione SVG è disabilitata di default:
     // la riabilitiamo esplicitamente perché è un uso voluto e controllato
