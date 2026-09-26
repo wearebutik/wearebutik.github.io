@@ -151,3 +151,29 @@ export const WithTransitionName: Story = {
     await expect(subtitle?.style.viewTransitionName).toBe('progetto-esempio-subtitle');
   },
 };
+
+// Con `sources` (AVIF, poi WebP, risolti dal sito con #lib/foto) l'immagine è
+// un <picture>: il browser prende la prima sorgente che sa leggere. A video non
+// cambia nulla rispetto a WithSubtitle: è un test, non uno specimen.
+export const WithSources: Story = {
+  ...WithSubtitle,
+  args: {
+    ...WithSubtitle.args,
+    sources: [
+      { type: 'image/avif', srcSet: `${placeholderSrc} 1600w` },
+      { type: 'image/webp', srcSet: `${placeholderSrc} 1600w` },
+    ],
+    // Il sito li usa insieme: il morph (BaseLayout) cerca nome e segnaposto
+    // sull'<img>, che col <picture> non è più figlio diretto del contenitore.
+    transitionName: 'progetto-esempio',
+    placeholder: lqipSrc,
+  },
+  parameters: { chromatic: { disableSnapshot: true } },
+  play: async ({ canvasElement }) => {
+    const tipi = [...canvasElement.querySelectorAll('picture source')].map((s) => s.getAttribute('type'));
+    await expect(tipi.slice(0, 2)).toEqual(['image/avif', 'image/webp']);
+    const img = canvasElement.querySelector<HTMLElement>('[data-hero-banner] picture img');
+    await expect(img?.style.viewTransitionName).toBe('progetto-esempio');
+    await expect(img?.style.getPropertyValue('--placeholder')).toContain('data:image/svg+xml');
+  },
+};

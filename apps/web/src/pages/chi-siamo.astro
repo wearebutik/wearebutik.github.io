@@ -1,11 +1,11 @@
 ---
-import { imageSize } from '#lib/media';
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import HeroBanner from '#components/HeroBanner.astro';
 import CtaBanner from '#components/CtaBanner.astro';
 import Testimonials from '#components/home/Testimonials.astro';
-import { Image } from 'astro:assets';
+import Foto from '#components/Foto.astro';
+import { foto } from '#lib/foto';
 import { richTextHtml } from '#lib/richText';
 
 import heroImg from '#assets/hero-home.jpg';
@@ -32,6 +32,9 @@ const testimonials = testimonialsEntry.data;
 // Founder come ARRAY dalla collezione: nome/ruolo/bio/email/linkedin + foto
 // (URL Sanity, scaricato e ottimizzato da Astro in build).
 const founders = c.founders;
+const fotoFondatori = await Promise.all(
+  founders.map((f) => (f.photo ? foto(f.photo, { widths: [300, 500], sizes: '(max-width: 768px) 100vw, 33vw' }) : undefined)),
+);
 
 // Obiettivi di Sviluppo Sostenibile (Agenda ONU 2030): num + titolo sono copy
 // editoriale (array in collezione); colore/icona restano config di design qui —
@@ -144,19 +147,11 @@ import { isLinkSegnaposto } from '#lib/links';
     </div>
 
     <div class="founders-grid" data-reveal-group>
-      {founders.map((f) => (
+      {founders.map((f, i) => (
         <article class="founder-card">
           <div class="founder-photo">
-            {f.photo && (
-              <Image
-                src={f.photo}
-                {...imageSize(f.photo)}
-                alt={`Ritratto di ${f.name}`}
-                widths={[300, 500]}
-                sizes="(max-width: 768px) 100vw, 33vw"
-                quality={72}
-                class="founder-photo-img"
-              />
+            {fotoFondatori[i] && (
+              <Foto foto={fotoFondatori[i]} alt={`Ritratto di ${f.name}`} loading="lazy" class="founder-photo-img" />
             )}
           </div>
           <h2 class="founder-name">{f.name}</h2>

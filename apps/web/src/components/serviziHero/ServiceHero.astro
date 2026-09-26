@@ -29,7 +29,7 @@ interface Props {
   image: ImageMetadata | string;
   imageAlt?: string;
   transitionName?: string;
-  /** Segnaposto sfocato della foto (LQIP): per ora solo il banner lo usa. */
+  /** Segnaposto sfocato della foto (LQIP), per il banner e le varianti A e C. */
   placeholder?: string;
 }
 const { variant, content, title, subtitle, image, imageAlt = '', transitionName, placeholder } = Astro.props;
@@ -50,6 +50,6 @@ const resolved = variant !== 'banner' && !content ? 'banner' : variant;
   />
 )}
 
-{resolved === 'a' && content && <ServiceHeroA content={content} image={image} imageAlt={imageAlt} />}
+{resolved === 'a' && content && <ServiceHeroA content={content} image={image} imageAlt={imageAlt} placeholder={placeholder} />}
 {resolved === 'b' && content && <ServiceHeroB content={content} image={image} imageAlt={imageAlt} />}
-{resolved === 'c' && content && <ServiceHeroC content={content} image={image} imageAlt={imageAlt} />}
+{resolved === 'c' && content && <ServiceHeroC content={content} image={image} imageAlt={imageAlt} placeholder={placeholder} />}

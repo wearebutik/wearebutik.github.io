@@ -7,9 +7,8 @@
  * `side="right"` il testo viene prima della figura — così anche lettori di
  * schermo e mobile (una colonna) seguono l'ordine che si vede.
  */
-import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-import { imageSize, isRemote } from '#lib/media';
+import { fotoOPercorso } from '#lib/foto';
 import ImageSide from '@butik/ui/ImageSide';
 
 interface Props {
@@ -23,25 +22,7 @@ interface Props {
 const { src, alt = '', caption, side = 'left' } = Astro.props;
 const resolved = src;
 
-const resolvedImg =
-  typeof resolved === 'string' && !isRemote(resolved)
-    ? { src: resolved, srcSet: undefined, sizes: undefined, width: undefined, height: undefined }
-    : await (async () => {
-        const img = await getImage({
-          src: resolved,
-          ...imageSize(resolved),
-          widths: [400, 800],
-          sizes: '(max-width: 768px) 100vw, 50vw',
-          quality: 72,
-        });
-        return {
-          src: img.src,
-          srcSet: img.srcSet.attribute,
-          sizes: '(max-width: 768px) 100vw, 50vw',
-          width: img.attributes.width,
-          height: img.attributes.height,
-        };
-      })();
+const resolvedImg = await fotoOPercorso(resolved, { widths: [400, 800], sizes: '(max-width: 768px) 100vw, 50vw' });
 ---
 
 <div class="image-text-row not-prose">
@@ -53,7 +34,7 @@ const resolvedImg =
 
   <ImageSide
     src={resolvedImg.src}
-    srcSet={resolvedImg.srcSet}
+    sources={resolvedImg.sources}
     sizes={resolvedImg.sizes}
     width={resolvedImg.width}
     height={resolvedImg.height}

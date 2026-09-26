@@ -7,6 +7,7 @@ import { basePath } from './src/lib/basePath.ts';
 import { pagineGuard } from './src/lib/pagineGuard.ts';
 import { fontCritici } from './src/lib/fontCritici.ts';
 import { cssCritico } from './src/lib/cssCritico.ts';
+import { linkConBarra } from './src/lib/linkConBarra.ts';
 
 // Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
 // (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
@@ -25,6 +26,13 @@ export default defineConfig({
     inlineStylesheets: 'never',
   },
   image: {
+    // AVIF (vedi src/lib/foto.ts): crominanza 4:2:0 ed effort 6 invece dei
+    // default di sharp (4:4:4, 4). A parità di resa (SSIM, foto del sito a
+    // 1200 px) l'AVIF così pesa ~22% meno del WebP; con i default ~0%.
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+      config: { avif: { chromaSubsampling: '4:2:0', effort: 6 } },
+    },
     // Il BaseLayout rasterizza il logo SVG → PNG (getImage, format 'png') per la
     // card OG. Da Astro 6.4 la rasterizzazione SVG è disabilitata di default:
     // la riabilitiamo esplicitamente perché è un uso voluto e controllato
@@ -36,5 +44,5 @@ export default defineConfig({
   },
   // I componenti condivisi di @butik/ui sono island React (ADR-0008): l'integrazione
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
-  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), pagineGuard(), cssCritico(), fontCritici()],
+  integrations: [react(), mdx(), sanityCdnGuard(), basePath(), linkConBarra(), pagineGuard(), cssCritico(), fontCritici()],
 });

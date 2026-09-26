@@ -37,6 +37,20 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      # Cache delle immagini ottimizzate da Astro (AVIF + WebP, apps/web/src/lib/foto.ts).
+      # A freddo la codifica AVIF porta il build da ~25 s a ~2 min; con la cache
+      # si rigenerano solo le foto nuove. Il nome di ogni file in cache tiene già
+      # conto di foto, larghezza, formato e qualità, ma non delle opzioni del
+      # codificatore (image.service in astro.config.mjs) né delle versioni di
+      # Astro e sharp: per questo la chiave dipende da quei due file, e se
+      # cambiano si riparte da zero. La cache non si sfoltisce da sola (restano
+      # anche le immagini di foto tolte): se cresce troppo, cambiare `v1`.
+      - uses: actions/cache@v4
+        with:
+          path: apps/web/node_modules/.astro/assets
+          key: astro-img-v1-${{ hashFiles('apps/web/astro.config.mjs', 'pnpm-lock.yaml') }}-${{ github.run_id }}
+          restore-keys: astro-img-v1-${{ hashFiles('apps/web/astro.config.mjs', 'pnpm-lock.yaml') }}-
+
       # Due build nello stesso artefatto (ADR-0004): la versione A da
       # `production` nella radice di dist/, la B da `anteprima` in dist/b/.
       - name: Build

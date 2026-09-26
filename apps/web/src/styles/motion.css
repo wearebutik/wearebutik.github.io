@@ -147,4 +147,15 @@
     animation-duration: revert;
     animation-timing-function: revert;
   }
+  /* Un elemento con nome che c'è solo da una parte (la hero del progetto che
+     si lascia per la home, le card del portfolio che arrivano) non fa il
+     morph: sfuma via o compare, e deve farlo al passo della pagina, non in
+     800 ms sopra di lei. :only-child = l'immagine è sola nella sua coppia. */
+  ::view-transition-old(*):only-child,
+  ::view-transition-new(*):only-child {
+    animation-duration: var(--duration-base);
+    /* Non la molla del gruppo: sull'opacità il picco oltre 1 si taglia e la
+       dissolvenza diventa uno scatto. */
+    animation-timing-function: var(--ease-out);
+  }
 }
