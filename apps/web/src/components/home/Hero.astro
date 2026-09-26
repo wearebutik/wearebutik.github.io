@@ -9,6 +9,7 @@ import Underline from '@butik/ui/Underline';
 
 import { imageSize } from '#lib/media';
 import { placeholderStyle } from '#lib/lqip';
+import { stili } from '#lib/viewTransition';
 
 // ── Foto di sfondo ──────────────────────────────────────────────────────
 // Foto a tutto sfondo da Sanity (pagina home), in loop con dissolvenza
@@ -102,7 +103,7 @@ const serviziItems = servizi.map((s) => ({
   {keyframes && <style is:inline set:html={keyframes} />}
   <div class="hero-slides" aria-hidden="true" data-assesta>
     {images.map((img, i) => (
-      <div class="hero-slide" style={[slideStyle(i), placeholderStyle(img.lqip)].filter(Boolean).join('; ') || undefined}>
+      <div class="hero-slide" style={stili(slideStyle(i), placeholderStyle(img.lqip))}>
         {/* onload inline: l'evento arriva anche se la foto è già in cache o
             finisce prima che parta un modulo JS. Vedi .hero-slide-img. */}
         <Image

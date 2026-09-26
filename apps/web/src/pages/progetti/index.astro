@@ -1,6 +1,7 @@
 ---
 import { imageSize } from '#lib/media';
 import { placeholderStyle } from '#lib/lqip';
+import { stili, vtName } from '#lib/viewTransition';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, getEntry } from 'astro:content';
 import { Image } from 'astro:assets';
@@ -42,8 +43,7 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
               quality={72}
               loading={i < 3 ? 'eager' : 'lazy'}
               class="project-card__image"
-              style={placeholderStyle(p.data.heroLqip)}
-              transition:name={`progetto-${p.id}`}
+              style={stili(placeholderStyle(p.data.heroLqip), vtName(`progetto-${p.id}`))}
             />
           </div>
           <div class="project-card__meta">
@@ -56,10 +56,10 @@ const progetti = (await getCollection('progetti', e => !e.data.draft))
               <span class="project-card__year">{p.data.year}</span>
             )}
           </div>
-          <h2 class="project-card__title" transition:name={`progetto-${p.id}-title`}>
+          <h2 class="project-card__title" style={vtName(`progetto-${p.id}-title`)}>
             {p.data.title}
           </h2>
-          <p class="project-card__subtitle" transition:name={`progetto-${p.id}-subtitle`}>
+          <p class="project-card__subtitle" style={vtName(`progetto-${p.id}-subtitle`)}>
             {p.data.subtitle}
           </p>
           {p.data.client && (

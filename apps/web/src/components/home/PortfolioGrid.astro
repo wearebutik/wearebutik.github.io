@@ -1,6 +1,7 @@
 ---
 import { imageSize } from '#lib/media';
 import { placeholderStyle } from '#lib/lqip';
+import { stili, vtName } from '#lib/viewTransition';
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import SectionHeading from '@butik/ui/SectionHeading';
@@ -39,8 +40,7 @@ const { progetti } = Astro.props;
               quality={72}
               loading="lazy"
               class="portfolio-card-image"
-              style={placeholderStyle(p.data.heroLqip)}
-              transition:name={`progetto-${p.id}`}
+              style={stili(placeholderStyle(p.data.heroLqip), vtName(`progetto-${p.id}`))}
             />
             <div class="portfolio-card-overlay">
               {p.data.category && (
@@ -50,7 +50,7 @@ const { progetti } = Astro.props;
               )}
               <h3
                 class="portfolio-card-title"
-                transition:name={`progetto-${p.id}-title`}
+                style={vtName(`progetto-${p.id}-title`)}
               >
                 {p.data.title}
               </h3>
