@@ -130,6 +130,7 @@ function isActive(href: string) {
      fondo chiaro. */
   .site-header-solid {
     --header-solid: 1;
+    --header-focus: var(--color-accent);
     background-color: var(--color-bg);
     border-bottom: 1px solid color-mix(in srgb, var(--color-fg) 10%, transparent);
   }
@@ -213,8 +214,50 @@ function isActive(href: string) {
     initial-value: 0;
   }
 
+  /* I colori delle proprietà che Chromium ricalcola per i link visitati
+     (color, background-color, border-color, outline-color) non possono essere
+     un color-mix con la percentuale calc(var(--header-solid) * 100%): nello
+     stile :visited quel color-mix non si risolve e il link visitato veniva
+     disegnato scuro sopra l'hero, mentre getComputedStyle — che per privacy
+     restituisce sempre lo stile non visitato — diceva bianco. Per i link
+     dell'header questi colori sono quindi custom property <color> registrate,
+     animate insieme a --header-solid: arrivano già risolte. Lo stato è
+     binario (steps), quindi non serve interpolare. */
+  @property --header-link {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: transparent;
+  }
+  @property --header-link-hover {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: transparent;
+  }
+  @property --header-cta-bg {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: transparent;
+  }
+  @property --header-cta-border {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: transparent;
+  }
+  @property --header-focus {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: transparent;
+  }
+
   @keyframes header-scroll {
-    to { --header-solid: 1; }
+    to {
+      --header-solid: 1;
+      --header-link: var(--color-fg);
+      --header-link-hover: var(--color-accent-text);
+      --header-cta-bg: var(--color-fg);
+      --header-cta-border: var(--color-fg);
+      --header-focus: var(--color-accent);
+    }
   }
 
   /* Solo la home è in overlay sopra l'hero. Longhand e non la shorthand
@@ -236,6 +279,14 @@ function isActive(href: string) {
     animation-timeline: scroll(root block);
     animation-range: 60px 61px;
 
+    /* Stato overlay dei colori registrati; il keyframe header-scroll li porta
+       allo stato solido. */
+    --header-link: var(--color-fg-invert);
+    --header-link-hover: var(--color-highlight);
+    --header-cta-bg: color-mix(in srgb, var(--color-fg) 35%, transparent);
+    --header-cta-border: color-mix(in srgb, var(--color-fg-invert) 45%, transparent);
+    --header-focus: var(--color-fg-invert);
+
     background-color: color-mix(
       in srgb, var(--color-bg) calc(var(--header-solid) * 100%), transparent
     );
@@ -251,7 +302,14 @@ function isActive(href: string) {
      non è ancora Baseline) l'header della home è solido da subito. Si perde
      l'overlay sull'hero, non la leggibilità. */
   @supports not (animation-timeline: scroll(root block)) {
-    .site-header[data-overlay='true'] { --header-solid: 1; }
+    .site-header[data-overlay='true'] {
+      --header-solid: 1;
+      --header-link: var(--color-fg);
+      --header-link-hover: var(--color-accent-text);
+      --header-cta-bg: var(--color-fg);
+      --header-cta-border: var(--color-fg);
+      --header-focus: var(--color-accent);
+    }
   }
 
   /* Elementi interni: commutano fra la resa chiara (sopra l'hero scuro) e
@@ -271,22 +329,18 @@ function isActive(href: string) {
   }
 
   .site-header[data-overlay='true'] .nav-link {
-    color: color-mix(
-      in srgb, var(--color-fg) calc(var(--header-solid) * 100%), var(--color-fg-invert)
-    );
+    color: var(--header-link);
     text-shadow: 0 1px 4px color-mix(
       in srgb, var(--color-fg) calc((1 - var(--header-solid)) * 45%), transparent
     );
     transition: color var(--duration-slow) var(--ease-standard), text-shadow var(--duration-slow) var(--ease-standard);
   }
-  /* Come le regole sorelle qui sopra, interpola fra i due stati invece di
-     fissare un colore: da solido serve l'accent scurito (5.20:1 su --color-bg),
-     sopra l'hero scuro serve l'highlight, perche' li' il rosso non arriva al
-     4.5:1 che questo testo da 12px bold richiede. */
+  /* Segue lo stato dell'header invece di fissare un colore: da solido serve
+     l'accent scurito (5.20:1 su --color-bg), sopra l'hero scuro serve
+     l'highlight, perche' li' il rosso non arriva al 4.5:1 che questo testo da
+     12px bold richiede. */
   .site-header[data-overlay='true'] .nav-link:hover {
-    color: color-mix(
-      in srgb, var(--color-accent-text) calc(var(--header-solid) * 100%), var(--color-highlight)
-    );
+    color: var(--header-link-hover);
     transition: color var(--duration-slow) var(--ease-standard);
   }
 
@@ -309,17 +363,9 @@ function isActive(href: string) {
      "vetro sopra la foto" resta, ma il testo bianco sale a ~10.9:1 e il bordo
      a ~3.6:1 sul proprio riempimento. */
   .site-header[data-overlay='true'] :global(.header-cta) {
-    background-color: color-mix(
-      in srgb,
-      var(--color-fg) calc(var(--header-solid) * 100%),
-      color-mix(in srgb, var(--color-fg) 35%, transparent)
-    );
+    background-color: var(--header-cta-bg);
     color: var(--color-fg-invert);
-    border: 1px solid color-mix(
-      in srgb,
-      var(--color-fg) calc(var(--header-solid) * 100%),
-      color-mix(in srgb, var(--color-fg-invert) 45%, transparent)
-    );
+    border: 1px solid var(--header-cta-border);
     /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%,
        --blur-glass); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
     backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
@@ -348,9 +394,7 @@ function isActive(href: string) {
   .site-header .nav-link:focus-visible,
   .mobile-nav > summary:focus-visible,
   .site-header :global(.header-cta:focus-visible) {
-    outline: 2px solid color-mix(
-      in srgb, var(--color-accent) calc(var(--header-solid) * 100%), var(--color-fg-invert)
-    );
+    outline: 2px solid var(--header-focus);
     outline-offset: 2px;
   }
 
