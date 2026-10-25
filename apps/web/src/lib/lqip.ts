@@ -16,6 +16,7 @@ const LATO = 20; // px del lato lungo: ~300 byte, basta per colori e masse
  * rompere il build.
  */
 export async function lqip(src: string, logger?: { warn: (msg: string) => void }): Promise<string | undefined> {
+  if (__BUTIK_ANTEPRIMA__) return undefined; // l'anteprima delle bozze non porta sharp
   try {
     const url = new URL(src);
     url.searchParams.set('w', String(LATO * 4));

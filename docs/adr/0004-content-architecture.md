@@ -89,6 +89,35 @@ it.
   `anteprima` has no webhook: a change there goes live on `/b/` when the
   workflow is run by hand (`gh workflow run deploy-pages.yml`, or *Run
   workflow* in GitHub Actions), or with the next deploy for any reason.
+- **Draft preview: `butik-anteprima`.** Whoever writes sees their drafts
+  rendered by the site's own code, on their computer, before publishing. The
+  tool is a single macOS binary that serves the site on `localhost:4321`; the
+  Studio shows it next to the form in the Presentation tool
+  (`presentationTool` in `apps/studio/sanity.config.ts`).
+  - **Build.** `pnpm --filter @butik/web build:anteprima` builds the same site
+    with `BUTIK_ANTEPRIMA=1`: `output: 'server'` with a minimal adapter
+    (`apps/web/src/lib/anteprima/`) that exports one `node:http` handler. The
+    pages are unchanged: in this build `astro:content` is a module that runs
+    the collection loaders and Zod schemas of `content.config.ts` on every
+    request (cached for two seconds), with the `drafts` perspective. Photos
+    are not optimized (`passthroughImageService`, straight from Sanity's
+    CDN); `sharp`, `satori` and `resvg` are stubbed out, so there is no LQIP
+    placeholder and no OG card; consent banner and analytics are off. Bun
+    compiles the server and every static file into the binary
+    (`apps/web/anteprima/`).
+  - **Authentication.** The binary contains no secret. `butik-anteprima login`
+    runs the Sanity CLI's browser login and stores the user's own token in
+    `~/.config/butik-anteprima/config.json`; `SANITY_AUTH_TOKEN` and the
+    Sanity CLI's config are read too. Without a token it shows published
+    content.
+  - **Isolation from the site.** `__BUTIK_ANTEPRIMA__` is a build-time
+    constant (`astro.config.mjs`), so no environment variable at runtime can
+    turn drafts on in the static build.
+  - **Distribution.** `.github/workflows/anteprima.yml` rebuilds the binary on
+    every code change on `main` and uploads it to the GitHub Release
+    `anteprima`, overwriting the asset so the download link stays fixed. The
+    binary holds code, not copy: a publish in the Studio does not rebuild it.
+    A client with a private repo gets the binary from its `dist/` instead.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
@@ -174,6 +203,18 @@ plus rich text and Portable Text) also covers `astro dev`, but every new link
 has to remember it; the post-build rewrite covers links from Sanity by
 construction, and the guard is needed either way.
 
+### Draft preview from a local clone of the repo
+
+`astro dev` with the `drafts` perspective would give the same preview, but the
+writer needs Node, pnpm and a clone of the repo kept up to date. The binary
+needs one download.
+
+### A hosted preview server
+
+A server always running `astro dev` behind a login would need nothing on the
+writer's computer, but it is a second runtime to host and pay for, against
+static-first (ADR-0002).
+
 ### Serving images from Sanity's CDN
 
 Simpler (no download at build), but ties public traffic to Sanity's bandwidth
@@ -211,5 +252,7 @@ quota, which on the Free plan blocks the project when exceeded.
 
 - Sanity usage approaches the Free-plan quotas, or the team needs roles beyond
   Administrator/Viewer → evaluate the Growth plan or another CMS.
-- Editors need to see changes live without a build → consider on-demand
-  revalidation, which conflicts with static-first (ADR-0002).
+- Editors need click-to-edit on the preview → add stega encoding and
+  `@sanity/visual-editing` to the `butik-anteprima` build only.
+- Writers on Windows or Intel Macs → add `bun build --compile --target`
+  variants to `anteprima.yml`.

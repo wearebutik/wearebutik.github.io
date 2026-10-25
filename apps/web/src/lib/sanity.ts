@@ -22,7 +22,13 @@ export const sanity = createClient({
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  perspective: 'published', // mai le bozze: il sito mostra solo i pubblicati
+  // Mai le bozze nel sito: le legge solo l'anteprima locale (butik-anteprima),
+  // con il token di chi la avvia. `__BUTIK_ANTEPRIMA__` è fissato dal build
+  // (astro.config.mjs), non da una variabile d'ambiente letta a runtime. Senza
+  // token la prospettiva `drafts` nasconde i documenti che hanno una bozza.
+  ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
+    ? { perspective: 'drafts' as const, token: process.env.SANITY_AUTH_TOKEN }
+    : { perspective: 'published' as const }),
 });
 
 const builder = createImageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });

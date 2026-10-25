@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { getImage } from 'astro:assets';
 import { PortableText } from 'astro-portabletext';
 import BaseLayout from '#layouts/BaseLayout.astro';
@@ -14,7 +14,10 @@ export async function getStaticPaths() {
   }));
 }
 
-const { entry } = Astro.props;
+// Nell'anteprima delle bozze la pagina si genera a ogni richiesta e
+// getStaticPaths non gira: l'entry si cerca dallo slug.
+const entry = Astro.props.entry ?? (await getEntry('servizi', Astro.params.slug!));
+if (!entry || entry.data.draft) return new Response(null, { status: 404 });
 
 // Immagine OG da Sanity: passa dalla pipeline di Astro come le altre, mai
 // da cdn.sanity.io (ADR-0004). JPEG 1200×630.
