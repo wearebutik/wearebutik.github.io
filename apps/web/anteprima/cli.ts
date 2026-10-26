@@ -22,7 +22,7 @@ const { values, positionals } = parseArgs({
   args: Bun.argv.slice(2),
   options: {
     port: { type: 'string', default: '4321' },
-    provider: { type: 'string', default: 'google' },
+    provider: { type: 'string' },
     help: { type: 'boolean', short: 'h' },
   },
   allowPositionals: true,
@@ -34,12 +34,21 @@ function token() {
   return process.env.SANITY_AUTH_TOKEN || leggi(CONFIG) || leggi(CONFIG_SANITY);
 }
 
-async function login(provider: string) {
+// Senza --provider si apre la pagina di login di Sanity, dove si sceglie il
+// metodo (Google, GitHub, email, SSO): ognuno è un utente Sanity diverso, e va
+// usato lo stesso dello Studio.
+async function urlLogin(provider: string | undefined) {
+  if (!provider) return 'https://www.sanity.io/login';
   const { providers } = (await (await fetch(`${API}/auth/providers`)).json()) as {
     providers: { name: string; url: string }[];
   };
   const scelto = providers.find((p) => p.name === provider);
   if (!scelto) throw new Error(`provider sconosciuto: ${provider} (${providers.map((p) => p.name).join(', ')})`);
+  return scelto.url;
+}
+
+async function login(provider: string | undefined) {
+  const base = await urlLogin(provider);
 
   // Il server di Sanity rimanda il browser a localhost con un id di sessione,
   // che /auth/fetch scambia con il token.
@@ -61,7 +70,7 @@ async function login(provider: string) {
   await new Promise<void>((ok) => server.listen(0, ok));
   const { port } = server.address() as { port: number };
 
-  const loginUrl = new URL(scelto.url);
+  const loginUrl = new URL(base);
   loginUrl.searchParams.set('type', 'token');
   loginUrl.searchParams.set('label', `${hostname().replace(/\.(local|lan)$/, '')} / butik-anteprima`);
   loginUrl.searchParams.set('origin', `http://localhost:${port}/callback`);
@@ -113,10 +122,16 @@ async function avvia(porta: number) {
   }).listen(porta, () => console.log(`Anteprima su http://localhost:${porta}`));
 }
 
-if (values.help) {
-  console.log('butik-anteprima login [--provider google|github|sanity]\nbutik-anteprima [--port 4321]');
-} else if (positionals[0] === 'login') {
-  await login(values.provider!);
-} else {
-  await avvia(Number(values.port));
+try {
+  if (values.help) {
+    console.log('butik-anteprima login [--provider google|github|sanity]\nbutik-anteprima [--port 4321]');
+  } else if (positionals[0] === 'login') {
+    await login(values.provider);
+  } else {
+    await avvia(Number(values.port));
+  }
+} catch (err) {
+  // Chi lo usa vede il messaggio, non lo stack del codice compilato.
+  console.error(`butik-anteprima: ${(err as Error).message}`);
+  process.exit(1);
 }

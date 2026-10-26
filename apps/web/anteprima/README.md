@@ -28,9 +28,11 @@ butik-anteprima login     # once: opens the browser to sign in to Sanity
 butik-anteprima           # serves the preview on http://localhost:4321
 ```
 
-- `login` takes `--provider google|github|sanity` (default `google`) and
-  stores your token in `~/.config/butik-anteprima/config.json`. Run it again
-  when the binary says the token has expired.
+- `login` opens Sanity's login page: choose the same method you use for the
+  Studio (Google, GitHub, email or SSO), since each one is a different Sanity
+  user. `--provider google|github|sanity` skips the choice. The token is
+  stored in `~/.config/butik-anteprima/config.json`; run `login` again when
+  the binary says it has expired.
 - `--port` changes the port; the Studio's Presentation tab expects `4321`.
 - Without a login the preview shows published content only.
 - After saving in the Studio, reload the preview page.
