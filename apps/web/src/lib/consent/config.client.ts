@@ -29,6 +29,9 @@ function applyConsent(): void {
 export const consentConfig: CookieConsent.CookieConsentConfig = {
   revision: 1,
 
+  // Il contenitore che il ClientRouter conserva fra le pagine (BaseLayout).
+  root: '#cc-root',
+
   // Barra in basso, non un box centrale.
   guiOptions: {
     consentModal: { layout: 'bar', position: 'bottom' },

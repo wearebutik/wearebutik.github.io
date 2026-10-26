@@ -114,6 +114,17 @@ Some behaviour has no CSS form yet, and a short script is the honest answer:
 The rule above still holds: re-wire on `astro:page-load`, guard what may
 survive, tear down what outlives the page.
 
+## Third-party UI appended to the body
+
+A library that appends its own UI to `<body>` (a banner, a modal) loses it on
+the next navigation, because the ClientRouter replaces the body. Give it a
+container that the router keeps — `<div id="…" transition:persist="…">` in
+`BaseLayout`, passed to the library as its root — and put the library's
+`<link>` in that container rather than in `<head>`, which the router also
+rewrites. If the library shows its UI through classes on `<html>`, copy those
+classes to `event.newDocument` on `astro:before-swap`. The cookie banner does
+all three (`lib/consent/init.client.ts`, #107).
+
 ## Why this is written down
 
 This failure mode is invisible in review and in the build. It produced three
