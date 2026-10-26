@@ -1,11 +1,13 @@
 // Come il sito genera una foto: un solo posto per formati, qualità e densità.
 //
-// - AVIF con WebP di riserva: a parità di resa l'AVIF pesa ~22% in meno, e il
+// - AVIF con WebP di riserva: a parità di resa l'AVIF pesa ~20% in meno, e il
 //   browser che non lo legge prende la sorgente WebP (<picture>/<source>).
 // - Qualità per ruolo: le hero si guardano da vicino, le miniature delle card
-//   no. I valori AVIF danno la stessa resa del WebP accanto (SSIM misurato
-//   sulle foto del sito, con la codifica di astro.config.mjs): 52 ≈ WebP 72,
-//   50 ≈ WebP 60.
+//   no. I valori AVIF danno la resa del WebP accanto (SSIM misurato su 17 foto
+//   del sito a due larghezze per ruolo, sharp 0.35, codifica di
+//   astro.config.mjs): AVIF 54 ≈ WebP 72 nelle hero (0,971 contro 0,973, −25%
+//   di peso), AVIF 54 ≈ WebP 60 nelle miniature (0,964 contro 0,963, −19%).
+//   La scala dipende dall'encoder: a ogni aggiornamento di sharp va rimisurata.
 // - Densità massima 2×: sugli schermi a 3× (quasi tutti i telefoni) `sizes`
 //   dichiara 2/3 della larghezza, così il browser sceglie la versione a 2×.
 //   In una foto la differenza fra 2× e 3× non si vede; nei byte sì (~45%).
@@ -16,8 +18,8 @@ import { imageSize, isRemote } from '#lib/media';
 export type Ruolo = 'hero' | 'miniatura';
 
 const QUALITA: Record<Ruolo, { avif: number; webp: number }> = {
-  hero: { avif: 52, webp: 72 },
-  miniatura: { avif: 50, webp: 60 },
+  hero: { avif: 54, webp: 72 },
+  miniatura: { avif: 54, webp: 60 },
 };
 
 export interface Sorgente {
