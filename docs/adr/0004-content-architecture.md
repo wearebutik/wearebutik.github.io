@@ -102,7 +102,13 @@ it.
     request (cached for two seconds), with the `drafts` perspective. Photos
     are not optimized (`passthroughImageService`, straight from Sanity's
     CDN); `sharp`, `satori` and `resvg` are stubbed out, so there is no LQIP
-    placeholder and no OG card; consent banner and analytics are off. Bun
+    placeholder and no OG card; consent banner and analytics are off.
+    With a token the client turns on stega and the page loads
+    `@sanity/visual-editing`: click-to-edit, document list and navigation in
+    the Presentation tool, and a reload after each change. Fields the code
+    compares or validates (enums, links, filter ids, `category`, e-mails) and
+    link-shaped values stay out of stega (`NON_CODIFICATI` in
+    `apps/web/src/lib/sanity.ts`). Bun
     compiles the server and every static file into the binary
     (`apps/web/anteprima/`).
   - **Authentication.** The binary contains no secret. `butik-anteprima login`
@@ -252,7 +258,5 @@ quota, which on the Free plan blocks the project when exceeded.
 
 - Sanity usage approaches the Free-plan quotas, or the team needs roles beyond
   Administrator/Viewer → evaluate the Growth plan or another CMS.
-- Editors need click-to-edit on the preview → add stega encoding and
-  `@sanity/visual-editing` to the `butik-anteprima` build only.
 - Writers on Windows or Intel Macs → add `bun build --compile --target`
   variants to `anteprima.yml`.

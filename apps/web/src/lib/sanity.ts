@@ -17,6 +17,16 @@ export const SANITY_DATASET =
     ? (process.env.SANITY_DATASET_B ?? 'anteprima')
     : (process.env.SANITY_DATASET ?? 'production');
 
+// Campi che il codice confronta o valida (enum, regex, link, filtri): i
+// caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
+// che il filtro di Sanity esclude già (slug, href, url, email, id…), che
+// riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
+const NON_CODIFICATI = new Set(['heroVariant', 'audience', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
+const nonCodificato = (k: string | number) => NON_CODIFICATI.has(String(k)) || /(href|url|link)$/i.test(String(k));
+// …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
+// (`linkedin`, i segnaposto `#` che lib/links.ts riconosce e non mostra).
+const sembraLink = (v: string) => /^(#|\/|[a-z][a-z+.-]*:)/i.test(v);
+
 export const sanity = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
@@ -27,7 +37,17 @@ export const sanity = createClient({
   // (astro.config.mjs), non da una variabile d'ambiente letta a runtime. Senza
   // token la prospettiva `drafts` nasconde i documenti che hanno una bozza.
   ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
-    ? { perspective: 'drafts' as const, token: process.env.SANITY_AUTH_TOKEN }
+    ? {
+        perspective: 'drafts' as const,
+        token: process.env.SANITY_AUTH_TOKEN,
+        // Visual editing nella scheda Presentation dello Studio: ogni testo
+        // porta, in caratteri invisibili, il campo da cui viene.
+        stega: {
+          enabled: true,
+          studioUrl: process.env.SANITY_STUDIO_URL ?? 'https://butik.sanity.studio',
+          filter: (p) => !p.sourcePath.some(nonCodificato) && !sembraLink(p.value) && p.filterDefault(p),
+        },
+      }
     : { perspective: 'published' as const }),
 });
 

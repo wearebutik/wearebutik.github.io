@@ -35,7 +35,19 @@ butik-anteprima           # serves the preview on http://localhost:4321
   the binary says it has expired.
 - `--port` changes the port; the Studio's Presentation tab expects `4321`.
 - Without a login the preview shows published content only.
-- After saving in the Studio, reload the preview page.
+
+## In the Studio
+
+Open the **Presentation** tab with the preview running:
+
+- the page reloads by itself a moment after you stop typing;
+- with **Edit** on, hovering a text outlines it and a click opens its field
+  in the form next to the page;
+- the panel lists the documents shown on the page, and following a link in
+  the preview moves the Studio along.
+
+A text the code splits (the underlined last word of a headline) is outlined
+only on the part that carries the field reference.
 
 The preview skips image optimization and has no blurred placeholders, social
 cards, cookie banner or analytics: everything else is the site's own code.
