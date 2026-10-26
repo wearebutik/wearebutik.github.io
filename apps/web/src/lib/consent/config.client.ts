@@ -74,7 +74,7 @@ export const consentConfig: CookieConsent.CookieConsentConfig = {
         consentModal: {
           title: 'Utilizziamo i cookie',
           description:
-            `Misuriamo in forma aggregata e senza cookie le pagine visitate e le prestazioni del sito. Con il tuo consenso attiviamo anche cookie di analisi e di marketing per capire meglio come viene usato il sito e misurare le campagne. Nessun cookie parte senza il tuo consenso. Dettagli nella <a href="${BASE}/privacy#cookie">Cookie Policy</a>.`,
+            `Misuriamo in forma aggregata e senza cookie le pagine visitate e le prestazioni del sito. Con il tuo consenso attiviamo anche cookie di analisi e di marketing per capire meglio come viene usato il sito e misurare le campagne. Nessun cookie parte senza il tuo consenso. Dettagli nella <a href="/privacy#cookie">Cookie Policy</a>.`,
           acceptAllBtn: 'Accetta tutti',
           acceptNecessaryBtn: 'Rifiuta',
           showPreferencesBtn: 'Gestisci preferenze',
