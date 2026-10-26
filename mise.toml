@@ -1,0 +1,5 @@
+# Versioni degli strumenti del repo, in locale e in CI (jdx/mise-action).
+# Node segue l'LTS; pnpm lo fissa `packageManager` nel package.json.
+[tools]
+node = "24.22.1"
+bun = "1.4.3"

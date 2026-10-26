@@ -7,7 +7,8 @@ is the index and the review contract.
 
 butik's website — **Astro 7**, built **static** (`astro build`) and host-agnostic,
 deployed today to GitHub Pages. Content lives in **Sanity** (read at build time
-into Astro content collections; Studio in `apps/studio`). Node ≥ 24.
+into Astro content collections; Studio in `apps/studio`). Node and Bun versions
+in `mise.toml`.
 
 It's a **pnpm + turbo monorepo** (ADR-0007):
 
@@ -115,10 +116,11 @@ Read-only review personas in `.claude/agents/`: `architect` (Ada), `design-syste
   **Italian** — it's raw editorial input (the site copy is Italian by nature).
   Commit messages follow the repo's existing Italian convention
   (`feat(scope): …`), no `Co-Authored-By` trailers.
-- **Verify before claiming**: run the build (`pnpm build`) and `pnpm lint:design`
-  before saying a change is safe; never call a check "passing" without running it.
-- **Open items** (ADR-0003): linter/formatter (Biome) and `@astrojs/check` are not
-  yet installed — a follow-up.
+- **Verify before claiming**: run the build (`pnpm build`), `pnpm check` (types)
+  and `pnpm lint:design` before saying a change is safe; never call a check
+  "passing" without running it.
+- **Open items** (ADR-0003): linter/formatter (Biome) is not yet installed — a
+  follow-up.
 
 ## Editing the product marketing context
 

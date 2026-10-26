@@ -16,7 +16,8 @@ export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 // che il filtro di Sanity esclude già (slug, href, url, email, id…), che
 // riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
 const NON_CODIFICATI = new Set(['heroVariant', 'audience', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
-const nonCodificato = (k: string | number) => NON_CODIFICATI.has(String(k)) || /(href|url|link)$/i.test(String(k));
+// Un passo del percorso è un nome di campo, un indice o un `{ _key }` di array.
+const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.has(k) || /(href|url|link)$/i.test(k));
 // …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
 // (`linkedin`, i segnaposto `#` che lib/links.ts riconosce e non mostra).
 const sembraLink = (v: string) => /^(#|\/|[a-z][a-z+.-]*:)/i.test(v);

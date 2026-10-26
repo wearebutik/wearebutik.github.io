@@ -1,0 +1,32 @@
+name: Prepara
+description: Node e Bun da mise.toml, pnpm da packageManager, dipendenze installate con lo store in cache.
+
+inputs:
+  installa:
+    description: Installare le dipendenze (pnpm install --frozen-lockfile)
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    # Le versioni stanno in mise.toml, come in locale.
+    - uses: jdx/mise-action@v5
+
+    - if: inputs.installa == 'true'
+      uses: pnpm/action-setup@v4
+
+    - if: inputs.installa == 'true'
+      id: store
+      shell: bash
+      run: echo "percorso=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
+
+    - if: inputs.installa == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.store.outputs.percorso }}
+        key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-store-${{ runner.os }}-
+
+    - if: inputs.installa == 'true'
+      shell: bash
+      run: pnpm install --frozen-lockfile

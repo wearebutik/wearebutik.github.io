@@ -11,6 +11,7 @@
     "dev": "turbo run dev",
     "build": "turbo run build",
     "preview": "turbo run preview",
+    "check": "turbo run check",
     "web": "pnpm --filter @butik/web",
     "lint:design": "node tools/design-lint/index.mjs"
   },

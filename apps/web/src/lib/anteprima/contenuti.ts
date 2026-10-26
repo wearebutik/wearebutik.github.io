@@ -45,7 +45,7 @@ async function leggi(collezione: Collezione & { [LOADER]: Loader }, client: Sani
     // Non lancia: una bozza non valida non deve fermare le altre.
     parseData: async ({ data }: { data: unknown }): Promise<Esito> => {
       const esito = collezione.schema.safeParse(data);
-      if (esito.success) return { data: esito.data };
+      if (esito.success) return { data: esito.data as Record<string, unknown> };
       return { errori: esito.error.issues.map((i) => `${i.path.join('.') || '(documento)'}: ${i.message}`) };
     },
     generateDigest: (v: unknown) => String(v),

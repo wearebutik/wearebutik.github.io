@@ -73,4 +73,4 @@ cards, cookie banner or analytics: everything else is the site's own code.
 pnpm --filter @butik/web build:anteprima   # → apps/web/dist-anteprima/butik-anteprima
 ```
 
-Needs Bun (version in `.tool-versions`).
+Needs Bun (version in `mise.toml`).

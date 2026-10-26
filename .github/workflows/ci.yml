@@ -17,10 +17,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/prepara
         with:
-          node-version-file: '.nvmrc'
+          installa: 'false'
       - run: node tools/design-lint/index.mjs
+
+  # Controllo dei tipi con TypeScript 7: sito (anche i .astro, via
+  # tools/type-check), CLI dell'anteprima e Studio. Vedi tools/type-check/README.md.
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prepara
+      - run: pnpm check
 
   # Pubblica Storybook su Chromatic: review/commenti su ogni PR (link in fondo
   # al check) + visual regression sulla build pubblicata (ADR-0008, issue #27).
@@ -37,12 +46,7 @@ jobs:
           # Chromatic confronta contro la baseline del branch base: senza la
           # storia completa non riesce a determinare il commit di baseline.
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/prepara
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:
