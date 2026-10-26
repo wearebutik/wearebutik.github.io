@@ -19,7 +19,8 @@ type Entry = { id: string; collection: string; data: Record<string, unknown> };
 const LOADER = Symbol('loader');
 
 export function defineCollection(c: Collezione) {
-  return { ...c, loader: { name: 'anteprima', load: async () => {} }, [LOADER]: c.loader };
+  // `type` come lo mette il defineCollection di Astro: senza, Astro 7 rifiuta la collection.
+  return { ...c, type: 'content_layer', loader: { name: 'anteprima', load: async () => {} }, [LOADER]: c.loader };
 }
 
 // Una pagina chiama getEntry più volte (header, footer, sezioni): entro un

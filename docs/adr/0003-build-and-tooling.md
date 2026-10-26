@@ -21,9 +21,11 @@ this ADR records the toolchain that drives it.
   the root: `pnpm build` → `turbo run build`.
 - **Package manager**: **pnpm** (`packageManager: pnpm@10.x`, `pnpm-lock.yaml`,
   `pnpm install --frozen-lockfile` in CI). npm is no longer used.
-- **Framework**: Astro 6 (static `astro build`, see
+- **Framework**: Astro 7 on Vite 8 (static `astro build`, see
   [ADR-0002](./0002-runtime-and-delivery.md)); the draft preview is a second,
   server build of the same code (`build:anteprima`, ADR-0004). Content in MDX via `@astrojs/mdx`.
+  `compressHTML: true` keeps the whitespace between inline elements, as
+  before Astro 7 (whose default, `'jsx'`, drops it).
 - **Node**: ≥ 24 (`.nvmrc` = 24, `engines` at root).
 - **Import aliases**: subpath imports in `apps/web/package.json` (`#components/*`,
   `#lib/*`, `#layouts/*`, `#styles/*`, `#assets/*`) for intra-app paths.
@@ -34,7 +36,9 @@ this ADR records the toolchain that drives it.
     otherwise.
   - Native build scripts are allow-listed in the root `pnpm.onlyBuiltDependencies`
     (`esbuild`, `sharp`, `@resvg/resvg-js`) — pnpm 10 blocks them by default.
-  - The `vite` override lives in root `pnpm.overrides`.
+  - One Vite version for the whole workspace (Astro, Storybook, Sanity Studio),
+    with no `pnpm.overrides`: a package that needs another major waits for an
+    upgrade instead of an override.
 - **Open Graph**: cards generated at **build-time** with `satori` +
   `@resvg/resvg-js` (`apps/web/src/pages/og/[...path].png.ts`). The base layout
   rasterizes the SVG logo → PNG via `getImage`, so `astro.config.mjs` sets

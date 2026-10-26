@@ -21,6 +21,9 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true,
   },
+  // Come in Astro 6: lo spazio fra due elementi inline resta uno spazio. Con
+  // il default di Astro 7 ('jsx') sparisce, e «<strong>a</strong> b» si legge «ab».
+  compressHTML: true,
   // CSS in file esterni: nella pagina resta solo quello critico, estratto a
   // fine build (src/lib/cssCritico.ts); i file completi restano in cache.
   build: {
