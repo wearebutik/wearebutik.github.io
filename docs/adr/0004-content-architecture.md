@@ -19,10 +19,9 @@ through Astro content collections.
 reads.** Sanity is read **only at build time**: the published site never calls
 it.
 
-- **Sanity project** `uvzsc0vv`, datasets `production` and `anteprima` (both
-  public), Free plan. The
+- **Sanity project** `uvzsc0vv`, dataset `production` (public), Free plan. The
   editing UI is Sanity Studio, in `apps/studio` (`@butik/studio`), published
-  on Sanity's Studio hosting with `pnpm --filter @butik/studio deploy`.
+  on Sanity's Studio hosting with `pnpm --filter @butik/studio run deploy`.
   `butik.sanity.studio` redirects to the Studio inside the organization's Sanity
   Dashboard (login required). The deployed Studio is pinned to the `sanity`
   version in the lockfile (`autoUpdates: false` in `sanity.cli.ts`).
@@ -37,38 +36,11 @@ it.
   that queries Sanity with GROQ during `astro build`, with the `published`
   perspective: drafts never reach the public site. If Sanity is unreachable the
   build fails, and the last deploy keeps being served.
-- **Two versions of the copy: A at `/`, B at `/b/`.** Version A, the site, is
-  built from `production`. Version B, an alternative copy under review, is the
-  same code built from `anteprima` and published under `/b/` on the same host.
-  `pnpm build` produces both into one `dist/`: `astro build` writes A to the
-  root, then `build:b` (`BUTIK_VERSIONE=b`) sets `base: '/b'`, `outDir:
-  dist/b` and the `anteprima` dataset (`apps/web/astro.config.mjs`,
-  `apps/web/src/lib/sanity.ts`). Both datasets are read with the `published`
-  perspective: drafts never reach any page, and no token is needed.
-  - **Links stay inside `/b/`.** Astro prefixes what goes through its pipeline
-    (`/_astro/`, `url()` in CSS). Internal paths written in code or coming from
-    Sanity are prefixed after the build by the `base-path` integration
-    (`apps/web/src/lib/basePath.ts`), which then fails the build if any link in
-    `dist/b` still leads outside `/b/`. Content keeps unprefixed paths, so
-    `lib/links.ts` checks them the same way in both versions. Code that reads
-    `Astro.url.pathname` strips the base with `senzaBase()`
-    (`apps/web/src/lib/versione.ts`); HTML built in client JS (the consent
-    banner) uses `BASE`.
-  - **B stays out of search engines.** Every B page carries `noindex`, its
-    canonical points at the corresponding A page, and a strip at the top says
-    it is version B, with the one link back to A (`data-versione-a`, the only
-    exception the `base-path` guard accepts). `sanity-cdn-guard` checks both
-    builds.
-  - **Review and adoption.** Reviewers compare `/` and `/b/` page by page. A
-    passage chosen from B reaches the site by copying it into `production` in
-    the Studio and publishing. The hosted Studio edits `production`; B is
-    edited with a local Studio on `anteprima`
-    (`SANITY_STUDIO_DATASET=anteprima pnpm --filter @butik/studio dev`) or
-    through the `testi.ts` import. Each build has its own dataset override
-    (`SANITY_DATASET` for A, `SANITY_DATASET_B` for B).
-  - **Lifecycle.** `anteprima` holds B for as long as a review is open. When it
-    closes, `build:b` comes out of the `build` script in
-    `apps/web/package.json`: `/b/` disappears with the next deploy, and `anteprima` can be emptied.
+- **Copy under review lives as drafts in `production`.** New copy is written,
+  or imported with `testi.ts --bozze`, as drafts next to the published
+  documents. The site shows published documents only; whoever reviews the
+  copy sees the drafts in `butik-anteprima` (*Draft preview*, below). A draft
+  reaches the site when its document is published in the Studio.
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our
@@ -85,10 +57,47 @@ it.
   and deploy: a Sanity webhook on published documents in `production` calls
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs
   `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
-  stored only in Sanity's webhook settings. Every deploy rebuilds both A and B.
-  `anteprima` has no webhook: a change there goes live on `/b/` when the
-  workflow is run by hand (`gh workflow run deploy-pages.yml`, or *Run
-  workflow* in GitHub Actions), or with the next deploy for any reason.
+  stored only in Sanity's webhook settings.
+- **Draft preview: `butik-anteprima`.** Whoever writes sees their drafts
+  rendered by the site's own code, on their computer, before publishing. The
+  tool is a single macOS binary that serves the site on `localhost:4321`; the
+  Studio shows it next to the form in the Presentation tool
+  (`presentationTool` in `apps/studio/sanity.config.ts`).
+  - **Build.** `pnpm --filter @butik/web build:anteprima` builds the same site
+    with `BUTIK_ANTEPRIMA=1`: `output: 'server'` with a minimal adapter
+    (`apps/web/src/lib/anteprima/`) that exports one `node:http` handler. The
+    pages are unchanged: in this build `astro:content` is a module that runs
+    the collection loaders and Zod schemas of `content.config.ts` on every
+    request (cached for two seconds), with the `drafts` perspective. A draft
+    that fails its Zod schema does not fail the page: the preview falls back
+    to the published document (or leaves it out) and a strip at the bottom
+    of the page lists the draft and the failing fields
+    (`components/anteprima/AvvisoBozze.astro`). Photos
+    are not optimized (`passthroughImageService`, straight from Sanity's
+    CDN); `sharp`, `satori` and `resvg` are stubbed out, so there is no LQIP
+    placeholder and no OG card; consent banner and analytics are off.
+    With a token the client turns on stega and the page loads
+    `@sanity/visual-editing`: click-to-edit, document list and navigation in
+    the Presentation tool, and a reload after each change. Fields the code
+    compares or validates (enums, links, filter ids, `category`, e-mails) and
+    link-shaped values stay out of stega (`NON_CODIFICATI` in
+    `apps/web/src/lib/sanity.ts`). Bun
+    compiles the server and every static file into the binary
+    (`apps/web/anteprima/`).
+  - **Authentication.** The binary contains no secret. Every start runs the
+    Sanity CLI's browser login; the user's session token lives only in the
+    process and is revoked (`/auth/logout`) when the preview stops, so no
+    token stays on disk. `SANITY_AUTH_TOKEN` skips the login and is never
+    revoked. The Studio, hosted on `https`, reaches the preview on
+    `localhost` once Chrome's local network permission is granted.
+  - **Isolation from the site.** `__BUTIK_ANTEPRIMA__` is a build-time
+    constant (`astro.config.mjs`), so no environment variable at runtime can
+    turn drafts on in the static build.
+  - **Distribution.** `.github/workflows/anteprima.yml` rebuilds the binary on
+    every code change on `main` and uploads it to the GitHub Release
+    `anteprima`, overwriting the asset so the download link stays fixed. The
+    binary holds code, not copy: a publish in the Studio does not rebuild it.
+    A client with a private repo gets the binary from its `dist/` instead.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
@@ -129,9 +138,9 @@ it.
   `apps/studio/scripts/`: `foto.ts` uploads photos from an assignment file
   (resized, metadata stripped, deduplicated by content hash) and wires them to
   documents; `testi.ts` exports copy to Markdown files and generates the NDJSON
-  of changed documents, imported with `sanity dataset import --replace` (into
-  `anteprima` for version B). A `dataset export` backup precedes every write to
-  a dataset.
+  of changed documents, imported with `sanity dataset import --replace`; with
+  `--bozze` the changes come out as drafts. A `dataset export` backup precedes
+  every write to a dataset.
 - Purely structural pages (e.g. the experimental `lab/*`) stay in code; editorial
   copy does not live hardcoded in `.astro` pages.
 
@@ -154,25 +163,13 @@ No free plan since July 2026.
 Free plans too tight for the content model (Contentful: 25 content types;
 Hygraph: 1,000 records), and Contentful's first paid tier is ~$300/month.
 
-### Version B as drafts over `production`
+### A public version B under `/b/`
 
-Drafts are not public even on a public dataset: building them needs a read
-token and a preview behind access control (another host, e.g. Cloudflare
-Access). In the Studio, *Publish* on any page publishes its B draft, so a
-routine edit can replace A by mistake.
-
-### A webhook on `anteprima`
-
-A second Sanity webhook would rebuild `/b/` on every publish in `anteprima`.
-B changes in batches (imports, review rounds), so a manual run is enough and
-keeps one fewer GitHub token in Sanity's settings.
-
-### Rewriting B's links with a helper in every component
-
-A `BASE_URL` helper at each place that renders a link (about twenty files,
-plus rich text and Portable Text) also covers `astro dev`, but every new link
-has to remember it; the post-build rewrite covers links from Sanity by
-construction, and the guard is needed either way.
+A second build from another dataset, published under `/b/`, lets reviewers
+compare the copy by opening a link. It costs a second dataset kept in step by
+hand, a second build in every deploy, and a post-build rewrite of every
+internal link; the draft preview shows the same copy from the documents that
+will be published.
 
 ### Serving images from Sanity's CDN
 
@@ -195,15 +192,10 @@ quota, which on the Free plan blocks the project when exceeded.
   build to go live.
 - Vendor dependency on Sanity (its API at build time, its Studio for editing).
 - Two schemas to keep aligned (Zod ↔ Sanity).
-- Two datasets with the same schema while a B review is open: a schema change
-  deployed to the Studio applies to both. A and B ship in one deploy, so a B
-  build that fails (`anteprima` not satisfying the Zod schemas, or a link the
-  `base-path` guard rejects) also stops a `production` publish from reaching
-  `/`.
-- B pages carry both `noindex` and a canonical to A: `noindex` keeps B out of
-  the index, the canonical names the page that stands for it.
-- `astro dev` serves version A only; B is checked on a build
-  (`pnpm --filter @butik/web build:b`, then any static server on `dist/`).
+- Publishing a document publishes all of its draft: a routine fix made on a
+  document whose copy is still under review also publishes that copy.
+- Reviewing the copy needs `butik-anteprima` and a Sanity login: there is no
+  public link to share with a reviewer outside the project.
 - Free-plan limits: 20 seats with only Administrator and Viewer roles, 10k
   documents, 250k API requests/month.
 
@@ -211,5 +203,5 @@ quota, which on the Free plan blocks the project when exceeded.
 
 - Sanity usage approaches the Free-plan quotas, or the team needs roles beyond
   Administrator/Viewer → evaluate the Growth plan or another CMS.
-- Editors need to see changes live without a build → consider on-demand
-  revalidation, which conflicts with static-first (ADR-0002).
+- Writers on Windows or Intel Macs → add `bun build --compile --target`
+  variants to `anteprima.yml`.

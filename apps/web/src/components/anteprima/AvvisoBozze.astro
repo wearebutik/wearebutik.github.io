@@ -1,0 +1,51 @@
+---
+// Solo nell'anteprima delle bozze (BaseLayout): le bozze che non rispettano
+// lo schema e cosa mostra la pagina al loro posto (lib/anteprima/contenuti.ts).
+// Va reso in fondo al body, dopo che la pagina ha letto i suoi contenuti.
+import { elencoProblemi } from '#lib/anteprima/problemi';
+
+const problemi = elencoProblemi();
+---
+
+{problemi.length > 0 && (
+  <aside class="avviso-bozze" aria-label="Bozze non valide">
+    <p>
+      <strong>{problemi.length === 1 ? 'Una bozza ha campi non validi' : `${problemi.length} bozze hanno campi non validi`}</strong>
+      {' '}— correggili nello Studio prima di pubblicare.
+    </p>
+    <ul>
+      {problemi.map((p) => (
+        <li>
+          <code>{p.collezione}/{p.id}</code>{' '}
+          ({p.ripiego === 'pubblicata' ? 'qui vedi la versione pubblicata' : 'non è mostrata: non esiste una versione pubblicata'}):
+          {' '}{p.errori.map((e) => `campo ${e}`).join('; ')}
+        </li>
+      ))}
+    </ul>
+  </aside>
+)}
+
+<style>
+  .avviso-bozze {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    /* Sopra l'header sticky (50) e lo skip link (60). */
+    z-index: 70;
+    max-block-size: 40vh;
+    overflow-y: auto;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-dark);
+    color: var(--color-fg-invert);
+    font-size: var(--font-size-xs);
+  }
+
+  .avviso-bozze p,
+  .avviso-bozze ul {
+    margin: 0;
+  }
+
+  .avviso-bozze ul {
+    padding-inline-start: var(--space-4);
+  }
+</style>

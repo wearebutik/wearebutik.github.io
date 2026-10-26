@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import AvvisoBozze from '#components/anteprima/AvvisoBozze.astro';
 import '@butik/ui-tokens/tokens.css';
 import '../styles/reset.css';
 import '../styles/global.css';
@@ -14,7 +15,6 @@ import '../styles/motion.css';
 import { getImage } from 'astro:assets';
 import logo from '../assets/logos/bollo-rosso.svg';
 import { getAllOgCards, ogPngPathForRoute, normalizeRoute } from '../data/ogCards';
-import { BASE, VERSIONE_B, senzaBase } from '#lib/versione';
 
 const optimizedOg = await getImage({ src: logo, width: 1200, format: 'png' });
 
@@ -37,21 +37,15 @@ const {
 } = Astro.props;
 
 const siteBase = Astro.site ?? Astro.url.origin;
-// Nella versione B (/b/, ADR-0004) il canonical punta alla pagina corrispondente
-// della A e la pagina resta fuori dai motori di ricerca; og:url resta quello
-// della B, così un link condiviso per la revisione porta alla B.
-const percorsoA = senzaBase(Astro.url.pathname);
 const pageURL = new URL(Astro.url.pathname, siteBase);
-const canonicalURL = new URL(percorsoA, siteBase);
-const robotsNoindex = noindex || VERSIONE_B;
 
 // og:image — precedenza: override esplicito della pagina > card generata per
 // questa rotta > logo di fallback. Sempre come URL assoluto.
-const route = normalizeRoute(percorsoA);
+const route = normalizeRoute(Astro.url.pathname);
 const ogCards = await getAllOgCards();
 const ogCard = ogImage ? null : ogCards.get(route);
 const hasCard = ogCard != null;
-const ogImagePath = ogImage ?? (hasCard ? BASE + ogPngPathForRoute(route) : optimizedOg.src);
+const ogImagePath = ogImage ?? (hasCard ? ogPngPathForRoute(route) : optimizedOg.src);
 const ogImageURL = new URL(ogImagePath, siteBase).href;
 // width/height/type valgono solo per le card generate (1200×630 PNG):
 // per il logo di fallback la proporzione è diversa, meglio non dichiararli.
@@ -70,7 +64,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <meta name="generator" content={Astro.generator} />
-    {robotsNoindex && <meta name="robots" content="noindex, nofollow" />}
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     {/* Google Tag Manager + Consent Mode v2 (ADR-0006). Il default `denied`
         DEVE precedere il caricamento di gtm.js: entrambi in questo unico script
@@ -105,8 +99,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       </script>
     )}
 
-    {/* Inline, fuori dalla pipeline CSS di Vite: la base (/b/) va aggiunta qui. */}
-    <style is:inline set:html={fontFaces.replaceAll('url("/fonts/', `url("${BASE}/fonts/`)} />
+    <style is:inline set:html={fontFaces} />
     <!-- Preload font per spezzare la catena CSS → font -->
     <link rel="preload" href="/fonts/league-spartan-latin.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/clear-sans-latin-400.woff2" as="font" type="font/woff2" crossorigin />
@@ -114,7 +107,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalURL} />
+    <link rel="canonical" href={pageURL} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -151,20 +144,13 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         set:html={`<iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe>`}
       />
     )}
-    {VERSIONE_B && (
-      <p class="versione-b">
-        <strong>Versione B</strong> — testi in revisione, non ancora pubblicati.
-        {/* Unico link della B che porta alla A: marcato perché basePath non lo
-            riscriva, e con ricarica completa fuori dal ClientRouter. */}
-        <a href={percorsoA} data-versione-a data-astro-reload>Vedi la versione pubblicata</a>
-      </p>
-    )}
     <Header />
     {/* tabindex=-1: il salto del link sposta anche il fuoco, non solo lo scroll. */}
     <main id="contenuto" tabindex="-1" class="page-main" data-reveal-off={reveal ? undefined : ''}>
       <slot />
     </main>
     <Footer />
+    {__BUTIK_ANTEPRIMA__ && <AvvisoBozze />}
 
     {/* Cookie consent (ADR-0006): nessun *cookie* prima del consenso — il
         livello cookieless di PostHog (pageview, web vitals) parte comunque,
@@ -244,10 +230,17 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <script>
       import { initCookieConsent } from '#lib/consent/init.client';
       import { initPostHogCookieless } from '#lib/analytics/posthog.client';
-      document.addEventListener('astro:page-load', () => {
-        initPostHogCookieless();
-        initCookieConsent();
-      });
+      // L'anteprima delle bozze gira su localhost per chi scrive: niente
+      // banner, niente misure, e il collegamento con lo Studio. Il ramo
+      // dell'anteprima non esiste nel build del sito (costante falsa).
+      if (__BUTIK_ANTEPRIMA__) {
+        import('#lib/anteprima/visualEditing.client').then((m) => m.avviaVisualEditing());
+      } else {
+        document.addEventListener('astro:page-load', () => {
+          initPostHogCookieless();
+          initCookieConsent();
+        });
+      }
     </script>
   </body>
 </html>
@@ -288,27 +281,6 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
   }
   .skip-link:focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
-  }
-
-  .versione-b {
-    margin: 0;
-    padding: var(--space-2) var(--space-4);
-    background: var(--color-dark);
-    color: var(--color-fg-invert);
-    font-size: var(--font-size-xs);
-    text-align: center;
-  }
-
-  .versione-b a {
-    margin-inline-start: var(--space-2);
-    color: inherit;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
-  .versione-b a:focus-visible {
-    outline: 2px solid currentColor;
     outline-offset: 2px;
   }
 </style>

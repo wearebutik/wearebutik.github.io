@@ -1,7 +1,7 @@
 // Foto del sito: carica le immagini di un file di assegnazioni e le collega ai
 // documenti (header, gallerie, foto delle pagine).
 //
-//   SANITY_STUDIO_DATASET=anteprima pnpm --filter @butik/studio foto <assegnazioni.json> [--prova]
+//   pnpm --filter @butik/studio foto <assegnazioni.json> [--prova]
 //
 // Le foto si leggono da FOTO_DIR (default: ~/Downloads/fotografie per il sito).
 // Prima del caricamento ogni foto è ridimensionata (lato lungo 2400 px), ruotata

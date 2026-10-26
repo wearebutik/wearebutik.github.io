@@ -1,7 +1,7 @@
 // Sanity come sorgente della collection `progetti`. Si legge solo a build
 // time: il sito resta statico e le immagini vengono scaricate e ottimizzate da
 // Astro (vedi `image.domains` in astro.config.mjs), non servite dalla CDN.
-import { createClient } from '@sanity/client';
+import { createClient, type SanityClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
@@ -9,21 +9,45 @@ import { lqip } from './lqip';
 
 // Il projectId non è un segreto: è nell'URL di ogni asset pubblico.
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
-// La versione A dei testi sta in `production`, la B (BUTIK_VERSIONE=b, servita
-// sotto /b/) in `anteprima` (ADR-0004). Un override per versione: una sola
-// variabile non deve far costruire A e B dallo stesso dataset.
-export const SANITY_DATASET =
-  process.env.BUTIK_VERSIONE === 'b'
-    ? (process.env.SANITY_DATASET_B ?? 'anteprima')
-    : (process.env.SANITY_DATASET ?? 'production');
+export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
+
+// Campi che il codice confronta o valida (enum, regex, link, filtri): i
+// caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
+// che il filtro di Sanity esclude già (slug, href, url, email, id…), che
+// riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
+const NON_CODIFICATI = new Set(['heroVariant', 'audience', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
+const nonCodificato = (k: string | number) => NON_CODIFICATI.has(String(k)) || /(href|url|link)$/i.test(String(k));
+// …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
+// (`linkedin`, i segnaposto `#` che lib/links.ts riconosce e non mostra).
+const sembraLink = (v: string) => /^(#|\/|[a-z][a-z+.-]*:)/i.test(v);
 
 export const sanity = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  perspective: 'published', // mai le bozze: il sito mostra solo i pubblicati
+  // Mai le bozze nel sito: le legge solo l'anteprima locale (butik-anteprima),
+  // con il token di chi la avvia. `__BUTIK_ANTEPRIMA__` è fissato dal build
+  // (astro.config.mjs), non da una variabile d'ambiente letta a runtime. Senza
+  // token la prospettiva `drafts` nasconde i documenti che hanno una bozza.
+  ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
+    ? {
+        perspective: 'drafts' as const,
+        token: process.env.SANITY_AUTH_TOKEN,
+        // Visual editing nella scheda Presentation dello Studio: ogni testo
+        // porta, in caratteri invisibili, il campo da cui viene.
+        stega: {
+          enabled: true,
+          studioUrl: process.env.SANITY_STUDIO_URL ?? 'https://butik.sanity.studio',
+          filter: (p) => !p.sourcePath.some(nonCodificato) && !sembraLink(p.value) && p.filterDefault(p),
+        },
+      }
+    : { perspective: 'published' as const }),
 });
+
+// I documenti pubblicati, senza stega: l'anteprima delle bozze ci ripiega
+// quando una bozza non rispetta lo schema (lib/anteprima/contenuti.ts).
+export const sanityPubblicati = sanity.withConfig({ perspective: 'published', stega: { enabled: false } });
 
 const builder = createImageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });
 
@@ -60,8 +84,11 @@ function sanityLoader(
 ): Loader {
   return {
     name: `sanity-${name}`,
-    load: async ({ store, parseData, generateDigest, logger }) => {
-      const docs = await sanity.fetch<Doc[]>(query);
+    load: async (contesto) => {
+      const { store, parseData, generateDigest, logger } = contesto;
+      // Il client lo può scegliere solo l'anteprima delle bozze; Astro non lo passa.
+      const client = (contesto as { client?: SanityClient }).client ?? sanity;
+      const docs = await client.fetch<Doc[]>(query);
       // In parallelo: `map` può scaricare qualcosa (i segnaposto LQIP).
       const entries = await Promise.all(
         docs.map(async (doc) => {

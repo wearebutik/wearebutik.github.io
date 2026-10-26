@@ -5,8 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pnpm run build:b",
-    "build:b": "BUTIK_VERSIONE=b astro build",
+    "build": "astro build",
+    "build:anteprima": "BUTIK_ANTEPRIMA=1 astro build && bun anteprima/manifesto.ts && bun build --compile --minify anteprima/cli.ts --outfile dist-anteprima/butik-anteprima",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -24,7 +24,7 @@
     "@butik/site-config": "workspace:*",
     "@butik/ui": "workspace:*",
     "@butik/ui-tokens": "workspace:*",
-    "@sanity/client": "^8.6.2",
+    "@sanity/client": "^8.11.0",
     "@sanity/image-url": "^2.1.1",
     "astro": "^6.1.5",
     "astro-portabletext": "^1.0.1",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@resvg/resvg-js": "^2.6.2",
+    "@sanity/visual-editing": "^6.2.0",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
     "beasties": "^0.5.4",
