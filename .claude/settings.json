@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "deny": [
+      "mcp__claude_ai_Sanity__publish_documents",
+      "mcp__claude_ai_Sanity__unpublish_documents",
+      "mcp__claude_ai_Sanity__discard_drafts",
+      "mcp__claude_ai_Sanity__version_discard",
+      "mcp__Sanity__publish_documents",
+      "mcp__Sanity__unpublish_documents",
+      "mcp__Sanity__discard_drafts",
+      "mcp__Sanity__version_discard"
+    ]
+  }
+}

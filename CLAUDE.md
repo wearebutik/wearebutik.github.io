@@ -119,3 +119,39 @@ Read-only review personas in `.claude/agents/`: `architect` (Ada), `design-syste
   before saying a change is safe; never call a check "passing" without running it.
 - **Open items** (ADR-0003): linter/formatter (Biome) and `@astrojs/check` are not
   yet installed — a follow-up.
+
+## Editing the product marketing context
+
+`.agents/product-marketing.md` (brand voice, personas, proof points…) is the
+context the marketing skills read before writing copy. The team edits it by
+asking Claude, often without knowing git: the request becomes a PR that
+someone else reviews.
+
+- One PR per revision, from a branch `contesto/<topic>`, touching only this
+  file.
+- Bump **Document version**, set **Last updated** to today, and add a line at
+  the top of the **Changelog**: what changed and why.
+- Structure and notes stay in English; quoted customer and site language stays
+  in Italian, verbatim.
+- Change only the sections the request names; ask before touching others.
+- Commit message `docs(marketing): …`; PR title and description in Italian,
+  in plain words, listing what changed section by section.
+
+## Writing site copy in Sanity
+
+Whoever writes the copy can ask Claude to draft it through the Sanity MCP
+server (the Sanity connector of claude.ai, or `claude mcp add Sanity -t http
+https://mcp.sanity.io`). Claude proposes, the writer publishes.
+
+- Read the voice and the audience from `.agents/product-marketing.md` before
+  writing.
+- Write drafts only (`create_documents`, `patch_documents`). Never publish,
+  unpublish or discard: publishing a document publishes all of its draft,
+  including copy still under review. `.claude/settings.json` denies those
+  tools.
+- Change copy fields only. Leave slugs, links (`…Href`), enums
+  (`heroVariant`), categories, filter ids, images and e-mail addresses as they
+  are.
+- After writing, say which documents and fields changed, and point the writer
+  to the Studio's **Presentation** tab with `butik-anteprima` running to
+  review and publish (`apps/web/anteprima/README.md`).
