@@ -3,17 +3,11 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import { sanityCdnGuard } from './src/lib/sanityCdnGuard.ts';
-import { basePath } from './src/lib/basePath.ts';
 import { pagineGuard } from './src/lib/pagineGuard.ts';
 import { fontCritici } from './src/lib/fontCritici.ts';
 import { cssCritico } from './src/lib/cssCritico.ts';
 import { linkConBarra } from './src/lib/linkConBarra.ts';
 import { bozze } from './src/lib/anteprima/bozze.ts';
-
-// Versione B dei testi (ADR-0004): stesso sito, dal dataset `anteprima`
-// (default di SANITY_DATASET in src/lib/sanity.ts), servito sotto /b/ e
-// scritto in dist/b accanto alla versione A. `pnpm build` le costruisce entrambe.
-const versioneB = process.env.BUTIK_VERSIONE === 'b';
 
 // Anteprima delle bozze (butik-anteprima, ADR-0004): lo stesso sito come
 // server locale, che a ogni richiesta legge le bozze da Sanity. Foto non
@@ -23,7 +17,6 @@ const anteprima = process.env.BUTIK_ANTEPRIMA === '1';
 
 export default defineConfig({
   ...(process.env.SITE ? { site: process.env.SITE } : {}),
-  ...(versioneB ? { base: '/b', outDir: './dist/b' } : {}),
   ...(anteprima ? { output: 'server', adapter: bozze(), outDir: './dist-anteprima' } : {}),
   prefetch: {
     prefetchAll: true,
@@ -56,6 +49,6 @@ export default defineConfig({
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
   integrations: anteprima
     ? [react(), mdx(), pagineGuard()]
-    : [react(), mdx(), sanityCdnGuard(), basePath(), linkConBarra(), pagineGuard(), cssCritico(), fontCritici()],
+    : [react(), mdx(), sanityCdnGuard(), linkConBarra(), pagineGuard(), cssCritico(), fontCritici()],
   vite: { define: { __BUTIK_ANTEPRIMA__: JSON.stringify(anteprima) } },
 });

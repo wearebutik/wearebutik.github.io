@@ -21,9 +21,9 @@ this ADR records the toolchain that drives it.
   the root: `pnpm build` → `turbo run build`.
 - **Package manager**: **pnpm** (`packageManager: pnpm@10.x`, `pnpm-lock.yaml`,
   `pnpm install --frozen-lockfile` in CI). npm is no longer used.
-- **Framework**: Astro 6 (static `astro build`, run twice by `@butik/web`'s
-  `build` — version A in `dist/`, version B in `dist/b/`, ADR-0004 — see
-  [ADR-0002](./0002-runtime-and-delivery.md)). Content in MDX via `@astrojs/mdx`.
+- **Framework**: Astro 6 (static `astro build`, see
+  [ADR-0002](./0002-runtime-and-delivery.md)); the draft preview is a second,
+  server build of the same code (`build:anteprima`, ADR-0004). Content in MDX via `@astrojs/mdx`.
 - **Node**: ≥ 24 (`.nvmrc` = 24, `engines` at root).
 - **Import aliases**: subpath imports in `apps/web/package.json` (`#components/*`,
   `#lib/*`, `#layouts/*`, `#styles/*`, `#assets/*`) for intra-app paths.

@@ -7,7 +7,6 @@ import type CookieConsent from 'vanilla-cookieconsent';
 import { acceptedCategory } from 'vanilla-cookieconsent';
 import { optInPostHog, optOutPostHog } from '#lib/analytics/posthog.client';
 import { safeGtag } from './gtag';
-import { BASE } from '#lib/versione';
 
 // Riflette lo stato delle categorie su Google Consent Mode v2 e su PostHog.
 // `analytics` guida `analytics_storage` (+ PostHog); `marketing` guida i tre
@@ -86,11 +85,8 @@ export const consentConfig: CookieConsent.CookieConsentConfig = {
           acceptNecessaryBtn: 'Rifiuta tutti',
           savePreferencesBtn: 'Salva preferenze',
           closeIconLabel: 'Chiudi',
-          // Link alla policy in fondo al modal preferenze. BASE: nella versione B
-          // (/b/) i link restano dentro la B; l'HTML di questi testi è nel JS,
-          // fuori dalla riscrittura di basePath.
-          footer:
-            `<a href="${BASE}/privacy">Privacy &amp; Cookie Policy</a> · <a href="${BASE}/termini">Termini di utilizzo</a>`,
+          // Link alla policy in fondo al modal preferenze.
+          footer: '<a href="/privacy">Privacy &amp; Cookie Policy</a> · <a href="/termini">Termini di utilizzo</a>',
           sections: [
             {
               title: 'Cookie necessari',

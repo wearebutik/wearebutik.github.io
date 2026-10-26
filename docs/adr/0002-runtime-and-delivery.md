@@ -54,7 +54,7 @@ the built HTML:
 - `linkConBarra.ts` rewrites internal `<a href>` values that point to a page
   to their trailing-slash form. GitHub Pages redirects `/servizi` to `/servizi/`
   with a 301, which would cost a network round trip on every navigation and
-  prefetch. It runs after `basePath`, so it sees the `/b/` prefix.
+  prefetch.
 - `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
   (the home hero), cut down to the characters they use.
 - `@font-face` rules are always inline (`styles/fonts.css`). They reach the text

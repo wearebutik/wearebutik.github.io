@@ -1,7 +1,7 @@
 // Testi del sito come file, per preparare versioni alternative e riapplicarle.
 //
-//   SANITY_STUDIO_DATASET=anteprima pnpm --filter @butik/studio testi esporta <cartella>
-//   SANITY_STUDIO_DATASET=anteprima pnpm --filter @butik/studio testi genera <cartella> <file.ndjson>
+//   pnpm --filter @butik/studio testi esporta <cartella>
+//   pnpm --filter @butik/studio testi genera <cartella> <file.ndjson>
 //
 // `esporta` scrive un file per documento (progetti, servizi, pagine):
 // `<_id>.md`, con i campi di testo nel frontmatter YAML e, per i progetti, il

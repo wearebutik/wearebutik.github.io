@@ -3,8 +3,7 @@
 // rete in più a ogni navigazione e a ogni prefetch, ~150 ms su una rete mobile
 // lenta. I link sono scritti a mano nel codice e arrivano anche da Sanity (i
 // CTA), quindi si correggono qui, a fine build: un <a href="/percorso"> che
-// porta a una pagina esistente diventa "/percorso/". Gira dopo basePath, così
-// sotto /b/ vede gli href già prefissati.
+// porta a una pagina esistente diventa "/percorso/".
 import type { AstroIntegration } from 'astro';
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

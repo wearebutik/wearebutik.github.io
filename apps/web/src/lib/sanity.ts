@@ -9,13 +9,7 @@ import { lqip } from './lqip';
 
 // Il projectId non è un segreto: è nell'URL di ogni asset pubblico.
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
-// La versione A dei testi sta in `production`, la B (BUTIK_VERSIONE=b, servita
-// sotto /b/) in `anteprima` (ADR-0004). Un override per versione: una sola
-// variabile non deve far costruire A e B dallo stesso dataset.
-export const SANITY_DATASET =
-  process.env.BUTIK_VERSIONE === 'b'
-    ? (process.env.SANITY_DATASET_B ?? 'anteprima')
-    : (process.env.SANITY_DATASET ?? 'production');
+export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 
 // Campi che il codice confronta o valida (enum, regex, link, filtri): i
 // caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli

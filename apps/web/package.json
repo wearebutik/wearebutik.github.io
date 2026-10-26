@@ -5,8 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pnpm run build:b",
-    "build:b": "BUTIK_VERSIONE=b astro build",
+    "build": "astro build",
     "build:anteprima": "BUTIK_ANTEPRIMA=1 astro build && bun anteprima/manifesto.ts && bun build --compile --minify anteprima/cli.ts --outfile dist-anteprima/butik-anteprima",
     "preview": "astro preview",
     "astro": "astro"
