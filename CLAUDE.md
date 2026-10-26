@@ -136,3 +136,22 @@ someone else reviews.
 - Change only the sections the request names; ask before touching others.
 - Commit message `docs(marketing): …`; PR title and description in Italian,
   in plain words, listing what changed section by section.
+
+## Writing site copy in Sanity
+
+Whoever writes the copy can ask Claude to draft it through the Sanity MCP
+server (the Sanity connector of claude.ai, or `claude mcp add Sanity -t http
+https://mcp.sanity.io`). Claude proposes, the writer publishes.
+
+- Read the voice and the audience from `.agents/product-marketing.md` before
+  writing.
+- Write drafts only (`create_documents`, `patch_documents`). Never publish,
+  unpublish or discard: publishing a document publishes all of its draft,
+  including copy still under review. `.claude/settings.json` denies those
+  tools.
+- Change copy fields only. Leave slugs, links (`…Href`), enums
+  (`heroVariant`), categories, filter ids, images and e-mail addresses as they
+  are.
+- After writing, say which documents and fields changed, and point the writer
+  to the Studio's **Presentation** tab with `butik-anteprima` running to
+  review and publish (`apps/web/anteprima/README.md`).
