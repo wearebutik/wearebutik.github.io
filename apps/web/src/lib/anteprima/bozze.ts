@@ -12,6 +12,7 @@ const NATIVI = new Set(['sharp', 'satori', '@resvg/resvg-js']);
 export function bozze(): AstroIntegration {
   const contenuti = qui('./contenuti.ts');
   const stub = qui('./stub.ts');
+  const renderOg = qui('../og/render.ts');
   return {
     name: 'butik-anteprima-bozze',
     hooks: {
@@ -32,8 +33,11 @@ export function bozze(): AstroIntegration {
                   if (!id.startsWith(src) || !codice.includes('astro:content')) return null;
                   return codice.replace(/(['"])astro:content\1/g, JSON.stringify(contenuti));
                 },
-                resolveId(id, importer) {
-                  return importer?.startsWith(src) && NATIVI.has(id) ? stub : null;
+                async resolveId(id, importer, opzioni) {
+                  if (!importer?.startsWith(src)) return null;
+                  if (NATIVI.has(id)) return stub;
+                  const risolto = await this.resolve(id, importer, { ...opzioni, skipSelf: true });
+                  return risolto?.id === renderOg ? stub : null;
                 },
               },
             ],

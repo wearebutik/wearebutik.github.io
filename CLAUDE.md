@@ -5,7 +5,7 @@ is the index and the review contract.
 
 ## What this is
 
-butik's website — **Astro 6**, built **static** (`astro build`) and host-agnostic,
+butik's website — **Astro 7**, built **static** (`astro build`) and host-agnostic,
 deployed today to GitHub Pages. Content lives in **Sanity** (read at build time
 into Astro content collections; Studio in `apps/studio`). Node ≥ 24.
 

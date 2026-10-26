@@ -104,9 +104,12 @@ const TIPI: Record<string, string> = {
   xml: 'application/xml', json: 'application/json', webmanifest: 'application/manifest+json',
 };
 
+// La sessione aperta da questo processo: si revoca in ogni modo in cui finisce.
+let sessione: string | undefined;
+
 async function avvia(porta: number, provider: string | undefined) {
   const daAmbiente = process.env.SANITY_AUTH_TOKEN;
-  const t = daAmbiente || (await login(provider));
+  const t = daAmbiente || (sessione = await login(provider));
   const utente = await chi(t);
   if (!utente) throw new Error(daAmbiente ? 'SANITY_AUTH_TOKEN non valido o scaduto' : 'login non riuscito');
   console.log(`Bozze lette come ${utente.name ?? utente.email}`);
@@ -115,7 +118,7 @@ async function avvia(porta: number, provider: string | undefined) {
     // Alla chiusura (Ctrl+C, terminale chiuso) la sessione si revoca.
     const chiudi = () =>
       revoca(t)
-        .then(() => console.log('\nSessione Sanity revocata.'))
+        .then(() => ((sessione = undefined), console.log('\nSessione Sanity revocata.')))
         .catch((err) => console.error(`\nbutik-anteprima: ${(err as Error).message}`))
         .finally(() => process.exit(0));
     for (const segnale of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) process.once(segnale, chiudi);
@@ -125,7 +128,7 @@ async function avvia(porta: number, provider: string | undefined) {
   process.env.SANITY_AUTH_TOKEN = t;
   const { handler } = await import('../dist-anteprima/server/entry.mjs');
 
-  createServer((req, res) => {
+  const server = createServer((req, res) => {
     const percorso = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname);
     const statico = fileClient[percorso];
     if (statico) {
@@ -135,7 +138,11 @@ async function avvia(porta: number, provider: string | undefined) {
       return;
     }
     handler(req, res);
-  }).listen(porta, () => console.log(`Anteprima su http://localhost:${porta}`));
+  });
+  // Un errore di avvio (porta occupata) arriva come evento: diventa un'eccezione
+  // del try qui sotto, che revoca la sessione.
+  await new Promise<void>((ok, ko) => server.once('error', ko).listen(porta, ok));
+  console.log(`Anteprima su http://localhost:${porta}`);
 }
 
 try {
@@ -149,5 +156,11 @@ try {
 } catch (err) {
   // Chi lo usa vede il messaggio, non lo stack del codice compilato.
   console.error(`butik-anteprima: ${(err as Error).message}`);
+  // Anche un avvio fallito dopo il login non deve lasciare la sessione aperta.
+  if (sessione) {
+    await revoca(sessione)
+      .then(() => console.error('Sessione Sanity revocata.'))
+      .catch((e) => console.error(`butik-anteprima: ${(e as Error).message}`));
+  }
   process.exit(1);
 }
