@@ -151,6 +151,10 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     </main>
     <Footer />
     {__BUTIK_ANTEPRIMA__ && <AvvisoBozze />}
+    {/* Banner e preferenze dei cookie (lib/consent): il ClientRouter rimpiazza
+        il <body> a ogni navigazione, e senza persist il banner se ne andrebbe
+        con la pagina vecchia (#107). */}
+    <div id="cc-root" transition:persist="cc-root"></div>
 
     {/* Cookie consent (ADR-0006): nessun *cookie* prima del consenso — il
         livello cookieless di PostHog (pageview, web vitals) parte comunque,

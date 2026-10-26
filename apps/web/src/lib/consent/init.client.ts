@@ -14,8 +14,9 @@ import { consentConfig } from './config.client';
 
 let stili: Promise<void> | undefined;
 
-// Il ClientRouter toglie dall'head ciò che la pagina nuova non ha, compreso
-// questo <link>: se manca si rimette, il file è già in cache.
+// Il <link> sta in #cc-root insieme al banner: il ClientRouter conserva quel
+// contenitore fra le pagine, mentre dall'head toglierebbe ciò che la pagina
+// nuova non ha.
 function caricaStili(): Promise<void> {
   if (document.querySelector('link[data-cookieconsent-css]')) return stili ?? Promise.resolve();
   const link = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: cssUrl });
@@ -26,9 +27,19 @@ function caricaStili(): Promise<void> {
     link.addEventListener('load', () => resolve(), { once: true });
     link.addEventListener('error', () => resolve(), { once: true });
   });
-  document.head.append(link);
+  (document.getElementById('cc-root') ?? document.head).append(link);
   return stili;
 }
+
+// Banner e preferenze stanno in #cc-root, che il ClientRouter conserva; la
+// libreria però li mostra con classi sull'<html>, che lo swap riscrive con
+// quelle della pagina nuova. Si portano di là prima dello swap (#107). Il
+// modulo gira una volta per sessione: il listener si registra una volta sola.
+const CLASSI_STATO = ['show--consent', 'show--preferences', 'disable--interaction'];
+document.addEventListener('astro:before-swap', (e) => {
+  const nuovo = e.newDocument.documentElement.classList;
+  for (const c of CLASSI_STATO) nuovo.toggle(c, document.documentElement.classList.contains(c));
+});
 
 // La libreria non costruisce il banner per bot e browser automatizzati
 // (hideFromBots, attivo di default): stessa condizione, o show() fallisce.
