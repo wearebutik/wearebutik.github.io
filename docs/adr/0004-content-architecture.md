@@ -21,7 +21,7 @@ it.
 
 - **Sanity project** `uvzsc0vv`, dataset `production` (public), Free plan. The
   editing UI is Sanity Studio, in `apps/studio` (`@butik/studio`), published
-  on Sanity's Studio hosting with `pnpm --filter @butik/studio deploy`.
+  on Sanity's Studio hosting with `pnpm --filter @butik/studio run deploy`.
   `butik.sanity.studio` redirects to the Studio inside the organization's Sanity
   Dashboard (login required). The deployed Studio is pinned to the `sanity`
   version in the lockfile (`autoUpdates: false` in `sanity.cli.ts`).

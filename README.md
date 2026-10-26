@@ -16,7 +16,7 @@ Dalla radice, con Node ≥ 24:
 | `pnpm build` | Build del sito in `apps/web/dist/` |
 | `pnpm --filter @butik/web build:anteprima` | Binario `butik-anteprima` (anteprima delle bozze) |
 | `pnpm --filter @butik/studio dev` | Studio Sanity in locale |
-| `pnpm --filter @butik/studio deploy` | Pubblica lo Studio |
+| `pnpm --filter @butik/studio run deploy` | Pubblica lo Studio |
 
 ## Rivedere i testi prima di pubblicarli
 

@@ -22,7 +22,7 @@ docs/ .claude/ reference/ design/   # repo-wide, at root
 ```
 
 Build from root: `pnpm build` (turbo). Site-only: `pnpm --filter @butik/web build`.
-Studio: `pnpm --filter @butik/studio dev` (local), `… deploy` (butik.sanity.studio).
+Studio: `pnpm --filter @butik/studio dev` (local), `… run deploy` (butik.sanity.studio).
 
 ## Where decisions live
 
