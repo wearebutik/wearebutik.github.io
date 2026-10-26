@@ -94,7 +94,7 @@ const key = () => `t${(seq++).toString(36)}`;
 
 function fromMarkdown(md: string, tipo: Tipo): Valore[] {
   const html = marked.parse(String(md ?? ''), { async: false });
-  return htmlToBlocks(html, tipo, { parseHtml: (h) => new JSDOM(h).window.document }).map((b: Valore) => ({
+  return htmlToBlocks(html, tipo as Parameters<typeof htmlToBlocks>[1], { parseHtml: (h) => new JSDOM(h).window.document }).map((b: Valore) => ({
     ...b,
     _key: key(),
     ...(Array.isArray(b.children) && { children: b.children.map((c: Valore) => ({ ...c, _key: key() })) }),
@@ -137,6 +137,7 @@ function esporta(dir: string, docs: Valore[]) {
   mkdirSync(dir, { recursive: true });
   for (const doc of docs) {
     const tipo = schema.get(doc._type);
+    if (!tipo) throw new Error(`tipo di documento sconosciuto: ${doc._type}`);
     const { body, ...resto } = doc;
     const dati = esportaValore(resto, tipo);
     let corpo = '';

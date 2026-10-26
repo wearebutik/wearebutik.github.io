@@ -26,7 +26,13 @@ this ADR records the toolchain that drives it.
   server build of the same code (`build:anteprima`, ADR-0004). Content in MDX via `@astrojs/mdx`.
   `compressHTML: true` keeps the whitespace between inline elements, as
   before Astro 7 (whose default, `'jsx'`, drops it).
-- **Node**: ≥ 24 (`.nvmrc` = 24, `engines` at root).
+- **Node and Bun**: versions pinned in `mise.toml` (Node on the current LTS),
+  used locally and in CI (`.github/actions/prepara`, with `jdx/mise-action`);
+  `engines` at root states the minimum.
+- **Type checking**: TypeScript 7 everywhere. `pnpm check` runs
+  `tools/type-check` on the site (`.astro` files included, since `astro check`
+  needs TypeScript ≤ 6), `tsc` on the preview CLI and on the Studio; the `check`
+  job in CI fails on any error.
 - **Import aliases**: subpath imports in `apps/web/package.json` (`#components/*`,
   `#lib/*`, `#layouts/*`, `#styles/*`, `#assets/*`) for intra-app paths.
   Cross-package code uses the workspace scope `@butik/*`.
@@ -52,8 +58,6 @@ this ADR records the toolchain that drives it.
 
 - **Formatter/linter**: no Biome/ESLint/Prettier yet. Proposal: adopt **Biome**
   at the root with a `PostToolUse` hook. A later ADR/commit.
-- **Type-check**: `@astrojs/check` not installed. Add it with the linter.
-
 ## Alternatives considered
 
 ### npm workspaces (no turbo)

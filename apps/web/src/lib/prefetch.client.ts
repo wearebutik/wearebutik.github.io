@@ -33,7 +33,7 @@ export function initPrefetch(root: ParentNode = document): () => void {
   let idle: number | undefined;
   const avviaEager = () => {
     const run = () => eager.forEach((a) => prefetch(a.href));
-    idle = 'requestIdleCallback' in window ? requestIdleCallback(run) : window.setTimeout(run, 200);
+    idle = typeof requestIdleCallback === 'function' ? requestIdleCallback(run) : window.setTimeout(run, 200);
   };
   if (eager.length) {
     if (document.readyState === 'complete') avviaEager();
@@ -52,6 +52,6 @@ export function initPrefetch(root: ParentNode = document): () => void {
   return () => {
     observer.disconnect();
     window.removeEventListener('load', avviaEager);
-    if (idle !== undefined) ('cancelIdleCallback' in window ? cancelIdleCallback : clearTimeout)(idle);
+    if (idle !== undefined) (typeof cancelIdleCallback === 'function' ? cancelIdleCallback : window.clearTimeout)(idle);
   };
 }

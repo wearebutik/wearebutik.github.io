@@ -16,3 +16,8 @@ design/
 
 # Anteprima delle bozze (butik-anteprima)
 dist-anteprima/
+# …tranne le dichiarazioni che ne prendono il posto nel controllo dei tipi del CLI
+!apps/web/anteprima/tipi/dist-anteprima/
+
+# Ombra del controllo dei tipi (tools/type-check)
+.tipi/

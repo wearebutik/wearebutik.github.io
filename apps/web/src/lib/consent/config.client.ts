@@ -85,8 +85,6 @@ export const consentConfig: CookieConsent.CookieConsentConfig = {
           acceptNecessaryBtn: 'Rifiuta tutti',
           savePreferencesBtn: 'Salva preferenze',
           closeIconLabel: 'Chiudi',
-          // Link alla policy in fondo al modal preferenze.
-          footer: '<a href="/privacy">Privacy &amp; Cookie Policy</a> · <a href="/termini">Termini di utilizzo</a>',
           sections: [
             {
               title: 'Cookie necessari',

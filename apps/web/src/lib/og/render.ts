@@ -140,7 +140,7 @@ function buildPlain(card: OgCard, handle: string): Node {
   if (card.meta?.length) head.push(metaLine(card.meta, DARK, 0.7, 18));
 
   return h('div', {
-    width: 1200, height: 630, display: 'flex', flexDirection: 'column',
+    width: 1200, height: 630, boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
     justifyContent: 'space-between', backgroundColor: LIGHT, padding: '72px 80px',
   }, [h('div', { display: 'flex', flexDirection: 'column' }, head), footerRow(card, handle, DARK)]);
 }
@@ -149,7 +149,7 @@ function buildPlain(card: OgCard, handle: string): Node {
 //   alto:   titolo piccolo · centro: bollo grande + @handle · basso: eyebrow
 function buildHome(card: OgCard): Node {
   return h('div', {
-    width: 1200, height: 630, display: 'flex', flexDirection: 'column',
+    width: 1200, height: 630, boxSizing: 'border-box', display: 'flex', flexDirection: 'column',
     alignItems: 'center', justifyContent: 'space-between',
     backgroundColor: LIGHT, padding: '72px 80px', textAlign: 'center',
   }, [
@@ -194,7 +194,7 @@ function buildBleed(card: OgCard, handle: string, hero: string): Node {
         backgroundImage: `linear-gradient(to top, ${darkAlpha(0.72)}, ${darkAlpha(0)})`,
       }),
       h('div', {
-        display: 'flex', flexDirection: 'column', width: 1200, padding: '0 80px 64px',
+        display: 'flex', flexDirection: 'column', width: 1200, boxSizing: 'border-box', padding: '0 80px 64px',
         backgroundImage: `linear-gradient(to top, ${darkAlpha(0.94)}, ${darkAlpha(0.72)})`,
       }, content),
     ]),

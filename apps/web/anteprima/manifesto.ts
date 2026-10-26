@@ -13,6 +13,6 @@ const righe = file.map((f, i) => `import f${i} from './client/${f}' with { type:
 const mappa = file.map((f, i) => `  '/${f}': f${i},`);
 writeFileSync(
   join(import.meta.dir, '../dist-anteprima/file-client.ts'),
-  `// Generato da manifesto.ts: non modificare.\n${righe.join('\n')}\n\nexport default {\n${mappa.join('\n')}\n} as Record<string, string>;\n`,
+  `// Generato da manifesto.ts: non modificare.\n// Gli import type: 'file' sono di Bun: TypeScript non li conosce.\n// @ts-nocheck\n${righe.join('\n')}\n\nexport default {\n${mappa.join('\n')}\n} as Record<string, string>;\n`,
 );
 console.log(`${file.length} file statici nel manifesto`);
