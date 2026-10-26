@@ -30,10 +30,10 @@
     "astro": "^7.4.2",
     "astro-portabletext": "^1.0.1",
     "github-slugger": "^2.0.0",
-    "posthog-js": "^1.399.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "sharp": "^0.34.5",
+    "posthog-js": "^1.438.22",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "sharp": "^0.35.5",
     "vanilla-cookieconsent": "^3.1.0"
   },
   "devDependencies": {
@@ -41,12 +41,12 @@
     "@resvg/resvg-js": "^2.6.2",
     "@sanity/visual-editing": "^6.2.0",
     "@types/bun": "^1.4.4",
-    "@types/react": "^19.2.0",
-    "@types/react-dom": "^19.2.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
     "@types/subset-font": "^2.3.0",
-    "beasties": "^0.5.4",
-    "node-html-parser": "^9.0.4",
-    "satori": "^0.26.0",
+    "beasties": "^0.5.5",
+    "node-html-parser": "^9.0.5",
+    "satori": "^0.63.2",
     "subset-font": "^2.9.0",
     "typescript": "7.0.2"
   }

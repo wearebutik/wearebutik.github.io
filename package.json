@@ -16,7 +16,7 @@
     "lint:design": "node tools/design-lint/index.mjs"
   },
   "devDependencies": {
-    "turbo": "^2.10.4"
+    "turbo": "^2.11.10"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
