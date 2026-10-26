@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import AvvisoBozze from '#components/anteprima/AvvisoBozze.astro';
 import '@butik/ui-tokens/tokens.css';
 import '../styles/reset.css';
 import '../styles/global.css';
@@ -165,6 +166,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
       <slot />
     </main>
     <Footer />
+    {__BUTIK_ANTEPRIMA__ && <AvvisoBozze />}
 
     {/* Cookie consent (ADR-0006): nessun *cookie* prima del consenso — il
         livello cookieless di PostHog (pageview, web vitals) parte comunque,

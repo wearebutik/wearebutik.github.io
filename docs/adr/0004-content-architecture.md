@@ -99,7 +99,11 @@ it.
     (`apps/web/src/lib/anteprima/`) that exports one `node:http` handler. The
     pages are unchanged: in this build `astro:content` is a module that runs
     the collection loaders and Zod schemas of `content.config.ts` on every
-    request (cached for two seconds), with the `drafts` perspective. Photos
+    request (cached for two seconds), with the `drafts` perspective. A draft
+    that fails its Zod schema does not fail the page: the preview falls back
+    to the published document (or leaves it out) and a strip at the bottom
+    of the page lists the draft and the failing fields
+    (`components/anteprima/AvvisoBozze.astro`). Photos
     are not optimized (`passthroughImageService`, straight from Sanity's
     CDN); `sharp`, `satori` and `resvg` are stubbed out, so there is no LQIP
     placeholder and no OG card; consent banner and analytics are off.

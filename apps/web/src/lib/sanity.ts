@@ -1,7 +1,7 @@
 // Sanity come sorgente della collection `progetti`. Si legge solo a build
 // time: il sito resta statico e le immagini vengono scaricate e ottimizzate da
 // Astro (vedi `image.domains` in astro.config.mjs), non servite dalla CDN.
-import { createClient } from '@sanity/client';
+import { createClient, type SanityClient } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
@@ -51,6 +51,10 @@ export const sanity = createClient({
     : { perspective: 'published' as const }),
 });
 
+// I documenti pubblicati, senza stega: l'anteprima delle bozze ci ripiega
+// quando una bozza non rispetta lo schema (lib/anteprima/contenuti.ts).
+export const sanityPubblicati = sanity.withConfig({ perspective: 'published', stega: { enabled: false } });
+
 const builder = createImageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });
 
 /** Riferimento immagine Sanity (`{ asset: { _ref } }`, con crop/hotspot opzionali). */
@@ -86,8 +90,11 @@ function sanityLoader(
 ): Loader {
   return {
     name: `sanity-${name}`,
-    load: async ({ store, parseData, generateDigest, logger }) => {
-      const docs = await sanity.fetch<Doc[]>(query);
+    load: async (contesto) => {
+      const { store, parseData, generateDigest, logger } = contesto;
+      // Il client lo può scegliere solo l'anteprima delle bozze; Astro non lo passa.
+      const client = (contesto as { client?: SanityClient }).client ?? sanity;
+      const docs = await client.fetch<Doc[]>(query);
       // In parallelo: `map` può scaricare qualcosa (i segnaposto LQIP).
       const entries = await Promise.all(
         docs.map(async (doc) => {

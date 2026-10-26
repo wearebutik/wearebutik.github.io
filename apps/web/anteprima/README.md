@@ -49,6 +49,14 @@ Open the **Presentation** tab with the preview running:
 A text the code splits (the underlined last word of a headline) is outlined
 only on the part that carries the field reference.
 
+If the tab shows a grey page with "Unable to connect", the preview is not
+running: start `butik-anteprima` and reload the tab.
+
+A draft whose fields the site cannot accept (a required field left empty,
+for instance) does not break the page: the preview shows the published
+version of that document, or leaves it out if it was never published, and a
+dark strip at the bottom lists the document and the fields to fix.
+
 The preview skips image optimization and has no blurred placeholders, social
 cards, cookie banner or analytics: everything else is the site's own code.
 
