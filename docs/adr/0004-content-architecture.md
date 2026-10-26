@@ -84,11 +84,12 @@ it.
     `apps/web/src/lib/sanity.ts`). Bun
     compiles the server and every static file into the binary
     (`apps/web/anteprima/`).
-  - **Authentication.** The binary contains no secret. `butik-anteprima login`
-    runs the Sanity CLI's browser login and stores the user's own token in
-    `~/.config/butik-anteprima/config.json`; `SANITY_AUTH_TOKEN` and the
-    Sanity CLI's config are read too. Without a token it shows published
-    content.
+  - **Authentication.** The binary contains no secret. Every start runs the
+    Sanity CLI's browser login; the user's session token lives only in the
+    process and is revoked (`/auth/logout`) when the preview stops, so no
+    token stays on disk. `SANITY_AUTH_TOKEN` skips the login and is never
+    revoked. The Studio, hosted on `https`, reaches the preview on
+    `localhost` once Chrome's local network permission is granted.
   - **Isolation from the site.** `__BUTIK_ANTEPRIMA__` is a build-time
     constant (`astro.config.mjs`), so no environment variable at runtime can
     turn drafts on in the static build.

@@ -1,22 +1,24 @@
 // butik-anteprima: il sito con le bozze di Sanity, su localhost. Lo usa chi
 // scrive i testi accanto allo Studio (Presentation tool), ADR-0004.
 //
-//   butik-anteprima login [--provider google|github|sanity]
-//   butik-anteprima [--port 4321]
+//   butik-anteprima [--port 4321] [--provider google|github|sanity]
+//   butik-anteprima logout
 //
-// Il token è quello dell'utente Sanity: lo dà `login` (lo stesso flusso di
-// `sanity login`), oppure arriva da SANITY_AUTH_TOKEN o dal config della CLI
-// di Sanity. Non è mai dentro il binario, che è pubblico.
+// A ogni avvio si accede a Sanity dal browser (lo stesso flusso di `sanity
+// login`): la sessione vive solo in memoria e alla chiusura si revoca, così sul
+// disco non resta nessun token. SANITY_AUTH_TOKEN, se c'è, salta il login e
+// non si revoca: non l'ha creato il binario. Nessun token è dentro il binario,
+// che è pubblico.
 import { createServer } from 'node:http';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { homedir, hostname } from 'node:os';
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { parseArgs } from 'node:util';
 import fileClient from '../dist-anteprima/file-client';
 
 const API = 'https://api.sanity.io/v2025-09-23';
+// Dove la prima versione salvava il token: `logout` lo revoca e lo cancella.
 const CONFIG = join(homedir(), '.config', 'butik-anteprima', 'config.json');
-const CONFIG_SANITY = join(homedir(), '.config', 'sanity', 'config.json');
 
 const { values, positionals } = parseArgs({
   args: Bun.argv.slice(2),
@@ -27,12 +29,6 @@ const { values, positionals } = parseArgs({
   },
   allowPositionals: true,
 });
-
-const leggi = (f: string) => (existsSync(f) ? (JSON.parse(readFileSync(f, 'utf8')).authToken as string) : undefined);
-
-function token() {
-  return process.env.SANITY_AUTH_TOKEN || leggi(CONFIG) || leggi(CONFIG_SANITY);
-}
 
 // Senza --provider si apre la pagina di login di Sanity, dove si sceglie il
 // metodo (Google, GitHub, email, SSO): ognuno è un utente Sanity diverso, e va
@@ -47,7 +43,7 @@ async function urlLogin(provider: string | undefined) {
   return scelto.url;
 }
 
-async function login(provider: string | undefined) {
+async function login(provider: string | undefined): Promise<string> {
   const base = await urlLogin(provider);
 
   // Il server di Sanity rimanda il browser a localhost con un id di sessione,
@@ -78,13 +74,23 @@ async function login(provider: string | undefined) {
   Bun.spawn(['open', loginUrl.href]);
 
   try {
-    const nuovo = await promise;
-    mkdirSync(dirname(CONFIG), { recursive: true });
-    writeFileSync(CONFIG, JSON.stringify({ authToken: nuovo }), { mode: 0o600 });
-    console.log(`Login fatto: token salvato in ${CONFIG}`);
+    return await promise;
   } finally {
     server.close();
   }
+}
+
+/** Revoca la sessione su Sanity; una sessione già scaduta conta come revocata. */
+async function revoca(t: string) {
+  const r = await fetch(`${API}/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${t}` } });
+  if (!r.ok && r.status !== 401) throw new Error(`revoca della sessione: HTTP ${r.status}`);
+}
+
+async function logout() {
+  if (!existsSync(CONFIG)) return console.log('Nessun token salvato.');
+  await revoca(JSON.parse(readFileSync(CONFIG, 'utf8')).authToken as string);
+  rmSync(CONFIG);
+  console.log(`Sessione revocata e ${CONFIG} cancellato.`);
 }
 
 async function chi(t: string) {
@@ -98,15 +104,25 @@ const TIPI: Record<string, string> = {
   xml: 'application/xml', json: 'application/json', webmanifest: 'application/manifest+json',
 };
 
-async function avvia(porta: number) {
-  const t = token();
-  const utente = t ? await chi(t) : undefined;
-  if (t && !utente) throw new Error('token Sanity non valido o scaduto: rifai `butik-anteprima login`');
-  if (utente) console.log(`Bozze lette come ${utente.name ?? utente.email}`);
-  else console.warn('Nessun login: vedi solo i testi pubblicati. Esegui `butik-anteprima login`.');
+async function avvia(porta: number, provider: string | undefined) {
+  const daAmbiente = process.env.SANITY_AUTH_TOKEN;
+  const t = daAmbiente || (await login(provider));
+  const utente = await chi(t);
+  if (!utente) throw new Error(daAmbiente ? 'SANITY_AUTH_TOKEN non valido o scaduto' : 'login non riuscito');
+  console.log(`Bozze lette come ${utente.name ?? utente.email}`);
+
+  if (!daAmbiente) {
+    // Alla chiusura (Ctrl+C, terminale chiuso) la sessione si revoca.
+    const chiudi = () =>
+      revoca(t)
+        .then(() => console.log('\nSessione Sanity revocata.'))
+        .catch((err) => console.error(`\nbutik-anteprima: ${(err as Error).message}`))
+        .finally(() => process.exit(0));
+    for (const segnale of ['SIGINT', 'SIGTERM', 'SIGHUP'] as const) process.once(segnale, chiudi);
+  }
 
   // Il client Sanity del sito legge il token all'import: va impostato prima.
-  if (t) process.env.SANITY_AUTH_TOKEN = t;
+  process.env.SANITY_AUTH_TOKEN = t;
   const { handler } = await import('../dist-anteprima/server/entry.mjs');
 
   createServer((req, res) => {
@@ -124,11 +140,11 @@ async function avvia(porta: number) {
 
 try {
   if (values.help) {
-    console.log('butik-anteprima login [--provider google|github|sanity]\nbutik-anteprima [--port 4321]');
-  } else if (positionals[0] === 'login') {
-    await login(values.provider);
+    console.log('butik-anteprima [--port 4321] [--provider google|github|sanity]\nbutik-anteprima logout');
+  } else if (positionals[0] === 'logout') {
+    await logout();
   } else {
-    await avvia(Number(values.port));
+    await avvia(Number(values.port), values.provider);
   }
 } catch (err) {
   // Chi lo usa vede il messaggio, non lo stack del codice compilato.
