@@ -124,6 +124,9 @@ Read-only review personas in `.claude/agents/`: `architect` (Ada), `design-syste
 
 ## Editing the product marketing context
 
+Onboarding a new person on the marketing team (accounts, draft preview,
+Claude Desktop setup): `docs/guidances/marketing-setup.md`.
+
 `.agents/product-marketing.md` (brand voice, personas, proof points…) is the
 context the marketing skills read before writing copy. The team edits it by
 asking Claude, often without knowing git: the request becomes a PR that
