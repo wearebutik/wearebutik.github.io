@@ -47,7 +47,9 @@ repository on the Mac, which Claude sets up in the **Code** tab (part 4).
 3. **Draft preview in the Studio.** For copy written by hand, the Studio's
    **Anteprima web** tab shows the same preview next to the form: it follows
    the drafts while they change, and with **Edit** on a click on a text opens
-   its field. If the tab stays on "Unable to connect", or shows the site as
+   its field. The Studio's perspective menu (*Drafts*, *Published*, a
+   release) changes what the tab shows. If the tab stays on "Unable to
+   connect", or shows the site as
    it was before a change to its code, the reload button in the tab's address
    bar loads the preview again.
 
@@ -143,5 +145,5 @@ Il tone of voice è in `.agents/product-marketing.md`, sezioni **Brand Voice** e
 
 - **`butik-anteprima`, the preview binary on the Mac.** It needs a download,
   a terminal and Chrome's local network permission, and it runs only on
-  Apple Silicon. Deprecated in favour of the preview in the browser
-  ([`apps/web/anteprima/README.md`](../../apps/web/anteprima/README.md)).
+  Apple Silicon. The preview in the browser replaces it
+  ([ADR-0004 *Draft preview*](../adr/0004-content-architecture.md)).
