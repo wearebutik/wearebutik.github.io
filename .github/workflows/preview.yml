@@ -2,12 +2,13 @@ name: Preview (Service Worker)
 
 # L'anteprima delle bozze che gira nel browser (apps/web/preview): il server di
 # butik-anteprima impacchettato in un Service Worker, pubblicato su Cloudflare
-# Pages (progetto `butik-preview`, dominio butik.consiglio.fyi, dietro
-# Cloudflare Access). Come il binario contiene solo il codice: si ripubblica
-# quando cambia il codice del sito, non quando si pubblica nello Studio.
+# Pages (progetto `butik-preview`, dominio butik.consiglio.fyi; ADR-0004). Chi
+# vede le bozze lo decide la sessione Sanity nel worker. Contiene solo il
+# codice: si ripubblica quando cambia il codice del sito, non quando si
+# pubblica nello Studio.
 on:
   push:
-    branches: [main, prova/anteprima-sw]
+    branches: [main]
     paths:
       - 'apps/web/**'
       - 'packages/**'
@@ -35,7 +36,7 @@ jobs:
       - run: pnpm --filter @butik/web build:preview
 
       # Il progetto Pages si crea al primo deploy; `--branch=main` pubblica in
-      # produzione, cioè sul dominio, anche da un branch di prova.
+      # produzione, cioè sul dominio, anche da workflow_dispatch su un branch.
       - name: Cloudflare Pages
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}

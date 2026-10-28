@@ -1,5 +1,6 @@
 name: Anteprima delle bozze
 
+# Deprecato: l'anteprima delle bozze ora gira nel browser (preview.yml).
 # Binario `butik-anteprima` (ADR-0004): il sito come server locale che legge le
 # bozze da Sanity. Contiene solo il codice, non i testi (li legge a ogni
 # richiesta): si ricostruisce quando cambia il codice del sito, non quando si

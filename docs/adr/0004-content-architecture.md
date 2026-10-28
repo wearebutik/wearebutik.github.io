@@ -39,7 +39,7 @@ it.
 - **Copy under review lives as drafts in `production`.** New copy is written,
   or imported with `testi.ts --bozze`, as drafts next to the published
   documents. The site shows published documents only; whoever reviews the
-  copy sees the drafts in `butik-anteprima` (*Draft preview*, below). A draft
+  copy sees the drafts in the draft preview (*Draft preview*, below). A draft
   reaches the site when its document is published in the Studio.
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
@@ -58,14 +58,20 @@ it.
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs
   `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
   stored only in Sanity's webhook settings.
-- **Draft preview: `butik-anteprima`.** Whoever writes sees their drafts
-  rendered by the site's own code, on their computer, before publishing. The
-  tool is a single macOS binary that serves the site on `localhost:4321`; the
-  Studio shows it next to the form in the Presentation tool
-  (`presentationTool` in `apps/studio/sanity.config.ts`).
-  - **Build.** `pnpm --filter @butik/web build:anteprima` builds the same site
+- **Draft preview: in the browser.** Whoever writes sees their drafts
+  rendered by the site's own code before publishing, with nothing to install.
+  The preview is the site built as a server and run inside a Service Worker
+  (`apps/web/preview/`), published on Cloudflare Pages (project
+  `butik-preview`, https://butik.consiglio.fyi). The Studio shows it next to
+  the form in the **Anteprima web** tab (the `anteprima-web` presentation tool
+  in `apps/studio/sanity.config.ts`); on its own, in a browser tab, it shows
+  the site with the drafts of whoever signs in.
+  - **Build.** `pnpm --filter @butik/web build:preview` builds the same site
     with `BUTIK_ANTEPRIMA=1`: `output: 'server'` with a minimal adapter
-    (`apps/web/src/lib/anteprima/`) that exports one `node:http` handler. The
+    (`apps/web/src/lib/anteprima/`); `BUTIK_PREVIEW_SW=1` picks the entry for
+    the worker (`apps/web/src/lib/preview/server.ts`), which renders a
+    browser `Request` into a `Response`. ADR-0002's static build is untouched:
+    the adapter exists only in this build. The
     pages are unchanged: in this build `astro:content` is a module that runs
     the collection loaders and Zod schemas of `content.config.ts` on every
     request (cached for two seconds), with the `drafts` perspective. A draft
@@ -78,26 +84,60 @@ it.
     placeholder and no OG card; consent banner and analytics are off.
     With a token the client turns on stega and the page loads
     `@sanity/visual-editing`: click-to-edit, document list and navigation in
-    the Presentation tool, and a reload after each change. Fields the code
+    the Studio tab, and a reload after each change. Fields the code
     compares or validates (enums, links, filter ids, `category`, e-mails) and
     link-shaped values stay out of stega (`NON_CODIFICATI` in
-    `apps/web/src/lib/sanity.ts`). Bun
-    compiles the server and every static file into the binary
-    (`apps/web/anteprima/`).
-  - **Authentication.** The binary contains no secret. Every start runs the
-    Sanity CLI's browser login; the user's session token lives only in the
-    process and is revoked (`/auth/logout`) when the preview stops, so no
-    token stays on disk. `SANITY_AUTH_TOKEN` skips the login and is never
-    revoked. The Studio, hosted on `https`, reaches the preview on
-    `localhost` once Chrome's local network permission is granted.
+    `apps/web/src/lib/sanity.ts`). `apps/web/preview/build.ts` bundles the
+    server and the worker (`worker.ts`) into `_astro/preview.<hash>.js`, and
+    writes `sw.js`, a one-line `importScripts` of that bundle.
+  - **The worker.** Every page is rendered in the browser; the static files
+    (`/_astro/`, any path with an extension), `/sw.js` and Cloudflare's
+    `/cdn-cgi/` go to the network. A deploy changes the bundle's hash, hence
+    `sw.js` (`no-cache` in `_headers`; the bundle is `immutable`): the new
+    worker takes over at once (`skipWaiting`, `clients.claim`) and reloads the
+    open tabs. Pages also ask for an update on every `astro:page-load`,
+    since the `ClientRouter` moves between pages with `fetch` and Chrome
+    checks for updates only on navigations. `/_version` returns the commit
+    the worker was built from.
+  - **Authentication.** The site shows only with a Sanity session of a
+    project member (`apps/web/preview/session.ts`): the token is valid when
+    `/users/me` and `/projects/uvzsc0vv` both answer, checked again at every
+    worker start, so a revoked session or a removed member loses the preview.
+    The session lives in IndexedDB. It comes from one of two places:
+    - **the Studio's tab**: the page in the iframe asks the Studio with
+      `postMessage`, the Studio answers only to the preview's origin
+      (`apps/studio/anteprimaWeb.tsx`) and the page hands the token to the
+      worker (`POST /_token`). The token never travels in a URL: the Studio
+      shows the preview's URL;
+    - **a login in the preview** (`/_login`): Sanity's providers with
+      `type=token`, back to `/_callback`, which exchanges the session id on
+      the project's API host. Sanity accepts the callback only from an origin
+      in the project's CORS list (`https://butik.consiglio.fyi`, with
+      credentials). `/_logout` revokes this session; the Studio's stays with
+      the Studio.
+
+    Without a session a tab gets the login page, the Studio's iframe a page
+    waiting for the token, any other request a `401`. Anyone can still fetch
+    the static files: they are the public site's code and assets. The drafts
+    need the Sanity token.
+  - **Not indexed.** `X-Robots-Tag: noindex` on every path and a `robots.txt`
+    that disallows everything.
   - **Isolation from the site.** `__BUTIK_ANTEPRIMA__` is a build-time
     constant (`astro.config.mjs`), so no environment variable at runtime can
     turn drafts on in the static build.
-  - **Distribution.** `.github/workflows/anteprima.yml` rebuilds the binary on
-    every code change on `main` and uploads it to the GitHub Release
-    `anteprima`, overwriting the asset so the download link stays fixed. The
-    binary holds code, not copy: a publish in the Studio does not rebuild it.
-    A client with a private repo gets the binary from its `dist/` instead.
+  - **Distribution.** `.github/workflows/preview.yml` builds and deploys the
+    preview on every code change on `main`, with `CLOUDFLARE_API_TOKEN`
+    (Pages Edit on that account only) in the repository's secrets. The
+    preview holds code, not copy: a publish in the Studio does not rebuild
+    it. The Cloudflare account and the `consiglio.fyi` domain are personal,
+    a temporary home until the preview moves to a butik account and domain.
+  - **Deprecated: `butik-anteprima`.** The same server compiled by Bun into a
+    single macOS binary (`apps/web/anteprima/`, `build:anteprima`), serving
+    the site on `localhost:4321` for the Studio's **Presentation** tab. Every
+    start runs the Sanity CLI's browser login, and the session is revoked
+    when the binary stops. `.github/workflows/anteprima.yml` still publishes
+    it to the GitHub Release `anteprima`. It stays until the Presentation
+    tab is removed; new writers use the preview in the browser.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
@@ -176,6 +216,15 @@ will be published.
 Simpler (no download at build), but ties public traffic to Sanity's bandwidth
 quota, which on the Free plan blocks the project when exceeded.
 
+### Cloudflare Access in front of the draft preview
+
+A login on the preview's host (Access with one-time PIN for `@wearebutik.com`
+addresses) keeps the preview's files private. In the Studio the preview runs
+in a third-party iframe, where Chrome does not send Access's cookie even with
+`SameSite=None`: the worker can no longer update and `@sanity/visual-editing`
+never loads. The files are the public site's anyway, and the drafts are
+behind the Sanity session.
+
 ## Consequences
 
 ### Positive
@@ -194,8 +243,10 @@ quota, which on the Free plan blocks the project when exceeded.
 - Two schemas to keep aligned (Zod ↔ Sanity).
 - Publishing a document publishes all of its draft: a routine fix made on a
   document whose copy is still under review also publishes that copy.
-- Reviewing the copy needs `butik-anteprima` and a Sanity login: there is no
-  public link to share with a reviewer outside the project.
+- Reviewing the copy needs a Sanity login on the project: there is no public
+  link to share with a reviewer outside the project.
+- The draft preview's access control runs in the browser, in the worker: the
+  host serves the same files to everyone.
 - Free-plan limits: 20 seats with only Administrator and Viewer roles, 10k
   documents, 250k API requests/month.
 
@@ -203,5 +254,8 @@ quota, which on the Free plan blocks the project when exceeded.
 
 - Sanity usage approaches the Free-plan quotas, or the team needs roles beyond
   Administrator/Viewer → evaluate the Growth plan or another CMS.
-- Writers on Windows or Intel Macs → add `bun build --compile --target`
-  variants to `anteprima.yml`.
+- The draft preview moves to a butik domain → change `ANTEPRIMA_WEB`
+  (`SANITY_STUDIO_ANTEPRIMA_WEB`) in the Studio and the CORS origin in
+  Sanity, then redeploy the Studio.
+- Nobody uses the Presentation tab any more → remove it, `butik-anteprima`,
+  `build:anteprima` and `anteprima.yml`.

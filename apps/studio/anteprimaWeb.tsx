@@ -1,4 +1,4 @@
-// Prova: la scheda «Anteprima web» apre l'anteprima che gira in un Service
+// La scheda «Anteprima web» apre l'anteprima che gira in un Service
 // Worker (apps/web/preview). Nell'iframe il browser tiene storage e worker
 // separati, e lì il login a Sanity non si apre: la pagina chiede il token della
 // sessione dello Studio con postMessage, e lo Studio lo manda solo a quella

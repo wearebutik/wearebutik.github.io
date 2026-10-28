@@ -42,8 +42,8 @@ export const sanity = createClient({
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  // Mai le bozze nel sito: le legge solo l'anteprima (butik-anteprima), con il
-  // token di chi la avvia. `__BUTIK_ANTEPRIMA__` è fissato dal build
+  // Mai le bozze nel sito: le legge solo l'anteprima (preview/ e il binario
+  // butik-anteprima), con il token di chi la usa. `__BUTIK_ANTEPRIMA__` è fissato dal build
   // (astro.config.mjs), non da una variabile d'ambiente letta a runtime.
   ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
     ? bozze(process.env.SANITY_AUTH_TOKEN)
