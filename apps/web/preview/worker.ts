@@ -68,7 +68,9 @@ self.addEventListener('fetch', (e) => {
     return e.respondWith(gestisci(e.request).then((r) => r ?? new Response(null, { status: 404 })));
   }
   if (e.request.method !== 'GET') return;
-  if (url.pathname.startsWith('/_astro/') || url.pathname === '/sw.js' || /\.[a-z0-9]+$/i.test(url.pathname)) return;
+  // Alla rete: i file statici, il worker stesso e gli indirizzi di Cloudflare
+  // (/cdn-cgi/access/logout e simili).
+  if (/^\/(_astro|cdn-cgi)\//.test(url.pathname) || url.pathname === '/sw.js' || /\.[a-z0-9]+$/i.test(url.pathname)) return;
   e.respondWith(
     pagina(e.request).catch((err) => new Response(`errore nel Service Worker: ${err?.stack ?? err}`, { status: 500 })),
   );
