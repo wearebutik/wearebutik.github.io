@@ -13,6 +13,7 @@ import '../styles/motion.css';
 // Gli stili del cookie banner (ADR-0006) si caricano solo quando il banner si
 // mostra: vedi lib/consent/init.client.ts.
 import { getImage } from 'astro:assets';
+import { stegaClean } from '@sanity/client/stega';
 import logo from '../assets/logos/bollo-rosso.svg';
 import { getAllOgCards, ogPngPathForRoute, normalizeRoute } from '../data/ogCards';
 
@@ -29,12 +30,17 @@ interface Props {
 }
 
 const {
-  title = 'Butik',
-  description = 'La prima impresa sociale italiana specializzata in progettazione culturale e sviluppo territoriale attraverso la musica.',
+  title: titoloProp = 'Butik',
+  description: descrizioneProp = 'La prima impresa sociale italiana specializzata in progettazione culturale e sviluppo territoriale attraverso la musica.',
   ogImage,
   noindex = false,
   reveal = true,
 } = Astro.props;
+// Nell'anteprima delle bozze i testi da Sanity portano i caratteri invisibili
+// dello stega (lib/sanity.ts): nella pagina servono al clic in Edit, nel
+// <head> allungherebbero titolo e meta. Nel sito pubblicato non ci sono.
+const title = stegaClean(titoloProp);
+const description = stegaClean(descrizioneProp);
 
 const siteBase = Astro.site ?? Astro.url.origin;
 const pageURL = new URL(Astro.url.pathname, siteBase);
@@ -49,7 +55,7 @@ const ogImagePath = ogImage ?? (hasCard ? ogPngPathForRoute(route) : optimizedOg
 const ogImageURL = new URL(ogImagePath, siteBase).href;
 // width/height/type valgono solo per le card generate (1200×630 PNG):
 // per il logo di fallback la proporzione è diversa, meglio non dichiararli.
-const ogImageAlt = ogCard ? `${ogCard.title} — Butik` : title;
+const ogImageAlt = ogCard ? `${stegaClean(ogCard.title)} — Butik` : title;
 
 // Google Tag Manager (ADR-0006, Update 2026-07-13): caricato via Google
 // Consent Mode v2. Il container si legge da `PUBLIC_GTM_ID`; se manca, GTM non
