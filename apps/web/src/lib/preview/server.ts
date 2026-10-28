@@ -3,7 +3,7 @@
 // browser. Il token di chi scrive arriva con ogni richiesta, dal login nel
 // browser; senza, si vedono i contenuti pubblicati.
 import { createApp } from 'astro/app/entrypoint';
-import { impostaToken } from '../anteprima/contenuti';
+import { impostaToken } from '#lib/anteprima/contenuti';
 
 const app = createApp();
 

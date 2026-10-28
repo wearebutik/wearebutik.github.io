@@ -1,5 +1,6 @@
 // Service Worker dell'anteprima: ogni pagina del sito la renderizza qui,
-// nel browser, lo stesso server del binario. I file statici passano alla rete.
+// nel browser, lo stesso server di butik-anteprima (ADR-0004, Draft preview).
+// I file statici passano alla rete.
 /// <reference lib="webworker" />
 import { render } from '../dist-preview/server/entry.mjs';
 import { gestisci, html, sessione, type Sessione } from './session';
@@ -7,16 +8,6 @@ import { gestisci, html, sessione, type Sessione } from './session';
 declare const self: ServiceWorkerGlobalScope;
 // La versione del codice (commit), messa da build.ts e letta su /_version.
 declare const __VERSION__: string;
-
-// Prova: quello che il worker scrive in console, leggibile su /_log.
-const log: string[] = [];
-for (const livello of ['error', 'warn', 'log'] as const) {
-  const originale = console[livello].bind(console);
-  console[livello] = (...a: unknown[]) => {
-    log.push(`[${livello}] ${a.map((x) => (x instanceof Error ? x.stack : typeof x === 'string' ? x : JSON.stringify(x))).join(' ')}`);
-    originale(...a);
-  };
-}
 
 self.addEventListener('install', () => self.skipWaiting());
 // Un worker nuovo prende subito le schede aperte e le ricarica: le pagine
@@ -45,6 +36,15 @@ const script = `<script>(() => {
   window.parent.postMessage({ type: 'butik-preview/token-request' }, '*');
 })();</script>`;
 
+// Il ClientRouter di Astro cambia pagina con fetch, non con una navigazione,
+// e Chrome cerca un worker nuovo solo alle navigazioni: lo chiede la pagina a
+// ogni cambio, una volta per scheda.
+const aggiorna = `<script>(() => {
+  if (window.__butikAggiorna) return;
+  window.__butikAggiorna = true;
+  document.addEventListener('astro:page-load', () => navigator.serviceWorker.getRegistration().then((r) => r?.update()));
+})();</script>`;
+
 const angolo = (s: Sessione) =>
   `<div style="position:fixed;left:8px;bottom:8px;z-index:2147483647;font:12px system-ui;background:#111;color:#fff;padding:4px 8px;border-radius:4px">Bozze di ${s.nome}${
     s.nostra ? ' · <a href="/_logout" style="color:inherit">esci</a>' : ''
@@ -67,7 +67,7 @@ async function pagina(request: Request) {
   if (!s) return senzaSessione(request);
   const risposta = await render(request, s.token);
   if (!risposta.headers.get('Content-Type')?.includes('text/html')) return risposta;
-  const testo = (await risposta.text()).replace(/<\/body>/i, `${angolo(s)}${script}</body>`);
+  const testo = (await risposta.text()).replace(/<\/body>/i, `${angolo(s)}${script}${aggiorna}</body>`);
   return new Response(testo, { status: risposta.status, headers: risposta.headers });
 }
 
@@ -75,7 +75,6 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
   if (url.pathname === '/_version') return e.respondWith(new Response(__VERSION__));
-  if (url.pathname === '/_log') return e.respondWith(new Response(log.join('\n')));
   if (['/_login', '/_callback', '/_logout', '/_token'].includes(url.pathname)) {
     return e.respondWith(gestisci(e.request).then((r) => r ?? new Response(null, { status: 404 })));
   }
