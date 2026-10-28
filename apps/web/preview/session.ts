@@ -30,8 +30,23 @@ function esito<T>(r: IDBRequest<T>) {
 
 let attuale: Promise<Sessione | undefined> | undefined;
 
+/**
+ * La sessione salvata, ricontrollata su Sanity la prima volta che il worker la
+ * legge: una sessione revocata, scaduta o di chi ha perso l'accesso al
+ * progetto si cancella.
+ */
 export function sessione() {
-  attuale ??= negozio('readonly').then((s) => esito(s.get('sessione') as IDBRequest<Sessione | undefined>));
+  attuale ??= negozio('readonly')
+    .then((s) => esito(s.get('sessione') as IDBRequest<Sessione | undefined>))
+    .then(async (s) => {
+      if (!s) return undefined;
+      try {
+        return await apri(s.token, s.nostra);
+      } catch {
+        await salva(undefined);
+        return undefined;
+      }
+    });
   return attuale;
 }
 
@@ -42,15 +57,20 @@ async function salva(s: Sessione | undefined) {
   attuale = Promise.resolve(s);
 }
 
-/** Chi è il token: un token scaduto o revocato non apre una sessione. */
+/**
+ * Chi è il token, e se è un membro del progetto: solo allora apre una
+ * sessione. È l'unico controllo su chi vede l'anteprima (worker.ts).
+ */
 async function apri(token: string, nostra: boolean): Promise<Sessione> {
-  const r = await fetch(`${API}/users/me`, { headers: { Authorization: `Bearer ${token}` } });
-  const utente = r.ok ? ((await r.json()) as { id?: string; name?: string; email?: string }) : undefined;
-  if (!utente?.id) throw new Error(`token non valido (HTTP ${r.status})`);
+  const headers = { Authorization: `Bearer ${token}` };
+  const [me, progetto] = await Promise.all([fetch(`${API}/users/me`, { headers }), fetch(`${API}/projects/${PROJECT_ID}`, { headers })]);
+  const utente = me.ok ? ((await me.json()) as { id?: string; name?: string; email?: string }) : undefined;
+  if (!utente?.id) throw new Error(`sessione Sanity non valida (HTTP ${me.status})`);
+  if (!progetto.ok) throw new Error(`${utente.email ?? utente.id} non ha accesso al progetto butik (HTTP ${progetto.status})`);
   return { token, nome: utente.name ?? utente.email ?? utente.id, nostra };
 }
 
-const html = (corpo: string, status = 200) =>
+export const html = (corpo: string, status = 200) =>
   new Response(
     `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Anteprima delle bozze · butik</title>

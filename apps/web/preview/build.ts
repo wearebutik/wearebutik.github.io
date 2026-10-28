@@ -4,7 +4,8 @@
 //   la cache HTTP tiene per sempre;
 // - sw.js, poche righe che importano quel file: il browser lo riscarica a ogni
 //   controllo e, quando cambia l'hash, installa il worker nuovo;
-// - index.html, la pagina che registra il worker;
+// - index.html, la pagina che registra il worker, e robots.txt, che tiene
+//   l'anteprima fuori dai motori di ricerca come il noindex di _headers;
 // - _headers, per Cloudflare Pages: la cache dei file e il noindex (l'anteprima
 //   non va nei motori di ricerca).
 import { createHash } from 'node:crypto';
@@ -32,6 +33,7 @@ const nome = `_astro/preview.${createHash('sha256').update(preview).digest('hex'
 await Bun.write(client + nome, preview);
 await Bun.write(`${client}sw.js`, `importScripts('/${nome}');\n`);
 await Bun.write(`${client}index.html`, Bun.file(new URL('./index.html', import.meta.url)));
+await Bun.write(`${client}robots.txt`, 'User-agent: *\nDisallow: /\n');
 await Bun.write(
   `${client}_headers`,
   `/*\n  X-Robots-Tag: noindex\n/sw.js\n  Cache-Control: no-cache\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n`,
