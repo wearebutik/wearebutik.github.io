@@ -7,8 +7,9 @@ import { enableVisualEditing } from '@sanity/visual-editing';
 import { navigate } from 'astro:transitions/client';
 
 // Mentre si scrive arrivano molte modifiche di fila: si ricarica una volta,
-// a scrittura ferma.
-const ATTESA_MS = 600;
+// a scrittura ferma, lasciando allo Studio il tempo di salvare la bozza su
+// Sanity.
+const ATTESA_MS = 1000;
 
 export function avviaVisualEditing() {
   let timer: ReturnType<typeof setTimeout> | undefined;
@@ -31,7 +32,10 @@ export function avviaVisualEditing() {
     refresh: () =>
       new Promise((fatto) => {
         clearTimeout(timer);
-        timer = setTimeout(() => {
+        // Il worker tiene i contenuti per un paio di secondi (contenuti.ts):
+        // prima di ricaricare li butta, così la pagina rilegge le bozze.
+        timer = setTimeout(async () => {
+          await fetch('/_aggiorna', { method: 'POST' }).catch(() => {});
           location.reload();
           fatto();
         }, ATTESA_MS);

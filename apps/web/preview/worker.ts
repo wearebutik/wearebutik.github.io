@@ -2,7 +2,7 @@
 // pagina del sito la renderizza qui, nel browser. I file statici passano alla
 // rete.
 /// <reference lib="webworker" />
-import { render } from '../dist-preview/server/entry.mjs';
+import { render, svuota } from '../dist-preview/server/entry.mjs';
 import { gestisci, html, prospettiva, sessione, type Sessione } from './session';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -75,6 +75,12 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
   if (url.pathname === '/_version') return e.respondWith(new Response(__VERSION__));
+  // Una modifica nello Studio (lib/anteprima/visualEditing.client.ts): la
+  // pagina che si ricarica subito dopo deve rileggere le bozze.
+  if (url.pathname === '/_aggiorna' && e.request.method === 'POST') {
+    svuota();
+    return e.respondWith(new Response(null, { status: 204 }));
+  }
   if (['/_login', '/_callback', '/_logout', '/_token', '/_perspective'].includes(url.pathname)) {
     return e.respondWith(gestisci(e.request).then((r) => r ?? new Response(null, { status: 404 })));
   }

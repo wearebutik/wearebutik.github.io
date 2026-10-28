@@ -39,6 +39,11 @@ export function impostaSessione(token: string | undefined, prospettiva: ClientPe
 const DURATA_MS = 2000;
 const cache = new Map<string, { scade: number; entries: Promise<Map<string, Entry>> }>();
 
+/** Dopo una modifica nello Studio la pagina rilegge tutto, anche entro i due secondi. */
+export function svuota() {
+  cache.clear();
+}
+
 type Esito = { data: Record<string, unknown> } | { errori: string[] };
 
 /** Esegue il loader della collection con `client` e valida ogni documento. */
