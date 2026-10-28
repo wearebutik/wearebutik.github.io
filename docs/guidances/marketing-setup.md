@@ -9,8 +9,8 @@ A new person on the marketing team ends the onboarding able to:
 
 1. **write and publish copy** in the Sanity Studio
    (https://butik.sanity.studio);
-2. **see their drafts on the real site** before publishing, in the Studio's
-   **Anteprima web** tab;
+2. **see their drafts on the real site** before publishing, on
+   https://butik.consiglio.fyi or in the Studio's **Anteprima web** tab;
 3. **have Claude draft copy** straight into Sanity, from Claude Desktop
    through the Sanity connector;
 4. **change the brand voice** — the sections *Brand Voice* and *Customer
@@ -36,18 +36,20 @@ repository on the Mac, which Claude sets up in the **Code** tab (part 4).
    (Google, GitHub, e-mail) is a separate Sanity user: the Studio and the
    connector must use the same one. Then open https://butik.sanity.studio and
    check that the documents are there.
-2. **Draft preview.** In the Studio open the **Anteprima web** tab: the site
-   with the drafts, next to the form. Bottom left, "Bozze di <name>" says
-   whose session it uses. With **Edit** on, a click on a text opens its
-   field; the page follows the drafts while they change. A dark strip at the
-   bottom lists drafts with required fields left empty.
-   The same preview opens on its own at https://butik.consiglio.fyi, after a
-   Sanity login with the same method as the Studio: useful to read a page in
-   a full tab.
-
-If the tab stays on "Unable to connect", or shows the site as it was before
-a change to its code, the reload button in the tab's address bar loads the
-preview again.
+2. **Draft preview.** Open https://butik.consiglio.fyi and sign in to
+   Sanity with the same method as the Studio: the browser keeps the session.
+   It is the site with every draft of the project, at the same paths as the
+   public site (`/`, `/servizi/<slug>`, `/progetti/<slug>`, `/chi-siamo`…).
+   Bottom left, "Bozze di <name> · esci" says whose session it uses. A new
+   draft shows after a reload of the page; a dark strip at the bottom lists
+   drafts with required fields left empty. This is the preview to use when
+   Claude writes the copy.
+3. **Draft preview in the Studio.** For copy written by hand, the Studio's
+   **Anteprima web** tab shows the same preview next to the form: it follows
+   the drafts while they change, and with **Edit** on a click on a text opens
+   its field. If the tab stays on "Unable to connect", or shows the site as
+   it was before a change to its code, the reload button in the tab's address
+   bar loads the preview again.
 
 ## 3. Claude Desktop with the Sanity connector
 
@@ -72,7 +74,9 @@ Scrivi i testi del sito di butik nel progetto Sanity "butik" (uvzsc0vv, dataset 
 - Prima di scrivere leggi voce e pubblico da product-marketing.md, nei file del progetto.
 - Scrivi solo bozze (create_documents, patch_documents). Non pubblicare, non ritirare e non scartare mai niente: la pubblicazione la faccio io dallo Studio, e pubblicare un documento pubblica tutta la sua bozza.
 - Cambia solo i campi di testo. Lascia come sono slug, link (i campi …Href), valori a scelta fissa (heroVariant), categorie, id dei filtri, immagini e indirizzi e-mail.
-- Alla fine dimmi quali documenti e quali campi hai cambiato, e ricordami di controllarli nella scheda "Anteprima web" dello Studio (https://butik.sanity.studio) prima di pubblicare.
+- Alla fine dimmi quali documenti e quali campi hai cambiato, con il testo prima e dopo.
+- Poi aprimi nel browser la pagina dell'anteprima dove si vede il testo cambiato, su https://butik.consiglio.fyi, con lo stesso percorso del sito pubblico: / per la home, /servizi/<slug> per un servizio, /progetti/<slug> per un progetto, /chi-siamo, /contatti, /partners per le altre pagine. Se compare la pagina "Anteprima delle bozze", dimmi di fare il login a Sanity con lo stesso metodo dello Studio e aspettami; poi ricarica la pagina e mostrami il testo nuovo.
+- Ricordami che per pubblicare devo aprire il documento nello Studio (https://butik.sanity.studio) e premere Publish.
 ````
 
 ## 4. The brand voice: the repository on the Mac
@@ -125,9 +129,9 @@ Il tone of voice è in `.agents/product-marketing.md`, sezioni **Brand Voice** e
   within a few minutes
   ([ADR-0004 *Publishing*](../adr/0004-content-architecture.md)).
 - **Copy drafted by Claude.** Ask in the *butik — testi del sito* project in
-  Claude Desktop: Claude writes drafts and says which documents and fields
-  it changed. Review them in the **Anteprima web** tab and publish from the
-  Studio. A chat outside the project has none of its instructions: ask it
+  Claude Desktop: Claude writes drafts, says which documents and fields it
+  changed and opens the page on https://butik.consiglio.fyi. Publish from
+  the Studio. A chat outside the project has none of its instructions: ask it
   explicitly for drafts, never to publish.
 - **Changing the brand voice.** Open the Code tab in
   `~/butik/wearebutik.github.io` and ask for the change. Claude brings the
