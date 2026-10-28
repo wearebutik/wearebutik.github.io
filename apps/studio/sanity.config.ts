@@ -4,8 +4,7 @@ import { visionTool } from '@sanity/vision';
 import { presentationTool } from 'sanity/presentation';
 import { schemaTypes } from './schemaTypes';
 import { structure, PAGINE_TYPES } from './structure';
-
-const ANTEPRIMA_WEB = process.env.SANITY_STUDIO_ANTEPRIMA_WEB ?? 'https://butik.consiglio.fyi';
+import { ANTEPRIMA_WEB, LayoutAnteprimaWeb } from './anteprimaWeb';
 
 export default defineConfig({
   name: 'butik',
@@ -18,21 +17,12 @@ export default defineConfig({
     // di chi scrive (ADR-0004). Senza il binario avviato, la scheda resta vuota.
     presentationTool({ previewUrl: 'http://localhost:4321' }),
     // Prova: la stessa anteprima nel browser, in un Service Worker
-    // (apps/web/preview), senza niente da installare. Il token della sessione
-    // dello Studio va all'anteprima dopo `#`, che non arriva a nessun server:
-    // l'iframe ha uno storage tutto suo e lì il login a Sanity non si apre.
-    presentationTool({
-      name: 'anteprima-web',
-      title: 'Anteprima web',
-      previewUrl: {
-        initial: ({ client }) => {
-          const token = client.config().token;
-          return `${ANTEPRIMA_WEB}/${token ? `#token=${encodeURIComponent(token)}` : ''}`;
-        },
-      },
-    }),
+    // (apps/web/preview), senza niente da installare. La sessione la riceve
+    // dallo Studio (anteprimaWeb.tsx).
+    presentationTool({ name: 'anteprima-web', title: 'Anteprima web', previewUrl: ANTEPRIMA_WEB }),
     visionTool(),
   ],
+  studio: { components: { layout: LayoutAnteprimaWeb } },
   schema: {
     types: schemaTypes,
     // Le pagine esistono in un solo esemplare: non si creano dal pulsante "+".

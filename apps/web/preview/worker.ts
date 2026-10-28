@@ -29,27 +29,30 @@ self.addEventListener('activate', (e) =>
   ),
 );
 
-// In fondo a ogni pagina: il token che lo Studio passa nell'indirizzo
-// (#token=…, sanity.config.ts) va al worker e sparisce dall'indirizzo; in un
-// angolo, con chi si stanno leggendo le bozze. index.html tiene il token in
-// sessionStorage se la pagina si apre prima che il worker ci sia.
+// In fondo a ogni pagina aperta nello Studio (scheda Anteprima web): la
+// pagina chiede il token alla finestra dello Studio, che risponde solo a
+// questa origine (apps/studio/anteprimaWeb.tsx), e lo passa al worker.
 const script = `<script>(() => {
-  const t = new URLSearchParams(location.hash.slice(1)).get('token') ?? sessionStorage.getItem('butik-token');
-  if (!t) return;
-  sessionStorage.removeItem('butik-token');
-  if (location.hash) history.replaceState(history.state, '', location.pathname + location.search);
-  fetch('/_token', { method: 'POST', body: t }).then((r) => r.status === 201 && location.reload());
+  if (window.parent === window) return;
+  addEventListener('message', (e) => {
+    if (e.source !== window.parent || e.data?.type !== 'butik-preview/token' || !e.data.token) return;
+    fetch('/_token', { method: 'POST', body: e.data.token }).then((r) => r.status === 201 && location.reload());
+  });
+  window.parent.postMessage({ type: 'butik-preview/token-request' }, '*');
 })();</script>`;
 
 const angolo = (s: Sessione | undefined) =>
   `<div style="position:fixed;left:8px;bottom:8px;z-index:2147483647;font:12px system-ui;background:#111;color:#fff;padding:4px 8px;border-radius:4px">${
     s
       ? `Bozze di ${s.nome}${s.nostra ? ' · <a href="/_logout" style="color:inherit">esci</a>' : ''}`
-      : 'Contenuti pubblicati · <a href="/_login" style="color:inherit">accedi per le bozze</a>'
+      : 'Contenuti pubblicati · <a href="/_login" target="_blank" style="color:inherit">accedi per le bozze</a>'
   }</div>`;
 
 async function pagina(request: Request) {
   const s = await sessione();
+  // Senza sessione, in una scheda normale, si parte dal login; nello Studio
+  // (iframe) il token arriva subito dopo, dallo script qui sopra.
+  if (!s && request.destination === 'document') return Response.redirect(new URL('/_login', request.url).href, 303);
   const risposta = await render(request, s?.token);
   if (!risposta.headers.get('Content-Type')?.includes('text/html')) return risposta;
   const testo = (await risposta.text()).replace(/<\/body>/i, `${angolo(s)}${script}</body>`);

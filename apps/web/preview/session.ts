@@ -1,6 +1,7 @@
 // La sessione Sanity di chi scrive, nel Service Worker. Il token arriva in due
 // modi: dal login fatto qui (/_login → Sanity → /_callback), o dallo Studio,
-// che lo passa all'anteprima aperta nella sua scheda Presentation (/_token).
+// che lo passa con postMessage all'anteprima aperta nella sua scheda
+// Presentation (worker.ts), e da lì a /_token.
 // Resta in IndexedDB, perché il browser ferma il worker quando è inattivo.
 /// <reference lib="webworker" />
 
@@ -50,10 +51,20 @@ async function apri(token: string, nostra: boolean): Promise<Sessione> {
 }
 
 const html = (corpo: string, status = 200) =>
-  new Response(`<!doctype html><meta charset="utf-8"><title>Anteprima delle bozze</title><body style="font:16px system-ui;margin:3rem">${corpo}`, {
-    status,
-    headers: { 'Content-Type': 'text/html; charset=utf-8' },
-  });
+  new Response(
+    `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Anteprima delle bozze · butik</title>
+<style>
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; font: 16px/1.5 system-ui, sans-serif; background: #f4f1ec; color: #1a1a1a; }
+  main { width: min(26rem, 100% - 2rem); background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 1px 3px #0002; }
+  h1 { margin: 0 0 .5rem; font-size: 1.4rem; }
+  p { margin: 0 0 1rem; color: #555; }
+  a.metodo { display: block; margin-top: .5rem; padding: .7rem 1rem; border: 1px solid #ccc; border-radius: 6px; color: inherit; text-decoration: none; text-align: center; font-weight: 600; }
+  a.metodo:hover, a.metodo:focus-visible { border-color: #1a1a1a; }
+</style>
+<main>${corpo}</main>`,
+    { status, headers: { 'Content-Type': 'text/html; charset=utf-8' } },
+  );
 
 /** Le pagine e le azioni della sessione; undefined per ogni altro indirizzo. */
 export async function gestisci(request: Request): Promise<Response | undefined> {
@@ -70,9 +81,11 @@ export async function gestisci(request: Request): Promise<Response | undefined> 
         u.searchParams.set('projectId', PROJECT_ID);
         u.searchParams.set('label', 'butik-preview');
         u.searchParams.set('origin', `${url.origin}/_callback`);
-        return `<p><a href="${u}">${p.title}</a></p>`;
+        return `<a class="metodo" href="${u}">${p.title}</a>`;
       });
-      return html(`<h1>Accedi a Sanity</h1><p>Con lo stesso metodo che usi per lo Studio.</p>${link.join('')}`);
+      return html(
+        `<h1>Anteprima delle bozze</h1><p>Il sito di butik con i testi non ancora pubblicati. Accedi a Sanity con lo stesso metodo che usi per lo Studio.</p>${link.join('')}`,
+      );
     }
     // Sanity rimanda qui con un id di sessione, che /auth/fetch scambia con il token.
     case '/_callback': {
@@ -90,7 +103,7 @@ export async function gestisci(request: Request): Promise<Response | undefined> 
       const s = await sessione();
       if (s?.nostra) await fetch(`${API}/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${s.token}` } });
       await salva(undefined);
-      return Response.redirect(`${url.origin}/`, 303);
+      return Response.redirect(`${url.origin}/_login`, 303);
     }
     // Il token dello Studio: 201 se la sessione è cambiata e la pagina va
     // ricaricata, 204 se era già questa.
