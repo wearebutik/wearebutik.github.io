@@ -1,7 +1,7 @@
 name: Preview (Service Worker)
 
-# L'anteprima delle bozze che gira nel browser (apps/web/preview): il server di
-# butik-anteprima impacchettato in un Service Worker, pubblicato su Cloudflare
+# L'anteprima delle bozze che gira nel browser (apps/web/preview): il sito come
+# server, impacchettato in un Service Worker, pubblicato su Cloudflare
 # Pages (progetto `butik-preview`, dominio butik.consiglio.fyi; ADR-0004). Chi
 # vede le bozze lo decide la sessione Sanity nel worker. Contiene solo il
 # codice: si ripubblica quando cambia il codice del sito, non quando si

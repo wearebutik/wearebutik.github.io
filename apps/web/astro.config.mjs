@@ -9,17 +9,15 @@ import { cssCritico } from './src/lib/cssCritico.ts';
 import { linkConBarra } from './src/lib/linkConBarra.ts';
 import { bozze } from './src/lib/anteprima/bozze.ts';
 
-// Anteprima delle bozze (butik-anteprima, ADR-0004): lo stesso sito come
-// server locale, che a ogni richiesta legge le bozze da Sanity. Foto non
-// ottimizzate (arrivano dalla CDN Sanity) e nessun passaggio di fine build:
-// è uno strumento di chi scrive, non il sito pubblicato.
+// Anteprima delle bozze (ADR-0004, Draft preview): lo stesso sito come server,
+// che gira in un Service Worker (preview/) e a ogni richiesta legge le bozze
+// da Sanity. Foto non ottimizzate (arrivano dalla CDN Sanity) e nessun
+// passaggio di fine build: è uno strumento di chi scrive, non il sito pubblicato.
 const anteprima = process.env.BUTIK_ANTEPRIMA === '1';
-// BUTIK_PREVIEW_SW=1: lo stesso server per il Service Worker (preview/), in una cartella sua.
-const outDirAnteprima = process.env.BUTIK_PREVIEW_SW === '1' ? './dist-preview' : './dist-anteprima';
 
 export default defineConfig({
   ...(process.env.SITE ? { site: process.env.SITE } : {}),
-  ...(anteprima ? { output: 'server', adapter: bozze(), outDir: outDirAnteprima } : {}),
+  ...(anteprima ? { output: 'server', adapter: bozze(), outDir: './dist-preview' } : {}),
   prefetch: {
     prefetchAll: true,
   },

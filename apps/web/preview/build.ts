@@ -1,5 +1,5 @@
 // Build dell'anteprima nel Service Worker, in dist-preview/client:
-// - il sito compilato per il server (BUTIK_PREVIEW_SW=1) e impacchettato per il
+// - il sito compilato per il server (BUTIK_ANTEPRIMA=1) e impacchettato per il
 //   browser in _astro/preview.<hash>.js, minificato e con l'hash nel nome, che
 //   la cache HTTP tiene per sempre;
 // - sw.js, poche righe che importano quel file: il browser lo riscarica a ogni
@@ -15,7 +15,7 @@ const web = new URL('../', import.meta.url).pathname;
 const client = `${web}dist-preview/client/`;
 const version = (await $`git rev-parse --short HEAD`.cwd(web).text()).trim();
 
-await $`pnpm exec astro build`.cwd(web).env({ ...process.env, BUTIK_ANTEPRIMA: '1', BUTIK_PREVIEW_SW: '1' });
+await $`pnpm exec astro build`.cwd(web).env({ ...process.env, BUTIK_ANTEPRIMA: '1' });
 
 const build = await Bun.build({
   entrypoints: [new URL('./worker.ts', import.meta.url).pathname],

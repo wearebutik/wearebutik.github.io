@@ -234,7 +234,7 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <script>
       import { initCookieConsent } from '#lib/consent/init.client';
       import { initPostHogCookieless } from '#lib/analytics/posthog.client';
-      // L'anteprima delle bozze gira su localhost per chi scrive: niente
+      // L'anteprima delle bozze è uno strumento di chi scrive: niente
       // banner, niente misure, e il collegamento con lo Studio. Il ramo
       // dell'anteprima non esiste nel build del sito (costante falsa).
       if (__BUTIK_ANTEPRIMA__) {

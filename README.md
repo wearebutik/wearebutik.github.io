@@ -16,7 +16,6 @@ Dalla radice, con gli strumenti di `mise.toml` (`mise install`):
 | `pnpm build` | Build del sito in `apps/web/dist/` |
 | `pnpm check` | Controllo dei tipi (TypeScript 7, anche i `.astro`) di sito, anteprima e Studio |
 | `pnpm --filter @butik/web build:preview` | Anteprima delle bozze nel browser, in `apps/web/dist-preview/client/` |
-| `pnpm --filter @butik/web build:anteprima` | Binario `butik-anteprima` (deprecato) |
 | `pnpm --filter @butik/studio dev` | Studio Sanity in locale |
 | `pnpm --filter @butik/studio run deploy` | Pubblica lo Studio |
 

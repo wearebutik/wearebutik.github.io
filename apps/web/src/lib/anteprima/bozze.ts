@@ -1,7 +1,7 @@
 // Integrazione e adapter del build dell'anteprima delle bozze
 // (astro.config.mjs): le pagine del sito leggono `astro:content` dal
 // sostituto di contenuti.ts e i pacchetti nativi da stub.ts, senza toccare il
-// codice delle pagine; il server è server.ts.
+// codice delle pagine; il server è ../preview/server.ts, per il Service Worker.
 import { fileURLToPath } from 'node:url';
 import type { AstroIntegration } from 'astro';
 
@@ -19,7 +19,7 @@ export function bozze(): AstroIntegration {
       'astro:config:setup': ({ updateConfig, config }) => {
         const src = fileURLToPath(config.srcDir);
         updateConfig({
-          // Le foto passano da /_image, che le richiede al binario stesso
+          // Le foto passano da /_image, che le richiede al sito stesso
           // (locali) o alla CDN Sanity (remote), senza trasformarle.
           image: { endpoint: { route: '/_image', entrypoint: 'astro/assets/endpoint/generic' } },
           vite: {
@@ -48,8 +48,7 @@ export function bozze(): AstroIntegration {
         setAdapter({
           name: 'butik-anteprima',
           entrypointResolution: 'auto',
-          // BUTIK_PREVIEW_SW=1: il server per il Service Worker (preview/).
-          serverEntrypoint: qui(process.env.BUTIK_PREVIEW_SW === '1' ? '../preview/server.ts' : './server.ts'),
+          serverEntrypoint: qui('../preview/server.ts'),
           adapterFeatures: { buildOutput: 'server' },
           supportedAstroFeatures: { serverOutput: 'stable', staticOutput: 'stable', hybridOutput: 'stable' },
         });

@@ -1,9 +1,9 @@
-// Service Worker dell'anteprima: ogni pagina del sito la renderizza qui,
-// nel browser, lo stesso server di butik-anteprima (ADR-0004, Draft preview).
-// I file statici passano alla rete.
+// Service Worker dell'anteprima delle bozze (ADR-0004, Draft preview): ogni
+// pagina del sito la renderizza qui, nel browser. I file statici passano alla
+// rete.
 /// <reference lib="webworker" />
 import { render } from '../dist-preview/server/entry.mjs';
-import { gestisci, html, sessione, type Sessione } from './session';
+import { gestisci, html, prospettiva, sessione, type Sessione } from './session';
 
 declare const self: ServiceWorkerGlobalScope;
 // La versione del codice (commit), messa da build.ts e letta su /_version.
@@ -65,7 +65,7 @@ async function senzaSessione(request: Request) {
 async function pagina(request: Request) {
   const s = await sessione();
   if (!s) return senzaSessione(request);
-  const risposta = await render(request, s.token);
+  const risposta = await render(request, s.token, await prospettiva());
   if (!risposta.headers.get('Content-Type')?.includes('text/html')) return risposta;
   const testo = (await risposta.text()).replace(/<\/body>/i, `${angolo(s)}${script}${aggiorna}</body>`);
   return new Response(testo, { status: risposta.status, headers: risposta.headers });
@@ -75,7 +75,7 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (url.origin !== location.origin) return;
   if (url.pathname === '/_version') return e.respondWith(new Response(__VERSION__));
-  if (['/_login', '/_callback', '/_logout', '/_token'].includes(url.pathname)) {
+  if (['/_login', '/_callback', '/_logout', '/_token', '/_perspective'].includes(url.pathname)) {
     return e.respondWith(gestisci(e.request).then((r) => r ?? new Response(null, { status: 404 })));
   }
   if (e.request.method !== 'GET') return;

@@ -2,7 +2,7 @@
 // e getEntry come nel sito, ma i dati arrivano da Sanity a ogni richiesta e non
 // dallo store scritto a build time. Riusa i loader e gli schemi Zod di
 // content.config.ts, così l'anteprima valida i testi come il build vero.
-import type { SanityClient } from '@sanity/client';
+import type { ClientPerspective, SanityClient } from '@sanity/client';
 import type { Loader } from 'astro/loaders';
 import { z } from 'astro/zod';
 import { sanityBozze, sanityPubblicati } from '#lib/sanity';
@@ -23,14 +23,14 @@ export function defineCollection(c: Collezione) {
   return { ...c, type: 'content_layer', loader: { name: 'anteprima', load: async () => {} }, [LOADER]: c.loader };
 }
 
-// Il token di chi scrive, quando arriva a runtime (l'anteprima nel Service
-// Worker, src/lib/preview/server.ts). Il binario lo mette nell'ambiente prima
-// di avviare il server: lì il client di default lo ha già.
-let bozze: { token: string; client: SanityClient } | undefined;
+// Il token di chi scrive e la prospettiva scelta nello Studio, che arrivano
+// con ogni richiesta (src/lib/preview/server.ts). Senza token, i pubblicati.
+let bozze: { chiave: string; client: SanityClient } | undefined;
 
-export function impostaToken(token: string | undefined) {
-  if (token === bozze?.token) return;
-  bozze = token ? { token, client: sanityBozze(token) } : undefined;
+export function impostaSessione(token: string | undefined, prospettiva: ClientPerspective = 'drafts') {
+  const chiave = token && `${token} ${JSON.stringify(prospettiva)}`;
+  if (chiave === bozze?.chiave) return;
+  bozze = token && chiave ? { chiave, client: sanityBozze(token, prospettiva) } : undefined;
   cache.clear();
 }
 

@@ -84,7 +84,10 @@ it.
     placeholder and no OG card; consent banner and analytics are off.
     With a token the client turns on stega and the page loads
     `@sanity/visual-editing`: click-to-edit, document list and navigation in
-    the Studio tab, and a reload after each change. Fields the code
+    the Studio tab, and a reload after each change. The perspective chosen
+    in the Studio (drafts, published, or a release) reaches the worker
+    through `onPerspectiveChange` (`POST /_perspective`) and the page reloads
+    with it; outside the Studio the preview shows drafts. Fields the code
     compares or validates (enums, links, filter ids, `category`, e-mails) and
     link-shaped values stay out of stega (`NON_CODIFICATI` in
     `apps/web/src/lib/sanity.ts`). `apps/web/preview/build.ts` bundles the
@@ -131,13 +134,6 @@ it.
     preview holds code, not copy: a publish in the Studio does not rebuild
     it. The Cloudflare account and the `consiglio.fyi` domain are personal,
     a temporary home until the preview moves to a butik account and domain.
-  - **Deprecated: `butik-anteprima`.** The same server compiled by Bun into a
-    single macOS binary (`apps/web/anteprima/`, `build:anteprima`), serving
-    the site on `localhost:4321` for the Studio's **Presentation** tab. Every
-    start runs the Sanity CLI's browser login, and the session is revoked
-    when the binary stops. `.github/workflows/anteprima.yml` still publishes
-    it to the GitHub Release `anteprima`. It stays until the Presentation
-    tab is removed; new writers use the preview in the browser.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner di chiusura), one Sanity object per site component. Text
@@ -216,6 +212,15 @@ will be published.
 Simpler (no download at build), but ties public traffic to Sanity's bandwidth
 quota, which on the Free plan blocks the project when exceeded.
 
+### A preview binary on the writer's computer
+
+The same server compiled by Bun into a single macOS binary, serving the site
+on `localhost:4321` for the Studio's Presentation tool, with the Sanity CLI's
+login at every start. It needs a download, a terminal and Chrome's local
+network permission, runs only on Apple Silicon, and a code change means a
+new download. The preview in the browser does the same with nothing to
+install.
+
 ### Cloudflare Access in front of the draft preview
 
 A login on the preview's host (Access with one-time PIN for `@wearebutik.com`
@@ -257,5 +262,3 @@ behind the Sanity session.
 - The draft preview moves to a butik domain → change `ANTEPRIMA_WEB`
   (`SANITY_STUDIO_ANTEPRIMA_WEB`) in the Studio and the CORS origin in
   Sanity, then redeploy the Studio.
-- Nobody uses the Presentation tab any more → remove it, `butik-anteprima`,
-  `build:anteprima` and `anteprima.yml`.
