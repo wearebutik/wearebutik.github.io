@@ -39,6 +39,30 @@ export function impostaSessione(token: string | undefined, prospettiva: ClientPe
 const DURATA_MS = 2000;
 const cache = new Map<string, { scade: number; entries: Promise<Map<string, Entry>> }>();
 
+/** Dopo una modifica nello Studio la pagina rilegge tutto, anche entro i due secondi. */
+export function svuota() {
+  cache.clear();
+}
+
+// Lo Studio salva le bozze con `visibility: async`: per un attimo dopo il
+// salvataggio le query vedono ancora la versione di prima. Il `_rev` che lo
+// Studio manda con la modifica è quello che il documento avrà una volta
+// salvato: si aspetta quello, al massimo qualche secondo.
+const ATTESA_MAX_MS = 6000;
+const PASSO_MS = 300;
+
+/** Aspetta che Sanity veda il documento `id` alla revisione `rev`, poi svuota la memoria. */
+export async function attendi(id: string, rev: string) {
+  const client = bozze?.client.withConfig({ perspective: 'raw', stega: { enabled: false } });
+  const fine = Date.now() + ATTESA_MAX_MS;
+  while (client && Date.now() < fine) {
+    const attuale = await client.fetch<string | null>('*[_id == $id][0]._rev', { id }).catch(() => null);
+    if (attuale === rev) break;
+    await new Promise((r) => setTimeout(r, PASSO_MS));
+  }
+  svuota();
+}
+
 type Esito = { data: Record<string, unknown> } | { errori: string[] };
 
 /** Esegue il loader della collection con `client` e valida ogni documento. */
