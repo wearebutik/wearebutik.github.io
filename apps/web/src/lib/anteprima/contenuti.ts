@@ -5,7 +5,7 @@
 import type { SanityClient } from '@sanity/client';
 import type { Loader } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { sanityPubblicati } from '#lib/sanity';
+import { sanityBozze, sanityPubblicati } from '#lib/sanity';
 import { registra, type Problema } from './problemi';
 
 export { z };
@@ -21,6 +21,17 @@ const LOADER = Symbol('loader');
 export function defineCollection(c: Collezione) {
   // `type` come lo mette il defineCollection di Astro: senza, Astro 7 rifiuta la collection.
   return { ...c, type: 'content_layer', loader: { name: 'anteprima', load: async () => {} }, [LOADER]: c.loader };
+}
+
+// Il token di chi scrive, quando arriva a runtime (l'anteprima nel Service
+// Worker, src/lib/preview/server.ts). Il binario lo mette nell'ambiente prima
+// di avviare il server: lì il client di default lo ha già.
+let bozze: { token: string; client: SanityClient } | undefined;
+
+export function impostaToken(token: string | undefined) {
+  if (token === bozze?.token) return;
+  bozze = token ? { token, client: sanityBozze(token) } : undefined;
+  cache.clear();
 }
 
 // Una pagina chiama getEntry più volte (header, footer, sezioni): entro un
@@ -62,7 +73,7 @@ async function carica(nome: string): Promise<Map<string, Entry>> {
   };
   const collezione = collections[nome];
   if (!collezione) throw new Error(`collection sconosciuta: ${nome}`);
-  const esiti = await leggi(collezione, undefined);
+  const esiti = await leggi(collezione, bozze?.client);
   const nonValidi = [...esiti].filter((e): e is [string, { errori: string[] }] => 'errori' in e[1]);
   const pubblicati = nonValidi.length ? await leggi(collezione, sanityPubblicati) : new Map<string, Esito>();
 

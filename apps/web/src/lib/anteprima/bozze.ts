@@ -48,7 +48,8 @@ export function bozze(): AstroIntegration {
         setAdapter({
           name: 'butik-anteprima',
           entrypointResolution: 'auto',
-          serverEntrypoint: qui('./server.ts'),
+          // BUTIK_PREVIEW_SW=1: il server per il Service Worker (preview/).
+          serverEntrypoint: qui(process.env.BUTIK_PREVIEW_SW === '1' ? '../preview/server.ts' : './server.ts'),
           adapterFeatures: { buildOutput: 'server' },
           supportedAstroFeatures: { serverOutput: 'stable', staticOutput: 'stable', hybridOutput: 'stable' },
         });

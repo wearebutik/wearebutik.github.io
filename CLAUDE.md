@@ -158,5 +158,5 @@ https://mcp.sanity.io`). Claude proposes, the writer publishes.
   (`heroVariant`), categories, filter ids, images and e-mail addresses as they
   are.
 - After writing, say which documents and fields changed, and point the writer
-  to the Studio's **Presentation** tab with `butik-anteprima` running to
-  review and publish (`apps/web/anteprima/README.md`).
+  to the Studio's **Anteprima web** tab to review and publish
+  (`docs/adr/0004-content-architecture.md`, *Draft preview*).

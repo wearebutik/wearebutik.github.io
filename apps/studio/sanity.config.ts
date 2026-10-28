@@ -4,6 +4,7 @@ import { visionTool } from '@sanity/vision';
 import { presentationTool } from 'sanity/presentation';
 import { schemaTypes } from './schemaTypes';
 import { structure, PAGINE_TYPES } from './structure';
+import { ANTEPRIMA_WEB, LayoutAnteprimaWeb } from './anteprimaWeb';
 
 export default defineConfig({
   name: 'butik',
@@ -12,11 +13,16 @@ export default defineConfig({
   dataset: process.env.SANITY_STUDIO_DATASET ?? 'production',
   plugins: [
     structureTool({ structure }),
-    // Anteprima delle bozze: il sito servito da `butik-anteprima` sul computer
-    // di chi scrive (ADR-0004). Senza il binario avviato, la scheda resta vuota.
+    // Deprecata: il sito servito da `butik-anteprima` sul computer di chi
+    // scrive (ADR-0004). Senza il binario avviato, la scheda resta vuota.
     presentationTool({ previewUrl: 'http://localhost:4321' }),
+    // Anteprima delle bozze: il sito nel browser, in un Service Worker
+    // (apps/web/preview), senza niente da installare. La sessione la riceve
+    // dallo Studio (anteprimaWeb.tsx).
+    presentationTool({ name: 'anteprima-web', title: 'Anteprima web', previewUrl: ANTEPRIMA_WEB }),
     visionTool(),
   ],
+  studio: { components: { layout: LayoutAnteprimaWeb } },
   schema: {
     types: schemaTypes,
     // Le pagine esistono in un solo esemplare: non si creano dal pulsante "+".

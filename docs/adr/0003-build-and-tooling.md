@@ -23,7 +23,7 @@ this ADR records the toolchain that drives it.
   `pnpm install --frozen-lockfile` in CI). npm is no longer used.
 - **Framework**: Astro 7 on Vite 8 (static `astro build`, see
   [ADR-0002](./0002-runtime-and-delivery.md)); the draft preview is a second,
-  server build of the same code (`build:anteprima`, ADR-0004). Content in MDX via `@astrojs/mdx`.
+  server build of the same code (`build:preview`, ADR-0004). Content in MDX via `@astrojs/mdx`.
   `compressHTML: true` keeps the whitespace between inline elements, as
   before Astro 7 (whose default, `'jsx'`, drops it).
 - **Node and Bun**: versions pinned in `mise.toml` (Node on the current LTS),

@@ -6,9 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:preview": "bun preview/build.ts",
     "build:anteprima": "BUTIK_ANTEPRIMA=1 astro build && bun anteprima/manifesto.ts && bun build --compile --minify anteprima/cli.ts --outfile dist-anteprima/butik-anteprima",
     "preview": "astro preview",
-    "check": "astro sync && node ../../tools/type-check/index.mjs && tsc -p anteprima",
+    "check": "astro sync && node ../../tools/type-check/index.mjs && tsc -p anteprima && tsc -p preview",
     "astro": "astro"
   },
   "imports": {

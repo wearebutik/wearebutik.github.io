@@ -1,5 +1,11 @@
 # butik-anteprima
 
+> **Deprecated.** The draft preview runs in the browser: the Studio's
+> **Anteprima web** tab, or https://butik.consiglio.fyi on its own, with
+> nothing to install (ADR-0004, *Draft preview*). This binary and the
+> Studio's **Presentation** tab stay until they are removed; new writers do
+> not need them.
+
 The butik site with your Sanity drafts, on your Mac. Open the Studio's
 **Presentation** tab to see the page you are editing as it will look once
 published. Why and how it is built: `docs/adr/0004-content-architecture.md`

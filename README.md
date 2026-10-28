@@ -15,7 +15,8 @@ Dalla radice, con gli strumenti di `mise.toml` (`mise install`):
 | `pnpm --filter @butik/web dev` | Sito in locale su `localhost:4321` |
 | `pnpm build` | Build del sito in `apps/web/dist/` |
 | `pnpm check` | Controllo dei tipi (TypeScript 7, anche i `.astro`) di sito, anteprima e Studio |
-| `pnpm --filter @butik/web build:anteprima` | Binario `butik-anteprima` (anteprima delle bozze) |
+| `pnpm --filter @butik/web build:preview` | Anteprima delle bozze nel browser, in `apps/web/dist-preview/client/` |
+| `pnpm --filter @butik/web build:anteprima` | Binario `butik-anteprima` (deprecato) |
 | `pnpm --filter @butik/studio dev` | Studio Sanity in locale |
 | `pnpm --filter @butik/studio run deploy` | Pubblica lo Studio |
 
@@ -23,7 +24,7 @@ Dalla radice, con gli strumenti di `mise.toml` (`mise install`):
 
 I testi nuovi si scrivono come bozze nello Studio, nel dataset `production`.
 Il sito pubblicato mostra solo i documenti pubblicati; le bozze si vedono
-nell'anteprima locale `butik-anteprima`, nella scheda *Presentation* dello
-Studio ([ADR-0004](docs/adr/0004-content-architecture.md),
-istruzioni in [`apps/web/anteprima/README.md`](apps/web/anteprima/README.md)).
+nella scheda *Anteprima web* dello Studio, o da sole su
+https://butik.consiglio.fyi con il login a Sanity
+([ADR-0004](docs/adr/0004-content-architecture.md), *Draft preview*).
 Una bozza va sul sito quando la si pubblica.

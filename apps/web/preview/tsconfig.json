@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "types": ["bun"],
+    // Gli import ../dist-preview/* trovano le dichiarazioni in types/ quando
+    // il build non c'è.
+    "rootDirs": ["..", "./types"]
+  },
+  "include": ["*.ts", "types/**/*"],
+  "exclude": []
+}
