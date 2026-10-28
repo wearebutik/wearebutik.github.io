@@ -1,7 +1,7 @@
 // Sanity come sorgente della collection `progetti`. Si legge solo a build
 // time: il sito resta statico e le immagini vengono scaricate e ottimizzate da
 // Astro (vedi `image.domains` in astro.config.mjs), non servite dalla CDN.
-import { createClient, type SanityClient } from '@sanity/client';
+import { createClient, type SanityClient, type StegaConfig } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
@@ -22,29 +22,39 @@ const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.h
 // (`linkedin`, i segnaposto `#` che lib/links.ts riconosce e non mostra).
 const sembraLink = (v: string) => /^(#|\/|[a-z][a-z+.-]*:)/i.test(v);
 
+// Le bozze, lette con il token di chi scrive. Senza token la prospettiva
+// `drafts` nasconderebbe i documenti che hanno una bozza.
+const bozze = (token: string) => ({
+  perspective: 'drafts' as const,
+  token,
+  // Visual editing nella scheda Presentation dello Studio: ogni testo porta,
+  // in caratteri invisibili, il campo da cui viene.
+  stega: {
+    enabled: true,
+    studioUrl: process.env.SANITY_STUDIO_URL ?? 'https://butik.sanity.studio',
+    filter: (p: Parameters<NonNullable<StegaConfig['filter']>>[0]) =>
+      !p.sourcePath.some(nonCodificato) && !sembraLink(p.value) && p.filterDefault(p),
+  },
+});
+
 export const sanity = createClient({
   projectId: SANITY_PROJECT_ID,
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  // Mai le bozze nel sito: le legge solo l'anteprima locale (butik-anteprima),
-  // con il token di chi la avvia. `__BUTIK_ANTEPRIMA__` è fissato dal build
-  // (astro.config.mjs), non da una variabile d'ambiente letta a runtime. Senza
-  // token la prospettiva `drafts` nasconde i documenti che hanno una bozza.
+  // Mai le bozze nel sito: le legge solo l'anteprima (butik-anteprima), con il
+  // token di chi la avvia. `__BUTIK_ANTEPRIMA__` è fissato dal build
+  // (astro.config.mjs), non da una variabile d'ambiente letta a runtime.
   ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
-    ? {
-        perspective: 'drafts' as const,
-        token: process.env.SANITY_AUTH_TOKEN,
-        // Visual editing nella scheda Presentation dello Studio: ogni testo
-        // porta, in caratteri invisibili, il campo da cui viene.
-        stega: {
-          enabled: true,
-          studioUrl: process.env.SANITY_STUDIO_URL ?? 'https://butik.sanity.studio',
-          filter: (p) => !p.sourcePath.some(nonCodificato) && !sembraLink(p.value) && p.filterDefault(p),
-        },
-      }
+    ? bozze(process.env.SANITY_AUTH_TOKEN)
     : { perspective: 'published' as const }),
 });
+
+/**
+ * Il client delle bozze per un token che arriva a runtime: l'anteprima nel
+ * Service Worker (preview/) lo riceve dal login nel browser, non dall'ambiente.
+ */
+export const sanityBozze = (token: string) => sanity.withConfig(bozze(token));
 
 // I documenti pubblicati, senza stega: l'anteprima delle bozze ci ripiega
 // quando una bozza non rispetta lo schema (lib/anteprima/contenuti.ts).

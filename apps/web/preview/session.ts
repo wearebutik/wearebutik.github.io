@@ -1,0 +1,109 @@
+// La sessione Sanity di chi scrive, nel Service Worker. Il token arriva in due
+// modi: dal login fatto qui (/_login → Sanity → /_callback), o dallo Studio,
+// che lo passa all'anteprima aperta nella sua scheda Presentation (/_token).
+// Resta in IndexedDB, perché il browser ferma il worker quando è inattivo.
+/// <reference lib="webworker" />
+
+const API = 'https://uvzsc0vv.api.sanity.io/v2025-09-23';
+const PROJECT_ID = 'uvzsc0vv';
+
+// `nostra`: aperta da /_login, quindi si revoca all'uscita. Quella dello
+// Studio resta allo Studio.
+export type Sessione = { token: string; nome: string; nostra: boolean };
+
+function negozio(modo: IDBTransactionMode) {
+  return new Promise<IDBObjectStore>((ok, ko) => {
+    const r = indexedDB.open('preview', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('sessione');
+    r.onsuccess = () => ok(r.result.transaction('sessione', modo).objectStore('sessione'));
+    r.onerror = () => ko(r.error);
+  });
+}
+
+function esito<T>(r: IDBRequest<T>) {
+  return new Promise<T>((ok, ko) => {
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => ko(r.error);
+  });
+}
+
+let attuale: Promise<Sessione | undefined> | undefined;
+
+export function sessione() {
+  attuale ??= negozio('readonly').then((s) => esito(s.get('sessione') as IDBRequest<Sessione | undefined>));
+  return attuale;
+}
+
+async function salva(s: Sessione | undefined) {
+  const n = await negozio('readwrite');
+  if (s) await esito(n.put(s, 'sessione'));
+  else await esito(n.delete('sessione'));
+  attuale = Promise.resolve(s);
+}
+
+/** Chi è il token: un token scaduto o revocato non apre una sessione. */
+async function apri(token: string, nostra: boolean): Promise<Sessione> {
+  const r = await fetch(`${API}/users/me`, { headers: { Authorization: `Bearer ${token}` } });
+  const utente = r.ok ? ((await r.json()) as { id?: string; name?: string; email?: string }) : undefined;
+  if (!utente?.id) throw new Error(`token non valido (HTTP ${r.status})`);
+  return { token, nome: utente.name ?? utente.email ?? utente.id, nostra };
+}
+
+const html = (corpo: string, status = 200) =>
+  new Response(`<!doctype html><meta charset="utf-8"><title>Anteprima delle bozze</title><body style="font:16px system-ui;margin:3rem">${corpo}`, {
+    status,
+    headers: { 'Content-Type': 'text/html; charset=utf-8' },
+  });
+
+/** Le pagine e le azioni della sessione; undefined per ogni altro indirizzo. */
+export async function gestisci(request: Request): Promise<Response | undefined> {
+  const url = new URL(request.url);
+  switch (url.pathname) {
+    // Ognuno dei metodi è un utente Sanity diverso: va usato lo stesso dello Studio.
+    case '/_login': {
+      const { providers } = (await (await fetch(`${API}/auth/providers`)).json()) as {
+        providers: { name: string; title: string; url: string }[];
+      };
+      const link = providers.map((p) => {
+        const u = new URL(p.url);
+        u.searchParams.set('type', 'token');
+        u.searchParams.set('projectId', PROJECT_ID);
+        u.searchParams.set('label', 'butik-preview');
+        u.searchParams.set('origin', `${url.origin}/_callback`);
+        return `<p><a href="${u}">${p.title}</a></p>`;
+      });
+      return html(`<h1>Accedi a Sanity</h1><p>Con lo stesso metodo che usi per lo Studio.</p>${link.join('')}`);
+    }
+    // Sanity rimanda qui con un id di sessione, che /auth/fetch scambia con il token.
+    case '/_callback': {
+      try {
+        const sid = new URL(url.searchParams.get('url') ?? '').search;
+        const r = await fetch(`${API}/auth/fetch${sid}`);
+        if (!r.ok) throw new Error(`/auth/fetch: HTTP ${r.status}`);
+        await salva(await apri(((await r.json()) as { token: string }).token, true));
+        return Response.redirect(`${url.origin}/`, 303);
+      } catch (err) {
+        return html(`<h1>Login non riuscito</h1><p>${(err as Error).message}</p><p><a href="/_login">Riprova</a></p>`, 500);
+      }
+    }
+    case '/_logout': {
+      const s = await sessione();
+      if (s?.nostra) await fetch(`${API}/auth/logout`, { method: 'POST', headers: { Authorization: `Bearer ${s.token}` } });
+      await salva(undefined);
+      return Response.redirect(`${url.origin}/`, 303);
+    }
+    // Il token dello Studio: 201 se la sessione è cambiata e la pagina va
+    // ricaricata, 204 se era già questa.
+    case '/_token': {
+      if (request.method !== 'POST') return new Response(null, { status: 405 });
+      const token = (await request.text()).trim();
+      if (token === (await sessione())?.token) return new Response(null, { status: 204 });
+      try {
+        await salva(await apri(token, false));
+        return new Response(null, { status: 201 });
+      } catch (err) {
+        return new Response((err as Error).message, { status: 401 });
+      }
+    }
+  }
+}

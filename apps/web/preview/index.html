@@ -3,6 +3,14 @@
 <title>Anteprima delle bozze</title>
 <p id="stato">Avvio dell'anteprima…</p>
 <script>
+  // Il token che lo Studio passa nell'indirizzo: lo prende la prima pagina
+  // servita dal worker (worker.ts).
+  const token = new URLSearchParams(location.hash.slice(1)).get('token');
+  if (token) {
+    sessionStorage.setItem('butik-token', token);
+    history.replaceState(null, '', location.pathname + location.search);
+  }
+
   // Pagina di avvio: registra il Service Worker che renderizza il sito. Un
   // worker nuovo, appena attivo, ricarica lui questa scheda; se invece è già
   // attivo e non ne arriva un altro (ricarica forzata, che salta il worker),
