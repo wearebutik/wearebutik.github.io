@@ -84,7 +84,13 @@ it.
     placeholder and no OG card; consent banner and analytics are off.
     With a token the client turns on stega and the page loads
     `@sanity/visual-editing`: click-to-edit, document list and navigation in
-    the Studio tab, and a reload after each change. The perspective chosen
+    the Studio tab, and a reload after each change. The reload waits until
+    Sanity serves the revision the Studio is saving (`POST /_aggiorna` with
+    `{ id, rev }`, at most six seconds): the Studio saves with `visibility:
+    async`. A discarded draft gets no event from the Presentation tool, so
+    the Studio's layout listens for drafts and versions that disappear and
+    sends the page `butik-preview/ricarica` with `postMessage`; the page
+    waits until the draft is gone (`rev: null`) and reloads. The perspective chosen
     in the Studio (drafts, published, or a release) reaches the worker
     through `onPerspectiveChange` (`POST /_perspective`) and the page reloads
     with it; outside the Studio the preview shows drafts. Fields the code

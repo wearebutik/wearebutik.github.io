@@ -12,13 +12,31 @@ export function LayoutAnteprimaWeb(props: LayoutProps) {
   const client = useClient({ apiVersion: '2026-09-01' });
 
   useEffect(() => {
+    // La pagina dell'anteprima chiede il token a ogni caricamento: da lì si
+    // sa a quale finestra mandare anche gli altri messaggi.
+    let anteprima: Window | null = null;
     const rispondi = (e: MessageEvent) => {
       if (e.origin !== ANTEPRIMA_WEB || e.data?.type !== 'butik-preview/token-request') return;
+      anteprima = e.source as Window | null;
       const token = client.config().token;
-      if (token) (e.source as Window | null)?.postMessage({ type: 'butik-preview/token', token }, ANTEPRIMA_WEB);
+      if (token) anteprima?.postMessage({ type: 'butik-preview/token', token }, ANTEPRIMA_WEB);
     };
     window.addEventListener('message', rispondi);
-    return () => window.removeEventListener('message', rispondi);
+
+    // Una bozza scartata (Discard changes) sparisce, e la Presentation di
+    // Sanity avvisa la pagina solo quando una bozza esiste e cambia: qui si
+    // avvisa l'anteprima, che rilegge i contenuti senza quella bozza.
+    const scarti = client
+      .listen('*[_id in path("drafts.**") || _id in path("versions.**")]', {}, { events: ['mutation'], includeResult: false })
+      .subscribe((ev) => {
+        if (ev.type !== 'mutation' || ev.transition !== 'disappear') return;
+        anteprima?.postMessage({ type: 'butik-preview/ricarica', id: ev.documentId }, ANTEPRIMA_WEB);
+      });
+
+    return () => {
+      window.removeEventListener('message', rispondi);
+      scarti.unsubscribe();
+    };
   }, [client]);
 
   return props.renderDefault(props);

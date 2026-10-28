@@ -23,11 +23,20 @@ self.addEventListener('activate', (e) =>
 // Nelle pagine aperte nello Studio (scheda Anteprima web): la pagina chiede il
 // token alla finestra dello Studio, che risponde solo a questa origine
 // (apps/studio/anteprimaWeb.tsx), e lo passa al worker. Un token rifiutato
-// (chi non è nel progetto) lascia il messaggio nella pagina.
+// (chi non è nel progetto) lascia il messaggio nella pagina. Lo Studio manda
+// anche `ricarica` quando una bozza viene scartata: la pagina aspetta che
+// Sanity non la veda più (rev null, /_aggiorna) e si ricarica.
 const script = `<script>(() => {
   if (window.parent === window) return;
   addEventListener('message', (e) => {
-    if (e.source !== window.parent || e.data?.type !== 'butik-preview/token' || !e.data.token) return;
+    if (e.source !== window.parent) return;
+    if (e.data?.type === 'butik-preview/ricarica' && typeof e.data.id === 'string') {
+      fetch('/_aggiorna', { method: 'POST', body: JSON.stringify({ id: e.data.id, rev: null }) })
+        .catch(() => {})
+        .then(() => location.reload());
+      return;
+    }
+    if (e.data?.type !== 'butik-preview/token' || !e.data.token) return;
     fetch('/_token', { method: 'POST', body: e.data.token }).then(async (r) => {
       if (r.status === 201) location.reload();
       else if (!r.ok) document.getElementById('butik-attesa')?.replaceChildren(await r.text());
@@ -77,14 +86,15 @@ self.addEventListener('fetch', (e) => {
   if (url.pathname === '/_version') return e.respondWith(new Response(__VERSION__));
   // Una modifica nello Studio (lib/anteprima/visualEditing.client.ts): la
   // pagina che si ricarica subito dopo deve rileggere le bozze. Con il
-  // documento modificato ({ id, rev }) si aspetta che Sanity lo veda salvato.
+  // documento modificato ({ id, rev }) si aspetta che Sanity lo veda salvato;
+  // con rev null, che non lo veda più (bozza scartata).
   if (url.pathname === '/_aggiorna' && e.request.method === 'POST') {
     return e.respondWith(
       e.request
         .json()
         .catch(() => null)
         .then((d: { id?: unknown; rev?: unknown } | null) =>
-          typeof d?.id === 'string' && typeof d.rev === 'string' ? attendi(d.id, d.rev) : svuota(),
+          typeof d?.id === 'string' && (typeof d.rev === 'string' || d.rev === null) ? attendi(d.id, d.rev) : svuota(),
         )
         .then(() => new Response(null, { status: 204 })),
     );
