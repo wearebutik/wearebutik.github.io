@@ -1,7 +1,7 @@
 // La sessione Sanity di chi scrive, nel Service Worker. Il token arriva in due
 // modi: dal login fatto qui (/_login → Sanity → /_callback), o dallo Studio,
 // che lo passa con postMessage all'anteprima aperta nella sua scheda
-// Presentation (worker.ts), e da lì a /_token.
+// Anteprima web (worker.ts), e da lì a /_token.
 // Resta in IndexedDB, perché il browser ferma il worker quando è inattivo.
 /// <reference lib="webworker" />
 
@@ -56,6 +56,22 @@ async function salva(s: Sessione | undefined) {
   else await esito(n.delete('sessione'));
   attuale = Promise.resolve(s);
 }
+
+// La prospettiva scelta nello Studio (`drafts`, `published`, o l'elenco delle
+// release): anche lei in IndexedDB, perché il worker si ferma tra una pagina e
+// l'altra. Fuori dallo Studio non arriva mai e resta `drafts`.
+export type Prospettiva = string | string[];
+let prospettivaAttuale: Promise<Prospettiva> | undefined;
+
+export function prospettiva() {
+  prospettivaAttuale ??= negozio('readonly')
+    .then((s) => esito(s.get('prospettiva') as IDBRequest<Prospettiva | undefined>))
+    .then((p) => p ?? 'drafts');
+  return prospettivaAttuale;
+}
+
+const valida = (p: unknown): p is Prospettiva =>
+  typeof p === 'string' || (Array.isArray(p) && p.length > 0 && p.every((x) => typeof x === 'string'));
 
 /**
  * Chi è il token, e se è un membro del progetto: solo allora apre una
@@ -137,6 +153,17 @@ export async function gestisci(request: Request): Promise<Response | undefined> 
       } catch (err) {
         return new Response((err as Error).message, { status: 401 });
       }
+    }
+    // La prospettiva dello Studio (lib/anteprima/visualEditing.client.ts):
+    // 201 se è cambiata e la pagina va ricaricata, 204 se era già questa.
+    case '/_perspective': {
+      if (request.method !== 'POST') return new Response(null, { status: 405 });
+      const p: unknown = await request.json().catch(() => undefined);
+      if (!valida(p)) return new Response('prospettiva non valida', { status: 400 });
+      if (JSON.stringify(p) === JSON.stringify(await prospettiva())) return new Response(null, { status: 204 });
+      await esito((await negozio('readwrite')).put(p, 'prospettiva'));
+      prospettivaAttuale = Promise.resolve(p);
+      return new Response(null, { status: 201 });
     }
   }
 }

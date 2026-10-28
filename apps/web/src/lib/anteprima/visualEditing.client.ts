@@ -1,6 +1,8 @@
-// Collegamento con la scheda Presentation dello Studio, solo nell'anteprima
+// Collegamento con la scheda Anteprima web dello Studio, solo nell'anteprima
 // delle bozze: la scheda segue le pagine che si aprono, il clic su un testo
-// apre il suo campo, e a ogni modifica salvata la pagina si ricarica.
+// apre il suo campo, a ogni modifica salvata la pagina si ricarica, e la
+// prospettiva scelta nello Studio (bozze, pubblicati, release) passa al worker
+// che renderizza le pagine (preview/session.ts, /_perspective).
 import { enableVisualEditing } from '@sanity/visual-editing';
 import { navigate } from 'astro:transitions/client';
 
@@ -22,6 +24,10 @@ export function avviaVisualEditing() {
         else navigate(u.url, { history: u.type === 'replace' ? 'replace' : 'push' });
       },
     },
+    onPerspectiveChange: (prospettiva) =>
+      fetch('/_perspective', { method: 'POST', body: JSON.stringify(prospettiva) }).then((r) => {
+        if (r.status === 201) location.reload();
+      }),
     refresh: () =>
       new Promise((fatto) => {
         clearTimeout(timer);

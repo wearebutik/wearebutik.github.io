@@ -1,7 +1,7 @@
 // Sanity come sorgente della collection `progetti`. Si legge solo a build
 // time: il sito resta statico e le immagini vengono scaricate e ottimizzate da
 // Astro (vedi `image.domains` in astro.config.mjs), non servite dalla CDN.
-import { createClient, type SanityClient, type StegaConfig } from '@sanity/client';
+import { createClient, type ClientPerspective, type SanityClient, type StegaConfig } from '@sanity/client';
 import { createImageUrlBuilder } from '@sanity/image-url';
 import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
@@ -24,10 +24,10 @@ const sembraLink = (v: string) => /^(#|\/|[a-z][a-z+.-]*:)/i.test(v);
 
 // Le bozze, lette con il token di chi scrive. Senza token la prospettiva
 // `drafts` nasconderebbe i documenti che hanno una bozza.
-const bozze = (token: string) => ({
-  perspective: 'drafts' as const,
+const bozze = (token: string, perspective: ClientPerspective) => ({
+  perspective,
   token,
-  // Visual editing nella scheda Presentation dello Studio: ogni testo porta,
+  // Visual editing nella scheda Anteprima web dello Studio: ogni testo porta,
   // in caratteri invisibili, il campo da cui viene.
   stega: {
     enabled: true,
@@ -42,19 +42,19 @@ export const sanity = createClient({
   dataset: SANITY_DATASET,
   apiVersion: '2026-09-01',
   useCdn: false, // a build time vogliamo i contenuti appena pubblicati
-  // Mai le bozze nel sito: le legge solo l'anteprima (preview/ e il binario
-  // butik-anteprima), con il token di chi la usa. `__BUTIK_ANTEPRIMA__` è fissato dal build
-  // (astro.config.mjs), non da una variabile d'ambiente letta a runtime.
-  ...(__BUTIK_ANTEPRIMA__ && process.env.SANITY_AUTH_TOKEN
-    ? bozze(process.env.SANITY_AUTH_TOKEN)
-    : { perspective: 'published' as const }),
+  // Mai le bozze nel sito: le legge solo l'anteprima (preview/), con il token
+  // di chi la usa, attraverso sanityBozze.
+  perspective: 'published',
 });
 
 /**
- * Il client delle bozze per un token che arriva a runtime: l'anteprima nel
- * Service Worker (preview/) lo riceve dal login nel browser, non dall'ambiente.
+ * Il client delle bozze per il token che l'anteprima nel Service Worker
+ * (preview/) riceve dal login nel browser o dallo Studio. La prospettiva è
+ * quella scelta nello Studio (`drafts`, `published` o le release); fuori dallo
+ * Studio, `drafts`.
  */
-export const sanityBozze = (token: string) => sanity.withConfig(bozze(token));
+export const sanityBozze = (token: string, perspective: ClientPerspective = 'drafts') =>
+  sanity.withConfig(bozze(token, perspective));
 
 // I documenti pubblicati, senza stega: l'anteprima delle bozze ci ripiega
 // quando una bozza non rispetta lo schema (lib/anteprima/contenuti.ts).
