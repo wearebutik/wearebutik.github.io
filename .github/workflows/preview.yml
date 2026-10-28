@@ -1,0 +1,47 @@
+name: Preview (Service Worker)
+
+# L'anteprima delle bozze che gira nel browser (apps/web/preview): il server di
+# butik-anteprima impacchettato in un Service Worker, pubblicato su Cloudflare
+# Pages (progetto `butik-preview`, dominio butik.consiglio.fyi, dietro
+# Cloudflare Access). Come il binario contiene solo il codice: si ripubblica
+# quando cambia il codice del sito, non quando si pubblica nello Studio.
+on:
+  push:
+    branches: [main, prova/anteprima-sw]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - 'mise.toml'
+      - '.github/workflows/preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/prepara
+
+      # Nessuna variabile PUBLIC_*: l'anteprima non ha analytics né form.
+      - run: pnpm --filter @butik/web build:preview
+
+      # Il progetto Pages si crea al primo deploy; `--branch=main` pubblica in
+      # produzione, cioè sul dominio, anche da un branch di prova.
+      - name: Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          wrangler() { pnpm dlx wrangler@4.154.0 "$@"; }
+          wrangler pages project list | grep -q butik-preview \
+            || wrangler pages project create butik-preview --production-branch=main
+          wrangler pages deploy apps/web/dist-preview/client --project-name=butik-preview --branch=main

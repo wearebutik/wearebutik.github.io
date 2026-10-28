@@ -14,10 +14,12 @@ import { bozze } from './src/lib/anteprima/bozze.ts';
 // ottimizzate (arrivano dalla CDN Sanity) e nessun passaggio di fine build:
 // è uno strumento di chi scrive, non il sito pubblicato.
 const anteprima = process.env.BUTIK_ANTEPRIMA === '1';
+// BUTIK_PREVIEW_SW=1: lo stesso server per il Service Worker (preview/), in una cartella sua.
+const outDirAnteprima = process.env.BUTIK_PREVIEW_SW === '1' ? './dist-preview' : './dist-anteprima';
 
 export default defineConfig({
   ...(process.env.SITE ? { site: process.env.SITE } : {}),
-  ...(anteprima ? { output: 'server', adapter: bozze(), outDir: './dist-anteprima' } : {}),
+  ...(anteprima ? { output: 'server', adapter: bozze(), outDir: outDirAnteprima } : {}),
   prefetch: {
     prefetchAll: true,
   },

@@ -1,0 +1,15 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Anteprima delle bozze</title>
+<p id="stato">Avvio dell'anteprima…</p>
+<script>
+  // Pagina di avvio: registra il Service Worker che renderizza il sito. Un
+  // worker nuovo, appena attivo, ricarica lui questa scheda; se invece è già
+  // attivo e non ne arriva un altro (ricarica forzata, che salta il worker),
+  // ricarica la pagina da sola.
+  (async () => {
+    const reg = await navigator.serviceWorker.register('/sw.js');
+    reg.update();
+    if (reg.active && !reg.installing && !reg.waiting) location.reload();
+  })().catch((err) => (document.getElementById('stato').textContent = `Errore: ${err}`));
+</script>
