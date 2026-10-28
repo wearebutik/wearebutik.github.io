@@ -1,7 +1,7 @@
 # Product Marketing Context
 
-**Document version:** v2
-**Last updated:** 2026-09-24
+**Document version:** v3
+**Last updated:** 2026-10-28
 
 Structure and notes are in English (repo convention for operational files). Quoted
 customer and site language stays in Italian, verbatim: the site copy is Italian and
@@ -117,7 +117,7 @@ Confirmed by the team (2026-09-24).
 **How they describe the problem:** **TODO** — collect verbatim quotes from clients (the source lists testimonials still to request: Rossella, Addes, Ferdinando, Stefano Soglia, Martha Friel).
 **How participants describe us:**
 - "Ho apprezzato l'approccio di Butik, in quanto sono state abili a creare uno spazio sicuro e libero da critiche anche durante l'errore." — under-35 participant, Cult Funding
-**Words to use:** attivare territori; comunità; nuove generazioni; patrimonio musicale (materiale e immateriale); turismo musicale; progettazione culturale; ascolto; co-progettazione; capacity building; impatto sociale; format replicabili; Music City; Comuni Musicali; su misura; "human first".
+**Words to use:** attivare territori; comunità; nuove generazioni; patrimonio musicale (materiale e immateriale); turismo musicale; progettazione culturale; ascolto; co-progettazione; capacity building; impatto sociale; format replicabili; Music City; Comuni Musicali; su misura; "human first"; fare rete.
 **Words to avoid:** **TODO** — confirm. Avoid presenting young people as a "target" (the method says they are active participants).
 **Glossary:**
 | Term | Meaning |
@@ -164,5 +164,6 @@ Confirmed by the team (2026-09-24).
 
 ## Changelog
 *Newest first. One line per revision: what changed and why.*
+- v3 (2026-10-28) — Customer Language: added "fare rete" to Words to use; clients (Comuni and DMO) use it often when talking about collaboration between cultural operators.
 - v2 (2026-09-24) — Filled Competitive Landscape from web research; team confirmed Objections and Customer Language; no pricing or metrics exist yet.
 - v1 (2026-09-24) — Initial context, drafted from `reference/copy/site-copy-source.md`.
