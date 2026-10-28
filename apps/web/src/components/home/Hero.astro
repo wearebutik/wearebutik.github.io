@@ -7,6 +7,7 @@ import ServiceLauncher from '../serviziCards/ServiceLauncher.astro';
 import Button from '@butik/ui/Button';
 import ArrowLink from '@butik/ui/ArrowLink';
 import Underline from '@butik/ui/Underline';
+import { stegaClean } from '@sanity/client/stega';
 
 import { placeholderStyle } from '#lib/lqip';
 import { stili } from '#lib/viewTransition';
@@ -77,8 +78,13 @@ const slideStyle = (i: number) =>
 
 // Accento tipografico: l'ultima parola del titolo sottolineata, disegnata al
 // caricamento solo con CSS (nessuna idratazione: il titolo è già in vista).
-const cut = title.lastIndexOf(' ');
-const [titleHead, titleLast] = cut === -1 ? ['', title] : [title.slice(0, cut + 1), title.slice(cut + 1)];
+// Nell'anteprima delle bozze il titolo finisce con i caratteri invisibili che
+// lo collegano al suo campo nello Studio: restano in fondo all'h1, non
+// nell'ultima parola, così il clic funziona su tutto il titolo.
+const testo = stegaClean(title);
+const stega = title.startsWith(testo) ? title.slice(testo.length) : '';
+const cut = testo.lastIndexOf(' ');
+const [titleHead, titleLast] = cut === -1 ? ['', testo] : [testo.slice(0, cut + 1), testo.slice(cut + 1)];
 
 // Presentazione dei servizi nell'hero: card con icona da tablet in su, lista
 // compatta da mobile (dove le card non stanno sopra la piega). La scelta è
@@ -139,7 +145,7 @@ const serviziItems = servizi.map((s) => ({
       <!-- Titolo + subtitle + CTA primario -->
       <div class="hero-textcol">
         <h1 class="hero-title" data-battito style="--ritardo: 150ms">
-          {titleHead}<Underline tone="accent">{titleLast}</Underline>
+          {titleHead}<Underline tone="accent">{titleLast}</Underline>{stega}
         </h1>
         <p class="hero-subtitle" data-battito style="--ritardo: 270ms">
           {subtitle}
