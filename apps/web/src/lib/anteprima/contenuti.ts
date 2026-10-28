@@ -47,16 +47,18 @@ export function svuota() {
 // Lo Studio salva le bozze con `visibility: async`: per un attimo dopo il
 // salvataggio le query vedono ancora la versione di prima. Il `_rev` che lo
 // Studio manda con la modifica è quello che il documento avrà una volta
-// salvato: si aspetta quello, al massimo qualche secondo.
+// salvato: si aspetta quello, al massimo qualche secondo. Una bozza scartata
+// arriva con rev null: si aspetta che sparisca.
 const ATTESA_MAX_MS = 6000;
 const PASSO_MS = 300;
 
-/** Aspetta che Sanity veda il documento `id` alla revisione `rev`, poi svuota la memoria. */
-export async function attendi(id: string, rev: string) {
+/** Aspetta che Sanity veda il documento `id` alla revisione `rev` (null: assente), poi svuota la memoria. */
+export async function attendi(id: string, rev: string | null) {
   const client = bozze?.client.withConfig({ perspective: 'raw', stega: { enabled: false } });
   const fine = Date.now() + ATTESA_MAX_MS;
   while (client && Date.now() < fine) {
-    const attuale = await client.fetch<string | null>('*[_id == $id][0]._rev', { id }).catch(() => null);
+    // Un errore di rete non vale come «assente»: si riprova.
+    const attuale = await client.fetch<string | null>('*[_id == $id][0]._rev', { id }).catch(() => undefined);
     if (attuale === rev) break;
     await new Promise((r) => setTimeout(r, PASSO_MS));
   }
