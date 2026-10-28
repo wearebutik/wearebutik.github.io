@@ -2,7 +2,7 @@
 // pagina del sito la renderizza qui, nel browser. I file statici passano alla
 // rete.
 /// <reference lib="webworker" />
-import { render, svuota } from '../dist-preview/server/entry.mjs';
+import { attendi, render, svuota } from '../dist-preview/server/entry.mjs';
 import { gestisci, html, prospettiva, sessione, type Sessione } from './session';
 
 declare const self: ServiceWorkerGlobalScope;
@@ -76,10 +76,18 @@ self.addEventListener('fetch', (e) => {
   if (url.origin !== location.origin) return;
   if (url.pathname === '/_version') return e.respondWith(new Response(__VERSION__));
   // Una modifica nello Studio (lib/anteprima/visualEditing.client.ts): la
-  // pagina che si ricarica subito dopo deve rileggere le bozze.
+  // pagina che si ricarica subito dopo deve rileggere le bozze. Con il
+  // documento modificato ({ id, rev }) si aspetta che Sanity lo veda salvato.
   if (url.pathname === '/_aggiorna' && e.request.method === 'POST') {
-    svuota();
-    return e.respondWith(new Response(null, { status: 204 }));
+    return e.respondWith(
+      e.request
+        .json()
+        .catch(() => null)
+        .then((d: { id?: unknown; rev?: unknown } | null) =>
+          typeof d?.id === 'string' && typeof d.rev === 'string' ? attendi(d.id, d.rev) : svuota(),
+        )
+        .then(() => new Response(null, { status: 204 })),
+    );
   }
   if (['/_login', '/_callback', '/_logout', '/_token', '/_perspective'].includes(url.pathname)) {
     return e.respondWith(gestisci(e.request).then((r) => r ?? new Response(null, { status: 404 })));

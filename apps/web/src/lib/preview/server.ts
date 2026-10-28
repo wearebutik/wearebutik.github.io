@@ -6,7 +6,7 @@ import type { ClientPerspective } from '@sanity/client';
 import { createApp } from 'astro/app/entrypoint';
 import { impostaSessione } from '#lib/anteprima/contenuti';
 
-export { svuota } from '#lib/anteprima/contenuti';
+export { attendi, svuota } from '#lib/anteprima/contenuti';
 
 const app = createApp();
 

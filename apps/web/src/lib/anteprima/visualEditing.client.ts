@@ -29,13 +29,16 @@ export function avviaVisualEditing() {
       fetch('/_perspective', { method: 'POST', body: JSON.stringify(prospettiva) }).then((r) => {
         if (r.status === 201) location.reload();
       }),
-    refresh: () =>
+    refresh: (r) =>
       new Promise((fatto) => {
         clearTimeout(timer);
         // Il worker tiene i contenuti per un paio di secondi (contenuti.ts):
-        // prima di ricaricare li butta, così la pagina rilegge le bozze.
+        // prima di ricaricare li butta, così la pagina rilegge le bozze. Su
+        // una modifica aspetta anche che Sanity veda la revisione salvata.
+        const doc = r.source === 'mutation' ? r.document : undefined;
         timer = setTimeout(async () => {
-          await fetch('/_aggiorna', { method: 'POST' }).catch(() => {});
+          const body = doc && JSON.stringify({ id: doc._id, rev: doc._rev });
+          await fetch('/_aggiorna', { method: 'POST', body }).catch(() => {});
           location.reload();
           fatto();
         }, ATTESA_MS);

@@ -2,4 +2,5 @@
 // scrive il build: serve al controllo dei tipi di worker.ts quando
 // dist-preview/ non esiste (tsconfig.json, `rootDirs`).
 export function svuota(): void;
+export function attendi(id: string, rev: string): Promise<void>;
 export function render(request: Request, token: string | undefined, prospettiva?: string | string[]): Promise<Response>;
