@@ -1,0 +1,37 @@
+name: Deploy Studio
+
+# Lo Studio Sanity (apps/studio) su https://butik.sanity.studio: si ripubblica
+# quando su main cambia il suo codice, con lo schema che il deploy carica
+# insieme. Richiede il secret repo SANITY_AUTH_TOKEN, un token del progetto
+# con il ruolo che permette il deploy dello Studio (creato a mano, non gestito
+# da questo workflow).
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/studio/**'
+      - 'packages/site-config/**'
+      - 'pnpm-lock.yaml'
+      - 'mise.toml'
+      - '.github/workflows/studio.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/prepara
+
+      - name: sanity deploy
+        env:
+          SANITY_AUTH_TOKEN: ${{ secrets.SANITY_AUTH_TOKEN }}
+        run: pnpm --filter @butik/studio exec sanity deploy --yes
