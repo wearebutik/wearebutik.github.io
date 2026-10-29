@@ -13,7 +13,7 @@ runs:
     - uses: jdx/mise-action@v5
 
     - if: inputs.installa == 'true'
-      uses: pnpm/action-setup@v4
+      uses: pnpm/action-setup@v6
 
     - if: inputs.installa == 'true'
       id: store
@@ -21,7 +21,7 @@ runs:
       run: echo "percorso=$(pnpm store path --silent)" >> "$GITHUB_OUTPUT"
 
     - if: inputs.installa == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: ${{ steps.store.outputs.percorso }}
         key: pnpm-store-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}

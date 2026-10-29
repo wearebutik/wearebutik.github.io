@@ -24,7 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - uses: ./.github/actions/prepara
 
@@ -38,7 +38,7 @@ jobs:
       # aggiornamento non rende sbagliate le immagini già fatte. Per
       # rigenerarle tutte (dopo un aggiornamento di sharp, o se la cache cresce
       # troppo: non si sfoltisce da sola) si cambia `v1`.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: apps/web/node_modules/.astro/assets
           key: astro-img-v1-${{ hashFiles('apps/web/astro.config.mjs') }}-${{ github.run_id }}
@@ -57,9 +57,9 @@ jobs:
           PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
         run: pnpm build
 
-      - uses: actions/configure-pages@v5
+      - uses: actions/configure-pages@v6
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: ./apps/web/dist
 
@@ -71,4 +71,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

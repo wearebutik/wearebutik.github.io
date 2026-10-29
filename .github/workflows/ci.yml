@@ -16,7 +16,7 @@ jobs:
   design-lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/prepara
         with:
           installa: 'false'
@@ -27,7 +27,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: ./.github/actions/prepara
       - run: pnpm check
 
@@ -41,14 +41,14 @@ jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # Chromatic confronta contro la baseline del branch base: senza la
           # storia completa non riesce a determinare il commit di baseline.
           fetch-depth: 0
       - uses: ./.github/actions/prepara
       - name: Publish to Chromatic
-        uses: chromaui/action@v1
+        uses: chromaui/action@v18
         with:
           workingDir: packages/ui
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
