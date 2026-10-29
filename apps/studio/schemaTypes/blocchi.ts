@@ -20,6 +20,21 @@ export const figura = defineType({
     }),
     defineField({ name: 'caption', title: 'Didascalia', type: 'string' }),
   ],
+  // Nelle liste (foto di sfondo, gallerie) la voce prende il nome dalla
+  // didascalia, dal testo alternativo o dal titolo dell'asset nella libreria.
+  preview: {
+    select: {
+      media: 'asset',
+      caption: 'caption',
+      alt: 'alt',
+      assetTitle: 'asset.title',
+      filename: 'asset.originalFilename',
+    },
+    prepare: ({ media, caption, alt, assetTitle, filename }) => ({
+      media,
+      title: caption || alt || assetTitle || filename || 'Immagine',
+    }),
+  },
 });
 
 export const imageBlock = defineType({
