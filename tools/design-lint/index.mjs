@@ -11,6 +11,17 @@
 //                 uppercase, 0.1em) fuori da Eyebrow e MetaLabel. CTA, bottoni e
 //                 link di navigazione hanno scala propria e non la toccano.
 //
+// E due casi che il minificatore CSS (Lightning CSS, da Vite 8) trasforma in
+// CSS che i browser scartano, senza un errore in build:
+//
+//   timeline-shorthand  la shorthand `animation` insieme ad `animation-timeline`
+//                 nella stessa regola: diventano `animation: … view()`, che i
+//                 browser rifiutano. Si scrive con le longhand;
+//   prefixed-duplicate  una proprietà scritta senza prefisso e poi di nuovo con il
+//                 prefisso (-webkit-, -moz-, -ms-): delle due resta l'ultima,
+//                 quella col prefisso, che Chrome e Firefox non leggono. Si
+//                 scrive solo la proprietà standard (o il prefisso prima).
+//
 // Il resto (il ruolo di un'etichetta, il contrasto del testo su una foto) lo
 // giudica la skill design-check. Un caso legittimo si dichiara nella regola
 // CSS stessa, con la ragione:
@@ -46,6 +57,15 @@ const TRACKING = /letter-spacing\s*:\s*0?\.1em\b/;
 const DISPLAY_FONT = /font-family\s*:\s*var\(--font-display\)/;
 // --font-size-xs, o una taglia piccola scritta a mano (0.6rem–0.75rem, 10–12px).
 const XS_SIZE = /font-size\s*:\s*(?:var\(--font-size-xs\)|0?\.(?:6\d*|7[0-4]\d*|75)rem|1[0-2]px)\b/;
+const ANIMATION_SHORTHAND = /(?:^|[;{\s])animation\s*:/;
+const ANIMATION_TIMELINE = /(?:^|[;{\s])animation-timeline\s*:/;
+const PREFIXED = /(?:^|[;{\s])-(?:webkit|moz|ms)-([a-z-]+)\s*:/g;
+
+/** Le proprietà della regola scritte senza prefisso e poi di nuovo con il prefisso. */
+const prefixedDuplicates = (body) =>
+  [...body.matchAll(PREFIXED)]
+    .filter((m) => new RegExp(`(?:^|[;{\\s])${m[1]}\\s*:`).test(body.slice(0, m.index + 1)))
+    .map((m) => m[1]);
 
 function* walk(dir) {
   for (const name of readdirSync(dir)) {
@@ -104,6 +124,14 @@ for (const base of SCAN) {
         }
         if (!SMALL_CAPS_HOME.has(file) && UPPERCASE.test(body) && TRACKING.test(body) && DISPLAY_FONT.test(body) && XS_SIZE.test(body) && !disabled(body, 'small-caps')) {
           report(file, line, 'small-caps', `${selector}: maiuscoletto scritto a mano: Eyebrow (apre una sezione) o MetaLabel (metadato)`);
+        }
+        const plain = body.replace(/\/\*[\s\S]*?\*\//g, '');
+        if (ANIMATION_SHORTHAND.test(plain) && ANIMATION_TIMELINE.test(plain) && !disabled(body, 'timeline-shorthand')) {
+          report(file, line, 'timeline-shorthand', `${selector}: con animation-timeline usa le longhand (animation-name, -duration, …), non la shorthand animation`);
+        }
+        for (const prop of prefixedDuplicates(plain)) {
+          if (disabled(body, 'prefixed-duplicate')) break;
+          report(file, line, 'prefixed-duplicate', `${selector}: ${prop} è scritta anche con il prefisso: tieni solo la proprietà standard`);
         }
       }
     }

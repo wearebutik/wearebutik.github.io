@@ -213,9 +213,17 @@ const items = [
   }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
+      /* Longhand e non la shorthand `animation` (come in Header): il
+         minificatore (Lightning CSS) fonderebbe shorthand e timeline in
+         `animation: … view()`, che Chrome scarta perché nella shorthand
+         animation-timeline si può solo azzerare. Senza interruttore il
+         contatore resterebbe fermo a 0. */
       .numbers {
         --conta: 1;
-        animation: interruttore linear both;
+        animation-name: interruttore;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: view();
         animation-range: entry 30% entry 31%;
       }

@@ -367,7 +367,6 @@ function isActive(href: string) {
     /* Stesso vetro delle card dei servizi nell'hero (scuro al 35%,
        --blur-glass); il bordo resta al 45% per il 3:1 sul proprio riempimento. */
     backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
-    -webkit-backdrop-filter: blur(calc((1 - var(--header-solid)) * var(--blur-glass)));
     /* Lento per il passaggio da vetro a pieno con lo scroll; il sollevamento
        resta quello del Button. */
     transition: background-color var(--duration-slow) var(--ease-standard),
@@ -487,7 +486,6 @@ function isActive(href: string) {
       transparent 45%
     );
     backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
-    -webkit-backdrop-filter: blur(var(--blur-heavy)) saturate(1.2);
   }
   .mobile-nav-list {
     display: flex;
