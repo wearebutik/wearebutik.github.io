@@ -22,6 +22,17 @@ storie e `pages/lab/`, che è sperimentale.
 | `red-as-text` | `color: var(--color-accent)` o `var(--color-butik-red)` | testo rosso → `--color-accent-text` |
 | `small-caps` | una regola CSS con la ricetta del maiuscoletto (font display, `--font-size-xs`, uppercase, 0.1em) fuori da `Eyebrow` e `MetaLabel` | apre una sezione → `Eyebrow`; metadato → `MetaLabel` |
 
+### CSS che il minificatore rompe
+
+Il CSS di produzione passa da Lightning CSS (il minificatore di Vite 8). In due
+casi ne esce CSS che i browser scartano senza che la build dia errore: queste
+regole li fermano nel sorgente.
+
+| Regola | Fallisce su | Correzione |
+|---|---|---|
+| `timeline-shorthand` | la shorthand `animation` e `animation-timeline` nella stessa regola: diventano `animation: … view()`, che i browser rifiutano | le longhand: `animation-name`, `animation-duration`, `animation-timing-function`, `animation-fill-mode`, poi `animation-timeline` |
+| `prefixed-duplicate` | una proprietà standard seguita dalla stessa con il prefisso (`backdrop-filter` e poi `-webkit-backdrop-filter`): resta solo l'ultima, che Chrome e Firefox non leggono | solo la proprietà standard |
+
 I rossi scritti a mano sono ammessi in `packages/ui-tokens/tokens.css`, dove sono
 definiti, e in `apps/web/src/lib/og/render.ts`, dove Satori non legge le custom
 property.

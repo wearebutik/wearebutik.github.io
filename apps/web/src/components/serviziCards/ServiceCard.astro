@@ -78,8 +78,9 @@ const icons: Record<string, string> = {
     border-radius: var(--radius-lg);
     border: 1px solid color-mix(in srgb, var(--color-fg-invert) 25%, transparent);
     background-color: color-mix(in srgb, var(--color-bg-invert) 35%, transparent);
+    /* Solo la proprietà standard (ADR-0003, CSS minification): Safari 17 e
+       precedenti non sfocano; il fondo scuro e il testo restano. */
     backdrop-filter: blur(var(--blur-glass));
-    -webkit-backdrop-filter: blur(var(--blur-glass));
     color: var(--color-fg-invert);
     text-decoration: none;
     transition: transform var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);

@@ -55,7 +55,9 @@ carrying text), defined with their contrast in the
 [design-approach guidance](../guidances/design-approach.md#accessibility).
 The `design-check` skill watches this discipline (tokens vs raw values, roles,
 AA contrast, visible focus), and `tools/design-lint` fails CI on its mechanical
-part.
+part. The same script also fails on the two CSS patterns the minifier breaks
+([ADR-0003](./0003-build-and-tooling.md), *CSS minification*):
+they are not design rules, but they live in the same CSS and the same pass reads them.
 
 Shared components live in the **`@butik/ui`** package (CSS Modules + tokens), grown
 from `apps/web/src/components` as they are migrated. During the Tailwind→CSS
