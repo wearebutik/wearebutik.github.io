@@ -5,11 +5,9 @@ import MetaLabel from '@butik/ui/MetaLabel';
 //
 // Una riga sola: i numeri di butik e, per ultimo, il dato più forte della
 // Milano Music Week (l'ultima voce di `mmwMetrics`), evidenziato. Quando la
-// sezione entra in vista i numeri contano da zero al valore. È tutto CSS,
-// nessuno script: una view timeline accende --in-vista e una style query su
-// quella proprietà avvia il conteggio (dettagli nello <style>). Con
-// reduced-motion, o nei browser senza view timeline o senza style query, il
-// numero resta fermo al valore finale.
+// sezione entra in vista i numeri contano da zero al valore, insieme al
+// rimbalzo d'ingresso del reveal, una volta sola (dettagli nello <style>).
+// Senza script o con reduced-motion il numero resta fermo al valore finale.
 type Metric = {
   value: string;
   label: string;
@@ -168,40 +166,21 @@ const items = [
     color: color-mix(in srgb, var(--color-fg-invert) 80%, transparent);
   }
 
-  /* ── Conteggio all'ingresso, solo CSS ────────────────────────────────
-     Due pezzi:
-     1. un interruttore: un'animazione legata allo scroll (view timeline)
-        porta --in-vista da 0 a 1 quando la sezione entra in vista, e con
-        fill `both` lo lascia a 1 finché la sezione resta sopra il bordo
-        inferiore dello schermo;
-     2. il conteggio: una style query su --in-vista avvia un'animazione A
-        TEMPO del contatore (--n da 0 a --to, mostrato con counter()). Non
-        segue lo scroll: parte, dura 1.4s, finisce.
-     Risalendo sopra la sezione l'interruttore torna a 0 e il conteggio si
-     riarma. Il numero vero passa ai lettori di schermo, il contatore è
-     aria-hidden.
-     Il cancello è doppio. @supports verifica la view timeline, ma non sa
-     verificare le style query: il passaggio dal numero vero al contatore
-     sta quindi dentro una style query sempre vera (--conta: 1, dichiarata
-     sulla sezione). Un browser che non le capisce salta il blocco e mostra
-     il numero vero, invece di un contatore fermo a 0. */
-  @property --in-vista {
-    syntax: '<integer>';
-    initial-value: 0;
-    inherits: true;
-  }
+  /* ── Conteggio all'ingresso ─────────────────────────────────────────
+     Il conteggio segue il reveal (@butik/ui/reveal, stili in motion.css):
+     la griglia è un data-reveal-group, quindi lo script arma ogni voce
+     (data-reveal="attesa") e la fa partire una volta sola, con il suo
+     ritardo a cascata --d (data-reveal="in"). Il contatore conta da 0 a
+     --to nello stesso momento in cui la voce sale con il rimbalzo, e poi
+     resta: scorrendo su e giù non si riarma.
+     Dove il reveal non arma nulla (senza script, con reduced-motion, con
+     la home già vista nella sessione: data-entrata-saltata, vedi
+     BaseLayout) non c'è data-reveal e resta il numero vero. Il numero vero
+     passa comunque ai lettori di schermo; il contatore è aria-hidden. */
   @property --n {
     syntax: '<integer>';
     initial-value: 0;
     inherits: false;
-  }
-  @keyframes interruttore {
-    from {
-      --in-vista: 0;
-    }
-    to {
-      --in-vista: 1;
-    }
   }
   @keyframes conta {
     from {
@@ -211,58 +190,29 @@ const items = [
       --n: var(--to);
     }
   }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      /* Longhand e non la shorthand `animation` (come in Header): il
-         minificatore (Lightning CSS) fonderebbe shorthand e timeline in
-         `animation: … view()`, che Chrome scarta perché nella shorthand
-         animation-timeline si può solo azzerare. Senza interruttore il
-         contatore resterebbe fermo a 0. */
-      .numbers {
-        --conta: 1;
-        animation-name: interruttore;
-        animation-duration: auto;
-        animation-timing-function: linear;
-        animation-fill-mode: both;
-        animation-timeline: view();
-        animation-range: entry 30% entry 31%;
-      }
-      @container style(--conta: 1) {
-        .metric-num {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          margin: -1px;
-          overflow: hidden;
-          clip-path: inset(50%);
-          white-space: nowrap;
-        }
-        .metric-count {
-          display: inline;
-          counter-reset: n var(--n);
-        }
-        .metric-count::after {
-          content: counter(n);
-        }
-      }
-      @container style(--in-vista: 1) {
-        .metric-count {
-          /* `both`: il contatore resta al valore finale, che non è lo stato
-             di base (--n parte da 0), e mostra 0 durante il ritardo.
-             Il conteggio aspetta che il numero sia entrato: ogni voce sale
-             con il rimbalzo del reveal (motion.css, ritardo a cascata --d,
-             durata --duration-enter). Partendo insieme, l'ease-out avrebbe
-             già fatto quasi tutto il conteggio quando il numero diventa
-             visibile, e si vedrebbe solo il rimbalzo. */
-          animation: conta 1400ms var(--ease-out) calc(var(--d, 0ms) + var(--duration-enter)) both;
-        }
-      }
-      /* Home già vista nella sessione (data-entrata-saltata su <html>, vedi
-         BaseLayout): niente conteggio, il numero finale c'è subito. */
-      :global([data-entrata-saltata]) .numbers {
-        --conta: 0;
-        animation: none;
-      }
+  @media (prefers-reduced-motion: no-preference) {
+    .metric[data-reveal] .metric-num {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .metric[data-reveal] .metric-count {
+      display: inline;
+      counter-reset: n var(--n);
+    }
+    .metric[data-reveal] .metric-count::after {
+      content: counter(n);
+    }
+    /* `both`: il contatore resta al valore finale, che non è lo stato di
+       base (--n parte da 0). Easing che parte piano: con un ease-out il
+       conteggio sarebbe quasi finito quando il rimbalzo rende visibile il
+       numero (opaco al 60% dei 600ms di --duration-enter). */
+    .metric[data-reveal='in'] .metric-count {
+      animation: conta 1400ms var(--ease-standard) var(--d, 0ms) both;
     }
   }
 </style>
