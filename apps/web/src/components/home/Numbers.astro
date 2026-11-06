@@ -248,8 +248,13 @@ const items = [
       @container style(--in-vista: 1) {
         .metric-count {
           /* `both`: il contatore resta al valore finale, che non è lo stato
-             di base (--n parte da 0). */
-          animation: conta 1400ms var(--ease-out) both;
+             di base (--n parte da 0), e mostra 0 durante il ritardo.
+             Il conteggio aspetta che il numero sia entrato: ogni voce sale
+             con il rimbalzo del reveal (motion.css, ritardo a cascata --d,
+             durata --duration-enter). Partendo insieme, l'ease-out avrebbe
+             già fatto quasi tutto il conteggio quando il numero diventa
+             visibile, e si vedrebbe solo il rimbalzo. */
+          animation: conta 1400ms var(--ease-out) calc(var(--d, 0ms) + var(--duration-enter)) both;
         }
       }
       /* Home già vista nella sessione (data-entrata-saltata su <html>, vedi
