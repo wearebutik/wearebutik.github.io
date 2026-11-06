@@ -1,7 +1,7 @@
 ---
 status: accepted
 date: 2026-07-10
-tags: [build, tooling, astro, node, pnpm, turbo, og, sharp]
+tags: [build, tooling, astro, node, pnpm, turbo, og, sharp, css, minification]
 ---
 
 # ADR-0003: Build and tooling
@@ -26,6 +26,19 @@ this ADR records the toolchain that drives it.
   server build of the same code (`build:preview`, ADR-0004). Content in MDX via `@astrojs/mdx`.
   `compressHTML: true` keeps the whitespace between inline elements, as
   before Astro 7 (whose default, `'jsx'`, drops it).
+- **CSS minification**: **Lightning CSS**, Vite 8's
+  default, with no `build.cssMinify` override. It merges declarations it
+  considers equivalent, and two merges produce CSS that browsers drop without
+  any build error, so the source avoids them and `tools/design-lint` fails CI
+  on both:
+  - `animation` shorthand plus `animation-timeline` in one rule becomes
+    `animation: … view()`, which no browser accepts (the shorthand can only
+    reset the timeline). Scroll-driven animations use the longhands
+    (`timeline-shorthand`).
+  - A standard property followed by its prefixed twin (`backdrop-filter`, then
+    `-webkit-backdrop-filter`) keeps only the last one, which Chrome and
+    Firefox ignore. The source writes the standard property alone
+    (`prefixed-duplicate`).
 - **Node and Bun**: versions pinned in `mise.toml` (Node on the current LTS),
   used locally and in CI (`.github/actions/prepara`, with `jdx/mise-action`);
   `engines` at root states the minimum.
@@ -66,6 +79,12 @@ Rejected: pnpm + turbo is the toolchain of our other repos (lunette, monowai), s
 the team already knows it, and turbo gives task caching/orchestration npm scripts
 don't. The small extra tooling is worth the consistency.
 
+### esbuild as the CSS minifier
+
+Rejected: `build.cssMinify: 'esbuild'` restores the pre-Vite-8 output, but it
+is a configuration override against Vite's default, and the two patterns
+Lightning CSS breaks are few and caught in the source by `design-lint`.
+
 ### Single package (no monorepo)
 
 Rejected — see [ADR-0007](./0007-monorepo-and-workspace-layout.md): shared design
@@ -85,7 +104,12 @@ package/deploy boundary.
   above) — a known footgun, documented here.
 - Without a linter/type-check in CI, quality depends on review until that item
   closes.
+- The minifier can drop a declaration and the build still passes: `astro build`
+  says nothing about CSS a browser rejects. `design-lint` covers the two known
+  patterns; a new one shows up only in the browser.
 
 ### When to deviate (revisit triggers)
 
 - Build times or task graph outgrow turbo's local cache → consider remote caching.
+- Lightning CSS breaks a third pattern, or one `design-lint` cannot recognise
+  in the source → reconsider `build.cssMinify: 'esbuild'`.

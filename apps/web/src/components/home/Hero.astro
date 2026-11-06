@@ -414,6 +414,8 @@ const serviziItems = servizi.map((s) => ({
      la lista, non il punto del gradiente dell'hero in cui cade. */
   .hero-svc-list {
     background-color: color-mix(in srgb, var(--color-bg-invert) 35%, transparent);
+    /* Solo la proprietà standard (ADR-0003, CSS minification): Safari 17 e
+       precedenti non sfocano; il fondo scuro e il testo restano. */
     backdrop-filter: blur(var(--blur-glass));
     border: 1px solid color-mix(in srgb, var(--color-fg-invert) 15%, transparent);
     padding-inline: var(--space-4);
