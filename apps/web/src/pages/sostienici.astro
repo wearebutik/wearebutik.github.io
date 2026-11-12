@@ -1,0 +1,17 @@
+---
+// Le sezioni della pagina su Sanity, nell'ordine scelto nello Studio
+// (ADR-0004, *Pages as sections*).
+import { getEntry } from 'astro:content';
+import BaseLayout from '#layouts/BaseLayout.astro';
+import Sezioni from '#components/sezioni/Sezioni.astro';
+
+const entry = await getEntry('pagine', 'sostienici');
+if (!entry || entry.data.type !== 'sostienici') {
+  throw new Error('Contenuto pagina "sostienici" mancante o non valido (collezione pagine).');
+}
+const c = entry.data;
+---
+
+<BaseLayout title={c.metaTitle} description={c.metaDescription}>
+  <Sezioni sezioni={c.sezioni} />
+</BaseLayout>

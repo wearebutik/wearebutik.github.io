@@ -1,0 +1,214 @@
+---
+// Sezione "Donazioni": il pulsante PayPal e i dati per il bonifico, ognuno
+// con il suo pulsante per copiarlo (l'IBAN ricopiato a mano si sbaglia).
+// Nata dalla pagina Sostienici.
+import Button from '@butik/ui/Button';
+import MetaLabel from '@butik/ui/MetaLabel';
+
+interface Props {
+  paypalTitle: string;
+  paypalLabel: string;
+  paypalHref: string;
+  bonificoTitle: string;
+  beneficiario: string;
+  banca: string;
+  iban?: string;
+  bic?: string;
+  causale: string;
+}
+const { paypalTitle, paypalLabel, paypalHref, bonificoTitle, beneficiario, banca, iban, bic, causale } = Astro.props;
+
+// Righe del bonifico: un dato mancante (IBAN o BIC ancora da inserire) non
+// si mostra.
+const righe = [
+  { label: 'Beneficiario', value: beneficiario },
+  { label: 'Banca', value: banca },
+  { label: 'IBAN', value: iban },
+  { label: 'BIC/SWIFT', value: bic },
+  { label: 'Causale', value: causale },
+].filter((r) => r.value);
+---
+
+<section class="donazioni">
+  <div class="donazione">
+    <h2 class="donazione__titolo">{paypalTitle}</h2>
+    <div class="donazione__azione">
+      <Button href={paypalHref} tone="dark">{paypalLabel}</Button>
+    </div>
+  </div>
+
+  <div class="donazione">
+    <h2 class="donazione__titolo">{bonificoTitle}</h2>
+    <dl class="bonifico">
+      {righe.map((r) => (
+        <div class="bonifico__riga">
+          <dt><MetaLabel as="span">{r.label}</MetaLabel></dt>
+          <dd class="bonifico__dato">
+            <span class="bonifico__valore">{r.value}</span>
+            <button
+              type="button"
+              class="bonifico__copia"
+              data-copia={r.value}
+              aria-label={`Copia ${r.label}`}
+            >
+              <svg class="bonifico__icona bonifico__icona--copia" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="11" height="11" rx="2" />
+                <path d="M5 15V6a2 2 0 0 1 2-2h9" />
+              </svg>
+              <svg class="bonifico__icona bonifico__icona--fatto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7.5" />
+              </svg>
+            </button>
+          </dd>
+        </div>
+      ))}
+    </dl>
+    {/* Annuncia "Copiato" agli screen reader: il testo del pulsante cambia,
+        ma un cambio di testo sul pulsante col fuoco non sempre si legge. */}
+    <p class="bonifico__stato" role="status" aria-live="polite" data-copia-stato></p>
+  </div>
+</section>
+
+<script>
+  // Rieseguito a ogni astro:page-load: con <ClientRouter /> il modulo gira una
+  // volta per sessione ma il DOM cambia a ogni navigazione
+  // (docs/guidances/client-scripts.md). Senza JS i pulsanti non fanno nulla e
+  // i dati restano selezionabili a mano.
+  function initCopia() {
+    const stato = document.querySelector<HTMLElement>('[data-copia-stato]');
+    document.querySelectorAll<HTMLButtonElement>('[data-copia]').forEach((pulsante) => {
+      if (pulsante.dataset.bound === 'true') return;
+      pulsante.dataset.bound = 'true';
+      let timer: number | undefined;
+      pulsante.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(pulsante.dataset.copia ?? '');
+        } catch {
+          return;
+        }
+        const etichetta = pulsante.getAttribute('aria-label')?.replace(/^Copia /, '') ?? '';
+        pulsante.dataset.copiato = 'true';
+        if (stato) stato.textContent = `${etichetta} copiato negli appunti.`;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          delete pulsante.dataset.copiato;
+        }, 2000);
+      });
+    });
+  }
+  document.addEventListener('astro:page-load', initCopia);
+</script>
+
+<style>
+  .donazioni {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-bottom: var(--space-16);
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .donazioni {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .donazione {
+    border: 1px solid color-mix(in oklab, var(--color-fg) 12%, transparent);
+    background-color: var(--color-white);
+    padding: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .donazione {
+      padding: var(--space-8);
+    }
+  }
+
+  .donazione__titolo {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-sm);
+    line-height: calc(1.75 / 1.25);
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-bottom: var(--space-6);
+  }
+
+  .bonifico {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+  }
+
+  .bonifico__dato {
+    margin: var(--space-1) 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .bonifico__valore {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+    color: var(--color-fg);
+    overflow-wrap: anywhere;
+  }
+
+  /* Pulsante "Copia": solo l'icona, quadrato e con un'area di tocco ampia;
+     dopo la copia l'icona diventa una spunta per due secondi. */
+  .bonifico__copia {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-8);
+    height: var(--space-8);
+    padding: 0;
+    border: 1px solid color-mix(in oklab, var(--color-fg) 18%, transparent);
+    background: transparent;
+    color: var(--color-fg);
+    cursor: pointer;
+    transition: color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
+  }
+  .bonifico__icona {
+    width: var(--space-4);
+    height: var(--space-4);
+  }
+  .bonifico__icona--fatto,
+  .bonifico__copia[data-copiato] .bonifico__icona--copia {
+    display: none;
+  }
+  .bonifico__copia[data-copiato] .bonifico__icona--fatto {
+    display: block;
+  }
+  .bonifico__copia:hover,
+  .bonifico__copia[data-copiato] {
+    color: var(--color-accent-text);
+    border-color: var(--color-accent-text);
+  }
+  .bonifico__copia:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bonifico__copia {
+      transition: none;
+    }
+  }
+
+  /* Solo per screen reader. */
+  .bonifico__stato {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+  }
+</style>

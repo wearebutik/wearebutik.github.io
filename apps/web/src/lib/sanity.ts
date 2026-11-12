@@ -15,7 +15,7 @@ export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 // caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
 // che il filtro di Sanity esclude già (slug, href, url, email, id…), che
 // riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
-const NON_CODIFICATI = new Set(['heroVariant', 'category', 'icona', 'rete', 'pec', 'emailValue', 'pecValue']);
+const NON_CODIFICATI = new Set(['heroVariant', 'category', 'icona', 'rete', 'pec', 'emailValue', 'pecValue', 'iban', 'bic']);
 // Un passo del percorso è un nome di campo, un indice o un `{ _key }` di array.
 const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.has(k) || /(href|url|link)$/i.test(k));
 // …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
@@ -167,6 +167,7 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaPartners: 'partners',
   paginaServizi: 'servizi-index',
   paginaProgetti: 'progetti-index',
+  paginaSostienici: 'sostienici',
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
@@ -205,6 +206,9 @@ async function conImmaginiSezione(s: ConImmagine, logger: Parameters<typeof lqip
   }
   if ((s._type === 'sezioneChiSiamo' || s._type === 'sezioneTestataFoto') && s.image !== undefined) {
     return { ...s, image: imageUrl(s.image) };
+  }
+  if (s._type === 'sezioneRiquadri' && Array.isArray(s.riquadri)) {
+    return { ...s, riquadri: (s.riquadri as ConImmagine[]).map((r) => ({ ...r, image: imageUrl(r.image) })) };
   }
   if (s._type === 'sezioneTeam' && Array.isArray(s.founders)) {
     return { ...s, founders: (s.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) })) };

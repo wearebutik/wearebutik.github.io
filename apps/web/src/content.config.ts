@@ -217,6 +217,23 @@ const sezioneSchema = z.discriminatedUnion('_type', [
   // riferimenti nello slug di ciascun servizio.
   sezione('sezioneElencoServizi', { servizi: z.array(z.string()) }),
   sezione('sezioneElencoProgetti', {}),
+  // Foto: URL Sanity, scaricato e ottimizzato da Astro in build.
+  sezione('sezioneRiquadri', {
+    eyebrow: z.string().optional(),
+    riquadri: z.array(z.object({ title: z.string(), image: z.string().url(), alt: z.string() })),
+  }),
+  // IBAN e BIC facoltativi: vuoti, la riga non si mostra.
+  sezione('sezioneDonazioni', {
+    paypalTitle: z.string(),
+    paypalLabel: z.string(),
+    paypalHref: z.string(),
+    bonificoTitle: z.string(),
+    beneficiario: z.string(),
+    banca: z.string(),
+    iban: z.string().optional(),
+    bic: z.string().optional(),
+    causale: z.string(),
+  }),
   sezione('sezioneNewsletter', {
     title: z.string(),
     body: z.string(),
@@ -326,6 +343,13 @@ const paginaServizi = z.object({
   })),
 });
 
+const paginaSostienici = z.object({
+  type: z.literal('sostienici'),
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  sezioni: z.array(sezioneSchema),
+});
+
 const paginaProgetti = z.object({
   type: z.literal('progetti-index'),
   metaTitle: z.string(),
@@ -375,6 +399,7 @@ const pagineCollection = defineCollection({
     paginaPartners,
     paginaServizi,
     paginaProgetti,
+    paginaSostienici,
     paginaTestimonials,
     paginaTermini,
     paginaPrivacy,

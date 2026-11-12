@@ -346,6 +346,54 @@ export const sezioneElencoProgetti = daAltrove('sezioneElencoProgetti', 'Elenco 
     "Mostra tutti i progetti pubblicati, nell'ordine dell'elenco Progetti: lì si riordinano trascinandoli. I testi delle card (titolo, sottotitolo, categoria, anno, cliente) si modificano in ciascun progetto.",
 });
 
+export const sezioneRiquadri = defineType({
+  name: 'sezioneRiquadri',
+  title: 'Riquadri con foto',
+  type: 'object',
+  description: 'Una griglia di foto, ciascuna con il suo titolo sotto (tre per riga).',
+  fields: [
+    defineField({ name: 'eyebrow', title: 'Intestazione', type: 'string', description: 'Facoltativa.' }),
+    defineField({
+      name: 'riquadri',
+      title: 'Riquadri',
+      type: 'array',
+      validation: (r) => r.required().min(1),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'riquadro',
+          fields: [
+            str('title', 'Titolo'),
+            defineField({ name: 'image', title: 'Foto', type: 'image', options: { hotspot: true }, validation: (r) => r.required() }),
+            str('alt', 'Testo alternativo della foto'),
+          ],
+          preview: { select: { title: 'title', media: 'image' } },
+        }),
+      ],
+    }),
+  ],
+  preview: { select: { n: 'riquadri.length' }, prepare: ({ n }) => ({ title: 'Riquadri con foto', subtitle: n ? `${n} riquadri` : undefined }) },
+});
+
+export const sezioneDonazioni = defineType({
+  name: 'sezioneDonazioni',
+  title: 'Donazioni',
+  type: 'object',
+  description: 'Il pulsante PayPal e i dati per il bonifico, affiancati. IBAN e BIC vuoti non si mostrano.',
+  fields: [
+    str('paypalTitle', 'PayPal: titolo'),
+    str('paypalLabel', 'PayPal: etichetta del pulsante'),
+    url('paypalHref', 'PayPal: link della donazione'),
+    str('bonificoTitle', 'Bonifico: titolo'),
+    str('beneficiario', 'Bonifico: beneficiario'),
+    str('banca', 'Bonifico: banca e filiale'),
+    defineField({ name: 'iban', title: 'Bonifico: IBAN', type: 'string' }),
+    defineField({ name: 'bic', title: 'Bonifico: BIC/SWIFT', type: 'string' }),
+    str('causale', 'Bonifico: causale'),
+  ],
+  preview: { prepare: () => ({ title: 'Donazioni', subtitle: 'PayPal e bonifico' }) },
+});
+
 export const sezioniPagina = [
   sezioneHero,
   sezioneLoghi,
@@ -364,6 +412,8 @@ export const sezioniPagina = [
   sezioneCitazione,
   sezioneElencoServizi,
   sezioneElencoProgetti,
+  sezioneRiquadri,
+  sezioneDonazioni,
 ];
 
 // Blocchi che ogni pagina a sezioni può usare, nell'ordine del menu
@@ -385,6 +435,8 @@ export const sezioniAmmesse = [
   'sezioneElencoProgetti',
   'sezioneElencoServizi',
   'sezioneChiSiamo',
+  'sezioneRiquadri',
+  'sezioneDonazioni',
   'ctaBanner',
   'sezioneNewsletter',
 ];

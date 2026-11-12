@@ -187,6 +187,8 @@ export const paginaServizi = pagina(
 
 export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sezioni()]);
 
+export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [sezioni()]);
+
 export const paginaTestimonials = defineType({
   name: 'paginaTestimonials',
   title: 'Testimonianze',
@@ -318,6 +320,7 @@ export const PAGINE = {
   paginaPartners: 'partners',
   paginaServizi: 'servizi',
   paginaProgetti: 'progetti',
+  paginaSostienici: 'sostienici',
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
@@ -331,6 +334,7 @@ export const pagineTypes = [
   paginaPartners,
   paginaServizi,
   paginaProgetti,
+  paginaSostienici,
   paginaTestimonials,
   paginaPrivacy,
   paginaTermini,

@@ -1,0 +1,74 @@
+---
+// Sezione "Riquadri con foto": una griglia di foto, ciascuna con il suo
+// titolo sotto. Nata dai tre temi della pagina Sostienici.
+import Eyebrow from '@butik/ui/Eyebrow';
+import Foto from '#components/Foto.astro';
+import { foto } from '#lib/foto';
+
+interface Riquadro {
+  title: string;
+  image: string;
+  alt: string;
+}
+interface Props {
+  eyebrow?: string;
+  riquadri: Riquadro[];
+}
+const { eyebrow, riquadri } = Astro.props;
+
+const fotoRiquadri = await Promise.all(
+  riquadri.map((r) =>
+    foto(r.image, { widths: [400, 700], sizes: '(max-width: 768px) 100vw, 33vw', ruolo: 'miniatura' }),
+  ),
+);
+---
+
+<section class="riquadri">
+  {eyebrow && <Eyebrow align="left">{eyebrow}</Eyebrow>}
+  <ul class="riquadri__griglia" data-reveal-group>
+    {riquadri.map((r, i) => (
+      <li class="riquadro">
+        <Foto foto={fotoRiquadri[i]} alt={r.alt} loading="lazy" class="riquadro__foto" />
+        <h2 class="riquadro__titolo">{r.title}</h2>
+      </li>
+    ))}
+  </ul>
+</section>
+
+<style>
+  .riquadri {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-bottom: var(--space-16);
+  }
+
+  .riquadri__griglia {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+  }
+  @media (min-width: 768px) {
+    .riquadri__griglia {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .riquadri :global(.riquadro__foto) {
+    width: 100%;
+    height: var(--media-h-sm);
+    object-fit: cover;
+  }
+
+  .riquadro__titolo {
+    margin-top: var(--space-4);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-sm);
+    line-height: calc(1.75 / 1.25);
+    font-weight: 700;
+    color: var(--color-fg);
+  }
+</style>
