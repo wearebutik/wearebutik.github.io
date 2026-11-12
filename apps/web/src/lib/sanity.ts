@@ -15,7 +15,7 @@ export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 // caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
 // che il filtro di Sanity esclude già (slug, href, url, email, id…), che
 // riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
-const NON_CODIFICATI = new Set(['heroVariant', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
+const NON_CODIFICATI = new Set(['heroVariant', 'category', 'icona', 'rete', 'pec', 'emailValue', 'pecValue']);
 // Un passo del percorso è un nome di campo, un indice o un `{ _key }` di array.
 const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.has(k) || /(href|url|link)$/i.test(k));
 // …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
