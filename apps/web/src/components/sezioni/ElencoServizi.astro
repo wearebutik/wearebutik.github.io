@@ -1,0 +1,49 @@
+---
+// Sezione "Elenco dei servizi": un blocco espanso per servizio (per chi ·
+// cosa ottieni), nell'ordine dell'elenco Servizi dello Studio. Nata da /servizi.
+import { getCollection } from 'astro:content';
+import ServiceExpanded from '#components/serviziCards/ServiceExpanded.astro';
+import { perOrdine } from '#lib/ordine';
+
+const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
+---
+
+<section class="svc-main">
+  <div class="svc-grid" data-svc-grid data-reveal-group data-prefetch="viewport">
+    {servizi.map((s, i) => (
+      <div class="svc-grid-item">
+        <ServiceExpanded servizio={s} index={i + 1} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .svc-main {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-bottom: var(--space-20);
+  }
+
+  .svc-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-5);
+  }
+  @media (min-width: 1024px) {
+    .svc-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .svc-grid-item {
+    border: 1px solid color-mix(in oklab, var(--color-butik-dark) 12%, transparent);
+    padding: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .svc-grid-item {
+      padding: var(--space-8);
+    }
+  }
+</style>

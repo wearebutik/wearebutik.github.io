@@ -1,0 +1,49 @@
+---
+// Sezione "Testo": intestazione e paragrafi di testo formattato (grassetto,
+// corsivo, link), uno per blocco. Nata dall'intro di Chi siamo.
+import Eyebrow from '@butik/ui/Eyebrow';
+import { richTextParagrafi } from '#lib/richText';
+
+interface Props {
+  eyebrow: string;
+  testo: unknown[];
+}
+const { eyebrow, testo } = Astro.props;
+---
+
+<section class="intro-section">
+  <Eyebrow align="left">{eyebrow}</Eyebrow>
+  <div class="intro-copy">
+    {richTextParagrafi(testo).map((p) => <p set:html={p}></p>)}
+  </div>
+</section>
+
+<style>
+  /* ── Chi siamo (intro) ──────────────────────────────────────────────── */
+  .intro-section {
+    max-width: var(--measure-3xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .intro-section {
+      padding-block: var(--space-20);
+    }
+  }
+
+  .intro-copy {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed vince su text-base/lg */
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .intro-copy {
+      font-size: var(--font-size-lg);
+    }
+  }
+  .intro-copy > p:not(:last-child) {
+    margin-bottom: var(--space-5);
+  }
+</style>

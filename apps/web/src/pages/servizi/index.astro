@@ -1,152 +1,17 @@
 ---
-// /servizi — l'elenco dei servizi. Ogni servizio è un blocco espanso
-// (per chi · cosa ottieni), non una card-teaser: la prova sintetica sta in home.
-import { getCollection, getEntry } from 'astro:content';
+// Le sezioni della pagina su Sanity, nell'ordine scelto nello Studio
+// (ADR-0004, *Pages as sections*).
+import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
-import Eyebrow from '@butik/ui/Eyebrow';
-import ServiceExpanded from '#components/serviziCards/ServiceExpanded.astro';
-import { richTextHtml } from '#lib/richText';
-import Metodo from '#components/home/Metodo.astro';
-import type { MetodoIconName } from '#data/metodo';
-import CtaBanner from '#components/CtaBanner.astro';
-import { perOrdine } from '#lib/ordine';
+import Sezioni from '#components/sezioni/Sezioni.astro';
 
-// Copy editoriale content-driven (ADR-0004): header, intro, metodo e CTA finale dalla collezione `pagine` (entry `servizi`).
 const entry = await getEntry('pagine', 'servizi');
 if (!entry || entry.data.type !== 'servizi-index') {
   throw new Error('Contenuto pagina "servizi" mancante o non valido (collezione pagine).');
 }
 const c = entry.data;
-
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
-
-// Icone per tappa del metodo: config di design, non copy editoriale.
-const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagonismo', 'formazione', 'eventi'];
 ---
 
 <BaseLayout title={c.metaTitle} description={c.metaDescription}>
-  <section class="svc-intro">
-    <Eyebrow>{c.headerEyebrow}</Eyebrow>
-    <h1 class="svc-title">{c.headerTitle}</h1>
-    <p class="svc-lead">
-      {c.headerIntro1}
-    </p>
-    <p class="svc-lead" set:html={richTextHtml(c.headerIntro2)}></p>
-  </section>
-
-  <section class="svc-main">
-    <div class="svc-grid" data-svc-grid data-reveal-group data-prefetch="viewport">
-      {servizi.map((s, i) => (
-        <div class="svc-grid-item">
-          <ServiceExpanded servizio={s} index={i + 1} />
-        </div>
-      ))}
-    </div>
-  </section>
-
-  <Metodo
-    eyebrow={c.metodoEyebrow}
-    title={c.metodoTitle}
-    tappe={c.metodo}
-    icons={metodoIcons}
-  />
-
-  <CtaBanner
-    title={c.ctaTitle}
-    primaryCta={{ label: c.ctaPrimaryLabel, href: c.ctaPrimaryHref }}
-    secondaryCta={{ label: c.ctaSecondaryLabel, href: c.ctaSecondaryHref }}
-  />
+  <Sezioni sezioni={c.sezioni} />
 </BaseLayout>
-
-<style>
-  .svc-intro {
-    max-width: var(--measure-5xl);
-    margin-inline: auto;
-    padding-inline: var(--space-6);
-    padding-top: var(--space-20);
-    padding-bottom: var(--space-8);
-    text-align: center;
-  }
-  @media (min-width: 768px) {
-    .svc-intro {
-      padding-top: var(--space-24);
-    }
-  }
-
-  .svc-title {
-    font-family: var(--font-heading);
-    font-size: var(--text-4xl);
-    line-height: calc(2.5 / 2.25);
-    font-weight: 700;
-    color: var(--color-butik-dark);
-    margin-bottom: var(--space-5);
-  }
-  @media (min-width: 768px) {
-    .svc-title {
-      font-size: var(--text-5xl);
-      line-height: 1;
-    }
-  }
-
-  .svc-lead {
-    font-family: var(--font-sans);
-    font-size: var(--font-size-base);
-    /* leading-relaxed era già sull'utility: vince lui sul line-height di
-       text-base/text-lg, non i valori di riga di quelle taglie. */
-    line-height: 1.625;
-    color: var(--color-butik-body);
-    max-width: var(--measure-2xl);
-    margin-inline: auto;
-  }
-  @media (min-width: 768px) {
-    .svc-lead {
-      font-size: var(--font-size-lg);
-    }
-  }
-  .svc-lead + .svc-lead {
-    margin-top: var(--space-4);
-  }
-
-  .svc-main {
-    max-width: var(--container-max);
-    margin-inline: auto;
-    padding-inline: var(--space-6);
-    padding-bottom: var(--space-20);
-  }
-
-
-  .svc-grid {
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: var(--space-5);
-  }
-  @media (min-width: 1024px) {
-    .svc-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
-
-  .svc-grid-item {
-    border: 1px solid color-mix(in oklab, var(--color-butik-dark) 12%, transparent);
-    padding: var(--space-6);
-  }
-  @media (min-width: 768px) {
-    .svc-grid-item {
-      padding: var(--space-8);
-    }
-  }
-
-  /* sr-only: fuori dal flusso visivo, presente per screen reader/status live. */
-  .svc-status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    margin: -1px;
-    padding: 0;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border-width: 0;
-  }
-</style>
-

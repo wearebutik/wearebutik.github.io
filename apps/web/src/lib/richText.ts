@@ -42,3 +42,11 @@ export function richTextHtml(value: unknown): string {
     .map((b) => (b.children ?? []).map((s) => spanHtml(s, b.markDefs)).join(''))
     .join('<br /><br />');
 }
+
+// Un paragrafo per blocco: per le sezioni che rendono ogni paragrafo nel suo
+// <p> (intro, team, testate), con gli stessi stili scoped della pagina.
+export function richTextParagrafi(value: unknown): string[] {
+  return ((value as Block[] | undefined) ?? [])
+    .filter((b) => b._type === 'block')
+    .map((b) => (b.children ?? []).map((s) => spanHtml(s, b.markDefs)).join(''));
+}

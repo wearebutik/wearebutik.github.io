@@ -1,0 +1,70 @@
+---
+// Sezione "Citazione": una frase in evidenza su fondo scuro, con l'autore.
+// Nata da Chi siamo.
+interface Props {
+  quote: string;
+  author: string;
+}
+const { quote, author } = Astro.props;
+---
+
+<section class="quote-section">
+  <figure class="quote-figure">
+    <svg class="quote-mark" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9.983 3v7.391c0 5.704-3.731 9.57-8.983 10.609l-.995-2.151c2.432-.917 3.995-3.638 3.995-5.849h-4v-10h9.983zm14.017 0v7.391c0 5.704-3.748 9.571-9 10.609l-.996-2.151c2.433-.917 3.996-3.638 3.996-5.849h-3.983v-10h9.983z" />
+    </svg>
+    <blockquote class="quote-text">
+      {quote}
+    </blockquote>
+    <figcaption class="quote-author">
+      {author}
+    </figcaption>
+  </figure>
+</section>
+
+<style>
+  /* ── Testimonianza in evidenza ────────────────────────────────────────── */
+  .quote-section {
+    background-color: var(--color-bg-invert);
+    color: var(--color-fg-invert);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .quote-section {
+      padding-block: var(--space-20);
+    }
+  }
+  .quote-figure {
+    max-width: var(--measure-3xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    text-align: center;
+  }
+  .quote-mark {
+    /* design-lint-disable red-as-text: virgolette SVG, aria-hidden, non testo */
+    width: var(--space-10);
+    height: var(--space-10);
+    margin-inline: auto;
+    margin-bottom: var(--space-6);
+    color: var(--color-accent);
+  }
+  .quote-text {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-sm);
+    line-height: 1.375; /* leading-snug */
+    font-weight: 700;
+  }
+  @media (min-width: 768px) {
+    .quote-text {
+      font-size: var(--font-size-xl);
+    }
+  }
+  .quote-author {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    /* text-white/70: chiaro, qui oklab e srgb NON coincidono */
+    color: color-mix(in oklab, var(--color-fg-invert) 70%, transparent);
+    margin-top: var(--space-6);
+  }
+</style>

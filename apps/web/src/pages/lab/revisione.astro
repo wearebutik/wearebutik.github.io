@@ -60,10 +60,13 @@ if (chiSiamo?.data.type === 'chi-siamo') {
     titolo: 'Chi siamo',
     href: '/chi-siamo',
     foto: [
-      ...(chiSiamo.data.heroImage ? [{ src: chiSiamo.data.heroImage, alt: chiSiamo.data.heroImageAlt, ruolo: 'Header' }] : []),
-      ...chiSiamo.data.founders
-        .filter((f) => f.photo)
-        .map((f) => ({ src: f.photo, alt: `Ritratto di ${f.name}`, ruolo: f.name })),
+      ...chiSiamo.data.sezioni.flatMap((s) =>
+        s._type === 'sezioneTestataFoto' && s.image
+          ? [{ src: s.image, alt: s.imageAlt, ruolo: 'Header' }]
+          : s._type === 'sezioneTeam'
+            ? s.founders.flatMap((f) => (f.photo ? [{ src: f.photo, alt: `Ritratto di ${f.name}`, ruolo: f.name }] : []))
+            : [],
+      ),
     ],
   });
 }

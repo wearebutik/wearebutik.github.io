@@ -1,0 +1,204 @@
+---
+// Sezione "Missione e SDG": la frase di missione e gli Obiettivi di Sviluppo
+// Sostenibile che il lavoro tocca. Nata da Chi siamo.
+import Eyebrow from '@butik/ui/Eyebrow';
+import MetaLabel from '@butik/ui/MetaLabel';
+
+interface Props {
+  missionEyebrow: string;
+  missionStatement: string;
+  sdgEyebrow: string;
+  sdgIntro: string;
+  sdgObiettivoLabel: string;
+  sdg: { num: number; title: string }[];
+}
+const { missionEyebrow, missionStatement, sdgEyebrow, sdgIntro, sdgObiettivoLabel } = Astro.props;
+
+// Obiettivi di Sviluppo Sostenibile (Agenda ONU 2030): num + titolo sono copy
+// editoriale (array in collezione); colore/icona restano config di design qui —
+// i colori sono quelli ufficiali SDG (tutti e 17), mappati per numero obiettivo.
+// `ink` è il colore del numero sul quadrato: fra bianco e --color-fg quello
+// col contrasto WCAG più alto su quel colore (in commento il rapporto). Il
+// numero è testo normale (--font-size-lg bold, sotto la soglia del testo
+// grande) e supera 4.5:1 su tutti i 17 colori; il margine più stretto è il
+// rosso dell'obiettivo 1 (bianco 4.52:1, --color-fg 4.25:1).
+// Fallback neutro per qualsiasi num fuori range 1-17 (refuso nello Studio):
+// niente stile mancante silenzioso (issue #26 — W4).
+const WHITE = 'var(--color-white)';
+const DARK = 'var(--color-fg)';
+const sdgStyle: Record<number, { color: string; ink: string; icon: string }> = {
+  1: { color: '#E5243B', ink: WHITE, icon: '🚫' }, // 4.52:1
+  2: { color: '#DDA63A', ink: DARK, icon: '🌾' }, // 8.78:1
+  3: { color: '#4C9F38', ink: DARK, icon: '🩺' }, // 5.79:1
+  4: { color: '#C5192D', ink: WHITE, icon: '📚' }, // 5.91:1
+  5: { color: '#FF3A21', ink: DARK, icon: '♀️' }, // 5.38:1
+  6: { color: '#26BDE2', ink: DARK, icon: '💧' }, // 8.66:1
+  7: { color: '#FCC30B', ink: DARK, icon: '⚡' }, // 11.85:1
+  8: { color: '#A21942', ink: WHITE, icon: '🎯' }, // 7.63:1
+  9: { color: '#FD6925', ink: DARK, icon: '🏗️' }, // 6.61:1
+  10: { color: '#DD1367', ink: WHITE, icon: '⚖️' }, // 4.81:1
+  11: { color: '#FD9D24', ink: DARK, icon: '🏙️' }, // 9.17:1
+  12: { color: '#BF8B2E', ink: DARK, icon: '♻️' }, // 6.36:1
+  13: { color: '#3F7E44', ink: WHITE, icon: '🌍' }, // 4.91:1
+  14: { color: '#0A97D9', ink: DARK, icon: '🐟' }, // 5.89:1
+  15: { color: '#56C02B', ink: DARK, icon: '🌳' }, // 8.21:1
+  16: { color: '#00689D', ink: WHITE, icon: '🕊️' }, // 6.06:1
+  17: { color: '#19486A', ink: WHITE, icon: '🤝' }, // 9.65:1
+};
+const sdgFallbackStyle = { color: '#6B7280', ink: WHITE, icon: '🌐' }; // 4.83:1
+const sdg = Astro.props.sdg.map((o) => ({ ...o, ...(sdgStyle[o.num] ?? sdgFallbackStyle) }));
+---
+
+<section class="mission-section">
+  <div class="mission-container">
+    <div class="mission-lead">
+      <Eyebrow align="left">{missionEyebrow}</Eyebrow>
+      <p class="mission-statement">
+        {missionStatement}
+      </p>
+    </div>
+
+    <div class="sdg-block">
+      <Eyebrow align="left">{sdgEyebrow}</Eyebrow>
+      <p class="sdg-intro">
+        {sdgIntro}
+      </p>
+      <div class="sdg-grid" data-reveal-group>
+        {sdg.map((o) => (
+          <div class="sdg-card">
+            <span
+              class="sdg-icon"
+              style={`background-color: ${o.color}; color: ${o.ink}`}
+              aria-hidden="true"
+            >
+              <span class="sdg-emoji">{o.icon}</span>
+              <span class="sdg-num">{o.num}</span>
+            </span>
+            <div>
+              <MetaLabel as="p">
+                {sdgObiettivoLabel} {o.num}
+              </MetaLabel>
+              <p class="sdg-title">
+                {o.title}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ── Missione + SDG ───────────────────────────────────────────────────
+     Colori: --color-fg/--color-bg/--color-white sono i token semantici di
+     @butik/ui-tokens che coincidono coi valori reali di butik-dark/butik-light/
+     white; --color-accent-text è il rosso scurito per il testo (già usato per
+     text-butik-red-ink), --color-accent il rosso di brand per i glifi senza
+     testo (i ruoli del rosso: docs/guidances/design-approach.md). */
+  .mission-section {
+    background-color: var(--color-white);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .mission-section {
+      padding-block: var(--space-20);
+    }
+  }
+  .mission-container {
+    max-width: var(--measure-5xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+  .mission-lead {
+    max-width: var(--measure-3xl);
+  }
+  .mission-statement {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    line-height: 1.375; /* leading-snug vince su text-2xl/3xl */
+    font-weight: 700;
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .mission-statement {
+      font-size: var(--text-3xl);
+    }
+  }
+
+  .sdg-block {
+    margin-top: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .sdg-block {
+      margin-top: var(--space-16);
+    }
+  }
+  .sdg-intro {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed */
+    color: var(--color-fg);
+    max-width: var(--measure-3xl);
+  }
+  .sdg-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+  }
+  @media (min-width: 640px) {
+    .sdg-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .sdg-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    /* border-butik-dark/15: scuro, oklab e srgb danno lo stesso pixel */
+    border: 1px solid color-mix(in srgb, var(--color-fg) 15%, transparent);
+    /* bg-butik-light/50: chiaro, qui oklab e srgb NON coincidono */
+    background-color: color-mix(in oklab, var(--color-bg) 50%, transparent);
+    padding: var(--space-5);
+  }
+  @media (min-width: 768px) {
+    .sdg-card {
+      padding: var(--space-6);
+    }
+  }
+  .sdg-icon {
+    display: flex;
+    flex-shrink: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-16);
+    height: var(--space-16);
+    /* il colore del numero arriva inline per obiettivo (sdgStyle.ink) */
+  }
+  .sdg-emoji {
+    font-size: var(--font-size-title-sm);
+    line-height: 1; /* leading-none */
+  }
+  .sdg-num {
+    font-family: var(--font-display);
+    font-size: var(--font-size-lg);
+    line-height: 1; /* leading-none */
+    font-weight: 700;
+    margin-top: var(--space-1);
+  }
+  .sdg-title {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-base);
+    line-height: 1.375; /* leading-snug */
+    font-weight: 700;
+    color: var(--color-fg);
+    margin-top: var(--space-1);
+  }
+  @media (min-width: 768px) {
+    .sdg-title {
+      font-size: var(--font-size-lg);
+    }
+  }
+</style>

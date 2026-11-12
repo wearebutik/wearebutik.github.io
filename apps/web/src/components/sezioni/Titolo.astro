@@ -1,0 +1,23 @@
+---
+// Sezione "Titolo": il titolo principale della pagina (H1) con
+// l'intestazione, centrato. Nata dalla testata di /progetti.
+import SectionHeading from '@butik/ui/SectionHeading';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+}
+const { eyebrow, title } = Astro.props;
+---
+
+<div class="page-header">
+  <SectionHeading as="h1" eyebrow={eyebrow} title={title} />
+</div>
+
+<style>
+  .page-header {
+    padding-top: var(--space-20);
+    padding-bottom: var(--space-12);
+    text-align: center;
+  }
+</style>

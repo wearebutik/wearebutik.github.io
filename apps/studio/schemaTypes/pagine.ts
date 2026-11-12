@@ -6,7 +6,7 @@ import { defineArrayMember, defineField, defineType, type FieldDefinition } from
 import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { hrefField, urlSicuro } from './testo';
-import { sezioniHome, validaSezioni } from './sezioniPagina';
+import { sezioniAmmesse, validaSezioni } from './sezioniPagina';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
 // Stringhe e testi sono obbligatori: lo schema Zod del sito li richiede tutti,
@@ -36,25 +36,7 @@ const rich = (name: string, title: string, group?: string) =>
 const seo = [str('metaTitle', 'Meta title', 'seo'), txt('metaDescription', 'Meta description', 'seo')];
 const seoGroup = { name: 'seo', title: 'SEO' };
 
-const metriche = (name: string, title: string, group?: string, description?: string) =>
-  defineField({
-    name,
-    title,
-    type: 'array',
-    group,
-    description,
-    ...lista,
-    of: [
-      defineArrayMember({
-        type: 'object',
-        name: 'metrica',
-        fields: [str('value', 'Valore'), str('label', 'Etichetta')],
-        preview: { select: { title: 'value', subtitle: 'label' } },
-      }),
-    ],
-  });
-
-const pagina = (name: string, title: string, fields: FieldDefinition[], groups: { name: string; title: string }[] = []) =>
+const pagina = (name: string, title: string, fields: FieldDefinition[], groups: { name: string; title: string; default?: boolean }[] = []) =>
   defineType({
     name,
     title,
@@ -99,91 +81,21 @@ export const testoLegale = defineType({
 });
 
 // ── Pagine ──────────────────────────────────────────────────────────────────
-export const paginaHome = pagina('paginaHome', 'Home', [
+// La pagina come lista di sezioni (ADR-0004, *Pages as sections*).
+const sezioni = (group?: string) =>
   defineField({
     name: 'sezioni',
     title: 'Sezioni',
-    description: 'La home, dall\'alto in basso: aggiungete, togliete e trascinate le sezioni. L\'Hero va per primo.',
+    description: 'La pagina, dall\'alto in basso: aggiungete, togliete e trascinate le sezioni. La testata va per prima.',
     type: 'array',
+    group,
     validation: validaSezioni,
-    of: sezioniHome.map((type) => defineArrayMember({ type })),
-  }),
-]);
+    of: sezioniAmmesse.map((type) => defineArrayMember({ type })),
+  });
 
-export const paginaChiSiamo = pagina(
-  'paginaChiSiamo',
-  'Chi siamo',
-  [
-    str('heroTitle', 'Titolo', 'intro'),
-    txt('heroSubtitle', 'Sottotitolo', 'intro'),
-    defineField({ name: 'heroImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'intro' }),
-    str('heroImageAlt', 'Testo alternativo immagine', 'intro'),
-    str('introEyebrow', 'Intestazione', 'intro'),
-    rich('introP1', 'Paragrafo 1', 'intro'),
-    rich('introP2', 'Paragrafo 2', 'intro'),
-    rich('introP3', 'Paragrafo 3', 'intro'),
-    rich('introP4', 'Paragrafo 4', 'intro'),
-    str('missionEyebrow', 'Intestazione', 'missione'),
-    txt('missionStatement', 'Missione', 'missione'),
-    str('sdgEyebrow', 'Intestazione', 'missione'),
-    txt('sdgIntro', 'Introduzione SDG', 'missione'),
-    defineField({
-      name: 'sdg',
-      ...lista,
-      title: 'Obiettivi SDG',
-      type: 'array',
-      group: 'missione',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'obiettivo',
-          fields: [defineField({ name: 'num', title: 'Numero', type: 'number', validation: (r) => r.required() }), str('title', 'Titolo')],
-          preview: { select: { title: 'title', subtitle: 'num' } },
-        }),
-      ],
-    }),
-    str('sdgObiettivoLabel', 'Etichetta "Obiettivo"', 'missione'),
-    str('teamEyebrow', 'Intestazione', 'team'),
-    rich('teamP1', 'Paragrafo 1', 'team'),
-    rich('teamP2', 'Paragrafo 2', 'team'),
-    rich('teamP3', 'Paragrafo 3', 'team'),
-    defineField({
-      name: 'founders',
-      ...lista,
-      title: 'Fondatrici',
-      type: 'array',
-      group: 'team',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'founder',
-          fields: [
-            str('name', 'Nome'),
-            str('role', 'Ruolo'),
-            txt('bio', 'Bio'),
-            str('email', 'Email'),
-            str('linkedin', 'LinkedIn (URL)'),
-            defineField({ name: 'photo', title: 'Foto', type: 'image', options: { hotspot: true } }),
-          ],
-          preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
-        }),
-      ],
-    }),
-    str('linkedinLabel', 'Etichetta link LinkedIn', 'team'),
-    txt('testimonialQuote', 'Citazione', 'chiusura'),
-    str('testimonialAuthor', 'Autore citazione', 'chiusura'),
-    str('ctaTitle', 'Banner: titolo', 'chiusura'),
-    txt('ctaBody', 'Banner: testo', 'chiusura'),
-    str('ctaLabel', 'Banner: etichetta pulsante', 'chiusura'),
-    str('ctaHref', 'Banner: URL pulsante', 'chiusura'),
-  ],
-  [
-    { name: 'intro', title: 'Intro' },
-    { name: 'missione', title: 'Missione e SDG' },
-    { name: 'team', title: 'Team' },
-    { name: 'chiusura', title: 'Chiusura' },
-  ],
-);
+export const paginaHome = pagina('paginaHome', 'Home', [sezioni()]);
+
+export const paginaChiSiamo = pagina('paginaChiSiamo', 'Chi siamo', [sezioni()]);
 
 export const paginaContatti = pagina(
   'paginaContatti',
@@ -241,20 +153,20 @@ export const paginaPartners = pagina('paginaPartners', 'Partner', [
   }),
 ]);
 
+// Il metodo resta un campo fisso: lo mostra la sezione Metodo, in questa
+// pagina come in home.
 export const paginaServizi = pagina(
   'paginaServizi',
   'Servizi (indice)',
   [
-    str('headerEyebrow', 'Intestazione', 'testata'),
-    str('headerTitle', 'Titolo', 'testata'),
-    txt('headerIntro1', 'Introduzione 1', 'testata'),
-    rich('headerIntro2', 'Introduzione 2', 'testata'),
+    sezioni('sezioni'),
     str('metodoEyebrow', 'Intestazione', 'metodo'),
     str('metodoTitle', 'Titolo', 'metodo'),
     defineField({
       name: 'metodo',
       ...lista,
-      title: 'Passi (anche in home)',
+      title: 'Passi',
+      description: 'Li mostra la sezione Metodo, qui e in home.',
       type: 'array',
       group: 'metodo',
       of: [
@@ -266,24 +178,14 @@ export const paginaServizi = pagina(
         }),
       ],
     }),
-    str('ctaTitle', 'Titolo', 'chiusura'),
-    str('ctaPrimaryLabel', 'Pulsante principale: etichetta', 'chiusura'),
-    str('ctaPrimaryHref', 'Pulsante principale: URL', 'chiusura'),
-    str('ctaSecondaryLabel', 'Pulsante secondario: etichetta', 'chiusura'),
-    str('ctaSecondaryHref', 'Pulsante secondario: URL', 'chiusura'),
   ],
   [
-    { name: 'testata', title: 'Testata' },
-    { name: 'metodo', title: 'Metodo' },
-    { name: 'chiusura', title: 'Chiusura' },
+    { name: 'sezioni', title: 'Sezioni', default: true },
+    { name: 'metodo', title: 'Metodo (anche in home)' },
   ],
 );
 
-export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [
-  str('eyebrow', 'Intestazione'),
-  str('title', 'Titolo'),
-  str('clienteLabel', 'Etichetta "Cliente"'),
-]);
+export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sezioni()]);
 
 export const paginaTestimonials = defineType({
   name: 'paginaTestimonials',
