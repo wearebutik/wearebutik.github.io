@@ -7,11 +7,16 @@ import type { CollectionEntry } from 'astro:content';
 import SectionHeading from '@butik/ui/SectionHeading';
 import Button from '@butik/ui/Button';
 
+// Testi dal blocco "Progetti in evidenza" della pagina (Sanity, ADR-0004).
 interface Props {
   progetti: CollectionEntry<'progetti'>[];
+  eyebrow: string;
+  title: string;
+  intro?: string;
+  ctaLabel: string;
 }
 
-const { progetti } = Astro.props;
+const { progetti, eyebrow, title, intro, ctaLabel } = Astro.props;
 
 const fotoCard = await Promise.all(
   progetti.map((p) =>
@@ -24,10 +29,8 @@ const fotoCard = await Promise.all(
   <section class="portfolio-section">
     <div class="portfolio-container">
       <div class="portfolio-header">
-        <SectionHeading eyebrow="Progetti" title="Storie di trasformazione territoriale" />
-        <p class="portfolio-intro">
-          Quello che abbiamo costruito insieme ai nostri partner
-        </p>
+        <SectionHeading eyebrow={eyebrow} title={title} />
+        {intro && <p class="portfolio-intro">{intro}</p>}
       </div>
 
       <div class="portfolio-grid" data-reveal-group data-prefetch="viewport">
@@ -65,7 +68,7 @@ const fotoCard = await Promise.all(
       </div>
 
       <div class="portfolio-cta" data-prefetch="viewport">
-        <Button href="/progetti" variant="ghost" tone="accent">Vedi tutti i progetti</Button>
+        <Button href="/progetti" variant="ghost" tone="accent">{ctaLabel}</Button>
       </div>
     </div>
   </section>

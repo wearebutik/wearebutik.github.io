@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
@@ -111,60 +112,76 @@ const metricSchema = z.object({
   label: z.string(),
 });
 
+// Sezioni di una pagina (ADR-0004, *Pages as sections*): lista di blocchi
+// che l'editor compone nello Studio (apps/studio/schemaTypes/sezioniPagina.ts),
+// resa in ordine da components/sezioni/Sezioni.astro. Un blocco senza campi
+// propri (loghi, metodo, testimonianze) prende i contenuti da un altro
+// documento e qui porta solo il suo tipo.
+const sezione = <T extends string, S extends z.ZodRawShape>(type: T, shape: S) =>
+  z.object({ _type: z.literal(type), _key: z.string(), ...shape });
+
+const sezioneSchema = z.discriminatedUnion('_type', [
+  sezione('sezioneHero', {
+    title: z.string(),
+    subtitle: z.string(),
+    ctaLabel: z.string(),
+    ctaHref: z.string(),
+    exploreLabel: z.string(),
+    exploreHref: z.string(),
+    // Foto di sfondo in loop, decorative. Facoltative: senza, fondo scuro.
+    // `lqip`: segnaposto sfocato calcolato dal loader, non un campo dello Studio.
+    fotoSfondo: z
+      .array(z.object({ src: z.string().url(), lqip: z.string().optional() }))
+      .optional()
+      .default([]),
+  }),
+  sezione('sezioneLoghi', {}),
+  sezione('sezioneNumeri', {
+    butikMetrics: z.array(metricSchema),
+    mmwLabel: z.string(),
+    mmwMetrics: z.array(metricSchema),
+  }),
+  sezione('sezioneMetodo', {}),
+  sezione('sezioneTestimonianze', {}),
+  sezione('sezioneProgetti', {
+    eyebrow: z.string(),
+    title: z.string(),
+    intro: z.string().optional(),
+    ctaLabel: z.string(),
+  }),
+  sezione('ctaBanner', {
+    title: z.string(),
+    body: z.string().optional(),
+    primaryCta: linkSchema,
+    secondaryCta: linkSchema.optional(),
+  }),
+  sezione('sezioneChiSiamo', {
+    title: z.string(),
+    p1: z.string(),
+    p2: z.string(),
+    p3: z.string(),
+    ctaLabel: z.string(),
+    ctaHref: z.string(),
+    // Facoltativa: senza, AboutInline usa l'immagine locale.
+    image: z.string().url().optional(),
+    imageAlt: z.string(),
+  }),
+  sezione('sezioneNewsletter', {
+    title: z.string(),
+    body: z.string(),
+    placeholder: z.string(),
+    button: z.string(),
+    privacy: portableText,
+    success: z.string(),
+  }),
+]);
+export type Sezione = z.infer<typeof sezioneSchema>;
+
 const paginaHome = z.object({
   type: z.literal('home'),
   metaTitle: z.string(),
   metaDescription: z.string(),
-  // Hero
-  heroTitle: z.string(),
-  heroSubtitle: z.string(),
-  heroCtaLabel: z.string(),
-  heroCtaHref: z.string(),
-  heroExploreLabel: z.string(),
-  heroExploreHref: z.string(),
-  // Foto di sfondo dell'hero, in loop. Facoltative: senza, fondo scuro.
-  // `lqip`: segnaposto sfocato calcolato dal loader, non un campo dello Studio.
-  heroImages: z
-    .array(z.object({ src: z.string().url(), alt: z.string(), lqip: z.string().optional() }))
-    .optional()
-    .default([]),
-  // Numeri / impatto
-  butikMetrics: z.array(metricSchema),
-  mmwLabel: z.string(),
-  mmwMetrics: z.array(metricSchema),
-  // CTA banner 1 (dopo Metodo/Testimonials/PortfolioGrid)
-  ctaBanner1Title: z.string(),
-  ctaBanner1Body: z.string(),
-  ctaBanner1PrimaryLabel: z.string(),
-  ctaBanner1PrimaryHref: z.string(),
-  ctaBanner1SecondaryLabel: z.string(),
-  ctaBanner1SecondaryHref: z.string(),
-  // About inline
-  aboutTitle: z.string(),
-  aboutP1: z.string(),
-  aboutP2: z.string(),
-  aboutP3: z.string(),
-  aboutCtaLabel: z.string(),
-  aboutCtaHref: z.string(),
-  // Facoltativa: senza, AboutInline usa l'immagine locale.
-  aboutImage: z.string().url().optional(),
-  aboutImageAlt: z.string(),
-  // CTA banner 2 (dopo AboutInline, senza body). `ctaBanner2Hidden` lo toglie
-  // dalla home; assente nei documenti meno recenti, quindi visibile di default.
-  ctaBanner2Hidden: z.boolean().optional().default(false),
-  ctaBanner2Title: z.string(),
-  ctaBanner2PrimaryLabel: z.string(),
-  ctaBanner2PrimaryHref: z.string(),
-  ctaBanner2SecondaryLabel: z.string(),
-  ctaBanner2SecondaryHref: z.string(),
-  // Newsletter. `newsletterHidden` la toglie dalla home (visibile di default).
-  newsletterHidden: z.boolean().optional().default(false),
-  newsletterTitle: z.string(),
-  newsletterBody: z.string(),
-  newsletterPlaceholder: z.string(),
-  newsletterButton: z.string(),
-  newsletterPrivacy: portableText,
-  newsletterSuccess: z.string(),
+  sezioni: z.array(sezioneSchema),
 });
 
 const paginaChiSiamo = z.object({

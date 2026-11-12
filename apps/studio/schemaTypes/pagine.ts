@@ -6,6 +6,7 @@ import { defineArrayMember, defineField, defineType, type FieldDefinition } from
 import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { hrefField, urlSicuro } from './testo';
+import { sezioniHome, validaSezioni } from './sezioniPagina';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
 // Stringhe e testi sono obbligatori: lo schema Zod del sito li richiede tutti,
@@ -98,66 +99,16 @@ export const testoLegale = defineType({
 });
 
 // ── Pagine ──────────────────────────────────────────────────────────────────
-export const paginaHome = pagina(
-  'paginaHome',
-  'Home',
-  [
-    str('heroTitle', 'Titolo', 'hero'),
-    txt('heroSubtitle', 'Sottotitolo', 'hero'),
-    str('heroCtaLabel', 'Pulsante: etichetta', 'hero'),
-    str('heroCtaHref', 'Pulsante: URL', 'hero'),
-    str('heroExploreLabel', 'Link servizi: etichetta', 'hero'),
-    str('heroExploreHref', 'Link servizi: URL', 'hero'),
-    // Foto a tutto sfondo, in loop con dissolvenza (components/home/Hero.astro).
-    // Facoltative: senza, l'hero resta sul fondo scuro.
-    defineField({
-      name: 'heroImages',
-      title: 'Foto di sfondo',
-      description: 'Scorrono in loop con dissolvenza, nell\'ordine della lista. La prima resta ferma per chi riduce le animazioni. Sono decorative: il testo dell\'hero dice già tutto, quindi non serve il testo alternativo.',
-      type: 'array',
-      group: 'hero',
-      of: [defineArrayMember({ type: 'figura' })],
-    }),
-    metriche('butikMetrics', 'Numeri Butik', 'numeri'),
-    str('mmwLabel', 'Etichetta Milano Music Week', 'numeri'),
-    metriche('mmwMetrics', 'Numeri Milano Music Week', 'numeri', 'In home si mostra l’ultima voce, accanto ai numeri di butik: mettete per ultimo il dato più forte.'),
-    str('ctaBanner1Title', 'Titolo', 'banner1'),
-    txt('ctaBanner1Body', 'Testo', 'banner1'),
-    str('ctaBanner1PrimaryLabel', 'Pulsante principale: etichetta', 'banner1'),
-    str('ctaBanner1PrimaryHref', 'Pulsante principale: URL', 'banner1'),
-    str('ctaBanner1SecondaryLabel', 'Pulsante secondario: etichetta', 'banner1'),
-    str('ctaBanner1SecondaryHref', 'Pulsante secondario: URL', 'banner1'),
-    str('aboutTitle', 'Titolo', 'about'),
-    txt('aboutP1', 'Paragrafo 1', 'about'),
-    txt('aboutP2', 'Paragrafo 2', 'about'),
-    txt('aboutP3', 'Paragrafo 3', 'about'),
-    str('aboutCtaLabel', 'Link: etichetta', 'about'),
-    str('aboutCtaHref', 'Link: URL', 'about'),
-    defineField({ name: 'aboutImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'about' }),
-    str('aboutImageAlt', 'Testo alternativo immagine', 'about'),
-    defineField({ name: 'ctaBanner2Hidden', title: 'Nascondi il banner', description: 'Il banner sparisce dalla home; i testi restano salvati qui.', type: 'boolean', group: 'banner2', initialValue: false }),
-    str('ctaBanner2Title', 'Titolo', 'banner2'),
-    str('ctaBanner2PrimaryLabel', 'Pulsante principale: etichetta', 'banner2'),
-    str('ctaBanner2PrimaryHref', 'Pulsante principale: URL', 'banner2'),
-    str('ctaBanner2SecondaryLabel', 'Pulsante secondario: etichetta', 'banner2'),
-    str('ctaBanner2SecondaryHref', 'Pulsante secondario: URL', 'banner2'),
-    defineField({ name: 'newsletterHidden', title: 'Nascondi la newsletter', description: 'Il blocco di iscrizione sparisce dalla home; i testi restano salvati qui.', type: 'boolean', group: 'newsletter', initialValue: false }),
-    str('newsletterTitle', 'Titolo', 'newsletter'),
-    txt('newsletterBody', 'Testo', 'newsletter'),
-    str('newsletterPlaceholder', 'Segnaposto email', 'newsletter'),
-    str('newsletterButton', 'Pulsante', 'newsletter'),
-    rich('newsletterPrivacy', 'Nota privacy', 'newsletter'),
-    str('newsletterSuccess', 'Messaggio di conferma', 'newsletter'),
-  ],
-  [
-    { name: 'hero', title: 'Hero' },
-    { name: 'numeri', title: 'Numeri' },
-    { name: 'banner1', title: 'Banner 1' },
-    { name: 'about', title: 'Chi siamo' },
-    { name: 'banner2', title: 'Banner 2' },
-    { name: 'newsletter', title: 'Newsletter' },
-  ],
-);
+export const paginaHome = pagina('paginaHome', 'Home', [
+  defineField({
+    name: 'sezioni',
+    title: 'Sezioni',
+    description: 'La home, dall\'alto in basso: aggiungete, togliete e trascinate le sezioni. L\'Hero va per primo.',
+    type: 'array',
+    validation: validaSezioni,
+    of: sezioniHome.map((type) => defineArrayMember({ type })),
+  }),
+]);
 
 export const paginaChiSiamo = pagina(
   'paginaChiSiamo',

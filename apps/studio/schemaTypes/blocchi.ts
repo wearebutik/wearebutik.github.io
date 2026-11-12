@@ -13,12 +13,13 @@ export const figura = defineType({
       name: 'alt',
       title: 'Testo alternativo',
       type: 'string',
-      // Le foto di sfondo dell'hero sono decorative: il sito non legge il testo
-      // alternativo (il contenuto dell'hero è nel testo), quindi il campo non
-      // si mostra. Vedi la descrizione di `heroImages` (pagine.ts).
-      hidden: ({ path }) => path[0] === 'heroImages',
+      // Le foto di sfondo dell'hero sono decorative: il sito non ne legge né
+      // il testo alternativo (il contenuto dell'hero è nel testo) né la
+      // didascalia, quindi i due campi non si mostrano. Vedi `fotoSfondo`
+      // (sezioniPagina.ts).
+      hidden: ({ path }) => path.includes('fotoSfondo'),
     }),
-    defineField({ name: 'caption', title: 'Didascalia', type: 'string' }),
+    defineField({ name: 'caption', title: 'Didascalia', type: 'string', hidden: ({ path }) => path.includes('fotoSfondo') }),
   ],
   // Nelle liste (foto di sfondo, gallerie) la voce prende il nome dalla
   // didascalia, dal testo alternativo o dal titolo dell'asset nella libreria.
