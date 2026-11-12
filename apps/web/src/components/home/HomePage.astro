@@ -11,9 +11,10 @@ import AboutInline from '#components/home/AboutInline.astro';
 import Metodo from '#components/home/Metodo.astro';
 import type { MetodoIconName } from '#data/metodo';
 import NewsletterSignup from '#components/home/NewsletterSignup.astro';
+import { perOrdine } from '#lib/ordine';
 
 const topProgetti = (await getCollection('progetti', e => e.data.featured && !e.data.draft))
-  .sort((a, b) => a.data.featuredOrder - b.data.featuredOrder)
+  .sort(perOrdine)
   .slice(0, 4);
 
 // Copy editoriale della home content-driven (ADR-0004): la collezione `pagine`
@@ -52,13 +53,13 @@ const testimonials = testimonialsEntry.data;
 // Card dei servizi nell'hero: i testi vivono nel documento servizio (Sanity),
 // nello stesso ordine della pagina /servizi.
 const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
-  .sort((a, b) => a.data.order - b.data.order)
+  .sort(perOrdine)
   .map((s) => ({
+    slug: s.id,
     title: s.data.card.title,
-    href: `/servizi/${s.id}`,
+    // Senza pagina raggiungibile la card porta al blocco del servizio in /servizi.
+    href: s.data.paginaRaggiungibile ? `/servizi/${s.id}` : `/servizi/#${s.id}`,
     description: s.data.card.desc,
-    statValue: s.data.card.statValue,
-    statLabel: s.data.card.statLabel,
   }));
 ---
   <Hero
@@ -105,16 +106,20 @@ const serviziCards = (await getCollection('servizi', (e) => !e.data.draft))
     image={c.aboutImage}
     imageAlt={c.aboutImageAlt}
   />
-  <CtaBanner
-    title={c.ctaBanner2Title}
-    primaryCta={{ label: c.ctaBanner2PrimaryLabel, href: c.ctaBanner2PrimaryHref }}
-    secondaryCta={{ label: c.ctaBanner2SecondaryLabel, href: c.ctaBanner2SecondaryHref }}
-  />
-  <NewsletterSignup
-    title={c.newsletterTitle}
-    body={c.newsletterBody}
-    placeholder={c.newsletterPlaceholder}
-    button={c.newsletterButton}
-    privacy={c.newsletterPrivacy}
-    success={c.newsletterSuccess}
-  />
+  {!c.ctaBanner2Hidden && (
+    <CtaBanner
+      title={c.ctaBanner2Title}
+      primaryCta={{ label: c.ctaBanner2PrimaryLabel, href: c.ctaBanner2PrimaryHref }}
+      secondaryCta={{ label: c.ctaBanner2SecondaryLabel, href: c.ctaBanner2SecondaryHref }}
+    />
+  )}
+  {!c.newsletterHidden && (
+    <NewsletterSignup
+      title={c.newsletterTitle}
+      body={c.newsletterBody}
+      placeholder={c.newsletterPlaceholder}
+      button={c.newsletterButton}
+      privacy={c.newsletterPrivacy}
+      success={c.newsletterSuccess}
+    />
+  )}

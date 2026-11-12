@@ -16,7 +16,9 @@ const { servizio, index } = Astro.props;
 const slug = servizio.id;
 const { hero, card } = servizio.data;
 const title = card.title;
-const href = `/servizi/${slug}`;
+// Link "Scopri …" solo se la pagina del servizio è raggiungibile (flag Sanity):
+// senza, il blocco è informativo e non porta da nessuna parte.
+const href = servizio.data.paginaRaggiungibile ? `/servizi/${slug}` : undefined;
 
 const idx = String(index).padStart(2, '0');
 
@@ -80,9 +82,11 @@ const icons: Record<string, string> = {
     ))}
   </ul>
 
-  <div class="svc-exp__cta">
-    <ArrowLink href={href} className="svc-exp__link">Scopri {title}</ArrowLink>
-  </div>
+  {href && (
+    <div class="svc-exp__cta">
+      <ArrowLink href={href} className="svc-exp__link">Scopri {title}</ArrowLink>
+    </div>
+  )}
 </article>
 
 <style>

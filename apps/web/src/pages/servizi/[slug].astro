@@ -30,6 +30,7 @@ const ogImage = entry.data.ogImage
   title={entry.data.metaTitle ?? `${entry.data.title} — Butik`}
   description={entry.data.metaDescription ?? entry.data.subtitle}
   ogImage={ogImage}
+  noindex={!entry.data.paginaRaggiungibile}
 >
   <ServiceHero
     variant={entry.data.heroVariant}

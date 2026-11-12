@@ -135,11 +135,13 @@ export const paginaHome = pagina(
     str('aboutCtaHref', 'Link: URL', 'about'),
     defineField({ name: 'aboutImage', title: 'Immagine', type: 'image', options: { hotspot: true }, group: 'about' }),
     str('aboutImageAlt', 'Testo alternativo immagine', 'about'),
+    defineField({ name: 'ctaBanner2Hidden', title: 'Nascondi il banner', description: 'Il banner sparisce dalla home; i testi restano salvati qui.', type: 'boolean', group: 'banner2', initialValue: false }),
     str('ctaBanner2Title', 'Titolo', 'banner2'),
     str('ctaBanner2PrimaryLabel', 'Pulsante principale: etichetta', 'banner2'),
     str('ctaBanner2PrimaryHref', 'Pulsante principale: URL', 'banner2'),
     str('ctaBanner2SecondaryLabel', 'Pulsante secondario: etichetta', 'banner2'),
     str('ctaBanner2SecondaryHref', 'Pulsante secondario: URL', 'banner2'),
+    defineField({ name: 'newsletterHidden', title: 'Nascondi la newsletter', description: 'Il blocco di iscrizione sparisce dalla home; i testi restano salvati qui.', type: 'boolean', group: 'newsletter', initialValue: false }),
     str('newsletterTitle', 'Titolo', 'newsletter'),
     txt('newsletterBody', 'Testo', 'newsletter'),
     str('newsletterPlaceholder', 'Segnaposto email', 'newsletter'),
@@ -313,22 +315,6 @@ export const paginaServizi = pagina(
         }),
       ],
     }),
-    defineField({
-      name: 'filtri',
-      ...lista,
-      title: 'Filtri per pubblico',
-      description: 'Il primo è quello attivo all\'apertura e vale "tutti". Gli id vanno usati nel campo Pubblico dei servizi.',
-      type: 'array',
-      group: 'filtri',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'filtro',
-          fields: [str('id', 'Id'), str('label', 'Etichetta')],
-          preview: { select: { title: 'label', subtitle: 'id' } },
-        }),
-      ],
-    }),
     str('ctaTitle', 'Titolo', 'chiusura'),
     str('ctaPrimaryLabel', 'Pulsante principale: etichetta', 'chiusura'),
     str('ctaPrimaryHref', 'Pulsante principale: URL', 'chiusura'),
@@ -338,7 +324,6 @@ export const paginaServizi = pagina(
   [
     { name: 'testata', title: 'Testata' },
     { name: 'metodo', title: 'Metodo' },
-    { name: 'filtri', title: 'Filtri' },
     { name: 'chiusura', title: 'Chiusura' },
   ],
 );
@@ -358,8 +343,8 @@ export const paginaTestimonials = defineType({
     str('sectionTitle', 'Titolo'),
     defineField({
       name: 'testimonials',
-      ...lista,
       title: 'Testimonianze (home e Chi siamo)',
+      description: 'Facoltative: senza testimonianze la sezione non compare sul sito.',
       type: 'array',
       of: [
         defineArrayMember({

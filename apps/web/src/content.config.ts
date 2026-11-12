@@ -28,10 +28,13 @@ const serviziCollection = defineCollection({
     //   banner = il trattamento comune a progetti e pagine
     //   a/b/c  = split al target · claim tipografico · scheda-offerta
     heroVariant: z.enum(['banner', 'a', 'b', 'c']).optional().default('banner'),
-    // Pubblici a cui il servizio parla, come id dei filtri della pagina
-    // /servizi (vedi `filtri` in `pagine/servizi`).
-    audience: z.array(z.object({ id: z.string() })).optional().default([]),
-    order: z.number().optional().default(0),
+    // La pagina /servizi/<slug> si genera sempre, ma senza questo flag il sito
+    // non la linka da nessuna parte e la segna noindex: le card portano al
+    // blocco del servizio in /servizi (#slug).
+    paginaRaggiungibile: z.boolean().optional().default(false),
+    // Posizione nell'elenco riordinabile dello Studio (LexoRank: si confronta
+    // come stringa). Vedi lib/ordine.ts.
+    orderRank: z.string().optional(),
     draft: z.boolean().optional().default(false),
     // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
     hero: z
@@ -52,8 +55,6 @@ const serviziCollection = defineCollection({
     card: z.object({
       title: z.string(),
       desc: z.string(),
-      statValue: z.string(),
-      statLabel: z.string(),
     }),
     // Sezioni del corpo (Portable Text, blocchi custom).
     body: z.array(z.any()).optional().default([]),
@@ -80,9 +81,9 @@ const progettiCollection = defineCollection({
     metaDescription: z.string().optional(),
     ogImage: z.string().url().optional(),
     ogCta: z.string().optional(),
-    order: z.number().optional().default(0),
+    // Posizione nell'elenco riordinabile dello Studio. Vedi lib/ordine.ts.
+    orderRank: z.string().optional(),
     featured: z.boolean().optional().default(false),
-    featuredOrder: z.number().optional().default(0),
     draft: z.boolean().optional().default(false),
     // Corpo in Portable Text, reso da astro-portabletext in progetti/[slug].astro
     body: z.array(z.any()).optional().default([]),
@@ -148,13 +149,16 @@ const paginaHome = z.object({
   // Facoltativa: senza, AboutInline usa l'immagine locale.
   aboutImage: z.string().url().optional(),
   aboutImageAlt: z.string(),
-  // CTA banner 2 (dopo AboutInline, senza body)
+  // CTA banner 2 (dopo AboutInline, senza body). `ctaBanner2Hidden` lo toglie
+  // dalla home; assente nei documenti meno recenti, quindi visibile di default.
+  ctaBanner2Hidden: z.boolean().optional().default(false),
   ctaBanner2Title: z.string(),
   ctaBanner2PrimaryLabel: z.string(),
   ctaBanner2PrimaryHref: z.string(),
   ctaBanner2SecondaryLabel: z.string(),
   ctaBanner2SecondaryHref: z.string(),
-  // Newsletter
+  // Newsletter. `newsletterHidden` la toglie dalla home (visibile di default).
+  newsletterHidden: z.boolean().optional().default(false),
   newsletterTitle: z.string(),
   newsletterBody: z.string(),
   newsletterPlaceholder: z.string(),
@@ -299,13 +303,6 @@ const paginaServizi = z.object({
     title: z.string(),
     description: z.string(),
   })),
-  // Filtri per pubblico della pagina /servizi. `id` deve combaciare con i
-  // valori in `audience` delle entry `servizi`; il primo filtro è quello
-  // attivo di default e vale "tutti".
-  filtri: z.array(z.object({
-    id: z.string(),
-    label: z.string(),
-  })),
   // CTA finale
   ctaTitle: z.string(),
   ctaPrimaryLabel: z.string(),
@@ -329,12 +326,14 @@ const paginaTestimonials = z.object({
   sectionTitle: z.string(),
   // Testimonianze condivise: riusate identiche da home (index.astro) e
   // chi-siamo.astro tramite lo stesso componente Testimonials.astro.
+  // Facoltative: lo Studio toglie il campo quando la lista si svuota, e senza
+  // testimonianze la sezione non viene renderizzata.
   testimonials: z.array(z.object({
     rating: z.number(),
     quote: z.string(),
     name: z.string(),
     role: z.string(),
-  })),
+  })).optional().default([]),
 });
 
 // Footer (contenuto condiviso da tutte le pagine; i social anche da Contatti).

@@ -5,6 +5,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, getEntry } from 'astro:content';
 import Foto from '#components/Foto.astro';
 import { foto } from '#lib/foto';
+import { perOrdine } from '#lib/ordine';
 import SectionHeading from '@butik/ui/SectionHeading';
 import MetaLabel from '@butik/ui/MetaLabel';
 
@@ -16,7 +17,7 @@ if (!entry || entry.data.type !== 'progetti-index') {
 const c = entry.data;
 
 const progetti = (await getCollection('progetti', e => !e.data.draft))
-  .sort((a, b) => a.data.order - b.data.order);
+  .sort(perOrdine);
 
 const fotoCard = await Promise.all(
   progetti.map((p) =>
