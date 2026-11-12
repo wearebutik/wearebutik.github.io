@@ -9,6 +9,8 @@
 // nella pagina.
 import { defineArrayMember, defineField, defineType, type ArrayRule } from 'sanity';
 import { urlSicuro } from './testo';
+import { EMAIL } from '@butik/site-config/links';
+import { notaSezione, type Fonte } from '../notaSezione';
 
 const str = (name: string, title: string, description?: string) =>
   defineField({ name, title, type: 'string', description, validation: (r) => r.required() });
@@ -34,18 +36,25 @@ const metriche = (name: string, title: string, description?: string) =>
     ],
   });
 
-// Un oggetto Sanity vuole almeno un campo: i blocchi che mostrano contenuti
-// presi altrove ne hanno uno nascosto, mai letto dal sito.
-const senzaCampi = defineField({ name: 'segnaposto', type: 'boolean', hidden: true });
-
-const daAltrove = (name: string, title: string, fonte: string) =>
+// I blocchi che mostrano contenuti presi altrove non hanno testi propri: il
+// loro unico campo è una nota che dice da dove arrivano i contenuti, con il
+// link al documento da modificare. Il campo non salva niente e il sito non lo
+// legge (un oggetto Sanity vuole almeno un campo).
+const daAltrove = (name: string, title: string, sottotitolo: string, fonte: Fonte) =>
   defineType({
     name,
     title,
     type: 'object',
-    description: `I contenuti arrivano da ${fonte}.`,
-    fields: [senzaCampi],
-    preview: { prepare: () => ({ title, subtitle: `Da ${fonte}` }) },
+    fields: [
+      defineField({
+        name: 'segnaposto',
+        title: 'Da dove arrivano i contenuti',
+        type: 'boolean',
+        readOnly: true,
+        components: { field: notaSezione(fonte) },
+      }),
+    ],
+    preview: { prepare: () => ({ title, subtitle: sottotitolo }) },
   });
 
 export const sezioneHero = defineType({
@@ -72,7 +81,10 @@ export const sezioneHero = defineType({
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Hero', subtitle }) },
 });
 
-export const sezioneLoghi = daAltrove('sezioneLoghi', 'Loghi dei partner', 'la pagina Partner');
+export const sezioneLoghi = daAltrove('sezioneLoghi', 'Loghi dei partner', 'Dalla pagina Partner', {
+  testo: 'I loghi e il loro ordine si modificano nella pagina Partner: lo stesso elenco compare qui e su /partners. Questo blocco decide solo dove mostrarli.',
+  documento: { id: 'pagina-partners', type: 'paginaPartners', etichetta: 'Apri la pagina Partner' },
+});
 
 export const sezioneNumeri = defineType({
   name: 'sezioneNumeri',
@@ -86,13 +98,15 @@ export const sezioneNumeri = defineType({
   preview: { prepare: () => ({ title: 'Numeri' }) },
 });
 
-export const sezioneMetodo = daAltrove('sezioneMetodo', 'Metodo', 'la pagina Servizi (gruppo Metodo)');
+export const sezioneMetodo = daAltrove('sezioneMetodo', 'Metodo', 'Dalla pagina Servizi', {
+  testo: 'Intestazione, titolo e passi del metodo si modificano nella pagina Servizi, scheda "Metodo (anche in home)". Questo blocco decide solo dove mostrarli.',
+  documento: { id: 'pagina-servizi', type: 'paginaServizi', etichetta: 'Apri la pagina Servizi' },
+});
 
-export const sezioneTestimonianze = daAltrove(
-  'sezioneTestimonianze',
-  'Testimonianze',
-  'il documento Testimonianze; senza testimonianze la sezione non compare',
-);
+export const sezioneTestimonianze = daAltrove('sezioneTestimonianze', 'Testimonianze', 'Dal documento Testimonianze', {
+  testo: 'Intestazione, titolo e testimonianze si modificano nel documento Testimonianze. Senza testimonianze la sezione non compare. Questo blocco decide solo dove mostrarle.',
+  documento: { id: 'pagina-testimonials', type: 'paginaTestimonials', etichetta: 'Apri le Testimonianze' },
+});
 
 export const sezioneProgetti = defineType({
   name: 'sezioneProgetti',
@@ -135,6 +149,7 @@ export const sezioneNewsletter = defineType({
   name: 'sezioneNewsletter',
   title: 'Newsletter',
   type: 'object',
+  description: 'Per ora il sito non la mostra: il form non è ancora collegato a un servizio di invio della newsletter.',
   fields: [
     str('title', 'Titolo'),
     txt('body', 'Testo'),
@@ -146,6 +161,143 @@ export const sezioneNewsletter = defineType({
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Newsletter', subtitle }) },
 });
 
+const testo = (title = 'Testo') =>
+  defineField({ name: 'testo', title, type: 'testoFormattato', description: 'Un paragrafo per blocco.', validation: (r) => r.required() });
+
+export const sezioneTestataFoto = defineType({
+  name: 'sezioneTestataFoto',
+  title: 'Testata con foto',
+  type: 'object',
+  description: 'Il titolo principale della pagina su una foto. Va messa per prima.',
+  fields: [
+    str('title', 'Titolo'),
+    txt('subtitle', 'Sottotitolo'),
+    defineField({
+      name: 'image',
+      title: 'Immagine',
+      type: 'image',
+      options: { hotspot: true },
+      description: 'Facoltativa: senza, il sito usa la foto predefinita.',
+    }),
+    str('imageAlt', 'Testo alternativo immagine'),
+  ],
+  preview: { select: { subtitle: 'title', media: 'image' }, prepare: ({ subtitle, media }) => ({ title: 'Testata con foto', subtitle, media }) },
+});
+
+export const sezioneIntestazione = defineType({
+  name: 'sezioneIntestazione',
+  title: 'Intestazione',
+  type: 'object',
+  description: 'Il titolo principale della pagina con un\'introduzione. Va messa per prima.',
+  fields: [str('eyebrow', 'Intestazione'), str('title', 'Titolo'), testo('Introduzione')],
+  preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Intestazione', subtitle }) },
+});
+
+export const sezioneTitolo = defineType({
+  name: 'sezioneTitolo',
+  title: 'Titolo',
+  type: 'object',
+  description: 'Il titolo principale della pagina, centrato, senza testo. Va messo per primo.',
+  fields: [str('eyebrow', 'Intestazione'), str('title', 'Titolo')],
+  preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Titolo', subtitle }) },
+});
+
+export const sezioneTesto = defineType({
+  name: 'sezioneTesto',
+  title: 'Testo',
+  type: 'object',
+  fields: [str('eyebrow', 'Intestazione'), testo()],
+  preview: { select: { subtitle: 'eyebrow' }, prepare: ({ subtitle }) => ({ title: 'Testo', subtitle }) },
+});
+
+export const sezioneMissione = defineType({
+  name: 'sezioneMissione',
+  title: 'Missione e SDG',
+  type: 'object',
+  fields: [
+    str('missionEyebrow', 'Intestazione missione'),
+    txt('missionStatement', 'Missione'),
+    str('sdgEyebrow', 'Intestazione SDG'),
+    txt('sdgIntro', 'Introduzione SDG'),
+    str('sdgObiettivoLabel', 'Etichetta "Obiettivo"'),
+    defineField({
+      name: 'sdg',
+      title: 'Obiettivi SDG',
+      type: 'array',
+      validation: (r) => r.required().min(1),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'obiettivo',
+          fields: [defineField({ name: 'num', title: 'Numero', type: 'number', validation: (r) => r.required() }), str('title', 'Titolo')],
+          preview: { select: { title: 'title', subtitle: 'num' } },
+        }),
+      ],
+    }),
+  ],
+  preview: { prepare: () => ({ title: 'Missione e SDG' }) },
+});
+
+export const sezioneTeam = defineType({
+  name: 'sezioneTeam',
+  title: 'Team',
+  type: 'object',
+  fields: [
+    str('eyebrow', 'Intestazione'),
+    testo(),
+    defineField({
+      name: 'founders',
+      title: 'Persone',
+      type: 'array',
+      validation: (r) => r.required().min(1),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'founder',
+          fields: [
+            str('name', 'Nome'),
+            str('role', 'Ruolo'),
+            txt('bio', 'Bio'),
+            defineField({
+              name: 'email',
+              title: 'Email',
+              type: 'string',
+              validation: (r) => r.required().regex(EMAIL, { name: 'email', invert: false }).error('Indirizzo email non valido'),
+            }),
+            url('linkedin', 'LinkedIn (URL)'),
+            defineField({ name: 'photo', title: 'Foto', type: 'image', options: { hotspot: true } }),
+          ],
+          preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
+        }),
+      ],
+    }),
+    str('linkedinLabel', 'Etichetta link LinkedIn'),
+  ],
+  preview: { select: { subtitle: 'eyebrow' }, prepare: ({ subtitle }) => ({ title: 'Team', subtitle }) },
+});
+
+export const sezioneCitazione = defineType({
+  name: 'sezioneCitazione',
+  title: 'Citazione',
+  type: 'object',
+  description: 'Una frase in evidenza su fondo scuro.',
+  fields: [txt('quote', 'Citazione'), str('author', 'Autore')],
+  preview: { select: { subtitle: 'author' }, prepare: ({ subtitle }) => ({ title: 'Citazione', subtitle }) },
+});
+
+export const sezioneElencoServizi = daAltrove('sezioneElencoServizi', 'Elenco dei servizi', "Dall'elenco Servizi", {
+  testo: "Mostra tutti i servizi pubblicati, nell'ordine dell'elenco Servizi (si riordinano trascinandoli). I testi si modificano in ciascun servizio, gruppo Card e Hero.",
+});
+
+export const sezioneElencoProgetti = defineType({
+  name: 'sezioneElencoProgetti',
+  title: 'Elenco dei progetti',
+  type: 'object',
+  description: 'Tutti i progetti pubblicati, nell\'ordine dell\'elenco Progetti.',
+  fields: [str('clienteLabel', 'Etichetta "Cliente"')],
+  preview: { prepare: () => ({ title: 'Elenco dei progetti', subtitle: "Dall'elenco Progetti" }) },
+});
+
 export const sezioniPagina = [
   sezioneHero,
   sezioneLoghi,
@@ -155,27 +307,47 @@ export const sezioniPagina = [
   sezioneProgetti,
   sezioneChiSiamo,
   sezioneNewsletter,
+  sezioneTestataFoto,
+  sezioneIntestazione,
+  sezioneTitolo,
+  sezioneTesto,
+  sezioneMissione,
+  sezioneTeam,
+  sezioneCitazione,
+  sezioneElencoServizi,
+  sezioneElencoProgetti,
 ];
 
-// Blocchi ammessi nella home, nell'ordine del menu "Aggiungi".
-export const sezioniHome = [
+// Blocchi che ogni pagina a sezioni può usare, nell'ordine del menu
+// "Aggiungi": prima le testate (portano l'H1), poi il resto.
+export const sezioniAmmesse = [
   'sezioneHero',
+  'sezioneTestataFoto',
+  'sezioneIntestazione',
+  'sezioneTitolo',
+  'sezioneTesto',
   'sezioneLoghi',
   'sezioneNumeri',
   'sezioneMetodo',
+  'sezioneMissione',
+  'sezioneTeam',
+  'sezioneCitazione',
   'sezioneTestimonianze',
   'sezioneProgetti',
-  'ctaBanner',
+  'sezioneElencoProgetti',
+  'sezioneElencoServizi',
   'sezioneChiSiamo',
+  'ctaBanner',
   'sezioneNewsletter',
 ];
 
-// L'hero porta l'H1 della pagina: al massimo uno, e in cima.
+// Le testate portano l'H1 della pagina: al massimo una, e in cima.
+const TESTATE = new Set(['sezioneHero', 'sezioneTestataFoto', 'sezioneIntestazione', 'sezioneTitolo']);
 type Blocco = { _type?: string };
 export const validaSezioni = (r: ArrayRule<Blocco[]>) =>
   r.required().min(1).custom((sezioni) => {
-    const hero = (sezioni ?? []).map((s, i) => (s._type === 'sezioneHero' ? i : -1)).filter((i) => i >= 0);
-    if (hero.length > 1) return 'Una sola sezione Hero per pagina.';
-    if (hero.length === 1 && hero[0] !== 0) return 'La sezione Hero va messa per prima.';
+    const testate = (sezioni ?? []).map((s, i) => (TESTATE.has(s._type ?? '') ? i : -1)).filter((i) => i >= 0);
+    if (testate.length > 1) return 'Una sola testata per pagina (Hero, Testata con foto, Intestazione o Titolo).';
+    if (testate.length === 1 && testate[0] !== 0) return 'La testata va messa per prima.';
     return true;
   });

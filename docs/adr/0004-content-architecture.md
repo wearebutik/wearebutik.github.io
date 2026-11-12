@@ -154,18 +154,20 @@ it.
   the containing element keeps the page's scoped styles; legal bodies keep the
   heading ids Markdown used to generate, and the Cookie Policy heading keeps the
   fixed `#cookie` anchor the consent banner links to.
-- <a id="pages-as-sections"></a>**Pages as sections.** The home is a list of
-  sections (`sezioni`) the editor adds, removes and reorders in the Studio:
-  Hero, Partner logos, Numbers, Method, Testimonials, Featured projects,
-  Banner, About and Newsletter (`apps/studio/schemaTypes/sezioniPagina.ts`;
-  the Banner is the same `ctaBanner` the service bodies use). One Sanity object per
-  site component, rendered in order by
-  `apps/web/src/components/sezioni/Sezioni.astro`. A section that shows content
-  owned by another document (logos from Partner, the method from Servizi,
-  testimonials, featured projects, the service cards in the hero) carries no
-  copy of its own: it places that content on the page. The Hero carries the
-  page's H1: at most one, and first. Hiding a section means removing it from
-  the list. The other pages keep fixed fields until they move to sections.
+- <a id="pages-as-sections"></a>**Pages as sections.** Home, Chi siamo,
+  Servizi and Progetti are each a list of sections (`sezioni`) the editor
+  adds, removes and reorders in the Studio. One Sanity object per site
+  component (`apps/studio/schemaTypes/sezioniPagina.ts`; the Banner is the same
+  `ctaBanner` the service bodies use), rendered in order by
+  `apps/web/src/components/sezioni/Sezioni.astro`; every page accepts every
+  section. A section that shows content owned by another document (logos from
+  Partner, the method from Servizi, testimonials, projects, services, the
+  service cards in the hero) carries no copy of its own: it places that
+  content on the page. The method stays as fixed fields on Servizi, shown by
+  the Method section there and on the home. A page header (Hero, Header with
+  photo, Header, Title) carries the page's H1: at most one, and first. Hiding a
+  section means removing it from the list. Contatti, Partner, the legal pages
+  and the footer keep fixed fields.
 - **Photos go through `apps/web/src/lib/foto.ts`**:
   - Every photo ships as AVIF with a WebP fallback, in a `<picture>`: `Foto.astro` in pages, and the `sources` prop of the `@butik/ui` components that show photos.
   - Quality comes from the photo's role: hero or thumbnail.
@@ -264,8 +266,8 @@ behind the Sanity session.
   build to go live.
 - Vendor dependency on Sanity (its API at build time, its Studio for editing).
 - Two schemas to keep aligned (Zod ↔ Sanity).
-- With pages as sections the layout of the home is in the editor's hands: a
-  section can be removed or moved, and the site renders what the list says.
+- With pages as sections the layout of those pages is in the editor's hands:
+  a section can be removed or moved, and the site renders what the list says.
 - Publishing a document publishes all of its draft: a routine fix made on a
   document whose copy is still under review also publishes that copy.
 - Reviewing the copy needs a Sanity login on the project: there is no public

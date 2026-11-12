@@ -1,0 +1,196 @@
+---
+// Sezione "Team": intestazione, paragrafi e le schede delle persone (foto,
+// ruolo, bio, LinkedIn, email). Nata da Chi siamo.
+import Eyebrow from '@butik/ui/Eyebrow';
+import MetaLabel from '@butik/ui/MetaLabel';
+import Foto from '#components/Foto.astro';
+import { foto } from '#lib/foto';
+import { richTextParagrafi } from '#lib/richText';
+import { isLinkSegnaposto } from '#lib/links';
+
+interface Persona {
+  name: string;
+  role: string;
+  bio: string;
+  email: string;
+  linkedin: string;
+  photo?: string;
+}
+interface Props {
+  eyebrow: string;
+  testo: unknown[];
+  founders: Persona[];
+  linkedinLabel: string;
+}
+const { eyebrow, testo, founders, linkedinLabel } = Astro.props;
+
+// Foto: URL Sanity, scaricato e ottimizzato da Astro in build.
+const fotoFondatori = await Promise.all(
+  founders.map((f) => (f.photo ? foto(f.photo, { widths: [300, 500], sizes: '(max-width: 768px) 100vw, 33vw' }) : undefined)),
+);
+---
+
+<section class="team-section">
+  <div class="team-lead">
+    <Eyebrow align="left">{eyebrow}</Eyebrow>
+    <div class="team-copy">
+      {richTextParagrafi(testo).map((p) => <p set:html={p}></p>)}
+    </div>
+  </div>
+
+  <div class="founders-grid" data-reveal-group>
+    {founders.map((f, i) => (
+      <article class="founder-card">
+        <div class="founder-photo">
+          {fotoFondatori[i] && (
+            <Foto foto={fotoFondatori[i]} alt={`Ritratto di ${f.name}`} loading="lazy" class="founder-photo-img" />
+          )}
+        </div>
+        <h2 class="founder-name">{f.name}</h2>
+        <MetaLabel as="p">{f.role}</MetaLabel>
+        <p class="founder-bio">{f.bio}</p>
+        <div class="founder-links">
+          {!isLinkSegnaposto(f.linkedin) && (
+            <a
+              href={f.linkedin}
+              class="founder-linkedin"
+              aria-label={`Profilo LinkedIn di ${f.name}`}
+            >
+              <svg class="founder-linkedin-icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+              </svg>
+              {linkedinLabel}
+            </a>
+          )}
+          <a
+            href={`mailto:${f.email}`}
+            class="founder-email"
+          >
+            {f.email}
+          </a>
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  /* ── Il nostro team ───────────────────────────────────────────────────── */
+  .team-section {
+    max-width: var(--measure-6xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .team-section {
+      padding-block: var(--space-20);
+    }
+  }
+  .team-lead {
+    max-width: var(--measure-3xl);
+  }
+  .team-copy {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-base);
+    line-height: 1.625; /* leading-relaxed */
+    color: var(--color-fg);
+  }
+  @media (min-width: 768px) {
+    .team-copy {
+      font-size: var(--font-size-lg);
+    }
+  }
+  .team-copy > p:not(:last-child) {
+    margin-bottom: var(--space-5);
+  }
+
+  .founders-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-8);
+    margin-top: var(--space-12);
+  }
+  @media (min-width: 768px) {
+    .founders-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-10);
+      margin-top: var(--space-16);
+    }
+  }
+
+  .founder-card {
+    display: flex;
+    flex-direction: column;
+  }
+  .founder-photo {
+    overflow: hidden;
+    margin-bottom: var(--space-5);
+    aspect-ratio: 4 / 5;
+    background-color: var(--color-bg);
+  }
+  .founder-photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .founder-name {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-sm);
+    line-height: 1.25; /* leading-tight vince su text-xl */
+    font-weight: 700;
+    color: var(--color-fg);
+    /* Lo scarto verso il ruolo (MetaLabel) lo dà il nome: l'isola non
+       riceve gli stili scoped di questa pagina (ADR-0008). */
+    margin-bottom: var(--space-1);
+  }
+  .founder-bio {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: 1.625; /* leading-relaxed vince su text-sm */
+    color: var(--color-fg);
+    margin-top: var(--space-4);
+    flex: 1 1 0%;
+  }
+  .founder-links {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-top: var(--space-5);
+  }
+  .founder-linkedin {
+    /* design-lint-disable small-caps: link, fuori dai due ruoli */
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
+    font-weight: 700;
+    letter-spacing: 0.1em; /* tracking-widest */
+    text-transform: uppercase;
+    color: var(--color-fg);
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .founder-linkedin:hover {
+    color: var(--color-accent-text);
+  }
+  .founder-linkedin-icon {
+    width: var(--space-4);
+    height: var(--space-4);
+  }
+  .founder-email {
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    line-height: calc(1.25 / 0.875); /* line-height che text-sm porta con sé */
+    /* text-butik-dark/70: scuro, oklab e srgb danno lo stesso pixel — pattern
+       già usato a mano nel repo */
+    color: color-mix(in srgb, var(--color-fg) 70%, transparent);
+    text-decoration: underline;
+    word-break: break-all;
+    transition: color var(--duration-fast) var(--ease-standard);
+  }
+  .founder-email:hover {
+    color: var(--color-accent-text);
+  }
+</style>

@@ -181,7 +181,7 @@ const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_
 type ConImmagine = Record<string, unknown>;
 
 // Immagini dentro le sezioni di una pagina: le foto di sfondo dell'hero
-// portano anche il loro segnaposto (LQIP), l'immagine di "Chi siamo" solo l'URL.
+// portano anche il loro segnaposto (LQIP), le altre immagini solo l'URL.
 async function conImmaginiSezione(s: ConImmagine, logger: Parameters<typeof lqip>[1]): Promise<ConImmagine> {
   if (s._type === 'sezioneHero' && Array.isArray(s.fotoSfondo)) {
     return {
@@ -196,7 +196,12 @@ async function conImmaginiSezione(s: ConImmagine, logger: Parameters<typeof lqip
       ),
     };
   }
-  if (s._type === 'sezioneChiSiamo' && s.image !== undefined) return { ...s, image: imageUrl(s.image) };
+  if ((s._type === 'sezioneChiSiamo' || s._type === 'sezioneTestataFoto') && s.image !== undefined) {
+    return { ...s, image: imageUrl(s.image) };
+  }
+  if (s._type === 'sezioneTeam' && Array.isArray(s.founders)) {
+    return { ...s, founders: (s.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) })) };
+  }
   return s;
 }
 
@@ -207,11 +212,6 @@ export const pagineLoader = () =>
     // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
     ...(Array.isArray(rest.sezioni) && {
       sezioni: await Promise.all((rest.sezioni as ConImmagine[]).map((s) => conImmaginiSezione(s, logger))),
-    }),
-    ...(rest.heroImage !== undefined && { heroImage: imageUrl(rest.heroImage) }),
-    ...(rest.aboutImage !== undefined && { aboutImage: imageUrl(rest.aboutImage) }),
-    ...(Array.isArray(rest.founders) && {
-      founders: (rest.founders as ConImmagine[]).map((f) => ({ ...f, photo: imageUrl(f.photo) ?? '' })),
     }),
     ...(Array.isArray(rest.partners) && {
       partners: (rest.partners as ConImmagine[]).map((p) => ({ ...p, logo: imageUrl(p.logo) ?? '' })),

@@ -12,11 +12,13 @@
     "foto": "sanity exec scripts/foto.ts --with-user-token --",
     "ordine-iniziale": "sanity exec scripts/ordine-iniziale.ts --with-user-token",
     "pulizia-campi": "sanity exec scripts/pulizia-campi.ts --with-user-token",
-    "home-a-sezioni": "sanity exec scripts/home-a-sezioni.ts --with-user-token"
+    "home-a-sezioni": "sanity exec scripts/home-a-sezioni.ts --with-user-token",
+    "pagine-a-sezioni": "sanity exec scripts/pagine-a-sezioni.ts --with-user-token"
   },
   "dependencies": {
     "@butik/site-config": "workspace:*",
     "@sanity/orderable-document-list": "2.0.28",
+    "@sanity/ui": "4.4.10",
     "@sanity/vision": "^6.20.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",

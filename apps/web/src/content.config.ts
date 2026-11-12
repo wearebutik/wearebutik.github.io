@@ -166,6 +166,43 @@ const sezioneSchema = z.discriminatedUnion('_type', [
     image: z.string().url().optional(),
     imageAlt: z.string(),
   }),
+  // Testata con foto (HeroBanner). Immagine facoltativa: senza, la foto locale.
+  sezione('sezioneTestataFoto', {
+    title: z.string(),
+    subtitle: z.string(),
+    image: z.string().url().optional(),
+    imageAlt: z.string(),
+  }),
+  sezione('sezioneIntestazione', { eyebrow: z.string(), title: z.string(), testo: portableText }),
+  sezione('sezioneTitolo', { eyebrow: z.string(), title: z.string() }),
+  sezione('sezioneTesto', { eyebrow: z.string(), testo: portableText }),
+  // Obiettivi di Sviluppo Sostenibile: num + titolo editoriale. Colore e
+  // icona restano config di design in components/sezioni/Missione.astro.
+  sezione('sezioneMissione', {
+    missionEyebrow: z.string(),
+    missionStatement: z.string(),
+    sdgEyebrow: z.string(),
+    sdgIntro: z.string(),
+    sdgObiettivoLabel: z.string(),
+    sdg: z.array(z.object({ num: z.number(), title: z.string() })),
+  }),
+  // Persone: la foto è l'URL Sanity, assente se manca (la scheda resta senza).
+  sezione('sezioneTeam', {
+    eyebrow: z.string(),
+    testo: portableText,
+    founders: z.array(z.object({
+      name: z.string(),
+      role: z.string(),
+      bio: z.string(),
+      email: z.string().regex(EMAIL),
+      linkedin: z.string(),
+      photo: z.string().optional(),
+    })),
+    linkedinLabel: z.string(),
+  }),
+  sezione('sezioneCitazione', { quote: z.string(), author: z.string() }),
+  sezione('sezioneElencoServizi', {}),
+  sezione('sezioneElencoProgetti', { clienteLabel: z.string() }),
   sezione('sezioneNewsletter', {
     title: z.string(),
     body: z.string(),
@@ -188,50 +225,7 @@ const paginaChiSiamo = z.object({
   type: z.literal('chi-siamo'),
   metaTitle: z.string(),
   metaDescription: z.string(),
-  heroTitle: z.string(),
-  heroSubtitle: z.string(),
-  // Facoltativa: senza, la pagina usa l'immagine locale.
-  heroImage: z.string().url().optional(),
-  heroImageAlt: z.string(),
-  introEyebrow: z.string(),
-  introP1: portableText,
-  introP2: portableText,
-  introP3: portableText,
-  introP4: portableText,
-  missionEyebrow: z.string(),
-  missionStatement: z.string(),
-  sdgEyebrow: z.string(),
-  sdgIntro: z.string(),
-  // Obiettivi di Sviluppo Sostenibile come ARRAY: num + titolo editoriale.
-  // Colore/icona restano config di design nella pagina (colori ufficiali SDG).
-  sdg: z.array(z.object({
-    num: z.number(),
-    title: z.string(),
-  })),
-  // Prefisso label di ogni card SDG (es. "Obiettivo 8").
-  sdgObiettivoLabel: z.string(),
-  teamEyebrow: z.string(),
-  teamP1: portableText,
-  teamP2: portableText,
-  teamP3: portableText,
-  // Founder come ARRAY di oggetti; la foto è l'URL Sanity, '' se manca (la
-  // pagina salta il render dell'immagine).
-  founders: z.array(z.object({
-    name: z.string(),
-    role: z.string(),
-    bio: z.string(),
-    email: z.string().regex(EMAIL),
-    linkedin: z.string(),
-    photo: z.string().optional().default(''),
-  })),
-  // Label del link LinkedIn di ogni founder (visibile accanto all'icona).
-  linkedinLabel: z.string(),
-  testimonialQuote: z.string(),
-  testimonialAuthor: z.string(),
-  ctaTitle: z.string(),
-  ctaBody: z.string(),
-  ctaLabel: z.string(),
-  ctaHref: z.string(),
+  sezioni: z.array(sezioneSchema),
 });
 
 const paginaContatti = z.object({
@@ -307,34 +301,22 @@ const paginaServizi = z.object({
   type: z.literal('servizi-index'),
   metaTitle: z.string(),
   metaDescription: z.string(),
-  headerEyebrow: z.string(),
-  headerTitle: z.string(),
-  headerIntro1: z.string(),
-  headerIntro2: portableText,
+  sezioni: z.array(sezioneSchema),
+  // Metodo: campi fissi, mostrati dalla sezione Metodo qui e in home. L'icona
+  // per tappa resta config di design in Metodo.astro, non nello schema.
   metodoEyebrow: z.string(),
   metodoTitle: z.string(),
-  // Passi del metodo come ARRAY di oggetti { titolo, descrizione }. Riusato
-  // anche dalla home (Metodo.astro): l'icona per tappa resta config di
-  // design nel componente (come sdgStyle in chi-siamo), non nello schema.
   metodo: z.array(z.object({
     title: z.string(),
     description: z.string(),
   })),
-  // CTA finale
-  ctaTitle: z.string(),
-  ctaPrimaryLabel: z.string(),
-  ctaPrimaryHref: z.string(),
-  ctaSecondaryLabel: z.string(),
-  ctaSecondaryHref: z.string(),
 });
 
 const paginaProgetti = z.object({
   type: z.literal('progetti-index'),
   metaTitle: z.string(),
   metaDescription: z.string(),
-  eyebrow: z.string(),
-  title: z.string(),
-  clienteLabel: z.string(),
+  sezioni: z.array(sezioneSchema),
 });
 
 const paginaTestimonials = z.object({

@@ -1,6 +1,7 @@
 ---
 // Le sezioni di una pagina, nell'ordine scelto nello Studio (ADR-0004,
-// *Pages as sections*). Ogni blocco Sanity diventa il suo componente; i
+// *Pages as sections*): home, chi siamo, servizi, progetti. Ogni blocco Sanity
+// diventa il suo componente; i
 // blocchi che mostrano contenuti di altri documenti (loghi, metodo,
 // testimonianze, progetti in evidenza, card dei servizi nell'hero) li leggono
 // qui, solo se la pagina li usa.
@@ -15,6 +16,16 @@ import PortfolioGrid from '#components/home/PortfolioGrid.astro';
 import CtaBanner from '#components/CtaBanner.astro';
 import AboutInline from '#components/home/AboutInline.astro';
 import NewsletterSignup from '#components/home/NewsletterSignup.astro';
+import HeroBanner from '#components/HeroBanner.astro';
+import Intestazione from './Intestazione.astro';
+import Titolo from './Titolo.astro';
+import Testo from './Testo.astro';
+import Missione from './Missione.astro';
+import Team from './Team.astro';
+import Citazione from './Citazione.astro';
+import ElencoServizi from './ElencoServizi.astro';
+import ElencoProgetti from './ElencoProgetti.astro';
+import fotoPredefinita from '#assets/hero-home.jpg';
 import type { MetodoIconName } from '#data/metodo';
 import { perOrdine } from '#lib/ordine';
 
@@ -22,6 +33,10 @@ interface Props {
   sezioni: Sezione[];
 }
 const { sezioni } = Astro.props;
+
+// La sezione Newsletter resta nello Studio con i suoi testi, ma il sito non la
+// mostra finché il form non è collegato a un servizio di invio.
+const NEWSLETTER_ATTIVA = false;
 const usa = (type: Sezione['_type']) => sezioni.some((s) => s._type === type);
 
 // Pagina fissa richiesta da un blocco: senza, la build si ferma con il motivo.
@@ -107,8 +122,37 @@ const progettiInEvidenza = usa('sezioneProgetti')
           imageAlt={s.imageAlt}
         />
       );
-    case 'sezioneNewsletter':
+    case 'sezioneTestataFoto':
+      return <HeroBanner title={s.title} subtitle={s.subtitle} image={s.image ?? fotoPredefinita} imageAlt={s.imageAlt} />;
+    case 'sezioneIntestazione':
+      return <Intestazione eyebrow={s.eyebrow} title={s.title} testo={s.testo} />;
+    case 'sezioneTitolo':
+      return <Titolo eyebrow={s.eyebrow} title={s.title} />;
+    case 'sezioneTesto':
+      return <Testo eyebrow={s.eyebrow} testo={s.testo} />;
+    case 'sezioneMissione':
       return (
+        <Missione
+          missionEyebrow={s.missionEyebrow}
+          missionStatement={s.missionStatement}
+          sdgEyebrow={s.sdgEyebrow}
+          sdgIntro={s.sdgIntro}
+          sdgObiettivoLabel={s.sdgObiettivoLabel}
+          sdg={s.sdg}
+        />
+      );
+    case 'sezioneTeam':
+      return <Team eyebrow={s.eyebrow} testo={s.testo} founders={s.founders} linkedinLabel={s.linkedinLabel} />;
+    case 'sezioneCitazione':
+      return <Citazione quote={s.quote} author={s.author} />;
+    case 'sezioneElencoServizi':
+      return <ElencoServizi />;
+    case 'sezioneElencoProgetti':
+      return <ElencoProgetti clienteLabel={s.clienteLabel} />;
+    case 'sezioneNewsletter':
+      // Disattivata: il form non invia ancora gli indirizzi a un servizio di
+      // newsletter (mostra solo la conferma). Si riattiva quando c'è.
+      return NEWSLETTER_ATTIVA ? (
         <NewsletterSignup
           title={s.title}
           body={s.body}
@@ -117,6 +161,6 @@ const progettiInEvidenza = usa('sezioneProgetti')
           privacy={s.privacy}
           success={s.success}
         />
-      );
+      ) : null;
   }
 })}

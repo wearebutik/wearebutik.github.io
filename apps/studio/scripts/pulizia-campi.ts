@@ -6,6 +6,10 @@
 //   pagina-servizi  filtri
 //   pagina-home     i campi fissi, passati nella lista `sezioni`
 //                   (home-a-sezioni), anche nella bozza se c'è
+//   pagina-chi-siamo, pagina-servizi, pagina-progetti
+//                   i campi fissi passati nelle `sezioni`
+//                   (pagine-a-sezioni), anche nelle bozze; Servizi tiene il
+//                   metodo
 //
 //   pnpm --filter @butik/studio pulizia-campi
 //
@@ -30,6 +34,27 @@ const daTogliere: { filtro: string; campi: string[] }[] = [
       'ctaBanner2Hidden', 'ctaBanner2Title', 'ctaBanner2PrimaryLabel', 'ctaBanner2PrimaryHref', 'ctaBanner2SecondaryLabel', 'ctaBanner2SecondaryHref',
       'newsletterHidden', 'newsletterTitle', 'newsletterBody', 'newsletterPlaceholder', 'newsletterButton', 'newsletterPrivacy', 'newsletterSuccess',
     ],
+  },
+  {
+    filtro: '_id in ["pagina-chi-siamo", "drafts.pagina-chi-siamo"]',
+    campi: [
+      'heroTitle', 'heroSubtitle', 'heroImage', 'heroImageAlt',
+      'introEyebrow', 'introP1', 'introP2', 'introP3', 'introP4',
+      'missionEyebrow', 'missionStatement', 'sdgEyebrow', 'sdgIntro', 'sdg', 'sdgObiettivoLabel',
+      'teamEyebrow', 'teamP1', 'teamP2', 'teamP3', 'founders', 'linkedinLabel',
+      'testimonialQuote', 'testimonialAuthor', 'ctaTitle', 'ctaBody', 'ctaLabel', 'ctaHref',
+    ],
+  },
+  {
+    filtro: '_id in ["pagina-servizi", "drafts.pagina-servizi"]',
+    campi: [
+      'headerEyebrow', 'headerTitle', 'headerIntro1', 'headerIntro2',
+      'ctaTitle', 'ctaPrimaryLabel', 'ctaPrimaryHref', 'ctaSecondaryLabel', 'ctaSecondaryHref',
+    ],
+  },
+  {
+    filtro: '_id in ["pagina-progetti", "drafts.pagina-progetti"]',
+    campi: ['eyebrow', 'title', 'clienteLabel'],
   },
 ];
 
