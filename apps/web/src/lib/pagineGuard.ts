@@ -20,7 +20,14 @@ export function pagineGuard(): AstroIntegration {
         build = command === 'build';
       },
       'astro:routes:resolved': ({ routes, logger }) => {
-        const pagine = routes.filter((r) => r.origin === 'project' && r.type === 'page' && !ESCLUSE.test(r.pattern));
+        const pagine = routes
+          .filter((r) => r.origin === 'project' && r.type === 'page' && !ESCLUSE.test(r.pattern))
+          // Una pagina statica che si può non generare (es. sostienici/[...radice])
+          // vale come la pagina alla sua radice.
+          .map((r) => {
+            const radice = r.pattern.match(/^(.*)\/\[\.\.\.[^\]]+\]$/);
+            return radice && r.params.length === 1 ? { ...r, pattern: radice[1], params: [] } : r;
+          });
         const statiche = new Set(pagine.filter((r) => r.params.length === 0).map((r) => r.pattern));
         const schede = new Set(pagine.filter((r) => r.params.length > 0).map((r) => r.pattern));
         const attese = new Set<string>(PAGINE_STATICHE);

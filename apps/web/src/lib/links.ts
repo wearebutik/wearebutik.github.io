@@ -1,4 +1,4 @@
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { PAGINE_STATICHE, SEZIONI_CON_SCHEDE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
 
 // Le regole dei link (pagine statiche, segnaposto) sono condivise con lo
@@ -9,6 +9,11 @@ import { PAGINE_STATICHE, SEZIONI_CON_SCHEDE, isLinkSegnaposto, percorsoInterno 
 export { isLinkSegnaposto };
 
 let pagine: Promise<Set<string>> | undefined;
+
+async function sostieniciNascosta(): Promise<boolean> {
+  const entry = await getEntry('pagine', 'sostienici');
+  return entry?.data.type === 'sostienici' && entry.data.nascosta;
+}
 
 /**
  * Percorsi interni che esistono: pagine statiche + una scheda per documento
@@ -21,7 +26,11 @@ function pagineEsistenti(): Promise<Set<string>> {
         (await getCollection(s, (e) => !e.data.draft)).map((e) => `/${s}/${e.id}`),
       ),
     );
-    return new Set([...PAGINE_STATICHE, ...schede.flat()]);
+    const esistenti = new Set<string>([...PAGINE_STATICHE, ...schede.flat()]);
+    // Una pagina nascosta dallo Studio non esiste sul sito pubblico, e i link
+    // che ci portano spariscono (l'anteprima delle bozze la mostra).
+    if (!__BUTIK_ANTEPRIMA__ && (await sostieniciNascosta())) esistenti.delete('/sostienici');
+    return esistenti;
   })();
   return pagine;
 }

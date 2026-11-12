@@ -345,6 +345,7 @@ const paginaServizi = z.object({
 
 const paginaSostienici = z.object({
   type: z.literal('sostienici'),
+  nascosta: z.boolean().optional().default(false),
   metaTitle: z.string(),
   metaDescription: z.string(),
   sezioni: z.array(sezioneSchema),
