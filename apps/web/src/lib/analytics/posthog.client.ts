@@ -61,6 +61,11 @@ function ensureInit(): boolean {
     capture_performance: { web_vitals: true },
     // Spenta all'init: il livello cookieless non la include (vedi sopra).
     disable_session_recording: true,
+    // Funzioni che il sito non usa: spente, PostHog non scarica surveys.js né
+    // dead-clicks-autocapture.js (~45 KB). Opzioni di posthog-js
+    // (`disable_surveys`, `capture_dead_clicks`).
+    disable_surveys: true,
+    capture_dead_clicks: false,
   });
   initialized = true;
   return true;
