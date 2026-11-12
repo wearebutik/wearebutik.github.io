@@ -1,11 +1,18 @@
 ---
 // Sezione "Elenco dei servizi": un blocco espanso per servizio (per chi ·
-// cosa ottieni), nell'ordine dell'elenco Servizi dello Studio. Nata da /servizi.
+// cosa ottieni), con i servizi scelti nel blocco e nel suo ordine. Nata da
+// /servizi.
 import { getCollection } from 'astro:content';
 import ServiceExpanded from '#components/serviziCards/ServiceExpanded.astro';
-import { perOrdine } from '#lib/ordine';
 
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
+interface Props {
+  /** Slug dei servizi da mostrare, nell'ordine del blocco. */
+  servizi: string[];
+}
+
+// Un riferimento a un servizio in bozza o non pubblicato non si mostra.
+const pubblicati = new Map((await getCollection('servizi', (e) => !e.data.draft)).map((e) => [e.id, e]));
+const servizi = Astro.props.servizi.flatMap((slug) => pubblicati.get(slug) ?? []);
 ---
 
 <section class="svc-main">

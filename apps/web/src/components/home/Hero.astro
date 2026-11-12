@@ -2,6 +2,7 @@
 import Foto from '#components/Foto.astro';
 import { foto } from '#lib/foto';
 import type { ImageMetadata } from 'astro';
+import type { IconaCard } from '@butik/site-config/icone';
 import ServiceCard from '../serviziCards/ServiceCard.astro';
 import ServiceLauncher from '../serviziCards/ServiceLauncher.astro';
 import Button from '@butik/ui/Button';
@@ -20,12 +21,12 @@ import { stili } from '#lib/viewTransition';
 const SLIDE_S = 7;
 const FADE_S = 1.5;
 
-// ── Card servizi (5) ───────────────────────────────────────────────────
-// Copy editoriale content-driven (ADR-0004): la card di ciascun documento
-// servizio (Sanity), passata da index.astro. Lo slug sceglie l'icona della
-// card; l'href porta alla scheda del servizio o al suo blocco in /servizi.
+// ── Card ─────────────────────────────────────────────────────────────
+// Copy editoriale content-driven (ADR-0004): la lista Card del blocco Hero
+// (Sanity), con il suo ordine. Concettualmente vicine ai servizi, ma sono
+// contenuto della home: titolo, testo, link e icona si scrivono lì.
 interface ServizioCard {
-  slug: string;
+  icona?: IconaCard;
   title: string;
   href: string;
   description: string;
@@ -90,7 +91,7 @@ const [titleHead, titleLast] = cut === -1 ? ['', testo] : [testo.slice(0, cut + 
 // puramente CSS — entrambi i blocchi sono nell'HTML, una media query ne mostra
 // uno solo — così non serve JS e non c'è sfarfallio all'idratazione.
 const serviziItems = servizi.map((s) => ({
-  slug: s.slug,
+  icona: s.icona,
   title: s.title,
   desc: s.description,
   href: s.href,

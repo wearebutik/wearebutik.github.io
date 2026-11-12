@@ -15,7 +15,7 @@ export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 // caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
 // che il filtro di Sanity esclude già (slug, href, url, email, id…), che
 // riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
-const NON_CODIFICATI = new Set(['heroVariant', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
+const NON_CODIFICATI = new Set(['heroVariant', 'category', 'icona', 'rete', 'pec', 'emailValue', 'pecValue']);
 // Un passo del percorso è un nome di campo, un indice o un `{ _key }` di array.
 const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.has(k) || /(href|url|link)$/i.test(k));
 // …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
@@ -130,9 +130,9 @@ async function conSegnaposto(image: unknown, logger: AstroIntegrationLogger) {
 const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
   "id": slug.current,
   _updatedAt,
-  title, subtitle, heroImage, heroAlt, client, year, category,
+  title, subtitle, heroImage, heroAlt, client, clienteEtichetta, year, category,
   metaTitle, metaDescription, ogImage, ogCta,
-  orderRank, featured, draft,
+  orderRank, draft,
   body
 }`;
 
@@ -148,7 +148,7 @@ const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current)
   _updatedAt,
   title, subtitle, heroImage, heroAlt, heroVariant, paginaRaggiungibile,
   metaTitle, metaDescription, ogImage, ogCta,
-  orderRank, draft, hero, card, body
+  draft, hero, card, body
 }`;
 
 export const serviziLoader = () =>
@@ -173,9 +173,16 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaFooter: 'footer',
 };
 
+// Nelle sezioni, l'Elenco dei servizi e i Progetti in evidenza portano
+// riferimenti: la query li risolve nello slug, nell'ordine scelto nel blocco.
 const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_TYPE))} && _id match "pagina-*"]{
   ...,
-  "id": string::split(_id, "pagina-")[1]
+  "id": string::split(_id, "pagina-")[1],
+  sezioni[]{
+    ...,
+    _type == "sezioneElencoServizi" => { "servizi": servizi[]->slug.current },
+    _type == "sezioneProgetti" => { "progetti": progetti[]->slug.current }
+  }
 }`;
 
 type ConImmagine = Record<string, unknown>;

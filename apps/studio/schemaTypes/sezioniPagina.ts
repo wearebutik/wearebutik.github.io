@@ -11,6 +11,7 @@ import { defineArrayMember, defineField, defineType, type ArrayRule } from 'sani
 import { urlSicuro } from './testo';
 import { EMAIL } from '@butik/site-config/links';
 import { notaSezione, type Fonte } from '../notaSezione';
+import { ICONE_CARD } from '@butik/site-config/icone';
 
 const str = (name: string, title: string, description?: string) =>
   defineField({ name, title, type: 'string', description, validation: (r) => r.required() });
@@ -61,7 +62,7 @@ export const sezioneHero = defineType({
   name: 'sezioneHero',
   title: 'Hero',
   type: 'object',
-  description: 'Il titolo principale della pagina, con le card dei servizi. Va messo per primo.',
+  description: 'Il titolo principale della pagina, con le card in basso. Va messo per primo.',
   fields: [
     str('title', 'Titolo'),
     txt('subtitle', 'Sottotitolo'),
@@ -76,6 +77,33 @@ export const sezioneHero = defineType({
         "Scorrono in loop con dissolvenza, nell'ordine della lista. La prima resta ferma per chi riduce le animazioni. Sono decorative: il testo dell'hero dice già tutto, quindi non servono testo alternativo né didascalia.",
       type: 'array',
       of: [defineArrayMember({ type: 'figura' })],
+    }),
+    // Card in basso sulle foto (da mobile una lista compatta). Vicine ai
+    // servizi, ma sono contenuto della home: si scrivono qui.
+    defineField({
+      name: 'card',
+      title: 'Card',
+      description: "In basso sulle foto, nell'ordine della lista. Di solito una per servizio, con il link al servizio nella pagina Servizi (/servizi/#nome-del-servizio).",
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'cardHero',
+          fields: [
+            str('title', 'Titolo'),
+            str('desc', 'Descrizione'),
+            url('href', 'Link'),
+            defineField({
+              name: 'icona',
+              title: 'Icona',
+              type: 'string',
+              description: 'Facoltativa: il disegno in filigrana nell\'angolo della card.',
+              options: { list: ICONE_CARD.map(({ id, title }) => ({ value: id, title })) },
+            }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'href' } },
+        }),
+      ],
     }),
   ],
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Hero', subtitle }) },
@@ -112,11 +140,18 @@ export const sezioneProgetti = defineType({
   name: 'sezioneProgetti',
   title: 'Progetti in evidenza',
   type: 'object',
-  description: 'Mostra i primi 4 progetti con "In evidenza in home", nell\'ordine dell\'elenco Progetti.',
   fields: [
     str('eyebrow', 'Intestazione'),
     str('title', 'Titolo'),
     defineField({ name: 'intro', title: 'Sottotitolo', type: 'string', description: 'Facoltativo.' }),
+    defineField({
+      name: 'progetti',
+      title: 'Progetti',
+      description: "Quali progetti mostrare, nell'ordine della lista (trascinateli per riordinarli), fino a 4. Indipendente dall'ordine del portfolio.",
+      type: 'array',
+      validation: (r) => r.required().min(1).max(4).unique(),
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'progetto' }] })],
+    }),
     str('ctaLabel', 'Pulsante verso tutti i progetti: etichetta'),
   ],
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Progetti in evidenza', subtitle }) },
@@ -285,17 +320,30 @@ export const sezioneCitazione = defineType({
   preview: { select: { subtitle: 'author' }, prepare: ({ subtitle }) => ({ title: 'Citazione', subtitle }) },
 });
 
-export const sezioneElencoServizi = daAltrove('sezioneElencoServizi', 'Elenco dei servizi', "Dall'elenco Servizi", {
-  testo: "Mostra tutti i servizi pubblicati, nell'ordine dell'elenco Servizi (si riordinano trascinandoli). I testi si modificano in ciascun servizio, gruppo Card e Hero.",
+export const sezioneElencoServizi = defineType({
+  name: 'sezioneElencoServizi',
+  title: 'Elenco dei servizi',
+  type: 'object',
+  fields: [
+    defineField({
+      name: 'servizi',
+      title: 'Servizi',
+      description:
+        "Quali servizi mostrare, nell'ordine della lista: trascinateli per riordinarli. Un servizio nuovo compare solo dopo averlo aggiunto qui. I testi si modificano nel servizio (Scheda e Hero).",
+      type: 'array',
+      validation: (r) => r.required().min(1).unique(),
+      of: [defineArrayMember({ type: 'reference', to: [{ type: 'servizio' }] })],
+    }),
+  ],
+  preview: {
+    select: { n: 'servizi.length' },
+    prepare: ({ n }) => ({ title: 'Elenco dei servizi', subtitle: n ? `${n} servizi` : 'Nessun servizio scelto' }),
+  },
 });
 
-export const sezioneElencoProgetti = defineType({
-  name: 'sezioneElencoProgetti',
-  title: 'Elenco dei progetti',
-  type: 'object',
-  description: 'Tutti i progetti pubblicati, nell\'ordine dell\'elenco Progetti.',
-  fields: [str('clienteLabel', 'Etichetta "Cliente"')],
-  preview: { prepare: () => ({ title: 'Elenco dei progetti', subtitle: "Dall'elenco Progetti" }) },
+export const sezioneElencoProgetti = daAltrove('sezioneElencoProgetti', 'Elenco dei progetti', "Dall'elenco Progetti", {
+  testo:
+    "Mostra tutti i progetti pubblicati, nell'ordine dell'elenco Progetti: lì si riordinano trascinandoli. I testi delle card (titolo, sottotitolo, categoria, anno, cliente) si modificano in ciascun progetto.",
 });
 
 export const sezioniPagina = [

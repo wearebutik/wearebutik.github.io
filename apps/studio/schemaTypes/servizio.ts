@@ -1,7 +1,6 @@
 // Specchio dello schema Zod della collection `servizi`
 // (apps/web/src/content.config.ts): i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType } from 'sanity';
-import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list';
 import { sezioniServizio } from './sezioniServizio';
 
 export const servizio = defineType({
@@ -11,14 +10,10 @@ export const servizio = defineType({
   groups: [
     { name: 'scheda', title: 'Scheda', default: true },
     { name: 'hero', title: 'Hero' },
-    { name: 'card', title: 'Card' },
     { name: 'corpo', title: 'Contenuto' },
     { name: 'seo', title: 'SEO e condivisione' },
   ],
   fields: [
-    // Ordine del sito: si trascinano i servizi nell'elenco "Servizi" dello Studio.
-    orderRankField({ type: 'servizio' }),
-
     // ── Scheda ──────────────────────────────────────────────────────────────
     defineField({ name: 'title', title: 'Titolo', type: 'string', group: 'scheda', validation: (r) => r.required() }),
     defineField({
@@ -117,18 +112,16 @@ export const servizio = defineType({
       ],
     }),
 
-    // ── Card (home e /servizi) ──────────────────────────────────────────────
+    // ── Titolo breve (blocco del servizio in /servizi) ──────────────────────
+    // Le card della home non stanno qui: sono nel blocco Hero della pagina.
     defineField({
       name: 'card',
-      title: 'Card',
+      title: 'Nella pagina Servizi',
       type: 'object',
-      group: 'card',
+      group: 'scheda',
       validation: (r) => r.required(),
       options: { collapsible: false },
-      fields: [
-        { name: 'title', title: 'Titolo breve', type: 'string', validation: (r: any) => r.required() },
-        { name: 'desc', title: 'Descrizione', type: 'string', validation: (r: any) => r.required() },
-      ],
+      fields: [{ name: 'title', title: 'Titolo breve', type: 'string', validation: (r: any) => r.required() }],
     }),
 
     // ── Corpo ───────────────────────────────────────────────────────────────
@@ -147,6 +140,6 @@ export const servizio = defineType({
     defineField({ name: 'ogImage', title: 'Immagine OG', type: 'image', group: 'seo' }),
     defineField({ name: 'ogCta', title: 'CTA della card OG', type: 'string', group: 'seo' }),
   ],
-  orderings: [orderRankOrdering],
+  orderings: [{ title: 'Titolo', name: 'titolo', by: [{ field: 'title', direction: 'asc' }] }],
   preview: { select: { title: 'title', subtitle: 'card.title', media: 'heroImage' } },
 });

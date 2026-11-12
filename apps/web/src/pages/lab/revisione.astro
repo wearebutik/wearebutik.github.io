@@ -71,7 +71,7 @@ if (chiSiamo?.data.type === 'chi-siamo') {
   });
 }
 
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
+const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort((a, b) => a.data.title.localeCompare(b.data.title, 'it'));
 const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort(perOrdine);
 const schede = (
   entries: typeof servizi | typeof progetti,
