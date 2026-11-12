@@ -146,6 +146,19 @@ it; it rests on legitimate interest (measuring and keeping the site working).
   blocked storage (Safari, sandboxed iframes) silences analytics instead of
   breaking the page. `posthog.client.test.ts` runs the whole consent cycle
   against the real posthog-js in jsdom, in CI.
+- <a id="after-first-paint"></a>**Loaded after the first paint.** posthog-js
+  (~100 KB, through a dynamic `import()`) and `gtm.js` (~117 KB) load after the
+  page's `load` event, when the browser is idle (at most 3 s later). Calls made
+  earlier — init, consent, our events — wait in a queue and run in order
+  (`creaAnalyticsDifferito`); Consent Mode's `denied` default is still set inline
+  at once. This departs from PostHog's and Google's guidance (load early,
+  asynchronously) on purpose: on Lighthouse's mobile simulation the two scripts,
+  requested before the first paint, took the home from 92–93 to 78–84 (LCP from
+  2.9–3.0 s to 3.9–4.9 s, measured on the beta by blocking them). The price: a
+  visitor who leaves before the page finishes loading is not counted, and
+  session recording (consent only) starts a moment later. The other pageviews
+  are sent at init, and web vitals already measured are still read. Revisit
+  when PostHog's own web vitals show the real visitors' LCP.
 - **Banner and Cookie Policy wording**: rephrased from "no tracking before
   consent" to "no cookie before consent" (`config.client.ts`'s consent modal
   description, `privacy.astro`'s data-collection section) — the Cookie Policy
