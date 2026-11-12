@@ -7,7 +7,7 @@
 // rilanciato a ogni aggiornamento di posthog-js.
 import { PostHog } from 'posthog-js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { creaAnalytics } from './posthog.client';
+import { creaAnalytics, creaAnalyticsDifferito, type ClientPostHog } from './posthog.client';
 
 // La sentinella che posthog-js usa al posto del distinct_id senza cookie.
 const SENTINELLA = '$posthog_cookieless';
@@ -131,5 +131,60 @@ describe('alla revoca', () => {
     analytics.revoca();
     analytics.evento('contact_form_submitted');
     expect(inviati.map((e) => e.event)).not.toContain('contact_form_submitted');
+  });
+});
+
+describe('caricamento dopo il disegno', () => {
+  // Un client finto che registra le chiamate: qui conta l'ordine della coda,
+  // non il comportamento dell'SDK (quello lo provano i casi sopra).
+  function finto() {
+    const chiamate: string[] = [];
+    const client = new Proxy({} as ClientPostHog, {
+      // `then` assente: altrimenti la promessa scambierebbe il client per
+      // un'altra promessa e resterebbe in attesa.
+      get: (_, nome: string) => nome === 'then' ? undefined : (...args: unknown[]) => {
+        chiamate.push(nome === 'capture' ? `capture:${String(args[0])}` : nome);
+        return nome === 'has_opted_in_capturing' ? false : undefined;
+      },
+    });
+    return { client, chiamate };
+  }
+
+  it('mette in coda le chiamate e le esegue nell ordine, una volta arrivato il client', async () => {
+    const { client, chiamate } = finto();
+    let avvia: () => void = () => {};
+    const carica = vi.fn(async () => client);
+    const a = creaAnalyticsDifferito('phc_x', 'https://eu.i.posthog.com', carica, (fn) => (avvia = fn));
+
+    a.avvia();
+    a.consenti();
+    a.evento('contact_form_submitted');
+    expect(carica).not.toHaveBeenCalled();
+
+    avvia();
+    await vi.waitFor(() => expect(chiamate).toContain('capture:contact_form_submitted'));
+    expect(carica).toHaveBeenCalledTimes(1);
+    expect(chiamate.indexOf('init')).toBeLessThan(chiamate.indexOf('opt_in_capturing'));
+    expect(chiamate.indexOf('opt_in_capturing')).toBeLessThan(chiamate.indexOf('capture:contact_form_submitted'));
+  });
+
+  it('senza chiave non scarica niente', () => {
+    const carica = vi.fn(async () => finto().client);
+    const a = creaAnalyticsDifferito(undefined, 'https://eu.i.posthog.com', carica, (fn) => fn());
+    a.avvia();
+    a.consenti();
+    expect(carica).not.toHaveBeenCalled();
+  });
+
+  it('se la libreria non arriva, le chiamate non lanciano errori', async () => {
+    const carica = vi.fn(async () => {
+      throw new Error('bloccata');
+    });
+    const a = creaAnalyticsDifferito('phc_x', 'https://eu.i.posthog.com', carica, (fn) => fn());
+    expect(() => {
+      a.avvia();
+      a.evento('x');
+    }).not.toThrow();
+    await Promise.resolve();
   });
 });

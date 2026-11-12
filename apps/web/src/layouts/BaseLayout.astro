@@ -76,7 +76,11 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
         DEVE precedere il caricamento di gtm.js: entrambi in questo unico script
         inline, così l'ordine è garantito. Nessun tag scatta finché il consenso
         `analytics` non aggiorna `analytics_storage` a `granted` (vedi
-        src/lib/consent/config.client.ts → applyAnalyticsConsent). */}
+        src/lib/consent/config.client.ts → applyAnalyticsConsent).
+        Il default è impostato subito; gtm.js (oltre 100 KB) si carica dopo il
+        `load`, quando il browser è libero (al più 3 s dopo), per non
+        competere con il primo disegno: i tag aspettano comunque il consenso.
+        Stessa scelta di PostHog (ADR-0006). */}
     {gtmId && (
       <script is:inline define:vars={{ gtmId }}>
         // `define:vars` incapsula lo script in una IIFE: `gtag` va assegnato a
@@ -100,7 +104,13 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
             dl = l != 'dataLayer' ? '&l=' + l : '';
           j.async = true;
           j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-          f.parentNode.insertBefore(j, f);
+          var carica = function () { f.parentNode.insertBefore(j, f); };
+          var libero = function () {
+            if (w.requestIdleCallback) w.requestIdleCallback(carica, { timeout: 3000 });
+            else setTimeout(carica, 1);
+          };
+          if (d.readyState === 'complete') libero();
+          else w.addEventListener('load', libero, { once: true });
         })(window, document, 'script', 'dataLayer', gtmId);
       </script>
     )}

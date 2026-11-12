@@ -22,9 +22,18 @@
 // iframe isolati) posthog-js lancia errori sincroni, e un'analisi che fallisce
 // non deve rompere la pagina.
 //
+// Caricamento dopo il disegno: la libreria (~100 KB) si scarica con un
+// `import()` dopo il `load` della pagina, quando il browser è libero (al più
+// 3 s dopo), per non competere con il primo disegno. Le chiamate fatte prima
+// restano in coda e partono nello stesso ordine. Il compromesso (ADR-0006): chi
+// chiude la pagina prima della fine del caricamento non viene contato; il
+// pageview delle altre visite parte all'init e le web vitals già misurate si
+// leggono anche dopo.
+//
 // La chiave si legge da `PUBLIC_POSTHOG_KEY`, l'host da `PUBLIC_POSTHOG_HOST`
-// (predefinito: cloud EU). Senza chiave tutto è un no-op.
-import posthog, { type PostHog } from 'posthog-js';
+// (predefinito: cloud EU). Senza chiave tutto è un no-op e non si scarica
+// niente.
+import type { PostHog } from 'posthog-js';
 
 /** La parte di posthog-js che usiamo: permette di provarla con un'istanza vera. */
 export type ClientPostHog = Pick<
@@ -52,11 +61,7 @@ export interface Analytics {
   evento(nome: string, proprieta?: Record<string, unknown>): void;
 }
 
-export function creaAnalytics(
-  chiave: string | undefined,
-  host: string,
-  client: ClientPostHog = posthog,
-): Analytics {
+export function creaAnalytics(chiave: string | undefined, host: string, client: ClientPostHog): Analytics {
   let avviato = false;
   let consentito = false;
 
@@ -139,9 +144,63 @@ export function creaAnalytics(
   };
 }
 
-const analytics = creaAnalytics(
+/** Dopo il `load` della pagina, quando il browser è libero (al più 3 s dopo). */
+export function dopoIlDisegno(fn: () => void): void {
+  const libero = () => {
+    if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout: 3000 });
+    else setTimeout(fn, 1);
+  };
+  if (document.readyState === 'complete') libero();
+  else window.addEventListener('load', libero, { once: true });
+}
+
+/**
+ * Lo stesso `Analytics`, con il client caricato più tardi: le chiamate
+ * restano in coda finché `carica` non lo consegna, poi partono nell'ordine in
+ * cui sono arrivate. Senza chiave non carica niente. Se il caricamento
+ * fallisce (rete, blocco di un adblocker) la coda resta ferma e il sito va
+ * avanti.
+ */
+export function creaAnalyticsDifferito(
+  chiave: string | undefined,
+  host: string,
+  carica: () => Promise<ClientPostHog>,
+  quando: (fn: () => void) => void = dopoIlDisegno,
+): Analytics {
+  let pronto: Analytics | undefined;
+  let partito = false;
+  const coda: Array<(a: Analytics) => void> = [];
+
+  const esegui = (chiamata: (a: Analytics) => void) => {
+    if (!chiave) return;
+    if (pronto) return chiamata(pronto);
+    coda.push(chiamata);
+    if (partito) return;
+    partito = true;
+    quando(() => {
+      carica()
+        .then((client) => {
+          pronto = creaAnalytics(chiave, host, client);
+          for (const c of coda.splice(0)) c(pronto);
+        })
+        .catch(() => {
+          /* libreria non arrivata: niente analisi, il sito va avanti */
+        });
+    });
+  };
+
+  return {
+    avvia: () => esegui((a) => a.avvia()),
+    consenti: () => esegui((a) => a.consenti()),
+    revoca: () => esegui((a) => a.revoca()),
+    evento: (nome, proprieta) => esegui((a) => a.evento(nome, proprieta)),
+  };
+}
+
+const analytics = creaAnalyticsDifferito(
   import.meta.env.PUBLIC_POSTHOG_KEY as string | undefined,
   (import.meta.env.PUBLIC_POSTHOG_HOST as string | undefined) ?? 'https://eu.i.posthog.com',
+  () => import('posthog-js').then((m) => m.default),
 );
 
 // Le funzioni che usano banner, layout e pagine (nomi invariati).
