@@ -1,6 +1,7 @@
 // Specchio dello schema Zod della collection `progetti`
 // (apps/web/src/content.config.ts): i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list';
 
 export const progetto = defineType({
   name: 'progetto',
@@ -9,9 +10,11 @@ export const progetto = defineType({
   groups: [
     { name: 'contenuto', title: 'Contenuto', default: true },
     { name: 'seo', title: 'SEO e condivisione' },
-    { name: 'ordine', title: 'Ordinamento' },
+    { name: 'ordine', title: 'Home e bozza' },
   ],
   fields: [
+    // Ordine del sito: si trascinano i progetti nell'elenco "Progetti" dello Studio.
+    orderRankField({ type: 'progetto' }),
     defineField({ name: 'title', title: 'Titolo', type: 'string', group: 'contenuto', validation: (r) => r.required() }),
     defineField({
       name: 'slug',
@@ -50,12 +53,17 @@ export const progetto = defineType({
     defineField({ name: 'metaDescription', title: 'Meta description', type: 'text', rows: 3, group: 'seo' }),
     defineField({ name: 'ogImage', title: 'Immagine OG', type: 'image', group: 'seo' }),
     defineField({ name: 'ogCta', title: 'CTA della card OG', type: 'string', group: 'seo' }),
-    defineField({ name: 'order', title: 'Ordine', type: 'number', group: 'ordine', initialValue: 0 }),
-    defineField({ name: 'featured', title: 'In evidenza in home', type: 'boolean', group: 'ordine', initialValue: false }),
-    defineField({ name: 'featuredOrder', title: 'Ordine in home', type: 'number', group: 'ordine', initialValue: 0 }),
+    defineField({
+      name: 'featured',
+      title: 'In evidenza in home',
+      description: 'In home compaiono i primi 4 progetti in evidenza, nell\'ordine dell\'elenco Progetti.',
+      type: 'boolean',
+      group: 'ordine',
+      initialValue: false,
+    }),
     defineField({ name: 'draft', title: 'Bozza (non pubblicare)', type: 'boolean', group: 'ordine', initialValue: false }),
   ],
-  orderings: [{ title: 'Ordine', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
+  orderings: [orderRankOrdering],
   preview: {
     select: { title: 'title', subtitle: 'client', media: 'heroImage' },
   },

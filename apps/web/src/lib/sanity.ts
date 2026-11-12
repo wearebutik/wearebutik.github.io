@@ -15,7 +15,7 @@ export const SANITY_DATASET = process.env.SANITY_DATASET ?? 'production';
 // caratteri invisibili dello stega li romperebbero. Si aggiungono a quelli
 // che il filtro di Sanity esclude già (slug, href, url, email, id…), che
 // riconosce solo i nomi esatti: `heroCtaHref` passerebbe.
-const NON_CODIFICATI = new Set(['heroVariant', 'audience', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
+const NON_CODIFICATI = new Set(['heroVariant', 'category', 'rete', 'pec', 'emailValue', 'pecValue']);
 // Un passo del percorso è un nome di campo, un indice o un `{ _key }` di array.
 const nonCodificato = (k: unknown) => typeof k === 'string' && (NON_CODIFICATI.has(k) || /(href|url|link)$/i.test(k));
 // …e ogni valore che ha la forma di un link, qualunque sia il nome del campo
@@ -132,7 +132,7 @@ const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current
   _updatedAt,
   title, subtitle, heroImage, heroAlt, client, year, category,
   metaTitle, metaDescription, ogImage, ogCta,
-  order, featured, featuredOrder, draft,
+  orderRank, featured, draft,
   body
 }`;
 
@@ -146,18 +146,16 @@ export const progettiLoader = () =>
 const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current) && draft != true]{
   "id": slug.current,
   _updatedAt,
-  title, subtitle, heroImage, heroAlt, heroVariant, audience,
+  title, subtitle, heroImage, heroAlt, heroVariant, paginaRaggiungibile,
   metaTitle, metaDescription, ogImage, ogCta,
-  order, draft, hero, card, body
+  orderRank, draft, hero, card, body
 }`;
 
 export const serviziLoader = () =>
-  sanityLoader('servizi', SERVIZI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, audience, ...rest }, logger) => ({
+  sanityLoader('servizi', SERVIZI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, ...rest }, logger) => ({
     ...rest,
     ...(await conSegnaposto(heroImage, logger)),
     ogImage: imageUrl(ogImage),
-    // Nello Studio è una lista di id; lo schema Zod (e /servizi) vuole { id }.
-    audience: ((audience as string[] | undefined) ?? []).map((a) => ({ id: a })),
   }));
 
 // Pagine: un documento fisso per pagina (_id `pagina-<id>`, ADR-0004). Il tipo

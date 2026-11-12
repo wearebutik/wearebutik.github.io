@@ -1,6 +1,5 @@
 ---
-// /servizi — router per pubblico: si sceglie chi si è, e la griglia mostra solo
-// i servizi che parlano a quel ruolo. Ogni servizio è un blocco espanso
+// /servizi — l'elenco dei servizi. Ogni servizio è un blocco espanso
 // (per chi · cosa ottieni), non una card-teaser: la prova sintetica sta in home.
 import { getCollection, getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
@@ -10,20 +9,16 @@ import { richTextHtml } from '#lib/richText';
 import Metodo from '#components/home/Metodo.astro';
 import type { MetodoIconName } from '#data/metodo';
 import CtaBanner from '#components/CtaBanner.astro';
+import { perOrdine } from '#lib/ordine';
 
-// Copy editoriale content-driven (ADR-0004): header, intro, etichette dei
-// filtri, metodo e CTA finale dalla collezione `pagine` (entry `servizi`).
+// Copy editoriale content-driven (ADR-0004): header, intro, metodo e CTA finale dalla collezione `pagine` (entry `servizi`).
 const entry = await getEntry('pagine', 'servizi');
 if (!entry || entry.data.type !== 'servizi-index') {
   throw new Error('Contenuto pagina "servizi" mancante o non valido (collezione pagine).');
 }
 const c = entry.data;
 
-// Il pubblico di ogni servizio è un campo della sua entry (`audience`): è la
-// stessa informazione degli "Adatto a" nel corpo della scheda, in forma di id.
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(
-  (a, b) => a.data.order - b.data.order,
-);
+const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
 
 // Icone per tappa del metodo: config di design, non copy editoriale.
 const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagonismo', 'formazione', 'eventi'];
@@ -40,28 +35,13 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
   </section>
 
   <section class="svc-main">
-    <div class="svc-filters" data-svc-filters role="group" aria-label="Filtra i servizi per pubblico">
-      {c.filtri.map((f, i) => (
-        <button
-          type="button"
-          class:list={['svc-filter', i === 0 && 'is-active']}
-          data-filter={f.id}
-          aria-pressed={i === 0 ? 'true' : 'false'}
-        >
-          {f.label}
-        </button>
-      ))}
-    </div>
-
     <div class="svc-grid" data-svc-grid data-reveal-group data-prefetch="viewport">
       {servizi.map((s, i) => (
-        <div data-audience={s.data.audience.map((a) => a.id).join(' ')} class="svc-grid-item">
+        <div class="svc-grid-item">
           <ServiceExpanded servizio={s} index={i + 1} />
         </div>
       ))}
     </div>
-
-    <p class="svc-status" role="status" data-svc-status></p>
   </section>
 
   <Metodo
@@ -134,45 +114,6 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
     padding-bottom: var(--space-20);
   }
 
-  .svc-filters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-2);
-    margin-bottom: var(--space-10);
-  }
-
-  .svc-filter {
-    padding: var(--space-2) 0.9rem;
-    border: 1px solid color-mix(in srgb, var(--color-butik-dark) 18%, transparent);
-    font-family: var(--font-display);
-    font-size: var(--font-size-2xs);
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--color-butik-dark);
-    background: transparent;
-    cursor: pointer;
-    transition: background-color var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
-  }
-  .svc-filter:hover {
-    border-color: var(--color-butik-red);
-    color: var(--color-butik-red-ink);
-  }
-  .svc-filter.is-active {
-    background: var(--color-accent-fill);
-    border-color: var(--color-accent-fill);
-    color: var(--color-fg-invert);
-  }
-  .svc-filter:focus-visible {
-    outline: 2px solid var(--color-butik-red);
-    outline-offset: 2px;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .svc-filter {
-      transition: none;
-    }
-  }
 
   .svc-grid {
     display: grid;
@@ -209,42 +150,3 @@ const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagoni
   }
 </style>
 
-<script>
-  // Filtro per pubblico. Idempotente e riagganciato a ogni navigazione: sotto
-  // le view transitions lo script gira una volta ma il DOM viene sostituito
-  // (docs/guidances/client-scripts.md). Senza JS restano visibili tutti i
-  // servizi, che è il default corretto.
-  function initServiziFilter() {
-    const filters = Array.from(
-      document.querySelectorAll<HTMLButtonElement>('[data-svc-filters] .svc-filter'),
-    );
-    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-svc-grid] [data-audience]'));
-    const status = document.querySelector<HTMLElement>('[data-svc-status]');
-    if (!filters.length) return;
-
-    const apply = (val: string) => {
-      let shown = 0;
-      cards.forEach((card) => {
-        const aud = (card.dataset.audience || '').split(' ');
-        const match = val === 'tutti' || aud.includes(val);
-        card.hidden = !match;
-        if (match) shown += 1;
-      });
-      filters.forEach((f) => {
-        const active = f.dataset.filter === val;
-        f.classList.toggle('is-active', active);
-        f.setAttribute('aria-pressed', String(active));
-      });
-      if (status) {
-        status.textContent = `${shown} ${shown === 1 ? 'servizio' : 'servizi'} in elenco.`;
-      }
-    };
-
-    filters.forEach((f) => {
-      if (f.dataset.svcBound) return;
-      f.dataset.svcBound = 'true';
-      f.addEventListener('click', () => apply(f.dataset.filter || 'tutti'));
-    });
-  }
-  document.addEventListener('astro:page-load', initServiziFilter);
-</script>

@@ -1,6 +1,7 @@
 // Specchio dello schema Zod della collection `servizi`
 // (apps/web/src/content.config.ts): i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType } from 'sanity';
+import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list';
 import { sezioniServizio } from './sezioniServizio';
 
 export const servizio = defineType({
@@ -15,6 +16,9 @@ export const servizio = defineType({
     { name: 'seo', title: 'SEO e condivisione' },
   ],
   fields: [
+    // Ordine del sito: si trascinano i servizi nell'elenco "Servizi" dello Studio.
+    orderRankField({ type: 'servizio' }),
+
     // ── Scheda ──────────────────────────────────────────────────────────────
     defineField({ name: 'title', title: 'Titolo', type: 'string', group: 'scheda', validation: (r) => r.required() }),
     defineField({
@@ -52,21 +56,13 @@ export const servizio = defineType({
       initialValue: 'banner',
     }),
     defineField({
-      name: 'audience',
-      title: 'Pubblico',
-      description: 'Filtri della pagina /servizi in cui compare (id definiti nella pagina Servizi).',
-      type: 'array',
+      name: 'paginaRaggiungibile',
+      title: 'Pagina del servizio raggiungibile',
+      description: 'Spento: la pagina del servizio resta online ma il sito non la linka e i motori di ricerca non la indicizzano; le card portano al servizio nella pagina Servizi. Acceso: le card aprono la pagina del servizio.',
+      type: 'boolean',
       group: 'scheda',
-      of: [defineArrayMember({ type: 'string' })],
-      options: {
-        list: [
-          { title: 'Comuni e PA', value: 'comuni' },
-          { title: 'DMO e turismo', value: 'dmo' },
-          { title: 'Operatori e industry', value: 'operatori' },
-        ],
-      },
+      initialValue: false,
     }),
-    defineField({ name: 'order', title: 'Ordine', type: 'number', group: 'scheda', initialValue: 0 }),
     defineField({ name: 'draft', title: 'Bozza (non pubblicare)', type: 'boolean', group: 'scheda', initialValue: false }),
 
     // ── Hero (varianti A/B/C) ───────────────────────────────────────────────
@@ -132,8 +128,6 @@ export const servizio = defineType({
       fields: [
         { name: 'title', title: 'Titolo breve', type: 'string', validation: (r: any) => r.required() },
         { name: 'desc', title: 'Descrizione', type: 'string', validation: (r: any) => r.required() },
-        { name: 'statValue', title: 'Statistica: valore', type: 'string', validation: (r: any) => r.required() },
-        { name: 'statLabel', title: 'Statistica: etichetta', type: 'string', validation: (r: any) => r.required() },
       ],
     }),
 
@@ -153,6 +147,6 @@ export const servizio = defineType({
     defineField({ name: 'ogImage', title: 'Immagine OG', type: 'image', group: 'seo' }),
     defineField({ name: 'ogCta', title: 'CTA della card OG', type: 'string', group: 'seo' }),
   ],
-  orderings: [{ title: 'Ordine', name: 'order', by: [{ field: 'order', direction: 'asc' }] }],
+  orderings: [orderRankOrdering],
   preview: { select: { title: 'title', subtitle: 'card.title', media: 'heroImage' } },
 });

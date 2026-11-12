@@ -18,8 +18,11 @@ interface Props {
 }
 
 const { eyebrow, sectionTitle, testimonials } = Astro.props;
+// Senza testimonianze la sezione sparisce del tutto (titolo compreso).
+const hasTestimonials = testimonials.length > 0;
 ---
 
+{hasTestimonials && (
 <section class="testimonials-section">
   <div class="testimonials-container">
     <div class="testimonials-heading">
@@ -83,6 +86,7 @@ const { eyebrow, sectionTitle, testimonials } = Astro.props;
     </div>
   </div>
 </section>
+)}
 
 <script>
   // Rieseguito a ogni astro:page-load: con <ClientRouter /> il modulo gira una

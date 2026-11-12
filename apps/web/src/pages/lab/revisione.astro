@@ -10,6 +10,7 @@ import BaseLayout from '#layouts/BaseLayout.astro';
 import Eyebrow from '@butik/ui/Eyebrow';
 import { sanityImageUrl, type SanityImage } from '#lib/sanity';
 import { imageSize } from '#lib/media';
+import { perOrdine } from '#lib/ordine';
 
 interface Foto {
   src: string;
@@ -62,8 +63,8 @@ if (chiSiamo?.data.type === 'chi-siamo') {
   });
 }
 
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort((a, b) => a.data.order - b.data.order);
-const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort((a, b) => a.data.order - b.data.order);
+const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine);
+const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort(perOrdine);
 const schede = (
   entries: typeof servizi | typeof progetti,
   base: string,
