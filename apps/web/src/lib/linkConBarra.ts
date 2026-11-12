@@ -1,5 +1,5 @@
 // Link interni con la barra finale. Le pagine sono cartelle (servizi/index.html)
-// e GitHub Pages risponde a /servizi con un 301 verso /servizi/: un giro di
+// e l'hosting risponde a /servizi con un redirect verso /servizi/: un giro di
 // rete in più a ogni navigazione e a ogni prefetch, ~150 ms su una rete mobile
 // lenta. I link sono scritti a mano nel codice e arrivano anche da Sanity (i
 // CTA), quindi si correggono qui, a fine build: un <a href="/percorso"> che

@@ -7,7 +7,7 @@
 import BaseLayout from '#layouts/BaseLayout.astro';
 import { getAllOgCards, ogPngPathForRoute } from '../../data/ogCards';
 
-const PROD = 'https://wearebutik.github.io';
+const PROD = 'https://beta.wearebutik.com';
 const ogCards = await getAllOgCards();
 const cardLinks = [...ogCards.entries()]
   .map(([route, card]) => {

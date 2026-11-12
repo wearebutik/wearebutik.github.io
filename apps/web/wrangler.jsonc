@@ -8,7 +8,7 @@
   "assets": {
     "directory": "./dist",
     // Gli indirizzi delle pagine finiscono con la barra (`/servizi/`,
-    // lib/linkConBarra.ts): `/servizi` risponde con un 301 verso `/servizi/`.
+    // lib/linkConBarra.ts): `/servizi` risponde con un 307 verso `/servizi/`.
     "html_handling": "auto-trailing-slash"
   },
   // Il dominio personalizzato crea da sé il record DNS nella zona
