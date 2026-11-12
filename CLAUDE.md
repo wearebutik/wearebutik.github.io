@@ -6,7 +6,8 @@ is the index and the review contract.
 ## What this is
 
 butik's website — **Astro 7**, built **static** (`astro build`) and host-agnostic,
-deployed today to GitHub Pages. Content lives in **Sanity** (read at build time
+deployed to Cloudflare Workers static assets (https://beta.wearebutik.com,
+ADR-0002 `#hosting`). Content lives in **Sanity** (read at build time
 into Astro content collections; Studio in `apps/studio`). Node and Bun versions
 in `mise.toml`.
 
@@ -158,7 +159,7 @@ https://mcp.sanity.io`). Claude proposes, the writer publishes.
   (`heroVariant`), categories, filter ids, images and e-mail addresses as they
   are.
 - After writing, say which documents and fields changed, and point the writer
-  to the changed page on https://butik.consiglio.fyi (same paths as the
+  to the changed page on https://preview.wearebutik.com (same paths as the
   public site) or to the Studio's **Anteprima web** tab to review; publishing
   stays in the Studio (`docs/adr/0004-content-architecture.md`, *Draft
   preview*).

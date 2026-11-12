@@ -1,6 +1,7 @@
 # butik — sito
 
-Sito di butik: Astro statico, contenuti su Sanity, pubblicato su GitHub Pages.
+Sito di butik: Astro statico, contenuti su Sanity, pubblicato su Cloudflare
+(https://beta.wearebutik.com).
 Monorepo pnpm + turbo (`apps/web` il sito, `apps/studio` lo Studio Sanity,
 `packages/*` token e componenti). Le decisioni stanno in [`docs/adr/`](docs/adr/README.md);
 le regole di lavoro in [`CLAUDE.md`](CLAUDE.md).
@@ -24,6 +25,6 @@ Dalla radice, con gli strumenti di `mise.toml` (`mise install`):
 I testi nuovi si scrivono come bozze nello Studio, nel dataset `production`.
 Il sito pubblicato mostra solo i documenti pubblicati; le bozze si vedono
 nella scheda *Anteprima web* dello Studio, o da sole su
-https://butik.consiglio.fyi con il login a Sanity
+https://preview.wearebutik.com con il login a Sanity
 ([ADR-0004](docs/adr/0004-content-architecture.md), *Draft preview*).
 Una bozza va sul sito quando la si pubblica.

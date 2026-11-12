@@ -8,9 +8,7 @@ tags: [runtime, hosting, astro, static, serverless]
 
 ## Context
 
-butik is an Astro site. Today it is built as a **static site** and published to
-GitHub Pages (`.github/workflows/deploy-pages.yml`). A trial `wrangler.jsonc`
-(Cloudflare) already exists in the repo. The recurring question: where does
+butik is an Astro site, built as a **static site**. The recurring question: where does
 "server logic" live when it's needed (forms, auth, storage, dynamic endpoints)?
 
 Explicit team constraint: **we don't want to bind ourselves to a server runtime.**
@@ -21,8 +19,20 @@ chosen case by case based on what's most effective — not imposed by an adapter
 
 **Static-first and host-agnostic.** Astro produces a static build (`astro build`,
 no SSR adapter committed by default). The site must be serveable from any static
-host — GitHub Pages today, but also Cloudflare Pages, Netlify or others — without
-changing the build model.
+host — Cloudflare, GitHub Pages, Netlify or others — without changing the build
+model.
+
+<a id="hosting"></a>**Hosting: Cloudflare Workers static assets.** The built
+`apps/web/dist` is served as static assets by the Worker `butik-beta`
+(`apps/web/wrangler.jsonc`) on https://beta.wearebutik.com, in butik's
+Cloudflare account, the one that holds the `wearebutik.com` zone.
+`.github/workflows/deploy-beta.yml` builds and deploys it on every push to
+`main` and on every Sanity publish (`repository_dispatch` `sanity-publish`),
+with `CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (variable).
+The Worker runs no code of ours: assets only. The beta stays out of search
+engines (`X-Robots-Tag: noindex` and a `robots.txt` that disallows everything,
+written by the workflow after the build) until the site moves to
+`wearebutik.com` (#96). `/_astro/*` is cached as `immutable`.
 
 Dynamic needs are **not** solved by introducing global SSR. They are solved,
 case by case, with a **serverless function chosen for the specific case**:
@@ -52,9 +62,9 @@ the built HTML:
   page before a swap. It does not wait for `rel=preload`, so navigations swap
   as soon as the HTML is there.
 - `linkConBarra.ts` rewrites internal `<a href>` values that point to a page
-  to their trailing-slash form. GitHub Pages redirects `/servizi` to `/servizi/`
-  with a 301, which would cost a network round trip on every navigation and
-  prefetch.
+  to their trailing-slash form. The host redirects `/servizi` to `/servizi/`
+  with a 301 (`html_handling: auto-trailing-slash`), which would cost a network
+  round trip on every navigation and prefetch.
 - `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
   (the home hero), cut down to the characters they use.
 - `@font-face` rules are always inline (`styles/fonts.css`). They reach the text

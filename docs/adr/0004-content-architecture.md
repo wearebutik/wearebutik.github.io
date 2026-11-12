@@ -56,13 +56,13 @@ it.
 - **Publishing.** A publish in the Studio reaches the site through a new build
   and deploy: a Sanity webhook on published documents in `production` calls
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs
-  `deploy-pages.yml`. The webhook authenticates with a fine-grained GitHub token
+  `deploy-beta.yml`. The webhook authenticates with a fine-grained GitHub token
   stored only in Sanity's webhook settings.
 - **Draft preview: in the browser.** Whoever writes sees their drafts
   rendered by the site's own code before publishing, with nothing to install.
   The preview is the site built as a server and run inside a Service Worker
-  (`apps/web/preview/`), published on Cloudflare Pages (project
-  `butik-preview`, https://butik.consiglio.fyi). The Studio shows it next to
+  (`apps/web/preview/`), published as static assets on Cloudflare Workers
+  (Worker `butik-anteprima`, https://preview.wearebutik.com). The Studio shows it next to
   the form in the **Anteprima web** tab (the `anteprima-web` presentation tool
   in `apps/studio/sanity.config.ts`); on its own, in a browser tab, it shows
   the site with the drafts of whoever signs in.
@@ -121,7 +121,7 @@ it.
     - **a login in the preview** (`/_login`): Sanity's providers with
       `type=token`, back to `/_callback`, which exchanges the session id on
       the project's API host. Sanity accepts the callback only from an origin
-      in the project's CORS list (`https://butik.consiglio.fyi`, with
+      in the project's CORS list (`https://preview.wearebutik.com`, with
       credentials). `/_logout` revokes this session; the Studio's stays with
       the Studio.
 
@@ -135,11 +135,13 @@ it.
     constant (`astro.config.mjs`), so no environment variable at runtime can
     turn drafts on in the static build.
   - **Distribution.** `.github/workflows/preview.yml` builds and deploys the
-    preview on every code change on `main`, with `CLOUDFLARE_API_TOKEN`
-    (Pages Edit on that account only) in the repository's secrets. The
-    preview holds code, not copy: a publish in the Studio does not rebuild
-    it. The Cloudflare account and the `consiglio.fyi` domain are personal,
-    a temporary home until the preview moves to a butik account and domain.
+    preview on every code change on `main`, in butik's Cloudflare account,
+    with the same `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` as the
+    site (ADR-0002 `#hosting`). Every path without a file gets `index.html`
+    (`not_found_handling: single-page-application` in
+    `apps/web/preview/wrangler.jsonc`), the page that registers the worker.
+    The preview holds code, not copy: a publish in the Studio does not
+    rebuild it.
 - **Structured bodies.** A `servizio` body is a list of reorderable sections
   (Cosa facciamo, Adatto a, Di cosa ci occupiamo, Metodo, Bandi vinti, Rimando
   ai progetti, Banner), one Sanity object per site component. Text

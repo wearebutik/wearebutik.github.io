@@ -6,7 +6,7 @@
 //   controllo e, quando cambia l'hash, installa il worker nuovo;
 // - index.html, la pagina che registra il worker, e robots.txt, che tiene
 //   l'anteprima fuori dai motori di ricerca come il noindex di _headers;
-// - _headers, per Cloudflare Pages: la cache dei file e il noindex (l'anteprima
+// - _headers, letto da Cloudflare: la cache dei file e il noindex (l'anteprima
 //   non va nei motori di ricerca).
 import { createHash } from 'node:crypto';
 import { $ } from 'bun';

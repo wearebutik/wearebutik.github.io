@@ -6,7 +6,7 @@
 import { useEffect } from 'react';
 import { useClient, type LayoutProps } from 'sanity';
 
-export const ANTEPRIMA_WEB = process.env.SANITY_STUDIO_ANTEPRIMA_WEB ?? 'https://butik.consiglio.fyi';
+export const ANTEPRIMA_WEB = process.env.SANITY_STUDIO_ANTEPRIMA_WEB ?? 'https://preview.wearebutik.com';
 
 export function LayoutAnteprimaWeb(props: LayoutProps) {
   const client = useClient({ apiVersion: '2026-09-01' });

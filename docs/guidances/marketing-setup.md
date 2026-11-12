@@ -10,7 +10,7 @@ A new person on the marketing team ends the onboarding able to:
 1. **write and publish copy** in the Sanity Studio
    (https://butik.sanity.studio);
 2. **see their drafts on the real site** before publishing, on
-   https://butik.consiglio.fyi or in the Studio's **Anteprima web** tab;
+   https://preview.wearebutik.com or in the Studio's **Anteprima web** tab;
 3. **have Claude draft copy** straight into Sanity, from Claude Desktop
    through the Sanity connector;
 4. **change the brand voice** — the sections *Brand Voice* and *Customer
@@ -36,7 +36,7 @@ repository on the Mac, which Claude sets up in the **Code** tab (part 4).
    (Google, GitHub, e-mail) is a separate Sanity user: the Studio and the
    connector must use the same one. Then open https://butik.sanity.studio and
    check that the documents are there.
-2. **Draft preview.** Open https://butik.consiglio.fyi and sign in to
+2. **Draft preview.** Open https://preview.wearebutik.com and sign in to
    Sanity with the same method as the Studio: the browser keeps the session.
    It is the site with every draft of the project, at the same paths as the
    public site (`/`, `/servizi/<slug>`, `/progetti/<slug>`, `/chi-siamo`…).
@@ -77,7 +77,7 @@ Scrivi i testi del sito di butik nel progetto Sanity "butik" (uvzsc0vv, dataset 
 - Scrivi solo bozze (create_documents, patch_documents). Non pubblicare, non ritirare e non scartare mai niente: la pubblicazione la faccio io dallo Studio, e pubblicare un documento pubblica tutta la sua bozza.
 - Cambia solo i campi di testo. Lascia come sono slug, link (i campi …Href), valori a scelta fissa (heroVariant), categorie, id dei filtri, immagini e indirizzi e-mail.
 - Alla fine dimmi quali documenti e quali campi hai cambiato, con il testo prima e dopo.
-- Poi aprimi nel browser la pagina dell'anteprima dove si vede il testo cambiato, su https://butik.consiglio.fyi, con lo stesso percorso del sito pubblico: / per la home, /servizi/<slug> per un servizio, /progetti/<slug> per un progetto, /chi-siamo, /contatti, /partners per le altre pagine. Se compare la pagina "Anteprima delle bozze", dimmi di fare il login a Sanity con lo stesso metodo dello Studio e aspettami; poi ricarica la pagina e mostrami il testo nuovo.
+- Poi aprimi nel browser la pagina dell'anteprima dove si vede il testo cambiato, su https://preview.wearebutik.com, con lo stesso percorso del sito pubblico: / per la home, /servizi/<slug> per un servizio, /progetti/<slug> per un progetto, /chi-siamo, /contatti, /partners per le altre pagine. Se compare la pagina "Anteprima delle bozze", dimmi di fare il login a Sanity con lo stesso metodo dello Studio e aspettami; poi ricarica la pagina e mostrami il testo nuovo.
 - Ricordami che per pubblicare devo aprire il documento nello Studio (https://butik.sanity.studio) e premere Publish.
 ````
 
@@ -132,7 +132,7 @@ Il tone of voice è in `.agents/product-marketing.md`, sezioni **Brand Voice** e
   ([ADR-0004 *Publishing*](../adr/0004-content-architecture.md)).
 - **Copy drafted by Claude.** Ask in the *butik — testi del sito* project in
   Claude Desktop: Claude writes drafts, says which documents and fields it
-  changed and opens the page on https://butik.consiglio.fyi. Publish from
+  changed and opens the page on https://preview.wearebutik.com. Publish from
   the Studio. A chat outside the project has none of its instructions: ask it
   explicitly for drafts, never to publish.
 - **Changing the brand voice.** Open the Code tab in
