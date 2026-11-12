@@ -2,6 +2,7 @@ import { progetto } from './progetto';
 import { servizio } from './servizio';
 import { imageBlock, imageSide, imageCarousel, figura } from './blocchi';
 import { sezioniServizio } from './sezioniServizio';
+import { sezioniPagina } from './sezioniPagina';
 import { testoFormattato, link, linkSegnaposto } from './testo';
 import { pagineTypes, testoLegale } from './pagine';
 
@@ -38,6 +39,7 @@ export const schemaTypes = [
   imageSide,
   imageCarousel,
   ...sezioniServizio,
+  ...sezioniPagina,
   testoFormattato,
   testoLegale,
   link,

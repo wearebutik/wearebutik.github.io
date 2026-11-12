@@ -45,8 +45,13 @@ if (home?.data.type === 'home') {
     titolo: 'Home',
     href: '/',
     foto: [
-      ...home.data.heroImages.map((i, n) => ({ src: i.src, alt: i.alt, ruolo: `Hero ${n + 1}` })),
-      ...(home.data.aboutImage ? [{ src: home.data.aboutImage, alt: home.data.aboutImageAlt, ruolo: 'Chi siamo' }] : []),
+      ...home.data.sezioni.flatMap((s) =>
+        s._type === 'sezioneHero'
+          ? s.fotoSfondo.map((i, n) => ({ src: i.src, alt: '', ruolo: `Hero ${n + 1}` }))
+          : s._type === 'sezioneChiSiamo' && s.image
+            ? [{ src: s.image, alt: s.imageAlt, ruolo: 'Chi siamo' }]
+            : [],
+      ),
     ],
   });
 }

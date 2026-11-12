@@ -148,7 +148,7 @@ export const ctaProgetti = defineType({
 
 export const ctaBanner = defineType({
   name: 'ctaBanner',
-  title: 'Banner di chiusura',
+  title: 'Banner',
   type: 'object',
   fields: [
     defineField({ name: 'title', title: 'Titolo', type: 'string', validation: (r) => r.required() }),
@@ -156,7 +156,7 @@ export const ctaBanner = defineType({
     defineField({ name: 'primaryCta', title: 'Pulsante principale', type: 'link', validation: (r) => r.required() }),
     defineField({ name: 'secondaryCta', title: 'Pulsante secondario', type: 'link' }),
   ],
-  preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Banner di chiusura', subtitle }) },
+  preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Banner', subtitle }) },
 });
 
 export const sezioniServizio = [cosaFacciamo, adattoA, diCosaCiOccupiamo, metodo, bandiVinti, ctaProgetti, ctaBanner];

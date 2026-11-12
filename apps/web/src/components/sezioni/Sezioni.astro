@@ -1,0 +1,122 @@
+---
+// Le sezioni di una pagina, nell'ordine scelto nello Studio (ADR-0004,
+// *Pages as sections*). Ogni blocco Sanity diventa il suo componente; i
+// blocchi che mostrano contenuti di altri documenti (loghi, metodo,
+// testimonianze, progetti in evidenza, card dei servizi nell'hero) li leggono
+// qui, solo se la pagina li usa.
+import { getCollection, getEntry } from 'astro:content';
+import type { Sezione } from '../../content.config';
+import Hero from '#components/home/Hero.astro';
+import PartnerLogos from '#components/home/PartnerLogos.astro';
+import Numbers from '#components/home/Numbers.astro';
+import Metodo from '#components/home/Metodo.astro';
+import Testimonials from '#components/home/Testimonials.astro';
+import PortfolioGrid from '#components/home/PortfolioGrid.astro';
+import CtaBanner from '#components/CtaBanner.astro';
+import AboutInline from '#components/home/AboutInline.astro';
+import NewsletterSignup from '#components/home/NewsletterSignup.astro';
+import type { MetodoIconName } from '#data/metodo';
+import { perOrdine } from '#lib/ordine';
+
+interface Props {
+  sezioni: Sezione[];
+}
+const { sezioni } = Astro.props;
+const usa = (type: Sezione['_type']) => sezioni.some((s) => s._type === type);
+
+// Pagina fissa richiesta da un blocco: senza, la build si ferma con il motivo.
+async function pagina<T extends string>(id: string, type: T, perChi: string) {
+  const entry = await getEntry('pagine', id);
+  if (!entry || entry.data.type !== type) {
+    throw new Error(`Contenuto pagina "${id}" mancante o non valido (collezione pagine) — richiesto dalla sezione ${perChi}.`);
+  }
+  return entry.data as Extract<typeof entry.data, { type: T }>;
+}
+
+// Card dei servizi nell'hero, nell'ordine dell'elenco Servizi. Senza pagina
+// raggiungibile la card porta al blocco del servizio in /servizi.
+const serviziCards = usa('sezioneHero')
+  ? (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine).map((s) => ({
+      slug: s.id,
+      title: s.data.card.title,
+      href: s.data.paginaRaggiungibile ? `/servizi/${s.id}` : `/servizi/#${s.id}`,
+      description: s.data.card.desc,
+    }))
+  : [];
+
+const partners = usa('sezioneLoghi') ? (await pagina('partners', 'partners', 'Loghi dei partner')).partners : [];
+
+const metodo = usa('sezioneMetodo') ? await pagina('servizi', 'servizi-index', 'Metodo') : undefined;
+// Icone per tappa del metodo: config di design, non copy editoriale.
+const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagonismo', 'formazione', 'eventi'];
+
+const testimonianze = usa('sezioneTestimonianze')
+  ? await pagina('testimonials', 'testimonials', 'Testimonianze')
+  : undefined;
+
+const progettiInEvidenza = usa('sezioneProgetti')
+  ? (await getCollection('progetti', (e) => e.data.featured && !e.data.draft)).sort(perOrdine).slice(0, 4)
+  : [];
+---
+
+{sezioni.map((s) => {
+  switch (s._type) {
+    case 'sezioneHero':
+      return (
+        <Hero
+          images={s.fotoSfondo}
+          title={s.title}
+          subtitle={s.subtitle}
+          ctaLabel={s.ctaLabel}
+          ctaHref={s.ctaHref}
+          exploreLabel={s.exploreLabel}
+          exploreHref={s.exploreHref}
+          servizi={serviziCards}
+        />
+      );
+    case 'sezioneLoghi':
+      return <PartnerLogos partners={partners} />;
+    case 'sezioneNumeri':
+      return <Numbers butikMetrics={s.butikMetrics} mmwLabel={s.mmwLabel} mmwMetrics={s.mmwMetrics} />;
+    case 'sezioneMetodo':
+      return metodo && <Metodo eyebrow={metodo.metodoEyebrow} title={metodo.metodoTitle} tappe={metodo.metodo} icons={metodoIcons} />;
+    case 'sezioneTestimonianze':
+      return (
+        testimonianze && (
+          <Testimonials
+            eyebrow={testimonianze.eyebrow}
+            sectionTitle={testimonianze.sectionTitle}
+            testimonials={testimonianze.testimonials}
+          />
+        )
+      );
+    case 'sezioneProgetti':
+      return <PortfolioGrid progetti={progettiInEvidenza} eyebrow={s.eyebrow} title={s.title} intro={s.intro} ctaLabel={s.ctaLabel} />;
+    case 'ctaBanner':
+      return <CtaBanner title={s.title} body={s.body} primaryCta={s.primaryCta} secondaryCta={s.secondaryCta} />;
+    case 'sezioneChiSiamo':
+      return (
+        <AboutInline
+          title={s.title}
+          p1={s.p1}
+          p2={s.p2}
+          p3={s.p3}
+          ctaLabel={s.ctaLabel}
+          ctaHref={s.ctaHref}
+          image={s.image}
+          imageAlt={s.imageAlt}
+        />
+      );
+    case 'sezioneNewsletter':
+      return (
+        <NewsletterSignup
+          title={s.title}
+          body={s.body}
+          placeholder={s.placeholder}
+          button={s.button}
+          privacy={s.privacy}
+          success={s.success}
+        />
+      );
+  }
+})}

@@ -11,7 +11,8 @@
     "testi": "sanity exec scripts/testi.ts --with-user-token --",
     "foto": "sanity exec scripts/foto.ts --with-user-token --",
     "ordine-iniziale": "sanity exec scripts/ordine-iniziale.ts --with-user-token",
-    "pulizia-campi": "sanity exec scripts/pulizia-campi.ts --with-user-token"
+    "pulizia-campi": "sanity exec scripts/pulizia-campi.ts --with-user-token",
+    "home-a-sezioni": "sanity exec scripts/home-a-sezioni.ts --with-user-token"
   },
   "dependencies": {
     "@butik/site-config": "workspace:*",
