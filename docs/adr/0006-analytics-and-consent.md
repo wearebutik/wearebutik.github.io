@@ -122,14 +122,30 @@ it; it rests on legitimate interest (measuring and keeping the site working).
 
 - **Always on, cookieless, legitimate interest**: `$pageview`/`$pageleave` and web
   vitals (`capture_performance: { web_vitals: true }`). PostHog initializes
-  immediately (if `PUBLIC_POSTHOG_KEY` is set) with `persistence: 'memory'` — no
-  cookie, no `localStorage`, nothing survives a reload. `autocapture` stays off at
-  this tier: it captures element text, which the always-on tier must not touch.
-- **Consent-gated**: upgrading `persistence` to `'localStorage+cookie'` — a
-  durable, cross-visit identifier — happens only on `analytics` opt-in. Revoking
-  consent downgrades back to `persistence: 'memory'` and calls `reset()`; the
-  cookieless pageview/web-vitals signals are **not** stopped, because they never
-  needed the consent they are losing nothing by keeping.
+  immediately (if `PUBLIC_POSTHOG_KEY` is set) in posthog-js's own cookieless
+  mode: `cookieless_mode: 'on_reject'` with `opt_out_capturing_by_default: true`,
+  so "no decision yet" counts as rejected and events travel under the
+  `$posthog_cookieless` sentinel (the server derives a daily-salted hash), with
+  `persistence: 'memory'` — no cookie, no `localStorage`. `on_reject` alone
+  would leave PostHog silent before consent. Cookieless mode must also be
+  enabled in the PostHog project's settings, or the server drops these events.
+  Off at this tier: `autocapture` (captures element text), heatmaps
+  (`capture_heatmaps: false`; they record where and on what people click, and
+  with them off PostHog does not load its dead-clicks module either), session
+  recording, surveys and dead clicks (`disable_surveys`, `capture_dead_clicks:
+  false`, unused by the site).
+- **Consent-gated**: `analytics` opt-in calls `opt_in_capturing` (leaving
+  cookieless mode, without an `$opt_in` event) and turns on durable persistence
+  (`'localStorage+cookie'`), autocapture, heatmaps and session recording, which
+  masks every text node and input (`maskTextSelector: '*'`, `maskAllInputs`).
+  Revoking resets, turns those off, opts out and clears the opt-out record, so
+  the visitor is back in cookieless mode: the pageview/web-vitals signals are
+  **not** stopped, because they never needed the consent being revoked. The
+  same client as pelion's (discentis), in
+  `apps/web/src/lib/analytics/posthog.client.ts`; every SDK call is wrapped, so
+  blocked storage (Safari, sandboxed iframes) silences analytics instead of
+  breaking the page. `posthog.client.test.ts` runs the whole consent cycle
+  against the real posthog-js in jsdom, in CI.
 - **Banner and Cookie Policy wording**: rephrased from "no tracking before
   consent" to "no cookie before consent" (`config.client.ts`'s consent modal
   description, `privacy.astro`'s data-collection section) — the Cookie Policy
