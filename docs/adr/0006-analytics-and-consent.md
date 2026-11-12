@@ -16,12 +16,16 @@ opensource. The site is static-first (ADR-0002), so consent is handled
 ## Decision
 
 - **Cookie banner**: **`vanilla-cookieconsent` v3** (opensource,
-  provider-agnostic). Configuration and init isolated in `src/lib/consent/`
-  (config, init, wrapper), with a hook in the layout and a "cookie preferences"
-  button in the footer. The banner's CSS loads only when the banner or the
-  preferences open. For that, `run()` starts with `autoShow: false` and our init
-  opens the banner itself when consent is missing, after loading the styles. It
-  skips bots and automated browsers, matching the library's `hideFromBots`.
+  provider-agnostic) as a **headless consent engine**: it stores the choice in
+  `cc_cookie`, clears a revoked category's cookies and fires `onConsent` /
+  `onChange`. Configuration and init live in `src/lib/consent/` (config, init,
+  cookie list), with a hook in the layout and a "cookie preferences" button in
+  the footer. The interface is ours: the ticket in
+  `components/BannerCookie.astro` (look and behaviour in
+  [PDR-0006](../product/decisions/0006-cookie-banner-ticket.md)), which records
+  the choice with `acceptCategory()`. `run()` starts with `autoShow: false` and
+  the library never builds its own HTML or loads its CSS. The ticket skips bots
+  and automated browsers, matching the library's `hideFromBots`.
 - **Categories**: `necessary` (readOnly, always on) and `analytics` (with
   `autoClear` of the provider's cookies). Further categories (e.g. `marketing`)
   are added if and when needed.
@@ -91,14 +95,14 @@ Mode v2** — because we want the tag manager in place now, not later.
   the first real marketing tag and its real cookies.
 - <a id="banner-copy"></a>**Banner copy and cookie list**: the banner's texts
   live on Sanity (document *Banner dei cookie*, `pagina-banner-cookie`,
-  ADR-0004); the layout writes them into the page (`#cc-testi`) and
-  `creaConsentConfig` reads them. The categories and the technical cookie list
-  (name and duration, `COOKIE_*` in `config.client.ts`) stay in code, because
-  they must match what the site actually writes.
+  ADR-0004) and `BannerCookie.astro` renders them at build time. The
+  categories and the technical cookie list (name, provider, duration, purpose:
+  `lib/consent/cookie.ts`) stay in code, because they must match what the site
+  actually writes.
 - <a id="consent-audit"></a>**Live consent audit** (issue #22):
   `tools/consent-audit` opens the site in a clean browser and checks each
   choice — before choosing, accept all, reject, accept then revoke — against
-  the cookie table the banner shows. Run it whenever the banner, PostHog or a
+  the cookie list the banner shows. Run it whenever the banner, PostHog or a
   GTM tag changes.
 - **Module name**: the PostHog client is `lib/analytics/misure.client.ts`, not
   `posthog.client.ts`. Ad blockers often block files named after PostHog, and

@@ -15,8 +15,7 @@
     "home-a-sezioni": "sanity exec scripts/home-a-sezioni.ts --with-user-token",
     "pagine-a-sezioni": "sanity exec scripts/pagine-a-sezioni.ts --with-user-token",
     "card-e-elenco-servizi": "sanity exec scripts/card-e-elenco-servizi.ts --with-user-token",
-    "progetti-in-evidenza": "sanity exec scripts/progetti-in-evidenza.ts --with-user-token",
-    "banner-cookie": "sanity exec scripts/banner-cookie.ts --with-user-token"
+    "progetti-in-evidenza": "sanity exec scripts/progetti-in-evidenza.ts --with-user-token"
   },
   "dependencies": {
     "@butik/site-config": "workspace:*",

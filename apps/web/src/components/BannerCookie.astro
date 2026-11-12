@@ -1,0 +1,406 @@
+---
+// ── Banner dei cookie a biglietto (ADR-0006, PDR-0006) ─────────────────────
+// L'interfaccia del consenso: un biglietto d'ingresso con corpo e matrice
+// separati dalla linea di strappo. Le preferenze si aprono dentro il biglietto,
+// sia al primo avviso («Gestisci preferenze») sia dal footer («Preferenze
+// cookie»). Il lavoro tecnico (cookie della scelta, pulizia alla revoca,
+// PostHog e Consent Mode) lo fa vanilla-cookieconsent: lib/consent.
+//
+// Desktop: il biglietto sta in basso a destra, il corpo scorre se le
+// preferenze non ci stanno. Telefono (sotto 768px): un foglio che spunta dal
+// fondo con solo titolo e pulsanti; scorrendo verso l'alto escono testo e
+// preferenze. Lo spazio vuoto sopra lascia passare i tocchi alla pagina.
+//
+// I testi vengono da Sanity (documento «Banner dei cookie»); l'elenco dei
+// cookie da lib/consent/cookie.ts. Il ClientRouter conserva il banner fra le
+// pagine (transition:persist): una scelta a metà non si perde navigando.
+import { getEntry } from 'astro:content';
+import Button from '@butik/ui/Button';
+import MetaLabel from '@butik/ui/MetaLabel';
+import { richTextHtml } from '#lib/richText';
+import { COOKIE_ANALISI, COOKIE_NECESSARI, type CookieDichiarato } from '#lib/consent/cookie';
+
+const entry = await getEntry('pagine', 'banner-cookie');
+if (!entry || entry.data.type !== 'banner-cookie') {
+  throw new Error('Contenuto "Banner dei cookie" mancante o non valido (collezione pagine).');
+}
+const t = entry.data;
+
+const categorie: Array<{ titolo: string; testo: string; cookie: CookieDichiarato[]; analisi: boolean }> = [
+  { titolo: t.necessariTitolo, testo: t.necessariTesto, cookie: COOKIE_NECESSARI, analisi: false },
+  { titolo: t.analisiTitolo, testo: t.analisiTesto, cookie: COOKIE_ANALISI, analisi: true },
+];
+---
+
+<div id="banner-cookie" class="banner" transition:persist="banner-cookie" data-modo="avviso" hidden>
+  <div class="foglio">
+    <div class="foglio__vuoto" aria-hidden="true"></div>
+    <section class="biglietto" aria-labelledby="banner-cookie-titolo" tabindex="-1">
+      <div class="testa">
+        <MetaLabel as="p">{t.occhiello}</MetaLabel>
+        <h2 id="banner-cookie-titolo" class="titolo">{t.titolo}</h2>
+        <button type="button" class="chiudi" data-azione="chiudi" aria-label={t.chiudi}>
+          <span aria-hidden="true">×</span>
+        </button>
+      </div>
+
+      <div class="corpo">
+        <div class="testo" set:html={richTextHtml(t.testo)} />
+        <div class="scelte" id="banner-cookie-scelte" data-scelte hidden>
+          <ul class="righe">
+            {categorie.map((c) => (
+              <li>
+                <div class="riga">
+                  <strong>{c.titolo}</strong>
+                  <span>{c.testo}</span>
+                  <details class="elenco">
+                    <summary>{t.elencoCookie}</summary>
+                    <dl>
+                      {c.cookie.map((k) => (
+                        <>
+                          <dt>{k.nome}</dt>
+                          <dd>{k.fornitore} · {k.durata} · {k.finalita}</dd>
+                        </>
+                      ))}
+                    </dl>
+                  </details>
+                </div>
+                {c.analisi ? (
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked="false"
+                    class="interruttore"
+                    aria-label={c.titolo}
+                    data-azione="interruttore"
+                  >
+                    <span class="interruttore__pallino"></span>
+                  </button>
+                ) : (
+                  <span class="timbro">{t.sempreAttivi}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+          <button type="button" class="link-secondario" data-azione="salva">{t.salva}</button>
+          <div class="informazioni" set:html={richTextHtml(t.informazioniTesto)} />
+        </div>
+      </div>
+
+      <div class="matrice">
+        {/* «Accetta» e «Rifiuta» con lo stesso peso: stessa variante, stessa
+            larghezza (linee guida EDPB sui dark pattern). */}
+        <div class="pulsanti">
+          <span data-azione="tutti"><Button tone="dark" className="pulsante">{t.accetta}</Button></span>
+          <span data-azione="nessuno"><Button tone="dark" className="pulsante">{t.rifiuta}</Button></span>
+        </div>
+        <button
+          type="button"
+          class="link-secondario"
+          data-azione="preferenze"
+          aria-expanded="false"
+          aria-controls="banner-cookie-scelte"
+        >
+          {t.preferenze}
+        </button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .banner {
+    position: fixed;
+    right: var(--space-6);
+    bottom: var(--space-6);
+    z-index: 60;
+    width: min(25rem, calc(100vw - 2 * var(--space-6)));
+    font-family: var(--font-sans);
+  }
+  .banner[hidden] {
+    display: none;
+  }
+  .foglio__vuoto {
+    display: none;
+  }
+
+  /* ── Biglietto ── */
+  /* Tre parti bianche: testa, corpo e matrice. La linea di strappo sta fra
+     corpo e matrice; le tacche sono mezzi cerchi «bucati» negli angoli delle
+     due parti che si toccano, così cadono sempre sulla linea. L'ombra segue i
+     buchi (drop-shadow, non box-shadow). */
+  .biglietto {
+    --tacca: var(--space-3);
+    --strappo: 2px dashed color-mix(in oklab, var(--color-fg) 30%, transparent);
+    --tacche-sotto:
+      radial-gradient(circle var(--tacca) at 0 100%, transparent 98%, #000) 0 0 / 51% 100% no-repeat,
+      radial-gradient(circle var(--tacca) at 100% 100%, transparent 98%, #000) 100% 0 / 51% 100% no-repeat;
+    --tacche-sopra:
+      radial-gradient(circle var(--tacca) at 0 0, transparent 98%, #000) 0 0 / 51% 100% no-repeat,
+      radial-gradient(circle var(--tacca) at 100% 0, transparent 98%, #000) 100% 0 / 51% 100% no-repeat;
+    display: flex;
+    flex-direction: column;
+    color: var(--color-fg);
+    filter: drop-shadow(0 12px 24px color-mix(in oklab, var(--color-dark) 35%, transparent));
+    animation: entra var(--duration-slow) var(--ease-standard) both;
+  }
+  .biglietto:focus {
+    outline: none;
+  }
+  .testa,
+  .corpo,
+  .matrice {
+    background: var(--color-white);
+  }
+  .testa {
+    position: relative;
+    padding: var(--space-6) var(--space-6) 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .corpo {
+    max-height: min(22rem, 100dvh - 20rem);
+    overflow-y: auto;
+    padding: 0 var(--space-6) var(--space-5);
+    mask: var(--tacche-sotto);
+  }
+  .matrice {
+    padding: var(--space-5) var(--space-6) var(--space-6);
+    border-top: var(--strappo);
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    mask: var(--tacche-sopra);
+  }
+
+  /* Il titolo non prende lo stile globale degli h2. */
+  .titolo {
+    font-family: var(--font-heading);
+    font-size: var(--font-size-title-sm);
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: none;
+    letter-spacing: normal;
+    color: inherit;
+    margin: var(--space-2) 0 var(--space-3);
+    padding-right: var(--space-8);
+  }
+  .chiudi {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: var(--space-10);
+    height: var(--space-10);
+    border: 0;
+    border-radius: var(--radius-full);
+    background: none;
+    color: var(--color-fg);
+    font-size: var(--font-size-xl);
+    line-height: 1;
+    cursor: pointer;
+  }
+  /* La chiusura c'è solo quando le preferenze si riaprono dal footer: al
+     primo avviso si sceglie con i pulsanti. */
+  [data-modo='avviso'] .chiudi {
+    display: none;
+  }
+  .testo {
+    font-size: var(--font-size-sm);
+    line-height: 1.5;
+  }
+  .testo :global(a),
+  .informazioni :global(a) {
+    color: var(--color-accent-text);
+  }
+
+  /* ── Preferenze, dentro il corpo ── */
+  .scelte {
+    margin-top: var(--space-4);
+    border-top: 1px solid color-mix(in oklab, var(--color-fg) 12%, transparent);
+  }
+  .righe {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .righe li {
+    display: flex;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid color-mix(in oklab, var(--color-fg) 12%, transparent);
+  }
+  .riga {
+    display: grid;
+    gap: var(--space-1);
+    flex: 1;
+    font-size: var(--font-size-sm);
+  }
+  /* Secondo livello dell'informativa: per ogni cookie nome, fornitore,
+     durata e finalità (Linee guida del Garante, 2021). */
+  .elenco {
+    margin-top: var(--space-1);
+    font-size: var(--font-size-xs);
+  }
+  .elenco summary {
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .elenco dl {
+    margin: var(--space-2) 0 0;
+  }
+  .elenco dt {
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+  }
+  .elenco dd {
+    margin: 0;
+    color: color-mix(in oklab, currentColor 80%, transparent);
+  }
+  .timbro {
+    /* design-lint-disable small-caps: timbro decorativo del biglietto */
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+    color: var(--color-accent-text);
+    border: 2px solid currentColor;
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-2);
+    rotate: -6deg;
+  }
+  .interruttore {
+    flex: none;
+    width: var(--space-12);
+    height: var(--space-6);
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-fg);
+    background: var(--color-white);
+    padding: 2px;
+    cursor: pointer;
+  }
+  .interruttore__pallino {
+    display: block;
+    width: calc(var(--space-6) - 8px);
+    height: calc(var(--space-6) - 8px);
+    border-radius: var(--radius-full);
+    background: var(--color-fg);
+    transition: translate var(--duration-fast) var(--ease-standard);
+  }
+  .interruttore[aria-checked='true'] {
+    background: var(--color-accent-fill);
+    border-color: var(--color-accent-fill);
+  }
+  .interruttore[aria-checked='true'] .interruttore__pallino {
+    background: var(--color-white);
+    translate: var(--space-6) 0;
+  }
+  .informazioni {
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+
+  /* ── Matrice ── */
+  .pulsanti {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+  }
+  .pulsanti :global(.pulsante) {
+    width: 100%;
+    justify-content: center;
+  }
+  .link-secondario {
+    /* design-lint-disable small-caps: link di un pulsante, fuori dai due ruoli */
+    margin-top: var(--space-3);
+    background: none;
+    border: 0;
+    padding: var(--space-1) 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-fg);
+    text-decoration: underline;
+    text-underline-offset: 0.3em;
+    cursor: pointer;
+  }
+  /* Con le preferenze aperte si salva da lì: il link della matrice sparisce. */
+  .link-secondario[aria-expanded='true'] {
+    display: none;
+  }
+
+  :is(.interruttore, .link-secondario, .chiudi, .elenco summary):focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @keyframes entra {
+    from {
+      opacity: 0;
+      translate: 0 var(--space-6);
+    }
+  }
+
+  /* ── Telefono: il foglio che spunta dal fondo e si scorre verso l'alto. ── */
+  @media (max-width: 767px) {
+    .banner {
+      inset: 0;
+      width: auto;
+      pointer-events: none;
+    }
+    .foglio {
+      height: 100%;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      overscroll-behavior: contain;
+    }
+    .foglio__vuoto {
+      display: block;
+      /* All'inizio spunta solo la parte per scegliere: testa e matrice, la
+         cui altezza la misura lo script (--visibile). */
+      height: calc(100% - var(--visibile, 17rem));
+      scroll-snap-align: start;
+    }
+    .biglietto {
+      pointer-events: auto;
+      scroll-snap-align: end;
+      margin: 0 var(--space-3) var(--space-3);
+    }
+    /* Testa e matrice (titolo e pulsanti) prima, il corpo dopo la linea di
+       strappo: tacche e angoli si spostano di conseguenza. */
+    .testa {
+      order: 1;
+    }
+    .matrice {
+      order: 2;
+      padding-top: 0;
+      padding-bottom: var(--space-5);
+      border-top: 0;
+      border-bottom: var(--strappo);
+      border-radius: 0;
+      mask: var(--tacche-sotto);
+    }
+    .corpo {
+      order: 3;
+      max-height: none;
+      overflow: visible;
+      padding-top: var(--space-5);
+      padding-bottom: var(--space-6);
+      border-radius: 0 0 var(--radius-md) var(--radius-md);
+      mask: var(--tacche-sopra);
+    }
+    .titolo {
+      margin-top: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .biglietto {
+      animation: none;
+    }
+    .interruttore__pallino {
+      transition: none;
+    }
+  }
+</style>
