@@ -189,11 +189,11 @@ export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sez
 
 export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [sezioni()]);
 
-// I testi del banner dei cookie e della finestra delle preferenze
-// (vanilla-cookieconsent, ADR-0006). Le categorie e l'elenco tecnico dei
-// cookie (nome e durata) restano nel codice, in
-// apps/web/src/lib/consent/config.client.ts: devono coincidere con quello che
-// il sito scrive davvero, e tools/consent-audit lo verifica.
+// I testi del banner dei cookie a biglietto, che contiene anche le
+// preferenze (ADR-0006, PDR-0006). Le categorie e l'elenco tecnico dei cookie
+// (nome, fornitore, durata) restano nel codice, in
+// apps/web/src/lib/consent/cookie.ts: devono coincidere con quello che il sito
+// scrive davvero, e tools/consent-audit lo verifica.
 export const paginaBannerCookie = defineType({
   name: 'paginaBannerCookie',
   title: 'Banner dei cookie',
@@ -203,34 +203,30 @@ export const paginaBannerCookie = defineType({
     { name: 'preferenze', title: 'Preferenze' },
   ],
   fields: [
+    str('occhiello', 'Occhiello', 'avviso'),
     str('titolo', 'Titolo', 'avviso'),
     defineField({
       name: 'testo',
       title: 'Testo',
-      description: 'Deve dire con chiarezza cosa si accetta e cosa si rifiuta.',
+      description: 'Deve dire con chiarezza cosa si accetta e cosa si rifiuta, e portare alla Cookie Policy.',
       type: 'testoFormattato',
       group: 'avviso',
       validation: (r) => r.required(),
     }),
-    str('accetta', 'Pulsante: accetta', 'avviso'),
-    str('rifiuta', 'Pulsante: rifiuta', 'avviso'),
-    str('preferenze', 'Pulsante: preferenze', 'avviso'),
-    str('preferenzeTitolo', 'Titolo', 'preferenze'),
-    str('accettaTutti', 'Pulsante: accetta tutti', 'preferenze'),
-    str('rifiutaTutti', 'Pulsante: rifiuta tutti', 'preferenze'),
-    str('salva', 'Pulsante: salva', 'preferenze'),
-    str('chiudi', 'Etichetta del pulsante di chiusura (per i lettori di schermo)', 'preferenze'),
+    str('accetta', 'Pulsante: accetta tutti', 'avviso'),
+    str('rifiuta', 'Pulsante: rifiuta tutti', 'avviso'),
+    str('preferenze', 'Link: apre le preferenze', 'avviso'),
     str('necessariTitolo', 'Necessari: titolo', 'preferenze'),
     txt('necessariTesto', 'Necessari: descrizione', 'preferenze'),
+    str('sempreAttivi', 'Necessari: timbro «sempre attivi»', 'preferenze'),
     str('analisiTitolo', 'Analisi: titolo', 'preferenze'),
     txt('analisiTesto', 'Analisi: descrizione', 'preferenze'),
-    str('colonnaCookie', 'Tabella: colonna del nome', 'preferenze'),
-    str('colonnaDurata', 'Tabella: colonna della durata', 'preferenze'),
-    str('colonnaDescrizione', 'Tabella: colonna della descrizione', 'preferenze'),
-    str('informazioniTitolo', 'Ultima sezione: titolo', 'preferenze'),
+    str('elencoCookie', 'Apre l’elenco dei cookie di ogni categoria', 'preferenze'),
+    str('salva', 'Link: salva le scelte', 'preferenze'),
+    str('chiudi', 'Etichetta del pulsante di chiusura (per i lettori di schermo)', 'preferenze'),
     defineField({
       name: 'informazioniTesto',
-      title: 'Ultima sezione: testo',
+      title: 'Testo in fondo alle preferenze',
       description: 'Con i link a Privacy & Cookie Policy e Termini di utilizzo.',
       type: 'testoFormattato',
       group: 'preferenze',

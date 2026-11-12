@@ -29,6 +29,12 @@ const daTogliere: { filtro: string; campi: string[] }[] = [
   // featured: i progetti in evidenza sono nel blocco della home (progetti-in-evidenza).
   { filtro: '_type == "progetto"', campi: ['order', 'featuredOrder', 'featured'] },
   { filtro: '_id == "pagina-servizi"', campi: ['filtri'] },
+  // Il banner a biglietto (PDR-0006) ha le preferenze dentro di sé: niente
+  // titolo, pulsanti e tabella della finestra separata.
+  {
+    filtro: '_id in ["pagina-banner-cookie", "drafts.pagina-banner-cookie"]',
+    campi: ['preferenzeTitolo', 'accettaTutti', 'rifiutaTutti', 'colonnaCookie', 'colonnaDurata', 'colonnaDescrizione', 'informazioniTitolo'],
+  },
   {
     filtro: '_id in ["pagina-home", "drafts.pagina-home"]',
     campi: [

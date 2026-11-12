@@ -18,8 +18,9 @@ if (!pw) {
 const { chromium } = require(pw);
 const URL0 = process.argv[2] ?? 'https://beta.wearebutik.com/';
 
-// La libreria del banner non si mostra ai browser che si dichiarano
-// automatici (hideFromBots): il controllo si presenta come un browser normale.
+// Il banner non si mostra ai browser che si dichiarano automatici (come
+// hideFromBots della libreria): il controllo si presenta come un browser
+// normale.
 const browser = await chromium.launch({ args: ['--disable-blink-features=AutomationControlled'] });
 const problemi = [];
 
@@ -48,12 +49,12 @@ const ricarica = async (page) => {
   await page.waitForTimeout(5000);
 };
 
-// I cookie che il banner dichiara: la tabella della finestra delle
-// preferenze, come la vede chi visita il sito. «…» vale qualunque testo.
+// I cookie che il banner dichiara: l'elenco «Quali cookie» delle preferenze,
+// come lo vede chi visita il sito. «…» vale qualunque testo.
 async function dichiarati(page) {
   await page.getByRole('button', { name: /preferenze cookie/i }).first().click();
   await page.waitForTimeout(800);
-  const nomi = await page.$$eval('#cc-main .pm table tbody tr td:first-child', (td) => td.map((t) => t.textContent.trim()));
+  const nomi = await page.$$eval('#banner-cookie .elenco dt', (dt) => dt.map((t) => t.textContent.trim()));
   await page.keyboard.press('Escape');
   return nomi.map((n) => ({ nome: n, re: new RegExp('^' + n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace('…', '.+') + '$') }));
 }
@@ -68,7 +69,7 @@ const attesa = (nome, cond, dettaglio) => {
 {
   const { ctx, page } = await apri();
   const s = await stato(ctx, page);
-  const banner = await page.evaluate(() => !!document.querySelector('#cc-main .cm'));
+  const banner = await page.evaluate(() => !!document.querySelector('#banner-cookie:not([hidden])'));
   attesa('prima della scelta: il banner compare', banner, 'banner assente');
   attesa('prima della scelta: nessun cookie', s.cookies.length === 0, s.cookies.join(', '));
   attesa('prima della scelta: niente PostHog nello storage', ![...s.local, ...s.session].some(ph), [...s.local, ...s.session].join(', '));
@@ -78,7 +79,7 @@ const attesa = (nome, cond, dettaglio) => {
 // 2. Accetta tutti: ogni cookie osservato è dichiarato, e viceversa.
 {
   const { ctx, page } = await apri();
-  await page.locator('#cc-main .cm [data-role="all"]').first().click();
+  await page.locator('#banner-cookie [data-azione="tutti"] button').first().click();
   await ricarica(page);
   const s = await stato(ctx, page);
   const dich = await dichiarati(page);
@@ -92,7 +93,7 @@ const attesa = (nome, cond, dettaglio) => {
 // 3. Rifiuta: resta solo il cookie della scelta.
 {
   const { ctx, page } = await apri();
-  await page.locator('#cc-main .cm [data-role="necessary"]').first().click();
+  await page.locator('#banner-cookie [data-azione="nessuno"] button').first().click();
   await ricarica(page);
   const s = await stato(ctx, page);
   attesa('dopo "Rifiuta": solo cc_cookie', s.cookies.join() === 'cc_cookie', s.cookies.join(', '));
@@ -103,11 +104,11 @@ const attesa = (nome, cond, dettaglio) => {
 // 4. Accetta, poi revoca dalle preferenze del footer: tutto via.
 {
   const { ctx, page } = await apri();
-  await page.locator('#cc-main .cm [data-role="all"]').first().click();
+  await page.locator('#banner-cookie [data-azione="tutti"] button').first().click();
   await page.waitForTimeout(1500);
   await page.getByRole('button', { name: /preferenze cookie/i }).first().click();
   await page.waitForTimeout(800);
-  await page.locator('#cc-main .pm [data-role="necessary"]').first().click();
+  await page.locator('#banner-cookie [data-azione="nessuno"] button').first().click();
   await ricarica(page);
   const s = await stato(ctx, page);
   attesa('dopo la revoca: solo cc_cookie', s.cookies.join() === 'cc_cookie', s.cookies.join(', '));
