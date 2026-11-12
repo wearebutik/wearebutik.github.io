@@ -1,4 +1,7 @@
 // ── PostHog — lato client, due livelli (ADR-0006) ────────────────────────────
+// Il file non si chiama «posthog»: gli adblocker bloccano spesso i file con
+// quel nome, e lo stesso script avvia il banner dei cookie, che deve comparire
+// comunque.
 // Stesso schema di pelion (discentis, apps/community/.../posthog-client.ts),
 // costruito sulla modalità senza cookie ufficiale di posthog-js.
 //
@@ -134,6 +137,12 @@ export function creaAnalytics(chiave: string | undefined, host: string, client: 
       // Cancella il record dell'opt-out: «nessuna decisione» torna a valere
       // come rifiuto, cioè cattura senza cookie, invece di PostHog muto.
       prova(() => client.clear_opt_in_out_capturing());
+      // `reset` non tocca lo stato di finestra e di sessione che PostHog
+      // tiene in sessionStorage (`ph_<chiave>_window_id` e simili): via anche
+      // quello, così dopo la revoca sul dispositivo non resta niente.
+      prova(() => {
+        for (const k of Object.keys(sessionStorage)) if (k.startsWith(`ph_${chiave}`)) sessionStorage.removeItem(k);
+      });
       consentito = false;
     },
 

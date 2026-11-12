@@ -151,7 +151,7 @@ servizi-a/b/c comparison prototypes) with varying props (with/without a
 secondary CTA). That crosses the same reuse bar already applied to `Button`.
 
 `@butik/ui/CtaBanner` becomes a React island like any other shared component.
-Its PostHog click-tracking (`#lib/analytics/posthog.client`, an app-only
+Its PostHog click-tracking (`#lib/analytics/misure.client`, an app-only
 subpath import — ADR-0007) cannot live inside `packages/ui` without breaking
 the monorepo boundary, so `apps/web/src/components/CtaBanner.astro` stays as
 a **thin wrapper**: same public Props, renders the island, keeps the tracking

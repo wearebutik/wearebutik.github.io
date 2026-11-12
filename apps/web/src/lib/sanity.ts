@@ -168,6 +168,7 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaServizi: 'servizi-index',
   paginaProgetti: 'progetti-index',
   paginaSostienici: 'sostienici',
+  paginaBannerCookie: 'banner-cookie',
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',

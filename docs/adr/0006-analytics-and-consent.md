@@ -84,20 +84,25 @@ Mode v2** — because we want the tag manager in place now, not later.
   id is public by nature). If unset, GTM is not injected and the build stays
   green — same graceful-degradation contract as PostHog.
 - **Consent mapping** (`config.client.ts` → `applyConsent`): the `analytics`
-  category drives `analytics_storage` (and PostHog opt-in/out); the `marketing`
-  category drives the three ad signals `ad_storage`, `ad_user_data`,
-  `ad_personalization`. Both categories ship now so every GTM tag is enabled once
-  the user consents — we no longer wait for a "future" marketing category.
-- **Cookie/script audit** (follow-up, tracked as issue #22): the cookie
-  lists in the banner (`autoClear` + `cookieTable`) are **provisional** — the real
-  set depends on which tags are actually loaded in the GTM container. A mechanism
-  must reconcile the declared cookies/scripts against what is really loaded and
-  keep the banner list in sync. Until then, treat the `marketing` cookie rows as
-  a best-effort placeholder.
-- **Marketing section gating** (follow-up, issue #23): showing a `marketing`
-  toggle while no marketing tag is actually loaded is a minor information
-  mismatch. Revisit at go-live — hide the section until a real marketing tag
-  exists in the container, or keep it if such tags are imminent.
+  category drives `analytics_storage` (and PostHog opt-in/out). There is no
+  `marketing` category while the GTM container holds no marketing tag: the
+  three ad signals (`ad_storage`, `ad_user_data`, `ad_personalization`) stay
+  at their `denied` default. A `marketing` category comes back together with
+  the first real marketing tag and its real cookies.
+- <a id="banner-copy"></a>**Banner copy and cookie list**: the banner's texts
+  live on Sanity (document *Banner dei cookie*, `pagina-banner-cookie`,
+  ADR-0004); the layout writes them into the page (`#cc-testi`) and
+  `creaConsentConfig` reads them. The categories and the technical cookie list
+  (name and duration, `COOKIE_*` in `config.client.ts`) stay in code, because
+  they must match what the site actually writes.
+- <a id="consent-audit"></a>**Live consent audit** (issue #22):
+  `tools/consent-audit` opens the site in a clean browser and checks each
+  choice — before choosing, accept all, reject, accept then revoke — against
+  the cookie table the banner shows. Run it whenever the banner, PostHog or a
+  GTM tag changes.
+- **Module name**: the PostHog client is `lib/analytics/misure.client.ts`, not
+  `posthog.client.ts`. Ad blockers often block files named after PostHog, and
+  the same script starts the consent banner, which must show regardless.
 
 ### Accepted trade-off vs the original wording
 
@@ -142,9 +147,9 @@ it; it rests on legitimate interest (measuring and keeping the site working).
   the visitor is back in cookieless mode: the pageview/web-vitals signals are
   **not** stopped, because they never needed the consent being revoked. The
   same client as pelion's (discentis), in
-  `apps/web/src/lib/analytics/posthog.client.ts`; every SDK call is wrapped, so
+  `apps/web/src/lib/analytics/misure.client.ts`; every SDK call is wrapped, so
   blocked storage (Safari, sandboxed iframes) silences analytics instead of
-  breaking the page. `posthog.client.test.ts` runs the whole consent cycle
+  breaking the page. `misure.client.test.ts` runs the whole consent cycle
   against the real posthog-js in jsdom, in CI.
 - <a id="after-first-paint"></a>**Loaded after the first paint.** posthog-js
   (~100 KB, through a dynamic `import()`) and `gtm.js` (~117 KB) load after the

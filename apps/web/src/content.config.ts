@@ -350,6 +350,30 @@ const paginaSostienici = z.object({
   sezioni: z.array(sezioneSchema),
 });
 
+// I testi del banner dei cookie (lib/consent/config.client.ts, ADR-0006).
+const paginaBannerCookie = z.object({
+  type: z.literal('banner-cookie'),
+  titolo: z.string(),
+  testo: portableText,
+  accetta: z.string(),
+  rifiuta: z.string(),
+  preferenze: z.string(),
+  preferenzeTitolo: z.string(),
+  accettaTutti: z.string(),
+  rifiutaTutti: z.string(),
+  salva: z.string(),
+  chiudi: z.string(),
+  necessariTitolo: z.string(),
+  necessariTesto: z.string(),
+  analisiTitolo: z.string(),
+  analisiTesto: z.string(),
+  colonnaCookie: z.string(),
+  colonnaDurata: z.string(),
+  colonnaDescrizione: z.string(),
+  informazioniTitolo: z.string(),
+  informazioniTesto: portableText,
+});
+
 const paginaProgetti = z.object({
   type: z.literal('progetti-index'),
   metaTitle: z.string(),
@@ -400,6 +424,7 @@ const pagineCollection = defineCollection({
     paginaServizi,
     paginaProgetti,
     paginaSostienici,
+    paginaBannerCookie,
     paginaTestimonials,
     paginaTermini,
     paginaPrivacy,
