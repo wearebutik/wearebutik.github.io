@@ -71,7 +71,7 @@ const { title, body, placeholder, button, privacy, success } = Astro.props;
 </section>
 
 <script>
-  import { trackEvent } from '#lib/analytics/posthog.client';
+  import { trackEvent } from '#lib/analytics/misure.client';
 
   // Rieseguito a ogni astro:page-load: con <ClientRouter /> il modulo gira una
   // volta sola per sessione, ma la view transition sostituisce il DOM. Senza

@@ -31,7 +31,7 @@ jobs:
       - uses: ./.github/actions/prepara
       - run: pnpm check
       # Test del sito (Vitest): fra l'altro il ciclo del consenso di PostHog
-      # contro l'SDK vero (src/lib/analytics/posthog.client.test.ts).
+      # contro l'SDK vero (src/lib/analytics/misure.client.test.ts).
       - run: pnpm --filter @butik/web test
 
   # Pubblica Storybook su Chromatic: review/commenti su ogni PR (link in fondo

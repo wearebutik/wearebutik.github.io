@@ -4,7 +4,7 @@
  * vive in @butik/ui/CtaBanner, isola React condivisa (ADR-0008 amendment
  * 2026-07-21: CtaBanner ha 6 punti di consumo reali, supera la soglia di
  * riuso). Questo wrapper resta .astro solo per il tracking PostHog dei
- * click, che usa un alias app-only (#lib/analytics/posthog.client,
+ * click, che usa un alias app-only (#lib/analytics/misure.client,
  * ADR-0007) non risolvibile da packages/ui.
  */
 import CtaBanner from '@butik/ui/CtaBanner';
@@ -25,7 +25,7 @@ const { title, body, primaryCta, secondaryCta } = Astro.props;
 ---
 
 <script>
-  import { trackEvent } from '#lib/analytics/posthog.client';
+  import { trackEvent } from '#lib/analytics/misure.client';
 
   document.addEventListener('astro:page-load', () => {
     document.querySelectorAll('[data-cta-banner] a').forEach((link) => {

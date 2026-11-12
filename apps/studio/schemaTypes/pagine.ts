@@ -189,6 +189,57 @@ export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sez
 
 export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [sezioni()]);
 
+// I testi del banner dei cookie e della finestra delle preferenze
+// (vanilla-cookieconsent, ADR-0006). Le categorie e l'elenco tecnico dei
+// cookie (nome e durata) restano nel codice, in
+// apps/web/src/lib/consent/config.client.ts: devono coincidere con quello che
+// il sito scrive davvero, e tools/consent-audit lo verifica.
+export const paginaBannerCookie = defineType({
+  name: 'paginaBannerCookie',
+  title: 'Banner dei cookie',
+  type: 'document',
+  groups: [
+    { name: 'avviso', title: 'Avviso', default: true },
+    { name: 'preferenze', title: 'Preferenze' },
+  ],
+  fields: [
+    str('titolo', 'Titolo', 'avviso'),
+    defineField({
+      name: 'testo',
+      title: 'Testo',
+      description: 'Deve dire con chiarezza cosa si accetta e cosa si rifiuta.',
+      type: 'testoFormattato',
+      group: 'avviso',
+      validation: (r) => r.required(),
+    }),
+    str('accetta', 'Pulsante: accetta', 'avviso'),
+    str('rifiuta', 'Pulsante: rifiuta', 'avviso'),
+    str('preferenze', 'Pulsante: preferenze', 'avviso'),
+    str('preferenzeTitolo', 'Titolo', 'preferenze'),
+    str('accettaTutti', 'Pulsante: accetta tutti', 'preferenze'),
+    str('rifiutaTutti', 'Pulsante: rifiuta tutti', 'preferenze'),
+    str('salva', 'Pulsante: salva', 'preferenze'),
+    str('chiudi', 'Etichetta del pulsante di chiusura (per i lettori di schermo)', 'preferenze'),
+    str('necessariTitolo', 'Necessari: titolo', 'preferenze'),
+    txt('necessariTesto', 'Necessari: descrizione', 'preferenze'),
+    str('analisiTitolo', 'Analisi: titolo', 'preferenze'),
+    txt('analisiTesto', 'Analisi: descrizione', 'preferenze'),
+    str('colonnaCookie', 'Tabella: colonna del nome', 'preferenze'),
+    str('colonnaDurata', 'Tabella: colonna della durata', 'preferenze'),
+    str('colonnaDescrizione', 'Tabella: colonna della descrizione', 'preferenze'),
+    str('informazioniTitolo', 'Ultima sezione: titolo', 'preferenze'),
+    defineField({
+      name: 'informazioniTesto',
+      title: 'Ultima sezione: testo',
+      description: 'Con i link a Privacy & Cookie Policy e Termini di utilizzo.',
+      type: 'testoFormattato',
+      group: 'preferenze',
+      validation: (r) => r.required(),
+    }),
+  ],
+  preview: { prepare: () => ({ title: 'Banner dei cookie' }) },
+});
+
 export const paginaTestimonials = defineType({
   name: 'paginaTestimonials',
   title: 'Testimonianze',
@@ -321,6 +372,7 @@ export const PAGINE = {
   paginaServizi: 'servizi',
   paginaProgetti: 'progetti',
   paginaSostienici: 'sostienici',
+  paginaBannerCookie: 'banner-cookie',
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
@@ -335,6 +387,7 @@ export const pagineTypes = [
   paginaServizi,
   paginaProgetti,
   paginaSostienici,
+  paginaBannerCookie,
   paginaTestimonials,
   paginaPrivacy,
   paginaTermini,

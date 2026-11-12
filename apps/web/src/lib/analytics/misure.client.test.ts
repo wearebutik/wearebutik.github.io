@@ -7,7 +7,7 @@
 // rilanciato a ogni aggiornamento di posthog-js.
 import { PostHog } from 'posthog-js';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { creaAnalytics, creaAnalyticsDifferito, type ClientPostHog } from './posthog.client';
+import { creaAnalytics, creaAnalyticsDifferito, type ClientPostHog } from './misure.client';
 
 // La sentinella che posthog-js usa al posto del distinct_id senza cookie.
 const SENTINELLA = '$posthog_cookieless';
@@ -46,12 +46,14 @@ function stato(ph: PostHog, inviati: Inviato[]) {
     optIn: ph.has_opted_in_capturing(),
     heatmap: ph.config.capture_heatmaps,
     storage: Object.keys(localStorage).sort(),
+    sessione: Object.keys(sessionStorage).filter((k) => k.startsWith('ph_')).sort(),
     cookie: document.cookie,
   };
 }
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
   vi.stubGlobal('fetch', vi.fn(async () => new Response('{}', { status: 200 })));
 });
 afterEach(() => {
@@ -122,6 +124,9 @@ describe('alla revoca', () => {
       cattura: true,
       optIn: false,
       heatmap: false,
+      // Né cookie né storage di PostHog: nemmeno lo stato di finestra.
+      storage: [],
+      sessione: [],
     });
   });
 

@@ -325,7 +325,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
 </style>
 
 <script>
-  import { trackEvent } from '#lib/analytics/posthog.client';
+  import { trackEvent } from '#lib/analytics/misure.client';
 
   // Aggancia il form. Idempotente: con ClientRouter astro:page-load rifà girare
   // questa init ad ogni navigazione, ma il binding avviene una volta per elemento.

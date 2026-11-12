@@ -10,7 +10,7 @@
 // applica come sempre — e il banner si apre qui, dopo gli stili.
 import * as CookieConsent from 'vanilla-cookieconsent';
 import cssUrl from 'vanilla-cookieconsent/dist/cookieconsent.css?url';
-import { consentConfig } from './config.client';
+import { creaConsentConfig, type TestiBanner } from './config.client';
 
 let stili: Promise<void> | undefined;
 
@@ -45,8 +45,22 @@ document.addEventListener('astro:before-swap', (e) => {
 // (hideFromBots, attivo di default): stessa condizione, o show() fallisce.
 const eBot = () => navigator.webdriver || /bot|crawl|spider|slurp|teoma/i.test(navigator.userAgent);
 
+// I testi del banner, che il layout scrive in #cc-testi leggendoli da Sanity.
+// #cc-root resta lo stesso fra le pagine: si leggono una volta.
+let testi: TestiBanner | undefined;
+function leggiTesti(): TestiBanner | undefined {
+  if (testi) return testi;
+  const json = document.getElementById('cc-testi')?.textContent;
+  if (json) testi = JSON.parse(json) as TestiBanner;
+  return testi;
+}
+
 export async function initCookieConsent(): Promise<void> {
-  await CookieConsent.run({ ...consentConfig, autoShow: false });
+  const t = leggiTesti();
+  // Senza testi (documento mancante) il banner non può chiedere nulla in modo
+  // informato: non parte, e nessun cookie di analisi viene scritto.
+  if (!t) return;
+  await CookieConsent.run({ ...creaConsentConfig(t), autoShow: false });
   if (CookieConsent.validConsent() || eBot()) return;
   await caricaStili();
   CookieConsent.show(true);
