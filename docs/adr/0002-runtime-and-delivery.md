@@ -63,7 +63,7 @@ the built HTML:
   as soon as the HTML is there.
 - `linkConBarra.ts` rewrites internal `<a href>` values that point to a page
   to their trailing-slash form. The host redirects `/servizi` to `/servizi/`
-  with a 301 (`html_handling: auto-trailing-slash`), which would cost a network
+  (a 307 on Cloudflare, `html_handling: auto-trailing-slash`), which would cost a network
   round trip on every navigation and prefetch.
 - `fontCritici.ts` inlines the fonts of the sections marked `data-font-critici`
   (the home hero), cut down to the characters they use.
