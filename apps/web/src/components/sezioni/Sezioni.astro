@@ -24,6 +24,8 @@ import Team from './Team.astro';
 import Citazione from './Citazione.astro';
 import ElencoServizi from './ElencoServizi.astro';
 import ElencoProgetti from './ElencoProgetti.astro';
+import Riquadri from './Riquadri.astro';
+import Donazioni from './Donazioni.astro';
 import fotoPredefinita from '#assets/hero-home.jpg';
 import type { MetodoIconName } from '#data/metodo';
 
@@ -139,6 +141,22 @@ const inEvidenza = (slug: string[]) => slug.flatMap((id) => progettiPubblicati.g
       return <ElencoServizi servizi={s.servizi} />;
     case 'sezioneElencoProgetti':
       return <ElencoProgetti />;
+    case 'sezioneRiquadri':
+      return <Riquadri eyebrow={s.eyebrow} riquadri={s.riquadri} />;
+    case 'sezioneDonazioni':
+      return (
+        <Donazioni
+          paypalTitle={s.paypalTitle}
+          paypalLabel={s.paypalLabel}
+          paypalHref={s.paypalHref}
+          bonificoTitle={s.bonificoTitle}
+          beneficiario={s.beneficiario}
+          banca={s.banca}
+          iban={s.iban}
+          bic={s.bic}
+          causale={s.causale}
+        />
+      );
     case 'sezioneNewsletter':
       // Disattivata: il form non invia ancora gli indirizzi a un servizio di
       // newsletter (mostra solo la conferma). Si riattiva quando c'è.

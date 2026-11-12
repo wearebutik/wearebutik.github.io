@@ -146,7 +146,8 @@ it.
   that needs bold, italics or links is a `testoFormattato` field, never HTML in
   a string.
 - **Pages** are one fixed document each (`_id` `pagina-<id>`: home, chi-siamo,
-  contatti, partners, servizi, progetti, testimonials, privacy, termini, and
+  contatti, partners, servizi, progetti, sostienici, testimonials, privacy,
+  termini, and
   `footer` — the footer shared by every page, whose social profiles the
   contatti page reuses),
   shown in the Studio as fixed entries that cannot be created, duplicated or
@@ -154,7 +155,7 @@ it.
   the containing element keeps the page's scoped styles; legal bodies keep the
   heading ids Markdown used to generate, and the Cookie Policy heading keeps the
   fixed `#cookie` anchor the consent banner links to.
-- <a id="pages-as-sections"></a>**Pages as sections.** Home, Chi siamo,
+- <a id="pages-as-sections"></a>**Pages as sections.** Home, Chi siamo, Sostienici,
   Servizi and Progetti are each a list of sections (`sezioni`) the editor
   adds, removes and reorders in the Studio. One Sanity object per site
   component (`apps/studio/schemaTypes/sezioniPagina.ts`; the Banner is the same
