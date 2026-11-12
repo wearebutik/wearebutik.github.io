@@ -9,12 +9,6 @@ import { foto } from '#lib/foto';
 import { perOrdine } from '#lib/ordine';
 import MetaLabel from '@butik/ui/MetaLabel';
 
-interface Props {
-  /** Etichetta davanti al nome del cliente ("Cliente:"). */
-  clienteLabel: string;
-}
-const { clienteLabel } = Astro.props;
-
 const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort(perOrdine);
 
 const fotoCard = await Promise.all(
@@ -59,7 +53,7 @@ const fotoCard = await Promise.all(
         </p>
         {p.data.client && (
           <p class="project-card__client">
-            {clienteLabel} {p.data.client}
+            {p.data.clienteEtichetta}: {p.data.client}
           </p>
         )}
       </a>

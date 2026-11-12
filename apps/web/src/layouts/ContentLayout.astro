@@ -17,6 +17,8 @@ interface Props {
   transitionName?: string;
   // Extra info (used by projects)
   client?: string;
+  /** La parola davanti al cliente (dal progetto su Sanity). */
+  clienteEtichetta?: string;
   year?: number;
   category?: string;
 }
@@ -32,6 +34,7 @@ const {
   ogImage,
   transitionName,
   client,
+  clienteEtichetta = 'Cliente',
   year,
   category,
 } = Astro.props;
@@ -50,7 +53,7 @@ const {
       <div class="meta-bar-inner">
         {client && (
           <div>
-            <MetaLabel as="p">Cliente</MetaLabel>
+            <MetaLabel as="p">{clienteEtichetta}</MetaLabel>
             <span class="meta-value">{client}</span>
           </div>
         )}

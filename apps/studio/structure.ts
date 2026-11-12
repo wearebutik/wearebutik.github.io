@@ -1,6 +1,7 @@
-// Struttura dello Studio: progetti e servizi come elenchi riordinabili a
-// trascinamento (l'ordine è quello del sito), le pagine come voci fisse (un
-// documento ciascuna, _id `pagina-<id>`).
+// Struttura dello Studio: progetti come elenco riordinabile a trascinamento
+// (l'ordine è quello del sito), servizi come elenco semplice (l'ordine lo
+// decide il blocco "Elenco dei servizi" della pagina), le pagine come voci
+// fisse (un documento ciascuna, _id `pagina-<id>`).
 import type { StructureResolver } from 'sanity/structure';
 import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list';
 import { PAGINE, pagineTypes } from './schemaTypes/pagine';
@@ -12,7 +13,7 @@ export const structure: StructureResolver = (S, context) =>
     .title('Contenuti')
     .items([
       orderableDocumentListDeskItem({ type: 'progetto', title: 'Progetti', S, context }),
-      orderableDocumentListDeskItem({ type: 'servizio', title: 'Servizi', S, context }),
+      S.documentTypeListItem('servizio').title('Servizi'),
       S.divider(),
       S.listItem()
         .title('Pagine')

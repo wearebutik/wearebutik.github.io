@@ -161,9 +161,13 @@ it.
   `ctaBanner` the service bodies use), rendered in order by
   `apps/web/src/components/sezioni/Sezioni.astro`; every page accepts every
   section. A section that shows content owned by another document (logos from
-  Partner, the method from Servizi, testimonials, projects, services, the
-  service cards in the hero) carries no copy of its own: it places that
-  content on the page. The method stays as fixed fields on Servizi, shown by
+  Partner, the method from Servizi, testimonials, projects) carries no copy of
+  its own: it places that content on the page, and the Studio shows a note
+  linking to the source. The cards in the Hero are the home's own content
+  (title, text, link, icon), close to the services but written in the block.
+  The Services list and Featured projects blocks pick which documents to show
+  and in which order (references); the project list follows the Studio's
+  drag-and-drop order of projects. The method stays as fixed fields on Servizi, shown by
   the Method section there and on the home. A page header (Hero, Header with
   photo, Header, Title) carries the page's H1: at most one, and first. Hiding a
   section means removing it from the list. Contatti, Partner, the legal pages

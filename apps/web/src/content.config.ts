@@ -2,6 +2,7 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
+import { ICONE_CARD, type IconaCard } from '@butik/site-config/icone';
 import { pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
 
 
@@ -33,9 +34,6 @@ const serviziCollection = defineCollection({
     // non la linka da nessuna parte e la segna noindex: le card portano al
     // blocco del servizio in /servizi (#slug).
     paginaRaggiungibile: z.boolean().optional().default(false),
-    // Posizione nell'elenco riordinabile dello Studio (LexoRank: si confronta
-    // come stringa). Vedi lib/ordine.ts.
-    orderRank: z.string().optional(),
     draft: z.boolean().optional().default(false),
     // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
     hero: z
@@ -52,10 +50,9 @@ const serviziCollection = defineCollection({
         ledger: z.array(z.object({ k: z.string(), v: z.string() })).default([]),
       })
       .optional(),
-    // Card del servizio in home (hero) e in /servizi.
+    // Titolo breve del servizio nel suo blocco in /servizi.
     card: z.object({
       title: z.string(),
-      desc: z.string(),
     }),
     // Sezioni del corpo (Portable Text, blocchi custom).
     body: z.array(z.any()).optional().default([]),
@@ -76,6 +73,8 @@ const progettiCollection = defineCollection({
     heroLqip: z.string().optional(),
     heroAlt: z.string().optional().default(''),
     client: z.string().optional(),
+    // La parola davanti al cliente ("Cliente: …"); senza, "Cliente".
+    clienteEtichetta: z.string().optional().default('Cliente'),
     year: z.number().optional(),
     category: z.string().optional(),
     metaTitle: z.string().optional(),
@@ -84,7 +83,6 @@ const progettiCollection = defineCollection({
     ogCta: z.string().optional(),
     // Posizione nell'elenco riordinabile dello Studio. Vedi lib/ordine.ts.
     orderRank: z.string().optional(),
-    featured: z.boolean().optional().default(false),
     draft: z.boolean().optional().default(false),
     // Corpo in Portable Text, reso da astro-portabletext in progetti/[slug].astro
     body: z.array(z.any()).optional().default([]),
@@ -134,6 +132,17 @@ const sezioneSchema = z.discriminatedUnion('_type', [
       .array(z.object({ src: z.string().url(), lqip: z.string().optional() }))
       .optional()
       .default([]),
+    // Card in basso sulle foto, nell'ordine della lista. L'icona è un id di
+    // @butik/site-config/icone.
+    card: z
+      .array(z.object({
+        title: z.string(),
+        desc: z.string(),
+        href: z.string(),
+        icona: z.enum(ICONE_CARD.map((i) => i.id) as [IconaCard, ...IconaCard[]]).optional(),
+      }))
+      .optional()
+      .default([]),
   }),
   sezione('sezioneLoghi', {}),
   sezione('sezioneNumeri', {
@@ -143,10 +152,13 @@ const sezioneSchema = z.discriminatedUnion('_type', [
   }),
   sezione('sezioneMetodo', {}),
   sezione('sezioneTestimonianze', {}),
+  // Progetti scelti nel blocco, nell'ordine del blocco: il loader risolve i
+  // riferimenti nello slug di ciascun progetto.
   sezione('sezioneProgetti', {
     eyebrow: z.string(),
     title: z.string(),
     intro: z.string().optional(),
+    progetti: z.array(z.string()),
     ctaLabel: z.string(),
   }),
   sezione('ctaBanner', {
@@ -201,8 +213,10 @@ const sezioneSchema = z.discriminatedUnion('_type', [
     linkedinLabel: z.string(),
   }),
   sezione('sezioneCitazione', { quote: z.string(), author: z.string() }),
-  sezione('sezioneElencoServizi', {}),
-  sezione('sezioneElencoProgetti', { clienteLabel: z.string() }),
+  // Servizi scelti nel blocco, nell'ordine del blocco: il loader risolve i
+  // riferimenti nello slug di ciascun servizio.
+  sezione('sezioneElencoServizi', { servizi: z.array(z.string()) }),
+  sezione('sezioneElencoProgetti', {}),
   sezione('sezioneNewsletter', {
     title: z.string(),
     body: z.string(),

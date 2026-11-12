@@ -3,8 +3,7 @@
 // *Pages as sections*): home, chi siamo, servizi, progetti. Ogni blocco Sanity
 // diventa il suo componente; i
 // blocchi che mostrano contenuti di altri documenti (loghi, metodo,
-// testimonianze, progetti in evidenza, card dei servizi nell'hero) li leggono
-// qui, solo se la pagina li usa.
+// testimonianze, progetti in evidenza) li leggono qui, solo se la pagina li usa.
 import { getCollection, getEntry } from 'astro:content';
 import type { Sezione } from '../../content.config';
 import Hero from '#components/home/Hero.astro';
@@ -27,7 +26,6 @@ import ElencoServizi from './ElencoServizi.astro';
 import ElencoProgetti from './ElencoProgetti.astro';
 import fotoPredefinita from '#assets/hero-home.jpg';
 import type { MetodoIconName } from '#data/metodo';
-import { perOrdine } from '#lib/ordine';
 
 interface Props {
   sezioni: Sezione[];
@@ -48,17 +46,6 @@ async function pagina<T extends string>(id: string, type: T, perChi: string) {
   return entry.data as Extract<typeof entry.data, { type: T }>;
 }
 
-// Card dei servizi nell'hero, nell'ordine dell'elenco Servizi. Senza pagina
-// raggiungibile la card porta al blocco del servizio in /servizi.
-const serviziCards = usa('sezioneHero')
-  ? (await getCollection('servizi', (e) => !e.data.draft)).sort(perOrdine).map((s) => ({
-      slug: s.id,
-      title: s.data.card.title,
-      href: s.data.paginaRaggiungibile ? `/servizi/${s.id}` : `/servizi/#${s.id}`,
-      description: s.data.card.desc,
-    }))
-  : [];
-
 const partners = usa('sezioneLoghi') ? (await pagina('partners', 'partners', 'Loghi dei partner')).partners : [];
 
 const metodo = usa('sezioneMetodo') ? await pagina('servizi', 'servizi-index', 'Metodo') : undefined;
@@ -69,9 +56,12 @@ const testimonianze = usa('sezioneTestimonianze')
   ? await pagina('testimonials', 'testimonials', 'Testimonianze')
   : undefined;
 
-const progettiInEvidenza = usa('sezioneProgetti')
-  ? (await getCollection('progetti', (e) => e.data.featured && !e.data.draft)).sort(perOrdine).slice(0, 4)
-  : [];
+// Progetti pubblicati per slug: i blocchi "Progetti in evidenza" li scelgono
+// per riferimento, nel loro ordine. Uno in bozza o non pubblicato non si mostra.
+const progettiPubblicati = usa('sezioneProgetti')
+  ? new Map((await getCollection('progetti', (e) => !e.data.draft)).map((e) => [e.id, e]))
+  : new Map();
+const inEvidenza = (slug: string[]) => slug.flatMap((id) => progettiPubblicati.get(id) ?? []);
 ---
 
 {sezioni.map((s) => {
@@ -86,7 +76,7 @@ const progettiInEvidenza = usa('sezioneProgetti')
           ctaHref={s.ctaHref}
           exploreLabel={s.exploreLabel}
           exploreHref={s.exploreHref}
-          servizi={serviziCards}
+          servizi={s.card.map((c) => ({ icona: c.icona, title: c.title, href: c.href, description: c.desc }))}
         />
       );
     case 'sezioneLoghi':
@@ -106,7 +96,7 @@ const progettiInEvidenza = usa('sezioneProgetti')
         )
       );
     case 'sezioneProgetti':
-      return <PortfolioGrid progetti={progettiInEvidenza} eyebrow={s.eyebrow} title={s.title} intro={s.intro} ctaLabel={s.ctaLabel} />;
+      return <PortfolioGrid progetti={inEvidenza(s.progetti)} eyebrow={s.eyebrow} title={s.title} intro={s.intro} ctaLabel={s.ctaLabel} />;
     case 'ctaBanner':
       return <CtaBanner title={s.title} body={s.body} primaryCta={s.primaryCta} secondaryCta={s.secondaryCta} />;
     case 'sezioneChiSiamo':
@@ -146,9 +136,9 @@ const progettiInEvidenza = usa('sezioneProgetti')
     case 'sezioneCitazione':
       return <Citazione quote={s.quote} author={s.author} />;
     case 'sezioneElencoServizi':
-      return <ElencoServizi />;
+      return <ElencoServizi servizi={s.servizi} />;
     case 'sezioneElencoProgetti':
-      return <ElencoProgetti clienteLabel={s.clienteLabel} />;
+      return <ElencoProgetti />;
     case 'sezioneNewsletter':
       // Disattivata: il form non invia ancora gli indirizzi a un servizio di
       // newsletter (mostra solo la conferma). Si riattiva quando c'è.
