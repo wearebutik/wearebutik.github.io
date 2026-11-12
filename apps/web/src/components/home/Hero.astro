@@ -142,10 +142,10 @@ const serviziItems = servizi.map((s) => ({
 
       <!-- Titolo + subtitle + CTA primario -->
       <div class="hero-textcol">
-        <h1 class="hero-title" data-battito style="--ritardo: 150ms">
+        <h1 class="hero-title" data-battito="visibile" style="--ritardo: 150ms">
           {titleHead}<Underline tone="accent">{titleLast}</Underline>{stega}
         </h1>
-        <p class="hero-subtitle" data-battito style="--ritardo: 270ms">
+        <p class="hero-subtitle" data-battito="visibile" style="--ritardo: 270ms">
           {subtitle}
         </p>
 
@@ -229,6 +229,13 @@ const serviziItems = servizi.map((s) => ({
   /* Senza animazione (reduced-motion, o una sola foto) resta la prima. */
   .hero-slide:first-child {
     opacity: 1;
+  }
+  /* La prima foto è quasi sempre l'elemento più grande della pagina (LCP):
+     compare appena arriva, senza dissolvenza sul segnaposto. Partendo da
+     opacità 0 il browser la conterebbe solo a dissolvenza iniziata. */
+  .hero-slide:first-child .hero-slide-img {
+    opacity: 1;
+    transition: none;
   }
   @media (prefers-reduced-motion: reduce) {
     .hero-slide {

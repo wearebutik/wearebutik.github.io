@@ -112,14 +112,36 @@
   }
 }
 
+/* Come motion-battito ma senza dissolvenza: l'elemento è visibile dal primo
+   disegno e fa solo la molla. Per il testo che può essere l'elemento più
+   grande della pagina (LCP): partendo da opacità 0 il browser lo conta solo
+   quando ricompare, e la stima di Lighthouse su mobile ci mette dentro tutto
+   quello che la pagina ha scaricato nel frattempo. */
+@keyframes motion-battito-visibile {
+  0% {
+    transform: scaleY(0.7);
+  }
+  60% {
+    transform: scaleY(1.04);
+  }
+  100% {
+    transform: none;
+  }
+}
+
 /* ── Hero: entrata al caricamento ───────────────────────────────────────
    Le hero sono già in vista all'apertura: niente osservatore, l'entrata parte
    al caricamento. data-battito = sale con il rimbalzo, dopo il ritardo
-   --ritardo (per metterli in sequenza); data-assesta = foto che si assesta. */
+   --ritardo (per metterli in sequenza); data-battito="visibile" = la stessa
+   molla senza dissolvenza, per titoli e testi che possono essere l'LCP;
+   data-assesta = foto che si assesta. */
 @media (prefers-reduced-motion: no-preference) {
   [data-battito] {
     transform-origin: bottom;
     animation: motion-battito var(--duration-enter) var(--ease-bounce) var(--ritardo, 150ms) backwards;
+  }
+  [data-battito='visibile'] {
+    animation-name: motion-battito-visibile;
   }
   [data-assesta] {
     animation: motion-assesta var(--duration-settle) var(--ease-out) backwards;
