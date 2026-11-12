@@ -9,7 +9,8 @@
     "build:preview": "bun preview/build.ts",
     "preview": "astro preview",
     "check": "astro sync && node ../../tools/type-check/index.mjs && tsc -p preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test": "vitest run"
   },
   "imports": {
     "#components/*": "./src/components/*",
@@ -45,9 +46,11 @@
     "@types/react-dom": "^19.3.0",
     "@types/subset-font": "^2.3.0",
     "beasties": "^0.5.5",
+    "jsdom": "30.1.2",
     "node-html-parser": "^9.0.5",
     "satori": "^0.63.2",
     "subset-font": "^2.9.0",
-    "typescript": "7.0.2"
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
   }
 }

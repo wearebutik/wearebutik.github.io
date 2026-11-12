@@ -1,107 +1,152 @@
-// ── PostHog — inizializzazione lato client, due livelli (ADR-0006, update
-// 2026-07-20) ─────────────────────────────────────────────────────────────
-// Livello SEMPRE ATTIVO, cookieless, legittimo interesse: pageview/pageleave
-// e web vitals. `persistence: 'memory'` non scrive né cookie né localStorage,
-// quindi non serve consenso (ePrivacy art. 5(3) riguarda l'accesso al
-// dispositivo, non la raccolta in sé). `autocapture` resta OFF a questo
-// livello: cattura il testo degli elementi, cosa che il livello sempre-attivo
-// non deve toccare.
+// ── PostHog — lato client, due livelli (ADR-0006) ────────────────────────────
+// Stesso schema di pelion (discentis, apps/community/.../posthog-client.ts),
+// costruito sulla modalità senza cookie ufficiale di posthog-js.
 //
-// Livello DIETRO CONSENSO: l'upgrade della persistenza a
-// `localStorage+cookie` (identificatore persistente cross-visita) parte solo
-// con l'opt-in alla categoria `analytics`. La revoca riabbassa la persistenza
-// a `memory` e fa `reset()` — ma pageview/web-vitals continuano, perché non
-// hanno mai avuto bisogno del consenso che si sta revocando.
+// Livello SEMPRE ATTIVO, senza cookie, legittimo interesse: pageview,
+// pageleave e web vitals. `cookieless_mode: 'on_reject'` più
+// `opt_out_capturing_by_default` fanno sì che «nessuna decisione ancora» valga
+// come rifiuto, cioè cattura senza cookie: niente identificatore sul
+// dispositivo (distinct_id `$posthog_cookieless`, l'hash lo calcola il server
+// con un sale giornaliero). `on_reject` da solo lascerebbe PostHog muto prima
+// del consenso. La modalità va attivata anche nelle impostazioni del progetto
+// PostHog, altrimenti il server scarta gli eventi senza cookie.
 //
-// Session recording (replay DOM/mouse via rrweb) NON fa parte del livello
-// cookieless: a differenza di pageview/web-vitals può catturare testo digitato
-// e comportamento utente, quindi resta dietro consenso esplicito come le altre
-// identificazioni persistenti. `disable_session_recording: true` la tiene
-// spenta all'init; parte/si ferma solo in optIn/optOutPostHog.
+// Livello DIETRO CONSENSO (categoria `analytics` del banner): persistenza
+// durevole, autocapture, heatmap e registrazioni di sessione, accesi da
+// `opt_in_capturing`, che esce dalla modalità senza cookie. Le heatmap stanno
+// qui perché registrano dove e su cosa si clicca; con loro spente PostHog non
+// scarica nemmeno il modulo dei dead clicks. Le registrazioni mascherano ogni
+// testo e ogni campo. La revoca torna al livello senza cookie.
 //
-// La chiave si legge da `PUBLIC_POSTHOG_KEY` e l'host da `PUBLIC_POSTHOG_HOST`
-// (default: cloud EU). Se la chiave manca, tutto è un no-op: il sito continua a
-// funzionare e a fare build senza PostHog.
-import posthog from 'posthog-js';
+// Ogni chiamata all'SDK è protetta: dove il browser blocca lo storage (Safari,
+// iframe isolati) posthog-js lancia errori sincroni, e un'analisi che fallisce
+// non deve rompere la pagina.
+//
+// La chiave si legge da `PUBLIC_POSTHOG_KEY`, l'host da `PUBLIC_POSTHOG_HOST`
+// (predefinito: cloud EU). Senza chiave tutto è un no-op.
+import posthog, { type PostHog } from 'posthog-js';
 
-const KEY = import.meta.env.PUBLIC_POSTHOG_KEY as string | undefined;
-const HOST =
-  (import.meta.env.PUBLIC_POSTHOG_HOST as string | undefined) ?? 'https://eu.i.posthog.com';
+/** La parte di posthog-js che usiamo: permette di provarla con un'istanza vera. */
+export type ClientPostHog = Pick<
+  PostHog,
+  | 'init'
+  | 'set_config'
+  | 'opt_in_capturing'
+  | 'opt_out_capturing'
+  | 'has_opted_in_capturing'
+  | 'clear_opt_in_out_capturing'
+  | 'capture'
+  | 'reset'
+  | 'startSessionRecording'
+  | 'stopSessionRecording'
+>;
 
-let initialized = false;
-// Distinto da `initialized`: quello diventa true già al livello cookieless
-// (subito, senza consenso). `consented` traccia invece se l'utente ha
-// concesso la categoria `analytics` — è il gate corretto per gli eventi
-// custom (trackEvent), che sono identificazione personale, non semplice
-// pageview/web-vitals.
-let consented = false;
-
-// Inizializza PostHog una sola volta, subito (se la chiave c'è) — non aspetta
-// il consenso, perché il livello cookieless non ne ha bisogno. Ritorna `false`
-// (e non fa nulla) se la chiave non è configurata.
-function ensureInit(): boolean {
-  if (initialized) return true;
-  if (!KEY) return false;
-
-  posthog.init(KEY, {
-    api_host: HOST,
-    // Cookieless finché non c'è opt-in: nessun cookie, nessun localStorage,
-    // niente sopravvive a un reload.
-    persistence: 'memory',
-    // Consent-gated: cattura il testo degli elementi, resta OFF finché non
-    // c'è opt-in esplicito (attivato in optInPostHog).
-    autocapture: false,
-    // Sempre attivi, cookieless: pageview/pageleave e web vitals.
-    // 'history_change', non `true`: il sito naviga via ClientRouter di Astro
-    // (soft navigation con pushState), non un caricamento di documento per
-    // pagina — solo 'history_change' arma il patch di pushState/replaceState
-    // di posthog-js; `true` catturerebbe solo il primo caricamento.
-    capture_pageview: 'history_change',
-    capture_pageleave: true,
-    capture_performance: { web_vitals: true },
-    // Spenta all'init: il livello cookieless non la include (vedi sopra).
-    disable_session_recording: true,
-    // Funzioni che il sito non usa: spente, PostHog non scarica surveys.js né
-    // dead-clicks-autocapture.js (~45 KB). Opzioni di posthog-js
-    // (`disable_surveys`, `capture_dead_clicks`).
-    disable_surveys: true,
-    capture_dead_clicks: false,
-  });
-  initialized = true;
-  return true;
+export interface Analytics {
+  /** Avvia il livello senza cookie. Idempotente; no-op senza chiave. */
+  avvia(): void;
+  /** Consenso alla categoria `analytics`: esce dalla modalità senza cookie. */
+  consenti(): void;
+  /** Consenso negato o revocato: torna al livello senza cookie. */
+  revoca(): void;
+  /** Evento nostro (es. `contact_form_submitted`): solo con il consenso. */
+  evento(nome: string, proprieta?: Record<string, unknown>): void;
 }
 
-// Chiamata all'avvio (fuori dal flusso di consenso): garantisce il livello
-// cookieless anche per chi non ha ancora risposto al banner.
-export function initPostHogCookieless(): void {
-  ensureInit();
+export function creaAnalytics(
+  chiave: string | undefined,
+  host: string,
+  client: ClientPostHog = posthog,
+): Analytics {
+  let avviato = false;
+  let consentito = false;
+
+  const prova = (fn: () => unknown) => {
+    try {
+      fn();
+    } catch {
+      /* storage bloccato o SDK in errore: l'analisi tace, la pagina no */
+    }
+  };
+  // Legge lo storage, quindi può lanciare: in quel caso «no», e non si tocca
+  // niente su un dispositivo che non riusciamo a leggere.
+  const sdkCrediConsenso = () => {
+    try {
+      return client.has_opted_in_capturing();
+    } catch {
+      return false;
+    }
+  };
+
+  return {
+    avvia() {
+      if (!chiave || avviato) return;
+      avviato = true;
+      prova(() =>
+        client.init(chiave, {
+          api_host: host,
+          persistence: 'memory',
+          cookieless_mode: 'on_reject',
+          opt_out_capturing_by_default: true,
+          person_profiles: 'identified_only',
+          autocapture: false,
+          // 'history_change': il sito naviga con il ClientRouter di Astro
+          // (pushState), e solo così ogni pagina conta come pageview.
+          capture_pageview: 'history_change',
+          capture_pageleave: true,
+          capture_performance: { web_vitals: true },
+          capture_heatmaps: false,
+          capture_dead_clicks: false,
+          disable_surveys: true,
+          // Spente fino al consenso; il mascheramento è già in vigore quando
+          // partono.
+          disable_session_recording: true,
+          session_recording: { maskAllInputs: true, maskTextSelector: '*' },
+        }),
+      );
+    },
+
+    consenti() {
+      if (!avviato || consentito) return;
+      prova(() =>
+        client.set_config({ persistence: 'localStorage+cookie', autocapture: true, capture_heatmaps: true }),
+      );
+      // Senza `captureEventName: false` l'opt-in manderebbe un evento `$opt_in`
+      // a ogni pagina caricata con il consenso già dato.
+      prova(() => client.opt_in_capturing({ captureEventName: false }));
+      prova(() => client.startSessionRecording());
+      consentito = true;
+    },
+
+    revoca() {
+      if (!avviato) return;
+      // Solo se c'era qualcosa da revocare: un rifiuto al primo banner non
+      // deve cancellare niente.
+      if (!consentito && !sdkCrediConsenso()) return;
+      prova(() => client.reset());
+      prova(() => client.set_config({ persistence: 'memory', autocapture: false, capture_heatmaps: false }));
+      prova(() => client.stopSessionRecording());
+      prova(() => client.opt_out_capturing());
+      // Cancella il record dell'opt-out: «nessuna decisione» torna a valere
+      // come rifiuto, cioè cattura senza cookie, invece di PostHog muto.
+      prova(() => client.clear_opt_in_out_capturing());
+      consentito = false;
+    },
+
+    evento(nome, proprieta) {
+      if (!avviato || !consentito) return;
+      prova(() => client.capture(nome, proprieta));
+    },
+  };
 }
 
-// Consenso concesso: upgrade a persistenza durevole + autocapture + session
-// recording.
-export function optInPostHog(): void {
-  if (!ensureInit()) return;
-  posthog.set_config({ persistence: 'localStorage+cookie', autocapture: true });
-  posthog.startSessionRecording();
-  consented = true;
-}
+const analytics = creaAnalytics(
+  import.meta.env.PUBLIC_POSTHOG_KEY as string | undefined,
+  (import.meta.env.PUBLIC_POSTHOG_HOST as string | undefined) ?? 'https://eu.i.posthog.com',
+);
 
-// Consenso negato/revocato: torna al livello cookieless. Pageview e web vitals
-// NON si fermano — non hanno mai avuto bisogno del consenso che si sta
-// revocando; persistenza durevole, autocapture e session recording si spengono.
-export function optOutPostHog(): void {
-  if (!KEY || !initialized) return;
-  posthog.stopSessionRecording();
-  posthog.set_config({ persistence: 'memory', autocapture: false });
-  posthog.reset();
-  consented = false;
-}
-
-// Punto d'ingresso unico per gli eventi custom (contact_form_submitted,
-// newsletter_subscribed, ecc.). Sono identificazione personale come
-// l'autocapture e la session recording, non pageview/web-vitals: gated su
-// `consented`, non su `initialized` (che è già true al livello cookieless).
-export function trackEvent(event: string, properties?: Record<string, unknown>): void {
-  if (!consented) return;
-  posthog.capture(event, properties);
-}
+// Le funzioni che usano banner, layout e pagine (nomi invariati).
+export const initPostHogCookieless = (): void => analytics.avvia();
+export const optInPostHog = (): void => analytics.consenti();
+export const optOutPostHog = (): void => analytics.revoca();
+export const trackEvent = (event: string, properties?: Record<string, unknown>): void =>
+  analytics.evento(event, properties);
