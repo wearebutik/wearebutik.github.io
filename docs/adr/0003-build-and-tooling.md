@@ -63,9 +63,9 @@ this ADR records the toolchain that drives it.
   rasterizes the SVG logo → PNG via `getImage`, so `astro.config.mjs` sets
   `image.dangerouslyProcessSVG: true` (Astro ≥ 6.4 disables SVG rasterization by
   default; our use is limited to our own branding assets).
-- **Deploy**: GitHub Actions → GitHub Pages. CI sets up pnpm, installs frozen,
-  runs `pnpm build`, and uploads `apps/web/dist`. The host is replaceable
-  (ADR-0002).
+- **Deploy**: GitHub Actions → Cloudflare Workers static assets. CI sets up
+  pnpm, installs frozen, runs `pnpm build`, and deploys `apps/web/dist` with
+  `wrangler deploy` (ADR-0002 `#hosting`). The host is replaceable.
 
 ### Open (to be decided, not yet fixed)
 

@@ -1,0 +1,75 @@
+name: Deploy beta (Cloudflare)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Pubblicazione nello Studio Sanity: il webhook del progetto (dataset
+  # production) chiama POST /repos/{owner}/{repo}/dispatches con event_type
+  # "sanity-publish" (ADR-0004). Pubblicazioni ravvicinate si accorpano grazie
+  # alla concurrency qui sotto: parte il build dell'ultima.
+  repository_dispatch:
+    types: [sanity-publish]
+
+# Il sito su Cloudflare Workers, all'indirizzo beta.wearebutik.com (ADR-0002;
+# configurazione in apps/web/wrangler.jsonc). Fuori dai motori di ricerca
+# finché non passa su wearebutik.com (#96): noindex su ogni percorso e un
+# robots.txt che blocca tutto, scritti dopo il build solo qui.
+permissions:
+  contents: read
+
+concurrency:
+  group: beta
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/prepara
+
+      # Cache delle immagini ottimizzate da Astro (AVIF + WebP, apps/web/src/lib/foto.ts).
+      # A freddo la codifica AVIF di tutte le foto richiede ~10 minuti su un
+      # runner; con la cache si rigenerano solo le foto nuove. Il nome di ogni
+      # file in cache tiene già conto di foto, larghezza, formato e qualità, ma
+      # non delle opzioni del codificatore (image.service in astro.config.mjs):
+      # per questo la chiave dipende da quel file, e se cambia si riparte da
+      # zero. Le versioni di Astro e sharp restano fuori dalla chiave, perché un
+      # aggiornamento non rende sbagliate le immagini già fatte. Per
+      # rigenerarle tutte (dopo un aggiornamento di sharp, o se la cache cresce
+      # troppo: non si sfoltisce da sola) si cambia `v1`.
+      - uses: actions/cache@v6
+        with:
+          path: apps/web/node_modules/.astro/assets
+          key: astro-img-v1-${{ hashFiles('apps/web/astro.config.mjs') }}-${{ github.run_id }}
+          restore-keys: astro-img-v1-${{ hashFiles('apps/web/astro.config.mjs') }}-
+
+      - name: Build
+        env:
+          SITE: https://beta.wearebutik.com
+          # Tutte le chiavi PUBLIC_* sono client-side: finiscono nel bundle statico
+          # per design, quindi NON sono segreti → repository *variables*, non
+          # secrets. Se una variable manca, la feature relativa è un no-op e il
+          # build resta verde. (turbo envMode: loose le lascia passare al build.)
+          PUBLIC_WEB3FORMS_ACCESS_KEY: ${{ vars.PUBLIC_WEB3FORMS_ACCESS_KEY }}
+          PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
+          PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}
+          PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
+        run: pnpm build
+
+      # Beta fuori dai motori di ricerca, e cache lunga sui file con l'hash nel
+      # nome. Da togliere (noindex e robots) al passaggio su wearebutik.com.
+      - name: Intestazioni della beta
+        working-directory: apps/web/dist
+        run: |
+          printf '/*\n  X-Robots-Tag: noindex\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n' > _headers
+          printf 'User-agent: *\nDisallow: /\n' > robots.txt
+
+      - name: Cloudflare Workers
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: pnpm dlx wrangler@4.154.0 deploy

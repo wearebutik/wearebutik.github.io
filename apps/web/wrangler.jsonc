@@ -1,7 +1,19 @@
+// Il sito statico su Cloudflare Workers (static assets, ADR-0002): i file di
+// `dist` serviti così come sono, senza codice nostro che giri sul server.
+// Pubblicato da .github/workflows/deploy-beta.yml su beta.wearebutik.com, fuori
+// dai motori di ricerca finché il sito non passa su wearebutik.com (#96).
 {
-  "name": "butik-test",
+  "name": "butik-beta",
   "compatibility_date": "2026-04-10",
   "assets": {
-    "directory": "./dist"
-  }
+    "directory": "./dist",
+    // Gli indirizzi delle pagine finiscono con la barra (`/servizi/`,
+    // lib/linkConBarra.ts): `/servizi` risponde con un 301 verso `/servizi/`.
+    "html_handling": "auto-trailing-slash"
+  },
+  // Il dominio personalizzato crea da sé il record DNS nella zona
+  // wearebutik.com, che sta nello stesso account Cloudflare.
+  "routes": [{ "pattern": "beta.wearebutik.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
 }

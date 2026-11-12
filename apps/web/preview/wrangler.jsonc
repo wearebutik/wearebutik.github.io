@@ -1,0 +1,21 @@
+// L'anteprima delle bozze su Cloudflare Workers (static assets, ADR-0004): i
+// file di `dist-preview/client` (la pagina che registra il Service Worker, il
+// worker e il sito impacchettato per il browser). Il login a Sanity e le bozze
+// girano tutti nel Service Worker, nel browser di chi scrive: qui non c'è
+// codice server. Pubblicata da .github/workflows/preview.yml su
+// preview.wearebutik.com.
+{
+  "name": "butik-anteprima",
+  "compatibility_date": "2026-04-10",
+  "assets": {
+    "directory": "../dist-preview/client",
+    // Ogni pagina senza file (`/servizi/…`, `/_login`, `/_callback`…) riceve
+    // index.html, che registra il worker: è lui a disegnarla. I file veri
+    // (`/_astro/`, `/sw.js`) restano file. Le intestazioni (noindex, cache)
+    // stanno in `_headers`, scritto da preview/build.ts.
+    "not_found_handling": "single-page-application"
+  },
+  "routes": [{ "pattern": "preview.wearebutik.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
+}
