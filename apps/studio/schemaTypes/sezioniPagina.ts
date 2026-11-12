@@ -10,6 +10,7 @@
 import { defineArrayMember, defineField, defineType, type ArrayRule } from 'sanity';
 import { urlSicuro } from './testo';
 import { EMAIL } from '@butik/site-config/links';
+import { notaSezione, type Fonte } from '../notaSezione';
 
 const str = (name: string, title: string, description?: string) =>
   defineField({ name, title, type: 'string', description, validation: (r) => r.required() });
@@ -35,18 +36,25 @@ const metriche = (name: string, title: string, description?: string) =>
     ],
   });
 
-// Un oggetto Sanity vuole almeno un campo: i blocchi che mostrano contenuti
-// presi altrove ne hanno uno nascosto, mai letto dal sito.
-const senzaCampi = defineField({ name: 'segnaposto', type: 'boolean', hidden: true });
-
-const daAltrove = (name: string, title: string, fonte: string) =>
+// I blocchi che mostrano contenuti presi altrove non hanno testi propri: il
+// loro unico campo è una nota che dice da dove arrivano i contenuti, con il
+// link al documento da modificare. Il campo non salva niente e il sito non lo
+// legge (un oggetto Sanity vuole almeno un campo).
+const daAltrove = (name: string, title: string, sottotitolo: string, fonte: Fonte) =>
   defineType({
     name,
     title,
     type: 'object',
-    description: `I contenuti arrivano da ${fonte}.`,
-    fields: [senzaCampi],
-    preview: { prepare: () => ({ title, subtitle: `Da ${fonte}` }) },
+    fields: [
+      defineField({
+        name: 'segnaposto',
+        title: 'Da dove arrivano i contenuti',
+        type: 'boolean',
+        readOnly: true,
+        components: { field: notaSezione(fonte) },
+      }),
+    ],
+    preview: { prepare: () => ({ title, subtitle: sottotitolo }) },
   });
 
 export const sezioneHero = defineType({
@@ -73,7 +81,10 @@ export const sezioneHero = defineType({
   preview: { select: { subtitle: 'title' }, prepare: ({ subtitle }) => ({ title: 'Hero', subtitle }) },
 });
 
-export const sezioneLoghi = daAltrove('sezioneLoghi', 'Loghi dei partner', 'la pagina Partner');
+export const sezioneLoghi = daAltrove('sezioneLoghi', 'Loghi dei partner', 'Dalla pagina Partner', {
+  testo: 'I loghi e il loro ordine si modificano nella pagina Partner: lo stesso elenco compare qui e su /partners. Questo blocco decide solo dove mostrarli.',
+  documento: { id: 'pagina-partners', type: 'paginaPartners', etichetta: 'Apri la pagina Partner' },
+});
 
 export const sezioneNumeri = defineType({
   name: 'sezioneNumeri',
@@ -87,13 +98,15 @@ export const sezioneNumeri = defineType({
   preview: { prepare: () => ({ title: 'Numeri' }) },
 });
 
-export const sezioneMetodo = daAltrove('sezioneMetodo', 'Metodo', 'la pagina Servizi (gruppo Metodo)');
+export const sezioneMetodo = daAltrove('sezioneMetodo', 'Metodo', 'Dalla pagina Servizi', {
+  testo: 'Intestazione, titolo e passi del metodo si modificano nella pagina Servizi, scheda "Metodo (anche in home)". Questo blocco decide solo dove mostrarli.',
+  documento: { id: 'pagina-servizi', type: 'paginaServizi', etichetta: 'Apri la pagina Servizi' },
+});
 
-export const sezioneTestimonianze = daAltrove(
-  'sezioneTestimonianze',
-  'Testimonianze',
-  'il documento Testimonianze; senza testimonianze la sezione non compare',
-);
+export const sezioneTestimonianze = daAltrove('sezioneTestimonianze', 'Testimonianze', 'Dal documento Testimonianze', {
+  testo: 'Intestazione, titolo e testimonianze si modificano nel documento Testimonianze. Senza testimonianze la sezione non compare. Questo blocco decide solo dove mostrarle.',
+  documento: { id: 'pagina-testimonials', type: 'paginaTestimonials', etichetta: 'Apri le Testimonianze' },
+});
 
 export const sezioneProgetti = defineType({
   name: 'sezioneProgetti',
@@ -272,7 +285,9 @@ export const sezioneCitazione = defineType({
   preview: { select: { subtitle: 'author' }, prepare: ({ subtitle }) => ({ title: 'Citazione', subtitle }) },
 });
 
-export const sezioneElencoServizi = daAltrove('sezioneElencoServizi', 'Elenco dei servizi', "l'elenco Servizi");
+export const sezioneElencoServizi = daAltrove('sezioneElencoServizi', 'Elenco dei servizi', "Dall'elenco Servizi", {
+  testo: "Mostra tutti i servizi pubblicati, nell'ordine dell'elenco Servizi (si riordinano trascinandoli). I testi si modificano in ciascun servizio, gruppo Card e Hero.",
+});
 
 export const sezioneElencoProgetti = defineType({
   name: 'sezioneElencoProgetti',
