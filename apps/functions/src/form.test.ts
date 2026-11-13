@@ -11,7 +11,7 @@ function ambiente() {
     EMAIL: { send: vi.fn(async (m: Messaggio) => (inviati.push(m), { messageId: 'x' })) },
     TURNSTILE_SECRET: 'segreto',
     DESTINATARIO: 'info@wearebutik.com',
-    MITTENTE: 'sito@form.wearebutik.com',
+    MITTENTE: 'form@wearebutik.it',
     ORIGINI: `${ORIGINE},https://wearebutik.com`,
   };
   return { env, inviati };
@@ -47,7 +47,7 @@ describe('un messaggio valido', () => {
     expect(inviati).toHaveLength(1);
     const m = inviati[0];
     expect(m.to).toBe('info@wearebutik.com');
-    expect(m.from).toEqual({ email: 'sito@form.wearebutik.com', name: 'Sito butik' });
+    expect(m.from).toEqual({ email: 'form@wearebutik.it', name: 'Sito butik' });
     expect(m.replyTo).toEqual({ email: 'ada@example.com', name: 'Ada Rossi' });
     expect(m.subject).toBe('[form-sito] Messaggio da Ada Rossi');
     expect(m.text).toContain('Comune di Prova');

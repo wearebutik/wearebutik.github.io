@@ -36,9 +36,10 @@ endpoints). The repo already has a trial `wrangler.jsonc`.
 
 In use: the **contact form** (`apps/functions`, `butik-form` on
 form.wearebutik.com). It checks Cloudflare Turnstile and forwards the message
-to info@wearebutik.com through Email Routing on the `form.wearebutik.com`
-subdomain (sending to a verified address is free on every plan; the domain's
-own mail stays on Google). It stores nothing. Deploy:
+to info@wearebutik.com through Email Routing on **wearebutik.it**, sender
+`form@wearebutik.it` (sending to a verified address is free on every plan).
+Email Routing puts its MX records on the zone apex, so it cannot run on
+wearebutik.com, whose mail is on Google. It stores nothing. Deploy:
 `.github/workflows/deploy-functions.yml`.
 
 ### 3. Supabase (edge functions + Postgres/Storage/Auth)

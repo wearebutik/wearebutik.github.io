@@ -3,9 +3,11 @@
 // controlla Turnstile e inoltra il messaggio a info@wearebutik.com.
 // Pubblicato da .github/workflows/deploy-functions.yml.
 //
-// La mail parte da un indirizzo del sottodominio form.wearebutik.com, su cui
-// è attivo Email Routing: la posta di wearebutik.com resta su Google. L'invio
-// verso un indirizzo verificato in Email Routing è gratuito su ogni piano.
+// La mail parte da form@wearebutik.it: Email Routing è attivo su
+// wearebutik.it, che non riceve altra posta. Su wearebutik.com non si può,
+// perché Email Routing mette i suoi record MX sulla radice al posto di quelli
+// di Google. L'invio verso un indirizzo verificato in Email Routing è gratuito
+// su ogni piano.
 // Il segreto TURNSTILE_SECRET non sta qui: lo imposta il workflow.
 {
   "name": "butik-form",
@@ -18,7 +20,7 @@
   "send_email": [{ "name": "EMAIL", "destination_address": "info@wearebutik.com" }],
   "vars": {
     "DESTINATARIO": "info@wearebutik.com",
-    "MITTENTE": "sito@form.wearebutik.com",
+    "MITTENTE": "form@wearebutik.it",
     // Le pagine da cui il modulo può arrivare, separate da virgole.
     "ORIGINI": "https://beta.wearebutik.com,https://wearebutik.com,https://www.wearebutik.com"
   }
