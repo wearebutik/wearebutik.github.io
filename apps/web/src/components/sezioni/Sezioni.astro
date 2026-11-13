@@ -4,7 +4,9 @@
 // diventa il suo componente; i
 // blocchi che mostrano contenuti di altri documenti (loghi, metodo,
 // testimonianze, progetti in evidenza) li leggono qui, solo se la pagina li usa.
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { linkValido } from '#lib/links';
+import { progettiVisibili } from '#lib/pubblicazione';
 import type { Sezione } from '../../content.config';
 import Hero from '#components/home/Hero.astro';
 import PartnerLogos from '#components/home/PartnerLogos.astro';
@@ -65,10 +67,22 @@ async function testimonianzeCondivise() {
 const testimonianze = usa('sezioneTestimonianze') ? await testimonianzeCondivise() : undefined;
 
 // Progetti pubblicati per slug: i blocchi "Progetti in evidenza" li scelgono
-// per riferimento, nel loro ordine. Uno in bozza o non pubblicato non si mostra.
+// per riferimento, nel loro ordine. Uno non pubblicato non si mostra
+// (lib/pubblicazione.ts).
 const progettiPubblicati = usa('sezioneProgetti')
-  ? new Map((await getCollection('progetti', (e) => !e.data.draft)).map((e) => [e.id, e]))
+  ? new Map((await progettiVisibili()).map((e) => [e.id, e]))
   : new Map();
+
+// Card dell'hero: una card che punta a una pagina che non esiste (per esempio
+// la scheda di un servizio non pubblicato) resta, senza link.
+const hrefCard = async (href: string) => ((await linkValido(href)) ? href : undefined);
+const cardHero = async (s: Extract<Sezione, { _type: 'sezioneHero' }>) =>
+  Promise.all(s.card.map(async (c) => ({ icona: c.icona, title: c.title, href: await hrefCard(c.href), description: c.desc })));
+const cardPerHero = new Map(
+  await Promise.all(
+    sezioni.flatMap((s) => (s._type === 'sezioneHero' ? [cardHero(s).then((card) => [s, card] as const)] : [])),
+  ),
+);
 const inEvidenza = (slug: string[]) => slug.flatMap((id) => progettiPubblicati.get(id) ?? []);
 ---
 
@@ -84,7 +98,7 @@ const inEvidenza = (slug: string[]) => slug.flatMap((id) => progettiPubblicati.g
           ctaHref={s.ctaHref}
           exploreLabel={s.exploreLabel}
           exploreHref={s.exploreHref}
-          servizi={s.card.map((c) => ({ icona: c.icona, title: c.title, href: c.href, description: c.desc }))}
+          servizi={cardPerHero.get(s) ?? []}
         />
       );
     case 'sezioneLoghi':

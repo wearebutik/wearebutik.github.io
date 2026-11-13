@@ -2,6 +2,7 @@
 // (apps/web/src/content.config.ts): i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { sezioniServizio } from './sezioniServizio';
+import { campoPubblicata, gruppoPubblicazione } from './pubblicazione';
 
 export const servizio = defineType({
   name: 'servizio',
@@ -12,6 +13,7 @@ export const servizio = defineType({
     { name: 'hero', title: 'Hero' },
     { name: 'corpo', title: 'Contenuto' },
     { name: 'seo', title: 'SEO e condivisione' },
+    gruppoPubblicazione,
   ],
   fields: [
     // ── Scheda ──────────────────────────────────────────────────────────────
@@ -50,15 +52,10 @@ export const servizio = defineType({
       },
       initialValue: 'banner',
     }),
-    defineField({
-      name: 'paginaRaggiungibile',
-      title: 'Pagina del servizio raggiungibile',
-      description: 'Spento: la pagina del servizio resta online ma il sito non la linka e i motori di ricerca non la indicizzano; le card portano al servizio nella pagina Servizi. Acceso: le card aprono la pagina del servizio.',
-      type: 'boolean',
-      group: 'scheda',
-      initialValue: false,
-    }),
-    defineField({ name: 'draft', title: 'Bozza (non pubblicare)', type: 'boolean', group: 'scheda', initialValue: false }),
+    campoPubblicata(
+      'Riguarda solo la pagina del servizio (/servizi/<slug>). Spento: la pagina non esiste e le card del servizio, che si vedono sempre, non portano da nessuna parte. Acceso: le card aprono la pagina del servizio.',
+      false,
+    ),
 
     // ── Hero (varianti A/B/C) ───────────────────────────────────────────────
     defineField({

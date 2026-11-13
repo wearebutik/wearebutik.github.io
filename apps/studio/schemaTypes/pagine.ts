@@ -3,6 +3,7 @@
 // structure.ts). Ogni tipo rispecchia il ramo corrispondente dello schema Zod
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
+import { campoPubblicata, gruppoPubblicazione } from './pubblicazione';
 import { EMAIL } from '@butik/site-config/links';
 import { hrefField, urlSicuro } from './testo';
 import { sezioniAmmesse, validaSezioni } from './sezioniPagina';
@@ -186,21 +187,17 @@ export const paginaServizi = pagina(
 
 export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sezioni()]);
 
-// `nascosta`: il sito pubblico non genera la pagina (l'indirizzo non esiste) e
-// i link che ci portano spariscono; l'anteprima delle bozze la mostra comunque.
-const nascosta = (percorso: string) =>
-  defineField({
-    name: 'nascosta',
-    title: 'Pagina nascosta',
-    description: `Se attivo, ${percorso} non esiste sul sito pubblico e i link che ci portano spariscono. L’anteprima la mostra comunque.`,
-    type: 'boolean',
-    initialValue: false,
-  });
+// «Pubblicata» spento: il sito pubblico non genera la pagina (l'indirizzo non
+// esiste) e i link che ci portano spariscono (schemaTypes/pubblicazione.ts).
+const pubblicata = (percorso: string) =>
+  campoPubblicata(`Spento: ${percorso} non esiste sul sito pubblico e i link che ci portano spariscono.`, true);
 
-export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [
-  nascosta('/sostienici'),
-  sezioni(),
-]);
+export const paginaSostienici = pagina(
+  'paginaSostienici',
+  'Sostienici',
+  [pubblicata('/sostienici'), sezioni()],
+  [gruppoPubblicazione],
+);
 
 export const paginaPrivacy = pagina('paginaPrivacy', 'Privacy e cookie', [
   str('pageTitle', 'Titolo'),
@@ -218,12 +215,17 @@ export const paginaPrivacy = pagina('paginaPrivacy', 'Privacy e cookie', [
 
 // Trasparenza: le informazioni che un'impresa sociale che riceve fondi
 // pubblici pubblica per legge (L. 112/2013 art. 9; L. 124/2017 art. 1 c. 125).
-export const paginaTrasparenza = pagina('paginaTrasparenza', 'Trasparenza', [
-  nascosta('/trasparenza'),
-  str('pageTitle', 'Titolo'),
-  str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
-  defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
-]);
+export const paginaTrasparenza = pagina(
+  'paginaTrasparenza',
+  'Trasparenza',
+  [
+    pubblicata('/trasparenza'),
+    str('pageTitle', 'Titolo'),
+    str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
+    defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
+  ],
+  [gruppoPubblicazione],
+);
 
 export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
   str('pageTitle', 'Titolo'),

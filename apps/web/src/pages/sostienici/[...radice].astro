@@ -3,16 +3,17 @@
 // (ADR-0004, *Pages as sections*).
 //
 // Rotta con un parametro vuoto solo per poter non generare la pagina: con
-// «Pagina nascosta» attivo nello Studio il sito pubblico non ha /sostienici/.
+// «Pubblicata» spento nello Studio il sito pubblico non ha /sostienici/
+// (lib/pubblicazione.ts).
 // L'anteprima delle bozze (build server, BUTIK_ANTEPRIMA) la mostra comunque;
 // lì getStaticPaths non vale, e ogni altro indirizzo sotto /sostienici/ è 404.
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import Sezioni from '#components/sezioni/Sezioni.astro';
-import { paginaNascosta } from '#lib/pagineNascoste';
+import { paginaVisibile } from '#lib/pubblicazione';
 
 export async function getStaticPaths() {
-  return (await paginaNascosta('sostienici')) ? [] : [{ params: { radice: undefined } }];
+  return (await paginaVisibile('sostienici')) ? [{ params: { radice: undefined } }] : [];
 }
 
 if (Astro.params.radice) return new Response(null, { status: 404 });
@@ -23,6 +24,6 @@ if (!entry || entry.data.type !== 'sostienici') {
 const c = entry.data;
 ---
 
-<BaseLayout title={c.metaTitle} description={c.metaDescription}>
+<BaseLayout title={c.metaTitle} description={c.metaDescription} nonPubblicata={!c.pubblicata}>
   <Sezioni sezioni={c.sezioni} />
 </BaseLayout>

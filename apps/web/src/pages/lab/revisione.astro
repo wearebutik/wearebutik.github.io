@@ -11,6 +11,7 @@ import Eyebrow from '@butik/ui/Eyebrow';
 import { sanityImageUrl, type SanityImage } from '#lib/sanity';
 import { imageSize } from '#lib/media';
 import { perOrdine } from '#lib/ordine';
+import { progettiVisibili } from '#lib/pubblicazione';
 
 interface Foto {
   src: string;
@@ -71,8 +72,8 @@ if (chiSiamo?.data.type === 'chi-siamo') {
   });
 }
 
-const servizi = (await getCollection('servizi', (e) => !e.data.draft)).sort((a, b) => a.data.title.localeCompare(b.data.title, 'it'));
-const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort(perOrdine);
+const servizi = (await getCollection('servizi')).sort((a, b) => a.data.title.localeCompare(b.data.title, 'it'));
+const progetti = (await progettiVisibili()).sort(perOrdine);
 const schede = (
   entries: typeof servizi | typeof progetti,
   base: string,

@@ -5,7 +5,7 @@
 // Tenendo qui l'unica sorgente, non serve cablare nulla sulle singole pagine:
 // progetti e servizi arrivano dalle collection, le pagine statiche dalla
 // mappa qui sotto. Una pagina non elencata ricade sul logo (nessun link rotto).
-import { getCollection } from 'astro:content';
+import { progettiVisibili, serviziConScheda } from '#lib/pubblicazione';
 
 export interface OgCard {
   kind: string;        // eyebrow: tipo/categoria mostrato in alto
@@ -56,7 +56,7 @@ export async function getAllOgCards(): Promise<Map<string, OgCard>> {
   const map = new Map<string, OgCard>();
   for (const [route, card] of Object.entries(staticCards)) map.set(route, card);
 
-  const progetti = await getCollection('progetti', (e) => !e.data.draft);
+  const progetti = await progettiVisibili();
   for (const e of progetti) {
     const meta = [e.data.client, e.data.year ? String(e.data.year) : null].filter(
       (x): x is string => Boolean(x),
@@ -72,7 +72,7 @@ export async function getAllOgCards(): Promise<Map<string, OgCard>> {
     });
   }
 
-  const servizi = await getCollection('servizi', (e) => !e.data.draft);
+  const servizi = await serviziConScheda();
   for (const e of servizi) {
     map.set(`/servizi/${e.id}`, {
       kind: 'Servizio',

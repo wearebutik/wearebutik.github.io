@@ -1,0 +1,22 @@
+---
+// Solo nell'anteprima delle bozze (BaseLayout, prop `nonPubblicata`): la
+// fascia in cima alle pagine e alle schede con «Pubblicata» spento nello
+// Studio, che il sito pubblico non genera (lib/pubblicazione.ts). È un testo
+// dello strumento di anteprima, non contenuto editoriale: resta qui.
+---
+
+<p class="avviso-non-pubblicata" role="note">
+  <strong>Questa pagina non è pubblicata:</strong> sul sito pubblico non esiste.
+</p>
+
+<style>
+  .avviso-non-pubblicata {
+    margin: 0;
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-accent-fill);
+    color: var(--color-fg-invert);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-sm);
+    text-align: center;
+  }
+</style>

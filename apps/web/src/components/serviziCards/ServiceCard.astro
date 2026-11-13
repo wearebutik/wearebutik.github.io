@@ -9,6 +9,8 @@
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004):
 // in home dalla lista Card del blocco Hero (Sanity). L'icona si sceglie nello
 // Studio fra quelle di @butik/site-config/icone; il disegno vive qui.
+// Senza `href` (link che non porta da nessuna parte, per esempio a una scheda
+// non pubblicata: lib/links.ts) la card resta, senza freccia né hover.
 import ArrowCircle from '@butik/ui/ArrowCircle';
 import type { IconaCard } from '@butik/site-config/icone';
 
@@ -17,13 +19,14 @@ export interface ServiceCardData {
   icona?: IconaCard;
   title: string;
   desc: string;
-  href: string;
+  href?: string;
 }
 
 interface Props {
   data: ServiceCardData;
 }
 const { data } = Astro.props;
+const Tag = data.href ? 'a' : 'div';
 
 // Icone monolinea. Geometriche, niente clip-art.
 const icons: Record<IconaCard, string> = {
@@ -40,7 +43,7 @@ const icons: Record<IconaCard, string> = {
 };
 ---
 
-<a href={data.href} class="card group" data-arrow-circle-host>
+<Tag href={data.href} class="card group" data-arrow-circle-host={data.href ? '' : undefined}>
   {data.icona && (
     <svg
       class="card__icon"
@@ -59,10 +62,10 @@ const icons: Record<IconaCard, string> = {
   <h3 class="card__title">{data.title}</h3>
   <p class="card__desc">{data.desc}</p>
 
-  <ArrowCircle tone="invert" size="md" className="card__go" />
+  {data.href && <ArrowCircle tone="invert" size="md" className="card__go" />}
   </div>
 
-</a>
+</Tag>
 
 <style>
   /* Vetro: fondo scuro semitrasparente + sfocatura della foto sottostante.
@@ -85,8 +88,8 @@ const icons: Record<IconaCard, string> = {
     text-decoration: none;
     transition: transform var(--duration-fast) var(--ease-standard), background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard);
   }
-  .card:hover,
-  .card:focus-visible {
+  a.card:hover,
+  a.card:focus-visible {
     transform: translateY(-3px);
     background-color: color-mix(in srgb, var(--color-bg-invert) 55%, transparent);
     border-color: var(--color-fg-invert);
