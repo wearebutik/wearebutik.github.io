@@ -1,7 +1,8 @@
 // Elementi del sito: i contenuti che non sono pagine ma compaiono in tutte, o
 // in più d'una. Header, footer, banner dei cookie, testimonianze (un blocco
-// che le pagine mostrano con la sezione «Testimonianze») e la pagina non
-// trovata (404), che risponde a ogni indirizzo che non esiste. Come le pagine sono
+// che le pagine mostrano con la sezione «Testimonianze»), la pagina non
+// trovata (404), che risponde a ogni indirizzo che non esiste, e la
+// descrizione per gli agenti AI (/llms.txt). Come le pagine sono
 // documenti fissi, uno per tipo (_id in ELEMENTI), senza "crea" né "elimina"
 // (structure.ts, sanity.config.ts). Ogni tipo rispecchia il ramo
 // corrispondente dello schema Zod `elementi` in apps/web/src/content.config.ts.
@@ -218,6 +219,34 @@ export const paginaNonTrovata = defineType({
   preview: { prepare: () => ({ title: 'Pagina non trovata (404)' }) },
 });
 
+// Descrizione per gli agenti AI: l'apertura di /llms.txt, il file che
+// presenta butik agli assistenti (ChatGPT, Claude, Perplexity…). Il resto del
+// file (servizi, progetti, pagine, contatti) il sito lo genera dai contenuti
+// (apps/web/src/lib/seo/llms.ts, PDR-0007).
+export const agentiAi = defineType({
+  name: 'agentiAi',
+  title: 'Descrizione per gli agenti AI',
+  type: 'document',
+  fields: [
+    defineField({
+      name: 'descrizione',
+      title: 'Chi è butik, in breve',
+      description: "Due o tre frasi che un assistente AI può citare: cosa fa butik, per chi, dove. Apre il file /llms.txt.",
+      type: 'text',
+      rows: 3,
+      validation: (r) => r.required(),
+    }),
+    defineField({
+      name: 'dettagli',
+      title: 'Da sapere',
+      description: 'Facoltativo: un paragrafo con quello che serve per raccontare bene butik (storia, approccio, numeri).',
+      type: 'text',
+      rows: 6,
+    }),
+  ],
+  preview: { prepare: () => ({ title: 'Descrizione per gli agenti AI' }) },
+});
+
 // tipo Sanity → _id del documento, che è anche l'id dell'entry `elementi` sul sito.
 export const ELEMENTI = {
   header: 'header',
@@ -225,6 +254,7 @@ export const ELEMENTI = {
   bannerCookie: 'banner-cookie',
   testimonials: 'testimonials',
   paginaNonTrovata: 'pagina-non-trovata',
+  agentiAi: 'agenti-ai',
 } as const;
 
-export const elementiTypes = [header, footer, bannerCookie, testimonials, paginaNonTrovata];
+export const elementiTypes = [header, footer, bannerCookie, testimonials, paginaNonTrovata, agentiAi];

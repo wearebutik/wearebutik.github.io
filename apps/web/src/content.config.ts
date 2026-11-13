@@ -453,6 +453,13 @@ const testimonials = z.object({
 
 // Pagina non trovata (pages/404.astro): testi e tracce, cioè i link per
 // tornare nel sito; quelli che non portano da nessuna parte non si mostrano.
+// Descrizione per gli agenti AI: l'apertura di /llms.txt (lib/seo/llms.ts).
+const agentiAi = z.object({
+  type: z.literal('agenti-ai'),
+  descrizione: z.string(),
+  dettagli: z.string().optional(),
+});
+
 const paginaNonTrovata = z.object({
   type: z.literal('pagina-non-trovata'),
   metaTitle: z.string(),
@@ -486,7 +493,7 @@ const footer = z.object({
 
 const elementiCollection = defineCollection({
   loader: elementiLoader(),
-  schema: z.discriminatedUnion('type', [header, footer, bannerCookie, testimonials, paginaNonTrovata]),
+  schema: z.discriminatedUnion('type', [header, footer, bannerCookie, testimonials, paginaNonTrovata, agentiAi]),
 });
 
 const pagineCollection = defineCollection({

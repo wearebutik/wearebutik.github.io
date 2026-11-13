@@ -245,6 +245,7 @@ const ELEMENTI_TYPE: Record<string, string> = {
   bannerCookie: 'banner-cookie',
   testimonials: 'testimonials',
   paginaNonTrovata: 'pagina-non-trovata',
+  agentiAi: 'agenti-ai',
 };
 
 const ELEMENTI_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(ELEMENTI_TYPE))} && _id in ${JSON.stringify(Object.values(ELEMENTI_TYPE))}]{

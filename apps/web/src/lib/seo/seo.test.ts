@@ -7,14 +7,32 @@ import { briciole, organizzazione, perScript, sitoWeb } from './datiStrutturati'
 const site = new URL('https://wearebutik.com');
 
 describe('testoRobots', () => {
-  it('apre tutto e indica la sitemap con l’indirizzo assoluto', () => {
-    expect(testoRobots(site)).toBe('User-agent: *\nAllow: /\n\nSitemap: https://wearebutik.com/sitemap-index.xml\n');
+  it('apre tutto ai motori e agli assistenti che cercano e citano, e indica la sitemap', () => {
+    const t = testoRobots(site);
+    expect(t.startsWith('User-agent: *\nAllow: /\n')).toBe(true);
+    expect(t.endsWith('\nSitemap: https://wearebutik.com/sitemap-index.xml\n')).toBe(true);
+    for (const bot of ['OAI-SearchBot', 'ChatGPT-User', 'Claude-SearchBot', 'Claude-User', 'PerplexityBot']) {
+      expect(gruppo(t, bot)).toBe(undefined); // nessun gruppo proprio: vale «*», tutto aperto
+    }
+  });
+
+  it('chiude il sito ai crawler che raccolgono testi per addestrare i modelli', () => {
+    const t = testoRobots(site);
+    for (const bot of ['GPTBot', 'ClaudeBot', 'Google-Extended', 'CCBot', 'Applebot-Extended', 'Meta-ExternalAgent']) {
+      expect(gruppo(t, bot)).toBe('Disallow: /');
+    }
   });
 
   it('senza site non indica la sitemap, che non viene generata', () => {
-    expect(testoRobots(undefined)).toBe('User-agent: *\nAllow: /\n');
+    expect(testoRobots(undefined)).not.toMatch(/Sitemap:/);
   });
 });
+
+/** La regola del gruppo di un crawler nel robots.txt, se ne ha uno suo. */
+function gruppo(robots: string, bot: string): string | undefined {
+  const blocco = robots.split('\n\n').find((b) => b.split('\n').includes(`User-agent: ${bot}`));
+  return blocco?.split('\n').find((r) => !r.startsWith('User-agent:') && !r.startsWith('#'));
+}
 
 const footer = {
   ragioneSociale: 'Butik s.r.l. Impresa Sociale',
