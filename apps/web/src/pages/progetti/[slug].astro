@@ -5,6 +5,7 @@ import { getImage } from 'astro:assets';
 import { PortableText } from 'astro-portabletext';
 import ContentLayout from '../../layouts/ContentLayout.astro';
 import { portableTextComponents } from '#components/portabletext/components';
+import DatiStrutturati from '#components/seo/DatiStrutturati.astro';
 
 export async function getStaticPaths() {
   // Solo i pubblicati (lib/pubblicazione.ts); l'anteprima li mostra tutti.
@@ -48,6 +49,10 @@ const ogImage = entry.data.ogImage
   year={entry.data.year}
   category={entry.data.category}
 >
+  <DatiStrutturati
+    slot="head"
+    briciole={[{ perMenu: '/progetti' }, { nome: entry.data.title, percorso: `/progetti/${entry.id}/` }]}
+  />
   <PortableText value={entry.data.body} components={portableTextComponents} />
 </ContentLayout>
 

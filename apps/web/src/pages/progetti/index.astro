@@ -4,6 +4,7 @@
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import Sezioni from '#components/sezioni/Sezioni.astro';
+import DatiStrutturati from '#components/seo/DatiStrutturati.astro';
 
 const entry = await getEntry('pagine', 'progetti');
 if (!entry || entry.data.type !== 'progetti-index') {
@@ -13,5 +14,6 @@ const c = entry.data;
 ---
 
 <BaseLayout title={c.metaTitle} description={c.metaDescription}>
+  <DatiStrutturati slot="head" briciole={[{ perMenu: '/progetti' }]} />
   <Sezioni sezioni={c.sezioni} />
 </BaseLayout>

@@ -31,8 +31,22 @@ Cloudflare account, the one that holds the `wearebutik.com` zone.
 with `CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (variable).
 The Worker runs no code of ours: assets only. The beta stays out of search
 engines (`X-Robots-Tag: noindex` and a `robots.txt` that disallows everything,
-written by the workflow after the build) until the site moves to
-`wearebutik.com` (#96). `/_astro/*` is cached as `immutable`.
+written by the workflow after the build over the one the site generates)
+until the site moves to `wearebutik.com` (#96). `/_astro/*` is cached as
+`immutable`.
+
+<a id="seo"></a>**Search engines.** `SITE` gives the build its absolute
+addresses (canonical, Open Graph, sitemap, structured data):
+`https://beta.wearebutik.com` today, `https://wearebutik.com` after #96.
+With `SITE` set, the published build writes a sitemap (`@astrojs/sitemap`:
+`/sitemap-index.xml`, without `lab/` and `og/`; unpublished pages are not
+generated, so they are not listed) and `pages/robots.txt.ts` serves a
+`robots.txt` that allows everything and points to it; noindex pages are not
+blocked, so crawlers can read their noindex. The draft preview has neither.
+Structured data (JSON-LD, `lib/seo/datiStrutturati.ts` through
+`components/seo/DatiStrutturati.astro` in the layout's `head` slot):
+`Organization` and `WebSite` on the home, from the footer element on Sanity,
+and `BreadcrumbList` on the project list and the project pages.
 
 Dynamic needs are **not** solved by introducing global SSR. They are solved,
 case by case, with a **serverless function chosen for the specific case**:
