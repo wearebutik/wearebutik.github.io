@@ -19,9 +19,8 @@ when the first one lands, not scaffolded empty
 
 ### 1. Managed service (no backend of ours)
 
-For standard cases well served by SaaS. Example already in use: **Web3Forms** for
-the contact form (no server, the key is public by design). Prefer this road when a
-mature service covers the need.
+For standard cases well served by SaaS. Prefer this road when a mature service
+covers the need and its data handling is acceptable for the privacy policy.
 
 - ✅ Zero infra to maintain, fast.
 - ❌ Light vendor lock-in, less control.
@@ -31,8 +30,16 @@ mature service covers the need.
 For lightweight custom logic near the edge (proxying, transforms, small
 endpoints). The repo already has a trial `wrangler.jsonc`.
 
-- ✅ Fast edge, integrates well if the site later moves to Cloudflare Pages.
+- ✅ Fast edge, same account as the site; data stays with a provider already in
+  the privacy policy.
 - ❌ One more runtime to know; state/persistence needs KV/D1/R2.
+
+In use: the **contact form** (`apps/functions`, `butik-modulo` on
+modulo.wearebutik.com). It checks Cloudflare Turnstile and forwards the message
+to info@wearebutik.com through Email Routing on the `modulo.wearebutik.com`
+subdomain (sending to a verified address is free on every plan; the domain's
+own mail stays on Google). It stores nothing. Deploy:
+`.github/workflows/deploy-functions.yml`.
 
 ### 3. Supabase (edge functions + Postgres/Storage/Auth)
 
@@ -52,6 +59,6 @@ Cross-cutting rules:
 - The function is **isolated and replaceable**: the client calls it behind a clear
   interface, so switching provider is a local change.
 - Secrets don't end up in the client bundle (only public-by-design keys, like
-  Web3Forms, may).
+  the Turnstile site key, may).
 - If a choice repeats across features and becomes "the way butik does X", stop
   deciding it case by case and write an **ADR**.
