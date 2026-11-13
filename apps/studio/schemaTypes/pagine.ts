@@ -33,7 +33,23 @@ const lista = { validation: (r: any) => r.required().min(1) };
 const rich = (name: string, title: string, group?: string) =>
   defineField({ name, title, type: 'testoFormattato', group });
 
-const seo = [str('metaTitle', 'Meta title', 'seo'), txt('metaDescription', 'Meta description', 'seo')];
+// La card che compare quando la pagina si condivide (LinkedIn, WhatsApp…):
+// un'immagine 1200×630 generata al build con questi testi. Senza tutti e tre
+// la pagina si condivide con il logo.
+const cardCondivisione = defineField({
+  name: 'ogCard',
+  title: 'Card di condivisione',
+  type: 'object',
+  group: 'seo',
+  description: "L'immagine che compare quando qualcuno condivide la pagina: servono etichetta, titolo e invito, il sottotitolo è la meta description. Se ne manca uno si condivide con il logo.",
+  options: { collapsible: true, collapsed: false },
+  fields: [
+    defineField({ name: 'eyebrow', title: 'Etichetta', type: 'string', description: 'In alto, piccola: per esempio «Servizi».' }),
+    defineField({ name: 'title', title: 'Titolo', type: 'string' }),
+    defineField({ name: 'cta', title: 'Invito', type: 'string', description: 'Il pulsante in basso: per esempio «Scopri i servizi».' }),
+  ],
+});
+const seo = [str('metaTitle', 'Meta title', 'seo'), txt('metaDescription', 'Meta description', 'seo'), cardCondivisione];
 const seoGroup = { name: 'seo', title: 'SEO' };
 
 const pagina = (name: string, title: string, fields: FieldDefinition[], groups: { name: string; title: string; default?: boolean }[] = []) =>

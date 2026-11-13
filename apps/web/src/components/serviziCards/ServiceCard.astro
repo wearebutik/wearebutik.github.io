@@ -47,7 +47,7 @@ const Tag = data.href ? 'a' : 'div';
   )}
 
   <div class="card__body">
-  <h3 class="card__title">{data.title}</h3>
+  <h2 class="card__title">{data.title}</h2>
   <p class="card__desc">{data.desc}</p>
 
   {data.href && <ArrowCircle tone="invert" size="md" className="card__go" />}
@@ -96,8 +96,8 @@ const Tag = data.href ? 'a' : 'div';
     gap: var(--space-2);
   }
 
-  /* Titolo: neutralizza lo stile globale di h3 (rosso/uppercase/tracking).
-     Il nome del servizio è l'elemento principale della card. */
+  /* Titolo H2: le card stanno subito sotto l'H1 della home. Il nome del
+     servizio è l'elemento principale della card. */
   .card__title {
     font-family: var(--font-heading);
     font-size: var(--font-size-xl);
