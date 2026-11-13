@@ -259,10 +259,17 @@ const sezioneSchema = z.discriminatedUnion('_type', [
 ]);
 export type Sezione = z.infer<typeof sezioneSchema>;
 
+// La card di condivisione di una pagina (tab SEO dello Studio): senza titolo
+// la pagina si condivide con il logo (data/ogCards.ts).
+const ogCardSchema = z
+  .object({ eyebrow: z.string().optional(), title: z.string().optional(), cta: z.string().optional() })
+  .optional();
+
 const paginaHome = z.object({
   type: z.literal('home'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   sezioni: z.array(sezioneSchema),
 });
 
@@ -270,6 +277,7 @@ const paginaChiSiamo = z.object({
   type: z.literal('chi-siamo'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   sezioni: z.array(sezioneSchema),
 });
 
@@ -277,6 +285,7 @@ const paginaContatti = z.object({
   type: z.literal('contatti'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   headerEyebrow: z.string(),
   headerTitle: z.string(),
   headerIntro: z.string(),
@@ -312,6 +321,7 @@ const paginaPrivacy = z.object({
   type: z.literal('privacy'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   pageTitle: z.string(),
   updatedDate: z.string(),
   // Il riquadro «In breve» in cima: compare solo con titolo e punti.
@@ -326,6 +336,7 @@ const paginaPartners = z.object({
   type: z.literal('partners'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   eyebrow: z.string(),
   title: z.string(),
   // Partner come ARRAY di oggetti { nome, logo }; il logo è l'URL Sanity, ''
@@ -341,6 +352,7 @@ const paginaTrasparenza = z.object({
   pubblicata: z.boolean(),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   pageTitle: z.string(),
   updatedDate: z.string(),
   body: portableText,
@@ -350,6 +362,7 @@ const paginaTermini = z.object({
   type: z.literal('termini'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   pageTitle: z.string(),
   updatedDate: z.string(),
   body: portableText,
@@ -359,6 +372,7 @@ const paginaServizi = z.object({
   type: z.literal('servizi-index'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   sezioni: z.array(sezioneSchema),
   // Metodo: campi fissi, mostrati dalla sezione Metodo qui e in home. L'icona
   // per tappa resta config di design in Metodo.astro, non nello schema.
@@ -375,6 +389,7 @@ const paginaSostienici = z.object({
   pubblicata: z.boolean(),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   sezioni: z.array(sezioneSchema),
 });
 
@@ -382,6 +397,7 @@ const paginaProgetti = z.object({
   type: z.literal('progetti-index'),
   metaTitle: z.string(),
   metaDescription: z.string(),
+  ogCard: ogCardSchema,
   sezioni: z.array(sezioneSchema),
 });
 
