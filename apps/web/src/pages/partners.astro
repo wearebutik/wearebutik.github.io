@@ -1,5 +1,5 @@
 ---
-import { imageSize } from '#lib/media';
+import { imageSize, LOGHI } from '#lib/media';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import { Image } from 'astro:assets';
 import { getEntry } from 'astro:content';
@@ -36,6 +36,7 @@ const partners = c.partners;
                 {...imageSize(partner.logo, { height: 36 })}
                 alt={partner.name}
                 densities={[1, 2]}
+                {...LOGHI}
                 loading="lazy"
                 decoding="async"
                 class="partner-logo-img"
