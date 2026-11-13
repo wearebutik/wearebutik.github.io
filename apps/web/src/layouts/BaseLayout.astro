@@ -152,6 +152,8 @@ const gtmId = import.meta.env.PUBLIC_GTM_ID as string | undefined;
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={ogImageURL} />
+    {/* Dati strutturati della pagina (components/seo/DatiStrutturati.astro). */}
+    <slot name="head" />
     <ClientRouter />
   </head>
   <body class="page-body">

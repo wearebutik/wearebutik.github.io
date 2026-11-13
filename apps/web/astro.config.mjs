@@ -2,6 +2,7 @@
 import { defineConfig, passthroughImageService } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import { sanityCdnGuard } from './src/lib/sanityCdnGuard.ts';
 import { pagineGuard } from './src/lib/pagineGuard.ts';
 import { fontCritici } from './src/lib/fontCritici.ts';
@@ -14,6 +15,13 @@ import { bozze } from './src/lib/anteprima/bozze.ts';
 // da Sanity. Foto non ottimizzate (arrivano dalla CDN Sanity) e nessun
 // passaggio di fine build: è uno strumento di chi scrive, non il sito pubblicato.
 const anteprima = process.env.BUTIK_ANTEPRIMA === '1';
+
+// Sitemap (/sitemap-index.xml, linkata da robots.txt) solo nel sito
+// pubblicato e solo con `SITE`, che dà gli indirizzi assoluti: beta oggi,
+// wearebutik.com al rilascio. Le pagine lab/ (prototipi, noindex) e le card
+// OG non ci vanno; le pagine non pubblicate non vengono generate.
+const conSitemap = !anteprima && Boolean(process.env.SITE);
+const inSitemap = (/** @type {string} */ page) => !/\/(lab|og)\//.test(new URL(page).pathname);
 
 export default defineConfig({
   ...(process.env.SITE ? { site: process.env.SITE } : {}),
@@ -52,6 +60,15 @@ export default defineConfig({
   // React li rende a HTML statico a build-time (nessuna direttiva client = zero JS).
   integrations: anteprima
     ? [react(), mdx(), pagineGuard()]
-    : [react(), mdx(), sanityCdnGuard(), linkConBarra(), pagineGuard(), cssCritico(), fontCritici()],
+    : [
+        react(),
+        mdx(),
+        sanityCdnGuard(),
+        linkConBarra(),
+        pagineGuard(),
+        cssCritico(),
+        fontCritici(),
+        ...(conSitemap ? [sitemap({ filter: inSitemap })] : []),
+      ],
   vite: { define: { __BUTIK_ANTEPRIMA__: JSON.stringify(anteprima) } },
 });

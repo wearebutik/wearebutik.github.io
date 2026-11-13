@@ -49,6 +49,7 @@ const {
   ogImage={ogImage}
   nonPubblicata={nonPubblicata}
 >
+  <slot name="head" slot="head" />
   <HeroBanner title={title} subtitle={subtitle} image={heroImage} imageAlt={heroAlt} transitionName={transitionName} placeholder={heroLqip} />
 
   <!-- Metadata bar (only for projects) -->

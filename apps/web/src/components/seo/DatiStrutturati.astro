@@ -1,0 +1,53 @@
+---
+// Dati strutturati (JSON-LD) nel <head> della pagina (slot "head" del
+// BaseLayout): con `home`, chi è butik (Organization) e il sito (WebSite);
+// con `briciole`, il percorso dalla home alla pagina (BreadcrumbList). Gli
+// oggetti li costruisce lib/seo/datiStrutturati.ts dai dati del footer e
+// dell'header su Sanity.
+import { getEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import logo from '../../assets/logos/bollo-rosso.svg';
+import { soloLinkValidi } from '#lib/links';
+import { briciole as costruisciBriciole, organizzazione, perScript, sitoWeb } from '#lib/seo/datiStrutturati';
+
+interface Props {
+  /** Organization e WebSite: solo in home. */
+  home?: boolean;
+  /**
+   * Il percorso dalla home alla pagina, home esclusa: la voce di una pagina
+   * del menu prende l'etichetta del menu (`perMenu`), le altre il loro nome.
+   */
+  briciole?: ({ perMenu: string } | { nome: string; percorso: string })[];
+}
+
+const { home = false, briciole } = Astro.props;
+const NOME = 'Butik';
+const site = new URL(Astro.site ?? Astro.url.origin);
+const dati: unknown[] = [];
+
+if (home) {
+  const footer = await getEntry('elementi', 'footer');
+  if (footer?.data.type === 'footer') {
+    const f = footer.data;
+    // Il logo in PNG quadrato: i motori di ricerca non leggono l'SVG.
+    const png = await getImage({ src: logo, width: 512, height: 512, format: 'png' });
+    const social = await soloLinkValidi(f.social);
+    dati.push(organizzazione({ site, nome: NOME, footer: { ...f, social }, logo: png.src }), sitoWeb({ site, nome: NOME }));
+  }
+}
+
+if (briciole) {
+  const header = await getEntry('elementi', 'header');
+  const menu = header?.data.type === 'header' ? header.data.voci : [];
+  const senzaBarra = (p: string) => p.replace(/\/+$/, '');
+  const voci = briciole.flatMap((b) => {
+    if (!('perMenu' in b)) return [b];
+    // Una pagina che il menu non ha più esce dal percorso.
+    const voce = menu.find((v) => senzaBarra(v.href) === senzaBarra(b.perMenu));
+    return voce ? [{ nome: voce.label, percorso: `${senzaBarra(b.perMenu)}/` }] : [];
+  });
+  dati.push(costruisciBriciole(site, [{ nome: NOME, percorso: '/' }, ...voci]));
+}
+---
+
+{dati.length > 0 && <script type="application/ld+json" set:html={perScript(dati)} />}
