@@ -202,6 +202,21 @@ export const paginaSostienici = pagina(
 export const paginaPrivacy = pagina('paginaPrivacy', 'Privacy e cookie', [
   str('pageTitle', 'Titolo'),
   str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
+  // Il primo strato dell'informativa (GDPR art. 12): l'essenziale in poche
+  // righe, in un riquadro in cima alla pagina, prima del testo completo.
+  defineField({
+    name: 'inBreveTitolo',
+    title: 'In breve: titolo',
+    description: 'Il titolo del riquadro in cima alla pagina, per esempio «In breve». Senza titolo e punti il riquadro non compare.',
+    type: 'string',
+  }),
+  defineField({
+    name: 'inBreve',
+    title: 'In breve: punti',
+    description: "L'essenziale in parole semplici, un punto per riga: cosa raccogliamo, perché, chi tratta i dati, come chiedere di vederli o cancellarli.",
+    type: 'array',
+    of: [defineArrayMember({ type: 'string' })],
+  }),
   defineField({ name: 'body', title: 'Privacy', type: 'testoLegale' }),
   defineField({
     name: 'cookieTitle',

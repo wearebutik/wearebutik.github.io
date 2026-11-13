@@ -1,7 +1,9 @@
 ---
 // Privacy & Cookie Policy dalla pagina "Privacy e cookie" su Sanity
-// (ADR-0004). Due corpi di testo legale: la Cookie Policy è separata perché il
-// suo titolo porta l'ancora fissa #cookie, a cui rimanda il banner dei cookie.
+// (ADR-0004). In cima il riquadro «In breve», il primo strato
+// dell'informativa (GDPR art. 12); poi due corpi di testo legale: la Cookie
+// Policy è separata perché il suo titolo porta l'ancora fissa #cookie, a cui
+// rimanda il banner dei cookie.
 import { getEntry } from 'astro:content';
 import GithubSlugger from 'github-slugger';
 import BaseLayout from '#layouts/BaseLayout.astro';
@@ -15,6 +17,7 @@ const c = entry.data;
 // Un solo slugger per la pagina: id dei titoli univoci tra i due corpi.
 const slugger = new GithubSlugger();
 slugger.slug('cookie');
+slugger.slug('in-breve');
 ---
 
 <BaseLayout
@@ -25,6 +28,14 @@ slugger.slug('cookie');
     <div class="prose prose-full">
       <h1>{c.pageTitle}</h1>
       <p><em>Ultimo aggiornamento: {c.updatedDate}.</em></p>
+      {c.inBreveTitolo && c.inBreve.length > 0 && (
+        <aside class="in-breve" aria-labelledby="in-breve">
+          <h2 id="in-breve">{c.inBreveTitolo}</h2>
+          <ul>
+            {c.inBreve.map((punto) => <li>{punto}</li>)}
+          </ul>
+        </aside>
+      )}
       <LegalText value={c.body} slugger={slugger} />
       <hr />
       <h2 id="cookie">{c.cookieTitle}</h2>
@@ -39,6 +50,20 @@ slugger.slug('cookie');
     margin-inline: auto;
     padding-inline: var(--space-6); /* px-6 = 1.5rem */
     padding-block: var(--space-16); /* py-16 = 4rem */
+  }
+  /* Il riquadro «In breve»: un filetto rosso a sinistra (l'accento senza
+     testo) e un fondo appena distinto, per staccarlo dal testo completo. */
+  .in-breve {
+    margin-block: var(--space-8);
+    padding: var(--space-6);
+    border-inline-start: 4px solid var(--color-accent);
+    background: color-mix(in oklab, var(--color-fg) 4%, transparent);
+  }
+  .in-breve h2 {
+    margin-block-start: 0;
+  }
+  .in-breve ul {
+    margin-block-end: 0;
   }
   @media (min-width: 768px) {
     .privacy-article {
