@@ -11,6 +11,10 @@
 // Lo scratch parte al CLICK (pointerdown), non al passaggio del mouse: il disco
 // gira indisturbato finché non lo si prende in mano, e il gesto funziona identico
 // da touch. Con `prefers-reduced-motion` i dischi restano fermi.
+//
+// Un disco può anche partire fermo (`fermo`, la 404 del sito) e girare solo
+// quando lo si accende con `impostaGiro`: da fermo la velocità di regime è
+// zero, quindi una spinta lo fa girare e l'attrito lo riporta a fermarsi.
 
 export interface VinylScratchOptions {
   /** Selettore dei nodi (area puntatore/hover). */
@@ -48,13 +52,16 @@ export interface VinylScratchOptions {
    * trattenere il vinile con la mano prima di mollarlo). Default 120.
    */
   stale?: number;
+  /** Il disco parte fermo e gira solo dopo `impostaGiro(disco, true)`. */
+  fermo?: boolean;
 }
 
 interface Vinile {
   disc: HTMLElement;
   angle: number; // rotazione corrente (°)
   vel: number; // velocità angolare corrente (°/s)
-  baseVel: number; // velocità di regime (auto-spin)
+  baseVel: number; // velocità di regime (auto-spin; 0 se il disco è spento)
+  giro: number; // velocità di regime quando il disco è acceso
   scratching: boolean;
   lastPointerAngle: number; // ultimo angolo puntatore visto
   lastT: number; // timestamp ultimo movimento
@@ -81,6 +88,7 @@ export function initVinylScratch(opts: VinylScratchOptions): void {
     tau = 0.8,
     maxVel = 1800,
     stale = 120,
+    fermo = false,
   } = opts;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -98,11 +106,13 @@ export function initVinylScratch(opts: VinylScratchOptions): void {
     // JS prende il controllo della rotazione → spegne l'animazione CSS di fallback
     disc.style.animation = 'none';
 
+    const giro = reduce ? 0 : 360 / speed;
     const v: Vinile = {
       disc,
       angle: 0,
-      vel: reduce ? 0 : 360 / speed,
-      baseVel: reduce ? 0 : 360 / speed,
+      vel: fermo ? 0 : giro,
+      baseVel: fermo ? 0 : giro,
+      giro,
       scratching: false,
       lastPointerAngle: 0,
       lastT: 0,
@@ -174,4 +184,26 @@ export function initVinylScratch(opts: VinylScratchOptions): void {
     };
     requestAnimationFrame(tick);
   }
+}
+
+/**
+ * Accende o spegne un disco agganciato da initVinylScratch: la velocità di
+ * regime passa a quella del suo giro o a zero, e l'inerzia fa il resto (il
+ * disco prende velocità o rallenta fino a fermarsi, come un piatto vero).
+ */
+export function impostaGiro(disc: HTMLElement, acceso: boolean): void {
+  const v = vinili.find((x) => x.disc === disc);
+  if (v) v.baseVel = acceso ? v.giro : 0;
+}
+
+/**
+ * Lo stato di un disco: la velocità (gradi al secondo, negativa se gira
+ * all'indietro), quella del suo giro acceso e se è in mano. Mentre lo si
+ * tiene, la velocità è quella della mano, e torna a zero se la mano si ferma.
+ */
+export function statoGiro(disc: HTMLElement): { vel: number; giro: number; preso: boolean } | undefined {
+  const v = vinili.find((x) => x.disc === disc);
+  if (!v) return undefined;
+  const fresca = performance.now() - v.lastT < 120;
+  return { vel: v.scratching ? (fresca ? v.flingVel : 0) : v.vel, giro: v.giro, preso: v.scratching };
 }

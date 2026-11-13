@@ -9,7 +9,10 @@
     "directory": "./dist",
     // Gli indirizzi delle pagine finiscono con la barra (`/servizi/`,
     // lib/linkConBarra.ts): `/servizi` risponde con un 307 verso `/servizi/`.
-    "html_handling": "auto-trailing-slash"
+    "html_handling": "auto-trailing-slash",
+    // Un indirizzo che non esiste riceve dist/404.html (pages/404.astro) con
+    // lo stato 404, invece di una risposta vuota.
+    "not_found_handling": "404-page"
   },
   // Il dominio personalizzato crea da sé il record DNS nella zona
   // wearebutik.com, che sta nello stesso account Cloudflare.

@@ -451,6 +451,22 @@ const testimonials = z.object({
   })).optional().default([]),
 });
 
+// Pagina non trovata (pages/404.astro): testi e tracce, cioè i link per
+// tornare nel sito; quelli che non portano da nessuna parte non si mostrano.
+const paginaNonTrovata = z.object({
+  type: z.literal('pagina-non-trovata'),
+  metaTitle: z.string(),
+  occhiello: z.string(),
+  titolo: z.string(),
+  testo: z.string(),
+  tracceTitolo: z.string(),
+  tracce: z.array(linkSchema).min(1),
+  play: z.string(),
+  stop: z.string(),
+  suonoAcceso: z.string(),
+  suonoSpento: z.string(),
+});
+
 // Footer (condiviso da tutte le pagine; i social anche da Contatti).
 const footer = z.object({
   type: z.literal('footer'),
@@ -470,7 +486,7 @@ const footer = z.object({
 
 const elementiCollection = defineCollection({
   loader: elementiLoader(),
-  schema: z.discriminatedUnion('type', [header, footer, bannerCookie, testimonials]),
+  schema: z.discriminatedUnion('type', [header, footer, bannerCookie, testimonials, paginaNonTrovata]),
 });
 
 const pagineCollection = defineCollection({

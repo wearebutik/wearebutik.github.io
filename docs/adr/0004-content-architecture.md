@@ -166,8 +166,11 @@ it.
 - <a id="site-elements"></a>**Site elements** are the content that is not a
   page but appears on every page or on several: the `header` (menu items and
   the button), the `footer` (whose social profiles the contatti page reuses),
-  the cookie banner (`bannerCookie`, `_id` `banner-cookie`) and the
-  `testimonials` the Testimonials section shows. Each has its own Sanity type
+  the cookie banner (`bannerCookie`, `_id` `banner-cookie`), the
+  `testimonials` the Testimonials section shows and the not-found page
+  (`paginaNonTrovata`, `_id` `pagina-non-trovata`), whose texts and tracklist
+  `apps/web/src/pages/404.astro` shows for every address that does not exist
+  (`not_found_handling` in `apps/web/wrangler.jsonc`). Each has its own Sanity type
   and one fixed document whose `_id` is the entry id of the `elementi`
   collection (`apps/studio/schemaTypes/elementi.ts`). The Studio lists them
   under *Elementi del sito*, apart from *Pagine*. Menu items follow the same
