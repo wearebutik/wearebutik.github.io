@@ -286,6 +286,7 @@ const paginaContatti = z.object({
   formMessagePlaceholder: z.string(),
   formSubmitLabel: z.string(),
   formSubmitLoadingLabel: z.string(),
+  formVerificaMessage: z.string(),
   formMissingKeyMessage: z.string(),
   formSuccessMessage: z.string(),
   formErrorMessage: z.string(),

@@ -1,7 +1,10 @@
 // ── Turnstile, la verifica anti-spam di Cloudflare, per il modulo contatti ──
 // Lo script di Cloudflare si scarica solo quando qualcuno inizia a compilare
 // il modulo (`avvia`), non al caricamento della pagina. Il widget resta
-// invisibile e compare solo se Cloudflare ha dubbi (`interaction-only`).
+// invisibile e compare solo se Cloudflare ha dubbi (`interaction-only`): allora
+// chiede una spunta, `suInterazione(true)` lo dice al form e l'attesa del token
+// non scade più, perché si aspetta una persona. Scade invece, dopo
+// ATTESA_MASSIMA, se lo script non arriva o la verifica invisibile non risponde.
 // `token()` aspetta che la verifica sia pronta; dopo ogni invio `rinnova()`,
 // perché un token vale una volta sola. Il Worker (apps/functions) lo controlla.
 
@@ -11,6 +14,9 @@ interface OpzioniTurnstile {
   callback: (token: string) => void;
   'expired-callback': () => void;
   'error-callback': () => void;
+  'timeout-callback': () => void;
+  'before-interactive-callback': () => void;
+  'after-interactive-callback': () => void;
 }
 
 interface Turnstile {
@@ -25,7 +31,7 @@ declare global {
 }
 
 const SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-// Oltre questo tempo l'invio si arrende e il modulo mostra l'errore di rete.
+// Oltre questo tempo, senza una spunta richiesta, l'invio si arrende.
 const ATTESA_MASSIMA = 30_000;
 
 let script: Promise<Turnstile> | undefined;
@@ -53,16 +59,37 @@ export interface VerificaModulo {
   rinnova(): void;
 }
 
-export function preparaTurnstile(box: HTMLElement, sitekey: string): VerificaModulo {
+export interface OpzioniVerifica {
+  /** true quando Cloudflare chiede la spunta, false quando è data. */
+  suInterazione?: (chiede: boolean) => void;
+}
+
+interface Attesa {
+  resolve: (t: string) => void;
+  reject: (e: Error) => void;
+  timer?: ReturnType<typeof setTimeout>;
+}
+
+export function preparaTurnstile(box: HTMLElement, sitekey: string, { suInterazione }: OpzioniVerifica = {}): VerificaModulo {
   let widget: string | undefined;
   let pronto: string | undefined;
-  let attese: Array<{ resolve: (t: string) => void; reject: (e: Error) => void }> = [];
+  let attese: Attesa[] = [];
   let errore: Error | undefined;
+  let interattivo = false;
+
+  const fermaScadenze = () => attese.forEach((a) => clearTimeout(a.timer));
+  const fallisci = (e: Error) => {
+    errore = e;
+    chiudiAttese((a) => a.reject(e));
+  };
 
   const chiudiAttese = (fn: (a: (typeof attese)[number]) => void) => {
     const tutte = attese;
     attese = [];
-    tutte.forEach(fn);
+    tutte.forEach((a) => {
+      clearTimeout(a.timer);
+      fn(a);
+    });
   };
 
   const avvia = () => {
@@ -81,16 +108,20 @@ export function preparaTurnstile(box: HTMLElement, sitekey: string): VerificaMod
           'expired-callback': () => {
             pronto = undefined;
           },
-          'error-callback': () => {
-            errore = new Error('turnstile');
-            chiudiAttese((a) => a.reject(errore!));
+          'error-callback': () => fallisci(new Error('turnstile')),
+          'timeout-callback': () => fallisci(new Error('turnstile: spunta scaduta')),
+          'before-interactive-callback': () => {
+            interattivo = true;
+            fermaScadenze();
+            suInterazione?.(true);
+          },
+          'after-interactive-callback': () => {
+            interattivo = false;
+            suInterazione?.(false);
           },
         });
       })
-      .catch((e: Error) => {
-        errore = e;
-        chiudiAttese((a) => a.reject(e));
-      });
+      .catch(fallisci);
   };
 
   return {
@@ -102,8 +133,14 @@ export function preparaTurnstile(box: HTMLElement, sitekey: string): VerificaMod
       errore = undefined;
       avvia();
       return new Promise<string>((resolve, reject) => {
-        attese.push({ resolve, reject });
-        setTimeout(() => reject(new Error('turnstile: tempo scaduto')), ATTESA_MASSIMA);
+        const attesa: Attesa = { resolve, reject };
+        if (!interattivo) {
+          attesa.timer = setTimeout(() => {
+            attese = attese.filter((a) => a !== attesa);
+            reject(new Error('turnstile: tempo scaduto'));
+          }, ATTESA_MASSIMA);
+        }
+        attese.push(attesa);
       });
     },
     rinnova() {

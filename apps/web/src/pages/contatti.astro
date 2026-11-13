@@ -98,6 +98,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
             aria-live="polite"
             data-missing-key={c.formMissingKeyMessage}
             data-loading={c.formSubmitLoadingLabel}
+            data-verifica={c.formVerificaMessage}
             data-success={c.formSuccessMessage}
             data-error={c.formErrorMessage}
             data-network-error={c.formNetworkErrorMessage}
@@ -340,6 +341,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
 
     const formMissingKeyMessage = result.dataset.missingKey ?? '';
     const formSubmitLoadingLabel = result.dataset.loading ?? '';
+    const formVerificaMessage = result.dataset.verifica ?? '';
     const formSuccessMessage = result.dataset.success ?? '';
     const formErrorMessage = result.dataset.error ?? '';
     const formNetworkErrorMessage = result.dataset.networkError ?? '';
@@ -354,7 +356,15 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
     const sitekey = form.dataset.sitekey ?? '';
     const configurato = Boolean(url && sitekey);
     // Turnstile si scarica solo quando qualcuno inizia a compilare il modulo.
-    const verifica = configurato ? preparaTurnstile(box, sitekey) : undefined;
+    // Se Cloudflare chiede la spunta, il form lo dice sotto il pulsante.
+    const verifica = configurato
+      ? preparaTurnstile(box, sitekey, {
+          suInterazione: (chiede) => {
+            if (chiede) showMessage(formVerificaMessage, true);
+            else if (result.textContent === formVerificaMessage) showMessage('', true);
+          },
+        })
+      : undefined;
     form.addEventListener('focusin', () => verifica?.avvia(), { once: true });
 
     form.addEventListener('submit', async (e) => {
@@ -367,10 +377,26 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
       submit.disabled = true;
       const originalLabel = submit.textContent;
       submit.textContent = formSubmitLoadingLabel;
+      // L'esito dell'invio precedente non vale per questo; resta solo l'avviso
+      // della spunta, se Cloudflare la sta chiedendo.
+      if (result.textContent !== formVerificaMessage) showMessage('', true);
+
+      let token: string;
+      try {
+        token = await verifica.token();
+      } catch {
+        // Verifica fallita o scaduta: non è un problema di rete.
+        showMessage(formErrorMessage, false);
+        trackEvent('contact_form_error', { error_message: 'turnstile' });
+        verifica.rinnova();
+        submit.disabled = false;
+        submit.textContent = originalLabel;
+        return;
+      }
 
       try {
         const formData = new FormData(form);
-        formData.set('cf-turnstile-response', await verifica.token());
+        formData.set('cf-turnstile-response', token);
         const response = await fetch(url, {
           method: 'POST',
           headers: { Accept: 'application/json' },
