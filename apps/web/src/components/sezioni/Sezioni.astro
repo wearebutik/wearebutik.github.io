@@ -158,7 +158,7 @@ const inEvidenza = (slug: string[]) => slug.flatMap((id) => progettiPubblicati.g
     case 'sezioneCitazione':
       return <Citazione quote={s.quote} author={s.author} />;
     case 'sezioneElencoServizi':
-      return <ElencoServizi servizi={s.servizi} />;
+      return <ElencoServizi card={s.card} />;
     case 'sezioneElencoProgetti':
       return <ElencoProgetti />;
     case 'sezioneRiquadri':

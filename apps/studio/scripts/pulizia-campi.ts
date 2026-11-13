@@ -1,8 +1,10 @@
 // Una tantum: toglie dai documenti pubblicati i valori dei campi che lo Studio
 // non ha più (nello Studio comparirebbero come "campi sconosciuti"):
-//   servizio  card.statValue, card.statLabel (statistica della card, mai
-//             mostrata), audience (filtro di /servizi), order; card.desc e
-//             orderRank (card e ordine passati nelle sezioni)
+//   servizio  card (i testi delle card stanno nelle sezioni: card-e-elenco-
+//             servizi e card-servizi), audience (filtro di /servizi), order,
+//             orderRank (ordine passato nelle sezioni)
+//   pagine con l'Elenco dei servizi
+//             i riferimenti `servizi`, sostituiti dalle card (card-servizi)
 //   progetto  order, featuredOrder (sostituiti dall'ordine a trascinamento),
 //             featured (progetti in evidenza scelti nel blocco della home)
 //   pagina-servizi  filtri
@@ -25,7 +27,14 @@ const client = getCliClient({ apiVersion: '2026-09-01', perspective: 'raw' });
 const daTogliere: { filtro: string; campi: string[] }[] = [
   // card.desc e orderRank: le card sono nel blocco Hero, l'ordine nel blocco
   // Elenco dei servizi (card-e-elenco-servizi).
-  { filtro: '_type == "servizio"', campi: ['card.statValue', 'card.statLabel', 'card.desc', 'audience', 'order', 'orderRank'] },
+  // card: i testi delle card dell'Elenco dei servizi stanno nelle card
+  // (card-servizi).
+  { filtro: '_type == "servizio"', campi: ['card', 'audience', 'order', 'orderRank'] },
+  // I riferimenti dell'Elenco dei servizi, sostituiti dalle card (card-servizi).
+  {
+    filtro: 'count(sezioni[_type == "sezioneElencoServizi"]) > 0',
+    campi: ['sezioni[_type=="sezioneElencoServizi"].servizi'],
+  },
   // featured: i progetti in evidenza sono nel blocco della home (progetti-in-evidenza).
   { filtro: '_type == "progetto"', campi: ['order', 'featuredOrder', 'featured'] },
   { filtro: '_id == "pagina-servizi"', campi: ['filtri'] },

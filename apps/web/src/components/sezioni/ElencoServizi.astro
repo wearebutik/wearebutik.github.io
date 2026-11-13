@@ -1,27 +1,38 @@
 ---
-// Sezione "Elenco dei servizi": un blocco espanso per servizio (per chi ·
-// cosa ottieni), con i servizi scelti nel blocco e nel suo ordine. Nata da
-// /servizi.
-import { getCollection } from 'astro:content';
-import ServiceExpanded from '#components/serviziCards/ServiceExpanded.astro';
+// Sezione "Elenco dei servizi": una card espansa per servizio (per chi ·
+// cosa ottieni), nell'ordine del blocco. Le card hanno i loro testi, separati
+// dalla scheda del servizio, e decidono da sé se mostrare il link
+// (lib/cardServizi.ts). Nata da /servizi.
+import ServiceExpanded, { type CardServizio } from '#components/serviziCards/ServiceExpanded.astro';
+import { linkDellaCard } from '#lib/cardServizi';
+import { linkValido } from '#lib/links';
+import type { IconaCard } from '@butik/site-config/icone';
 
 interface Props {
-  /** Slug dei servizi da mostrare, nell'ordine del blocco. */
-  servizi: string[];
+  card: {
+    _key: string;
+    ancora: string;
+    icona: IconaCard;
+    perChi: string;
+    title: string;
+    desc: string;
+    punti: string[];
+    mostraLink: boolean;
+    href?: string;
+    linkLabel?: string;
+  }[];
 }
 
-// I servizi si mostrano sempre, anche con la scheda non pubblicata: il blocco
-// porta alla scheda solo se c'è (ServiceExpanded, lib/pubblicazione.ts). Un
-// riferimento a un servizio che non esiste più si salta.
-const tutti = new Map((await getCollection('servizi')).map((e) => [e.id, e]));
-const servizi = Astro.props.servizi.flatMap((slug) => tutti.get(slug) ?? []);
+const card: (CardServizio & { _key: string })[] = await Promise.all(
+  Astro.props.card.map(async (c) => ({ ...c, link: await linkDellaCard(c, linkValido) })),
+);
 ---
 
 <section class="svc-main">
   <div class="svc-grid" data-svc-grid data-reveal-group data-prefetch="viewport">
-    {servizi.map((s, i) => (
+    {card.map((c, i) => (
       <div class="svc-grid-item">
-        <ServiceExpanded servizio={s} index={i + 1} />
+        <ServiceExpanded card={c} index={i + 1} />
       </div>
     ))}
   </div>

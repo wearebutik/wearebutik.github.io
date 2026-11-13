@@ -53,7 +53,7 @@ export const servizio = defineType({
       initialValue: 'banner',
     }),
     campoPubblicata(
-      'Riguarda solo la pagina del servizio (/servizi/<slug>). Spento: la pagina non esiste e le card del servizio, che si vedono sempre, non portano da nessuna parte. Acceso: le card aprono la pagina del servizio.',
+      'Riguarda solo la pagina del servizio (/servizi/<slug>). Spento: la pagina non esiste e i link che ci portano spariscono dal sito pubblico. Le card dell\'Elenco dei servizi hanno i loro testi e decidono da sé se mostrare il link.',
       false,
     ),
 
@@ -109,18 +109,6 @@ export const servizio = defineType({
       ],
     }),
 
-    // ── Titolo breve (blocco del servizio in /servizi) ──────────────────────
-    // Le card della home non stanno qui: sono nel blocco Hero della pagina.
-    defineField({
-      name: 'card',
-      title: 'Nella pagina Servizi',
-      type: 'object',
-      group: 'scheda',
-      validation: (r) => r.required(),
-      options: { collapsible: false },
-      fields: [{ name: 'title', title: 'Titolo breve', type: 'string', validation: (r: any) => r.required() }],
-    }),
-
     // ── Corpo ───────────────────────────────────────────────────────────────
     defineField({
       name: 'body',
@@ -138,5 +126,5 @@ export const servizio = defineType({
     defineField({ name: 'ogCta', title: 'CTA della card OG', type: 'string', group: 'seo' }),
   ],
   orderings: [{ title: 'Titolo', name: 'titolo', by: [{ field: 'title', direction: 'asc' }] }],
-  preview: { select: { title: 'title', subtitle: 'card.title', media: 'heroImage' } },
+  preview: { select: { title: 'title', subtitle: 'subtitle', media: 'heroImage' } },
 });
