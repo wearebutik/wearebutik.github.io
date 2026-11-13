@@ -33,8 +33,10 @@ const tracce = await soloLinkValidi(c.tracce);
     data-suono-spento={c.suonoSpento}
   >
     <div class="nf-piatto" aria-hidden="true">
-      <div class="nf-disco" data-disco>
-        <span class="nf-etichetta">404</span>
+      <div class="nf-salto">
+        <div class="nf-disco" data-disco>
+          <span class="nf-etichetta">404</span>
+        </div>
       </div>
       <span class="nf-braccio" data-braccio></span>
     </div>
@@ -68,6 +70,7 @@ const tracce = await soloLinkValidi(c.tracce);
 <script>
   import { notaDellaTraccia } from '#lib/giradischi/note';
   import { creaSuono, type Suono } from '#lib/giradischi/suono.client';
+  import { impostaGiro, initVinylScratch } from '@butik/ui/vinylScratch';
 
   // ClientRouter: la pagina può tornare senza ricaricare lo script, quindi
   // l'aggancio si rifà a ogni astro:page-load sui nodi nuovi
@@ -82,6 +85,11 @@ const tracce = await soloLinkValidi(c.tracce);
     const interruttore = root.querySelector<HTMLButtonElement>('.nf-suono');
     if (!play || !interruttore) return;
 
+    // Il disco si prende in mano come quelli del Metodo; parte fermo e il
+    // motore lo accendono «Rimetti il disco» e «Ferma il disco».
+    initVinylScratch({ root, nodeSelector: '.nf-piatto', discSelector: '.nf-disco', speedVar: '--nf-giro', defaultSpeed: 1.8, fermo: true });
+    const disco = root.querySelector<HTMLElement>('.nf-disco');
+
     let gira = false;
     let conSuono = false;
     play.setAttribute('aria-pressed', 'false');
@@ -92,6 +100,7 @@ const tracce = await soloLinkValidi(c.tracce);
       root.toggleAttribute('data-gira', gira);
       play.setAttribute('aria-pressed', String(gira));
       play.textContent = gira ? root.dataset.stop! : root.dataset.play!;
+      if (disco) impostaGiro(disco, gira);
       if (gira && conSuono) suono?.frase();
     });
 
@@ -120,6 +129,7 @@ const tracce = await soloLinkValidi(c.tracce);
 
 <style>
   .nf {
+    --nf-giro: 1.8s; /* un giro: 33 giri e un terzo, più o meno */
     display: grid;
     gap: var(--space-12);
     align-items: center;
@@ -135,11 +145,30 @@ const tracce = await soloLinkValidi(c.tracce);
   }
 
   /* ── Il giradischi ─────────────────────────────────────────────────────── */
+  /* Il piatto si prende in mano come i dischi del Metodo
+     (@butik/ui/vinylScratch): si preme, si gira, si lascia andare. */
   .nf-piatto {
     position: relative;
     width: min(100%, 22rem);
     aspect-ratio: 1;
     margin-inline: auto;
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+  }
+  .nf-piatto:active {
+    cursor: grabbing;
+  }
+  /* Fermo, il disco «salta»: torna indietro di un soffio, sempre sullo
+     stesso punto. Il salto sta su un involucro, perché la rotazione del disco
+     la guida lo script. */
+  .nf-salto {
+    position: absolute;
+    inset: 0;
+    animation: nf-salto 1.6s var(--ease-standard) infinite;
+  }
+  .nf[data-gira] .nf-salto {
+    animation: none;
   }
 
   /* Il disco: solchi concentrici scuri e l'etichetta rossa con «404». */
@@ -153,8 +182,6 @@ const tracce = await soloLinkValidi(c.tracce);
       radial-gradient(circle, transparent 0 31%, color-mix(in oklab, var(--color-white) 14%, transparent) 31.5% 32%, transparent 32.5%),
       repeating-radial-gradient(circle, var(--color-dark) 0 2px, color-mix(in oklab, var(--color-dark) 82%, var(--color-white)) 2px 3px);
     box-shadow: 0 var(--space-4) var(--space-12) color-mix(in oklab, var(--color-dark) 25%, transparent);
-    /* Fermo, il disco «salta»: torna indietro di un soffio, sempre sullo stesso punto. */
-    animation: nf-salto 1.6s var(--ease-standard) infinite;
   }
   .nf-etichetta {
     display: grid;
@@ -168,8 +195,10 @@ const tracce = await soloLinkValidi(c.tracce);
     font-size: var(--font-size-2xl);
     font-weight: 800;
   }
+  /* Senza JavaScript il disco gira con il CSS; con lo script lo guida
+     vinylScratch, che spegne questa animazione. */
   .nf[data-gira] .nf-disco {
-    animation: nf-giro 1.8s linear infinite; /* 33 giri e un terzo, più o meno */
+    animation: nf-giro var(--nf-giro) linear infinite;
   }
 
   /* Il braccio: alzato quando il disco salta, appoggiato quando gira. */
@@ -299,6 +328,7 @@ const tracce = await soloLinkValidi(c.tracce);
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .nf-salto,
     .nf-disco,
     .nf[data-gira] .nf-disco,
     .nf-traccia:hover .nf-eq i,
