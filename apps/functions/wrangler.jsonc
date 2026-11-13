@@ -1,0 +1,27 @@
+// Il modulo contatti del sito (ADR-0002, docs/guidances/functions.md): un
+// Worker che riceve il modulo da beta.wearebutik.com e wearebutik.com,
+// controlla Turnstile e inoltra il messaggio a info@wearebutik.com.
+// Pubblicato da .github/workflows/deploy-functions.yml.
+//
+// La mail parte da form@wearebutik.it: Email Routing è attivo su
+// wearebutik.it, che non riceve altra posta. Su wearebutik.com non si può,
+// perché Email Routing mette i suoi record MX sulla radice al posto di quelli
+// di Google. L'invio verso un indirizzo verificato in Email Routing è gratuito
+// su ogni piano.
+// Il segreto TURNSTILE_SECRET non sta qui: lo imposta il workflow.
+{
+  "name": "butik-form",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-04-10",
+  "routes": [{ "pattern": "form.wearebutik.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+  // Il binding può spedire solo a questo indirizzo, verificato in Email Routing.
+  "send_email": [{ "name": "EMAIL", "destination_address": "info@wearebutik.com" }],
+  "vars": {
+    "DESTINATARIO": "info@wearebutik.com",
+    "MITTENTE": "form@wearebutik.it",
+    // Le pagine da cui il modulo può arrivare, separate da virgole.
+    "ORIGINI": "https://beta.wearebutik.com,https://wearebutik.com,https://www.wearebutik.com"
+  }
+}

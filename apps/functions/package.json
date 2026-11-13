@@ -1,0 +1,15 @@
+{
+  "name": "@butik/functions",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "pnpm dlx wrangler@4.154.0 dev",
+    "check": "tsc -p .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "typescript": "7.0.2",
+    "vitest": "5.0.5"
+  }
+}

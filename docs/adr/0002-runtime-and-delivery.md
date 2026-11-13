@@ -37,7 +37,8 @@ written by the workflow after the build) until the site moves to
 Dynamic needs are **not** solved by introducing global SSR. They are solved,
 case by case, with a **serverless function chosen for the specific case**:
 Cloudflare Workers / Pages Functions, Supabase (edge functions / DB), or managed
-services (e.g. Web3Forms for the contact form, already in use). The selection
+services. The contact form is the first function of ours: a Worker in
+`apps/functions` with Cloudflare Turnstile. The selection
 criteria and options are described as a **guidance**, not a fixed decision — see
 [`docs/guidances/functions.md`](../guidances/functions.md).
 
@@ -78,7 +79,7 @@ Every step works on static files, with no runtime on the host.
 ### Migrate everything to Cloudflare Pages/Workers with an SSR adapter
 
 `@astrojs/cloudflare`, hybrid build, native server functions. Rejected as the
-*default*: nothing requires it today (form via Web3Forms, OG at build-time,
+*default*: nothing requires it today (form via an isolated Worker, OG at build-time,
 consent client-side) and it would bind the project to a runtime before it's
 needed. Still available as a per-feature choice via the guidance.
 

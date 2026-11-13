@@ -13,7 +13,7 @@ You care about:
   re-open-preferences control present.
 - **Build safety** (ADR-0002/0003): the change keeps `astro build` static and
   green; no adapter/SSR sneaks in; secrets don't leak into the client bundle
-  (only by-design public keys like Web3Forms may).
+  (only by-design public keys like the Turnstile site key may).
 - **Correctness**: edge cases, empty states, error paths of any new dynamic
   function (a client→serverless call must handle failure).
 
