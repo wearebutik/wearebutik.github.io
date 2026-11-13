@@ -4,7 +4,8 @@
 // `chiudi()` lo spegne lasciando la pagina.
 import { FRASE } from './note';
 
-const VOLUME = 0.08;
+// Abbastanza da sentirsi anche dalle casse di un portatile, senza spaventare.
+const VOLUME = 0.25;
 
 export interface Suono {
   /** Una nota breve, con attacco e coda morbidi. */
@@ -20,6 +21,8 @@ export function creaSuono(): Suono | undefined {
   const ctx = new Contesto();
 
   const nota = (freq: number, durata = 0.18, ritardo = 0) => {
+    // Il browser può sospendere il contesto (scheda in secondo piano, risparmio).
+    if (ctx.state === 'suspended') void ctx.resume();
     const t = ctx.currentTime + ritardo;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();

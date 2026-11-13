@@ -106,7 +106,11 @@ const tracce = await soloLinkValidi(c.tracce);
 
     interruttore.addEventListener('click', () => {
       conSuono = !conSuono;
-      if (conSuono) suono ??= creaSuono();
+      if (conSuono) {
+        suono ??= creaSuono();
+        // Una nota subito: chi accende il suono sente che funziona.
+        suono?.nota(notaDellaTraccia(3), 0.25);
+      }
       interruttore.setAttribute('aria-pressed', String(conSuono));
       interruttore.textContent = conSuono ? root.dataset.suonoAcceso! : root.dataset.suonoSpento!;
     });
