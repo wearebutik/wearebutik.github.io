@@ -49,6 +49,17 @@ describe('disco della 404', () => {
     expect(angolo(disco) - fermo).toBeLessThan(1);
   });
 
+  it('statoGiro dice la velocità del disco rispetto al suo giro, e se è in mano', async () => {
+    const { initVinylScratch, impostaGiro, statoGiro } = await import('@butik/ui/vinylScratch');
+    initVinylScratch({ nodeSelector: '.nodo', discSelector: '.disco', speedVar: '--giro', defaultSpeed: 2, fermo: true });
+    const disco = document.querySelector<HTMLElement>('.disco')!;
+    expect(statoGiro(disco)).toEqual({ vel: 0, giro: 180, preso: false });
+    impostaGiro(disco, true);
+    avanza(3000);
+    expect(statoGiro(disco)!.vel).toBeGreaterThan(170); // l’attrito lo porta verso 180
+    expect(statoGiro(document.createElement('span'))).toBeUndefined();
+  });
+
   it('i dischi del Metodo, senza `fermo`, girano da subito come prima', async () => {
     const { initVinylScratch } = await import('@butik/ui/vinylScratch');
     initVinylScratch({ nodeSelector: '.nodo', discSelector: '.disco', speedVar: '--giro', defaultSpeed: 2 });

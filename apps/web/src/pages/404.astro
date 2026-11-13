@@ -4,10 +4,14 @@
 // disco che salta sulla «traccia 404» e una scaletta di pagine da cui
 // ripartire. Interazione:
 //   - «Rimetti il disco» lo fa girare (e lo ferma); il braccio si appoggia;
-//   - l'interruttore del suono è spento all'inizio: acceso, il disco che
-//     riparte suona una frase breve e ogni traccia della scaletta la sua nota
-//     al passaggio del puntatore o del fuoco (lib/giradischi);
-//   - con prefers-reduced-motion niente rotazione né salti.
+//   - il disco si prende in mano e si gira come quelli del Metodo
+//     (@butik/ui/vinylScratch);
+//   - il pulsante con l'altoparlante parte muto. Senza muto, mentre il disco
+//     gira suona una mini canzone che va alla velocità del disco, girandolo
+//     a mano si sente lo scratch, e ogni traccia della scaletta suona la sua
+//     nota al passaggio del puntatore o del fuoco (lib/giradischi);
+//   - con prefers-reduced-motion niente rotazione né salti (la canzone va a
+//     tempo finché il disco è acceso).
 // I testi stanno su Sanity (elemento del sito «Pagina non trovata»).
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
@@ -48,7 +52,16 @@ const tracce = await soloLinkValidi(c.tracce);
 
       <div class="nf-comandi">
         <Button type="button" tone="dark" className="nf-play">{c.play}</Button>
-        <Button type="button" variant="ghost" className="nf-suono">{c.suonoSpento}</Button>
+        {/* Muto / suono: l'icona cambia, il testo resta per gli screen reader. */}
+        <Button type="button" variant="ghost" className="nf-suono">
+          <svg class="nf-icona nf-icona-muto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="m23 9-6 6M17 9l6 6" />
+          </svg>
+          <svg class="nf-icona nf-icona-suono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M11 5 6 9H2v6h4l5 4V5z" /><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14" />
+          </svg>
+          <span class="nf-sr" data-suono-testo>{c.suonoSpento}</span>
+        </Button>
       </div>
 
       <h2 class="nf-scaletta-titolo">{c.tracceTitolo}</h2>
@@ -70,7 +83,7 @@ const tracce = await soloLinkValidi(c.tracce);
 <script>
   import { notaDellaTraccia } from '#lib/giradischi/note';
   import { creaSuono, type Suono } from '#lib/giradischi/suono.client';
-  import { impostaGiro, initVinylScratch } from '@butik/ui/vinylScratch';
+  import { impostaGiro, initVinylScratch, statoGiro } from '@butik/ui/vinylScratch';
 
   // ClientRouter: la pagina può tornare senza ricaricare lo script, quindi
   // l'aggancio si rifà a ogni astro:page-load sui nodi nuovi
@@ -101,18 +114,36 @@ const tracce = await soloLinkValidi(c.tracce);
       play.setAttribute('aria-pressed', String(gira));
       play.textContent = gira ? root.dataset.stop! : root.dataset.play!;
       if (disco) impostaGiro(disco, gira);
-      if (gira && conSuono) suono?.frase();
     });
 
+    // Col suono acceso la canzone segue il disco a ogni fotogramma: la sua
+    // velocità è quella del disco, e lo scratch quella della mano. Con
+    // «riduci movimento» il disco non gira: la canzone va a tempo se il
+    // disco è acceso.
+    const segui = () => {
+      if (!conSuono || !suono || !disco?.isConnected) return;
+      const s = statoGiro(disco);
+      const giro = s?.giro || 0;
+      const giri = giro ? (s?.vel ?? 0) / giro : gira ? 1 : 0;
+      const mano = s?.preso && giro ? s.vel / giro : 0;
+      suono.segui(giri, mano);
+      requestAnimationFrame(segui);
+    };
+
+    const testo = interruttore.querySelector<HTMLElement>('[data-suono-testo]');
     interruttore.addEventListener('click', () => {
       conSuono = !conSuono;
+      root.toggleAttribute('data-suono', conSuono);
+      interruttore.setAttribute('aria-pressed', String(conSuono));
+      if (testo) testo.textContent = conSuono ? root.dataset.suonoAcceso! : root.dataset.suonoSpento!;
       if (conSuono) {
         suono ??= creaSuono();
-        // Una nota subito: chi accende il suono sente che funziona.
+        // Una nota subito: chi toglie il muto sente che funziona.
         suono?.nota(notaDellaTraccia(3), 0.25);
+        requestAnimationFrame(segui);
+      } else {
+        suono?.zitto();
       }
-      interruttore.setAttribute('aria-pressed', String(conSuono));
-      interruttore.textContent = conSuono ? root.dataset.suonoAcceso! : root.dataset.suonoSpento!;
     });
 
     for (const traccia of root.querySelectorAll<HTMLAnchorElement>('[data-traccia]')) {
@@ -342,5 +373,25 @@ const tracce = await soloLinkValidi(c.tracce);
     .nf-braccio {
       transition: none;
     }
+  }
+  /* Il pulsante del suono: solo l'icona, muto o altoparlante acceso. */
+  .nf-icona {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  .nf-icona-suono,
+  .nf[data-suono] .nf-icona-muto {
+    display: none;
+  }
+  .nf[data-suono] .nf-icona-suono {
+    display: block;
+  }
+  .nf-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 </style>

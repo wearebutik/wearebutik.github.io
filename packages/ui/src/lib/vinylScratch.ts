@@ -195,3 +195,15 @@ export function impostaGiro(disc: HTMLElement, acceso: boolean): void {
   const v = vinili.find((x) => x.disc === disc);
   if (v) v.baseVel = acceso ? v.giro : 0;
 }
+
+/**
+ * Lo stato di un disco: la velocità (gradi al secondo, negativa se gira
+ * all'indietro), quella del suo giro acceso e se è in mano. Mentre lo si
+ * tiene, la velocità è quella della mano, e torna a zero se la mano si ferma.
+ */
+export function statoGiro(disc: HTMLElement): { vel: number; giro: number; preso: boolean } | undefined {
+  const v = vinili.find((x) => x.disc === disc);
+  if (!v) return undefined;
+  const fresca = performance.now() - v.lastT < 120;
+  return { vel: v.scratching ? (fresca ? v.flingVel : 0) : v.vel, giro: v.giro, preso: v.scratching };
+}

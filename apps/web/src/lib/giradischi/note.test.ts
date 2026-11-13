@@ -1,7 +1,7 @@
 // Le note del giradischi della pagina 404: ogni traccia della scaletta ha la
 // sua, su una scala pentatonica (suonano bene in qualsiasi ordine).
 import { describe, expect, it } from 'vitest';
-import { FRASE, notaDellaTraccia } from './note';
+import { CANZONE, durataCanzone, notaDellaTraccia } from './note';
 
 describe('notaDellaTraccia', () => {
   it('sale lungo la pentatonica di do, una nota per traccia', () => {
@@ -15,9 +15,26 @@ describe('notaDellaTraccia', () => {
   });
 });
 
-describe('FRASE', () => {
-  it('è breve: poche note, meno di un secondo', () => {
-    expect(FRASE.length).toBeLessThanOrEqual(6);
-    expect(FRASE.reduce((t, n) => t + n.durata, 0)).toBeLessThan(1);
+describe('CANZONE', () => {
+  const pentatonica = [0, 1, 2, 3, 4, 5, 6, 7].map(notaDellaTraccia);
+
+  it('è un loop breve: due battute di sedicesimi, qualche secondo', () => {
+    expect(CANZONE.passi).toBe(32);
+    expect(durataCanzone()).toBeGreaterThan(3);
+    expect(durataCanzone()).toBeLessThan(8);
+  });
+
+  it('la melodia sta sulla pentatonica, così non stona mai', () => {
+    for (const n of CANZONE.melodia) {
+      expect(pentatonica.some((f) => Math.abs(f - n.freq) < 0.01)).toBe(true);
+    }
+  });
+
+  it('ogni evento cade dentro il loop', () => {
+    for (const n of [...CANZONE.melodia, ...CANZONE.basso]) {
+      expect(n.passo).toBeGreaterThanOrEqual(0);
+      expect(n.passo + n.lunghezza).toBeLessThanOrEqual(CANZONE.passi);
+    }
+    for (const p of [...CANZONE.cassa, ...CANZONE.charleston]) expect(p).toBeLessThan(CANZONE.passi);
   });
 });
