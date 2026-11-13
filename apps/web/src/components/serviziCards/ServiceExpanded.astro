@@ -1,25 +1,32 @@
 ---
-// Blocco servizio "espanso" con trattamento grafico: badge-icona, numero
-// indice fantasma, mini-equalizer (firma musicale) all'hover e reveal allo
-// scroll. Testi dal documento servizio: card (titolo) e hero (target, sub,
-// esiti).
-import type { CollectionEntry } from 'astro:content';
+// Card espansa di un servizio in /servizi (blocco Elenco dei servizi), con
+// trattamento grafico: badge-icona, numero indice fantasma, mini-equalizer
+// (firma musicale) all'hover e reveal allo scroll. I testi sono della card
+// (sezioneElencoServizi), non della scheda del servizio; il link lo decide la
+// card e arriva qui solo se la destinazione esiste (ElencoServizi).
 import ArrowLink from '@butik/ui/ArrowLink';
 import MetaLabel from '@butik/ui/MetaLabel';
-import { schedaServizio } from '#lib/pubblicazione';
+import type { IconaCard } from '@butik/site-config/icone';
+import { ICONE_SVG } from './icone';
+
+export interface CardServizio {
+  ancora: string;
+  icona: IconaCard;
+  perChi: string;
+  title: string;
+  desc: string;
+  punti: string[];
+  /** Il link della card, già controllato; senza, la card è informativa. */
+  link?: { href: string; label: string };
+}
 
 interface Props {
-  servizio: CollectionEntry<'servizi'>;
+  card: CardServizio;
   /** Posizione nell'elenco (da 1): numero fantasma e accento a rotazione. */
   index: number;
 }
-const { servizio, index } = Astro.props;
-const slug = servizio.id;
-const { hero, card } = servizio.data;
-const title = card.title;
-// Link "Scopri …" solo se la scheda del servizio è pubblicata
-// (lib/pubblicazione.ts): senza, il blocco è informativo.
-const href = schedaServizio(servizio);
+const { card, index } = Astro.props;
+const { ancora, icona, perChi, title, desc, punti, link } = card;
 
 const idx = String(index).padStart(2, '0');
 
@@ -42,40 +49,29 @@ const accentsInk = [
   'var(--color-butik-dark)',
 ];
 const accentInk = accentsInk[(index - 1) % accentsInk.length];
-
-// Icone monolinea per servizio (geometriche, niente clip-art).
-const icons: Record<string, string> = {
-  'progettazione-culturale': '<path d="M12 3v18M3 12h18M5.6 5.6l12.8 12.8M18.4 5.6 5.6 18.4"/>',
-  'consulenza-strategica': '<circle cx="12" cy="12" r="9"/><path d="M9.5 14.5 11 9l4.5-1.5L14 13z"/>',
-  'formazione-capacity-building': '<path d="M12 4 2 9l10 5 10-5z"/><path d="M6 11v4c0 1.1 2.7 3 6 3s6-1.9 6-3v-4"/>',
-  'eventi-culturali-musicali': '<path d="M4 12v1.5M8 8.5v7M12 5v14M16 9v6M20 11v2.5"/>',
-  'prodotti-turistico-musicali': '<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',
-};
 ---
 
-<article class="svc-exp" id={slug} style={`--accent:${accent};--accent-ink:${accentInk};--meta-label-color:${accentInk}`}>
+<article class="svc-exp" id={ancora} style={`--accent:${accent};--accent-ink:${accentInk};--meta-label-color:${accentInk}`}>
   <div class="svc-exp__head">
     <span class="svc-exp__badge">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[slug]} />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONE_SVG[icona]} />
       <span class="svc-exp__eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
     </span>
     <span class="svc-exp__index" aria-hidden="true">{idx}</span>
   </div>
 
-  {hero?.eyebrow && (
-    <MetaLabel as="p">
-      {hero.eyebrow}
-    </MetaLabel>
-  )}
+  <MetaLabel as="p">
+    {perChi}
+  </MetaLabel>
   <h3 class="svc-exp__title">
     {title}
   </h3>
   <p class="svc-exp__desc">
-    {hero?.sub ?? servizio.data.subtitle}
+    {desc}
   </p>
 
   <ul class="svc-exp__outcomes">
-    {(hero?.outcomes ?? []).map((o) => (
+    {punti.map((o) => (
       <li class="svc-exp__outcome">
         <span class="svc-exp__check" aria-hidden="true">✓</span>
         <span>{o}</span>
@@ -83,9 +79,9 @@ const icons: Record<string, string> = {
     ))}
   </ul>
 
-  {href && (
+  {link && (
     <div class="svc-exp__cta">
-      <ArrowLink href={href} className="svc-exp__link">Scopri {title}</ArrowLink>
+      <ArrowLink href={link.href} className="svc-exp__link">{link.label}</ArrowLink>
     </div>
   )}
 </article>

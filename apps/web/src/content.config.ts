@@ -7,7 +7,7 @@ import { elementiLoader, pagineLoader, progettiLoader, serviziLoader } from '#li
 
 
 // Servizi da Sanity (ADR-0004). Oltre alla scheda, il documento porta i testi
-// degli hero A/B/C, quelli della card (home e /servizi) e il corpo come lista
+// degli hero A/B/C e il corpo come lista
 // di sezioni riordinabili (blocchi Portable Text resi in servizi/[slug].astro).
 const linkSchema = z.object({ label: z.string(), href: z.string() });
 
@@ -30,10 +30,10 @@ const serviziCollection = defineCollection({
     //   banner = il trattamento comune a progetti e pagine
     //   a/b/c  = split al target · claim tipografico · scheda-offerta
     heroVariant: z.enum(['banner', 'a', 'b', 'c']).optional().default('banner'),
-    // «Pubblicata» comanda solo la scheda /servizi/<slug>: le card del
-    // servizio si mostrano sempre, e portano alla scheda solo se è pubblicata
-    // (lib/pubblicazione.ts). Il loader lo ricava anche dai documenti non
-    // ancora migrati (lib/statoPubblicazione.ts).
+    // «Pubblicata» comanda solo la scheda /servizi/<slug>: le card
+    // dell'Elenco dei servizi sono contenuti a sé (sezioneElencoServizi). Il
+    // loader lo ricava anche dai documenti non ancora migrati
+    // (lib/statoPubblicazione.ts).
     pubblicata: z.boolean(),
     // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
     hero: z
@@ -50,10 +50,6 @@ const serviziCollection = defineCollection({
         ledger: z.array(z.object({ k: z.string(), v: z.string() })).default([]),
       })
       .optional(),
-    // Titolo breve del servizio nel suo blocco in /servizi.
-    card: z.object({
-      title: z.string(),
-    }),
     // Sezioni del corpo (Portable Text, blocchi custom).
     body: z.array(z.any()).optional().default([]),
   }),
@@ -217,7 +213,25 @@ const sezioneSchema = z.discriminatedUnion('_type', [
   sezione('sezioneCitazione', { quote: z.string(), author: z.string() }),
   // Servizi scelti nel blocco, nell'ordine del blocco: il loader risolve i
   // riferimenti nello slug di ciascun servizio.
-  sezione('sezioneElencoServizi', { servizi: z.array(z.string()) }),
+  // Elenco dei servizi: card con i loro testi, separate dalla scheda del
+  // servizio. Il link si mostra se la card lo chiede e la destinazione
+  // esiste (lib/links.ts).
+  sezione('sezioneElencoServizi', {
+    card: z.array(
+      z.object({
+        _key: z.string(),
+        ancora: z.string(),
+        icona: z.enum(ICONE_CARD.map((i) => i.id) as [IconaCard, ...IconaCard[]]),
+        perChi: z.string(),
+        title: z.string(),
+        desc: z.string(),
+        punti: z.array(z.string()).optional().default([]),
+        mostraLink: z.boolean().optional().default(false),
+        href: z.string().optional(),
+        linkLabel: z.string().optional(),
+      }),
+    ),
+  }),
   sezione('sezioneElencoProgetti', {}),
   // Foto: URL Sanity, scaricato e ottimizzato da Astro in build.
   sezione('sezioneRiquadri', {

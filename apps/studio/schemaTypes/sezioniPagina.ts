@@ -326,18 +326,79 @@ export const sezioneElencoServizi = defineType({
   type: 'object',
   fields: [
     defineField({
-      name: 'servizi',
-      title: 'Servizi',
+      name: 'card',
+      title: 'Card',
       description:
-        "Quali servizi mostrare, nell'ordine della lista: trascinateli per riordinarli. Un servizio nuovo compare solo dopo averlo aggiunto qui. I testi si modificano nel servizio (Scheda e Hero).",
+        "Una card per servizio, nell'ordine della lista: trascinatele per riordinarle. I testi sono della card, non della scheda del servizio: la card decide anche se portare alla scheda.",
       type: 'array',
-      validation: (r) => r.required().min(1).unique(),
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'servizio' }] })],
+      validation: (r) => r.required().min(1),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'cardServizio',
+          title: 'Card del servizio',
+          fields: [
+            defineField({
+              name: 'ancora',
+              title: 'Ancora',
+              type: 'string',
+              description: "L'indirizzo della card nella pagina, /servizi/#<ancora>: ci portano i link delle card della home. Solo lettere minuscole, numeri e trattini.",
+              validation: (r) =>
+                r.required().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, { name: 'ancora', invert: false }),
+            }),
+            defineField({
+              name: 'icona',
+              title: 'Icona',
+              type: 'string',
+              options: { list: ICONE_CARD.map(({ id, title }) => ({ value: id, title })) },
+              validation: (r) => r.required(),
+            }),
+            str('perChi', 'Per chi'),
+            str('title', 'Titolo'),
+            txt('desc', 'Descrizione'),
+            defineField({
+              name: 'punti',
+              title: 'Cosa ottieni',
+              type: 'array',
+              of: [defineArrayMember({ type: 'string' })],
+            }),
+            defineField({
+              name: 'mostraLink',
+              title: 'Mostra il link',
+              type: 'boolean',
+              description:
+                "Acceso: la card porta alla destinazione qui sotto. Sul sito pubblico il link sparisce comunque se la pagina di destinazione non esiste o non è pubblicata.",
+              initialValue: false,
+            }),
+            defineField({
+              name: 'href',
+              title: 'Destinazione del link',
+              type: 'string',
+              description: 'Di solito la scheda del servizio, /servizi/<slug>.',
+              hidden: ({ parent }) => !parent?.mostraLink,
+              validation: (r) =>
+                r.custom(urlSicuro).custom((v, ctx) => ((ctx.parent as any)?.mostraLink && !v ? 'Serve una destinazione' : true)),
+            }),
+            defineField({
+              name: 'linkLabel',
+              title: 'Testo del link',
+              type: 'string',
+              description: 'Per esempio «Scopri consulenza strategica».',
+              hidden: ({ parent }) => !parent?.mostraLink,
+              validation: (r) => r.custom((v, ctx) => ((ctx.parent as any)?.mostraLink && !v ? 'Serve il testo del link' : true)),
+            }),
+          ],
+          preview: {
+            select: { title: 'title', subtitle: 'perChi', mostraLink: 'mostraLink' },
+            prepare: ({ title, subtitle, mostraLink }) => ({ title, subtitle: `${subtitle ?? ''}${mostraLink ? ' · con link' : ''}` }),
+          },
+        }),
+      ],
     }),
   ],
   preview: {
-    select: { n: 'servizi.length' },
-    prepare: ({ n }) => ({ title: 'Elenco dei servizi', subtitle: n ? `${n} servizi` : 'Nessun servizio scelto' }),
+    select: { n: 'card.length' },
+    prepare: ({ n }) => ({ title: 'Elenco dei servizi', subtitle: n ? `${n} card` : 'Nessuna card' }),
   },
 });
 

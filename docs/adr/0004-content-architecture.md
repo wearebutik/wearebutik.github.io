@@ -47,8 +47,8 @@ it.
   It is distinct from Sanity's Publish, which makes edits final.
   `apps/web/src/lib/pubblicazione.ts` decides what the site shows from it:
   an unpublished progetto has no page, card or link; an unpublished servizio
-  loses only its page `/servizi/<slug>`, while its cards stay, without a link
-  to the page; an unpublished page (or one that exists only as a draft) is
+  loses only its page `/servizi/<slug>` (its cards are content of their own,
+  see *Pages as sections*); an unpublished page (or one that exists only as a draft) is
   not generated. Links to anything not generated disappear
   (`apps/web/src/lib/links.ts`). The queries load every document and the site
   filters, so the draft preview shows everything, with a strip at the top of
@@ -189,8 +189,12 @@ it.
   its own: it places that content on the page, and the Studio shows a note
   linking to the source. The cards in the Hero are the home's own content
   (title, text, link, icon), close to the services but written in the block.
-  The Services list and Featured projects blocks pick which documents to show
-  and in which order (references); the project list follows the Studio's
+  The Services list holds its own cards too (who it is for, title,
+  description, outcomes, icon, anchor), separate from the servizio documents,
+  which are the detail pages: each card decides with «Mostra il link» whether
+  it links somewhere, and the link still disappears when its target is not
+  generated (`apps/web/src/lib/cardServizi.ts`). The Featured projects block
+  picks which projects to show and in which order (references); the project list follows the Studio's
   drag-and-drop order of projects. The method stays as fixed fields on Servizi, shown by
   the Method section there and on the home. A page header (Hero, Header with
   photo, Header, Title) carries the page's H1: at most one, and first. Hiding a

@@ -180,14 +180,13 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaTrasparenza: 'trasparenza',
 };
 
-// Nelle sezioni, l'Elenco dei servizi e i Progetti in evidenza portano
-// riferimenti: la query li risolve nello slug, nell'ordine scelto nel blocco.
+// Nelle sezioni, i Progetti in evidenza portano riferimenti: la query li
+// risolve nello slug, nell'ordine scelto nel blocco.
 const PAGINE_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(PAGINE_TYPE))} && _id match "pagina-*"]{
   ...,
   "id": string::split(_id, "pagina-")[1],
   sezioni[]{
     ...,
-    _type == "sezioneElencoServizi" => { "servizi": servizi[]->slug.current },
     _type == "sezioneProgetti" => { "progetti": progetti[]->slug.current }
   }
 }`;
