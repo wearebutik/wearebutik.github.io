@@ -78,7 +78,10 @@ it.
   (Worker `butik-anteprima`, https://preview.wearebutik.com). The Studio shows it next to
   the form in the **Anteprima web** tab (the `anteprima-web` presentation tool
   in `apps/studio/sanity.config.ts`); on its own, in a browser tab, it shows
-  the site with the drafts of whoever signs in.
+  the site with the drafts of whoever signs in. Each document's form lists
+  the pages it appears on, and each one opens that page in the tab
+  (`resolve` in `apps/studio/luoghiAnteprima.ts`, with the paths taken from
+  `@butik/site-config/links`).
   - **Build.** `pnpm --filter @butik/web build:preview` builds the same site
     with `BUTIK_ANTEPRIMA=1`: `output: 'server'` with a minimal adapter
     (`apps/web/src/lib/anteprima/`); `BUTIK_PREVIEW_SW=1` picks the entry for
