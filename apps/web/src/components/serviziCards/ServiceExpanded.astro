@@ -63,9 +63,9 @@ const accentInk = accentsInk[(index - 1) % accentsInk.length];
   <MetaLabel as="p">
     {perChi}
   </MetaLabel>
-  <h3 class="svc-exp__title">
+  <h2 class="svc-exp__title">
     {title}
-  </h3>
+  </h2>
   <p class="svc-exp__desc">
     {desc}
   </p>
@@ -181,16 +181,16 @@ const accentInk = accentsInk[(index - 1) % accentsInk.length];
     font-weight: 700;
     color: var(--accent);
   }
-  /* Neutralizza lo stile globale di h3 (uppercase/rosso/tracking). */
+  /* H2: ogni card è una sezione della pagina, subito sotto l'H1. */
   .svc-exp__title {
     font-family: var(--font-heading);
     font-size: var(--font-size-xl);
     font-weight: 700;
     line-height: 1.25;
     margin-top: var(--space-2);
-    text-transform: none !important;
-    letter-spacing: -0.005em !important;
-    color: var(--color-butik-dark) !important;
+    text-transform: none;
+    letter-spacing: -0.005em;
+    color: var(--color-butik-dark);
   }
   @media (min-width: 768px) {
     .svc-exp__title {

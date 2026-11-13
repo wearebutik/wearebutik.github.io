@@ -3,9 +3,11 @@
 //   1. l'endpoint /og/[...path].png.ts → genera le PNG (una per rotta)
 //   2. BaseLayout.astro → emette il <meta og:image> verso la PNG giusta
 // Tenendo qui l'unica sorgente, non serve cablare nulla sulle singole pagine:
-// progetti e servizi arrivano dalle collection, le pagine statiche dalla
-// mappa qui sotto. Una pagina non elencata ricade sul logo (nessun link rotto).
-import { progettiVisibili, serviziConScheda } from '#lib/pubblicazione';
+// progetti e servizi arrivano dalle loro collection, le pagine dalla «Card di
+// condivisione» della loro tab SEO nello Studio (sottotitolo = meta
+// description). Una pagina senza la card completa ricade sul logo.
+import { getCollection } from 'astro:content';
+import { pagineNonVisibili, progettiVisibili, serviziConScheda } from '#lib/pubblicazione';
 
 export interface OgCard {
   kind: string;        // eyebrow: tipo/categoria mostrato in alto
@@ -25,36 +27,24 @@ export const CARD_HANDLE = '@wearebutik';
 const CTA_PROGETTO = 'Scopri il progetto';
 const CTA_SERVIZIO = 'Richiedi una consulenza';
 
-// Pagine statiche (non-collection): card OG curate a mano.
-const staticCards: Record<string, OgCard> = {
-  '/': {
-    kind: 'Butik · Impresa sociale',
-    title: 'Cultura e territori attraverso la musica',
-    subtitle:
-      'La prima impresa sociale italiana specializzata in progettazione culturale e sviluppo territoriale attraverso la musica.',
-    cta: 'Parliamone',
-    layout: 'home',
-  },
-  '/chi-siamo': {
-    kind: 'Chi siamo',
-    title: 'Un team di professioniste della musica',
-    subtitle:
-      'Abbiamo fatto della musica uno strumento concreto di sviluppo culturale, sociale e territoriale.',
-    cta: 'Conosci il team',
-  },
-  '/contatti': {
-    kind: 'Contatti',
-    title: 'Costruiamo qualcosa insieme',
-    subtitle:
-      'Comune, DMO, operatore culturale o festival: scrivici e mettiamo a terra il prossimo progetto.',
-    cta: 'Scrivici',
-  },
-};
-
-/** Mappa completa rotta → card, unendo statiche + collection. */
+/** Mappa completa rotta → card: pagine, progetti e servizi. */
 export async function getAllOgCards(): Promise<Map<string, OgCard>> {
   const map = new Map<string, OgCard>();
-  for (const [route, card] of Object.entries(staticCards)) map.set(route, card);
+
+  const nonVisibili = new Set(await pagineNonVisibili());
+  for (const e of await getCollection('pagine')) {
+    const route = e.id === 'home' ? '/' : `/${e.id}`;
+    const card = e.data.ogCard;
+    if (!card?.title || !card.eyebrow || !card.cta || nonVisibili.has(route)) continue;
+    map.set(route, {
+      kind: card.eyebrow,
+      title: card.title,
+      subtitle: e.data.metaDescription,
+      cta: card.cta,
+      // La home ha il suo impianto grafico (lib/og/render.ts).
+      layout: e.id === 'home' ? 'home' : 'plain',
+    });
+  }
 
   const progetti = await progettiVisibili();
   for (const e of progetti) {
