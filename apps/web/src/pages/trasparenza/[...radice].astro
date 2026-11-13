@@ -1,0 +1,49 @@
+---
+// Trasparenza dalla pagina omonima su Sanity (ADR-0004): le informazioni che
+// butik pubblica per legge come impresa sociale che riceve fondi pubblici.
+// Stessa forma dei Termini: titolo, data di aggiornamento, testo legale.
+//
+// Rotta con un parametro vuoto per poter non generare la pagina: con «Pagina
+// nascosta» attivo, o finché il documento esiste solo in bozza, il sito
+// pubblico non ha /trasparenza/ (lib/pagineNascoste.ts). L'anteprima la
+// mostra; lì ogni altro indirizzo sotto /trasparenza/ è 404.
+import { getEntry } from 'astro:content';
+import LegalText from '#components/testo/LegalText.astro';
+import BaseLayout from '#layouts/BaseLayout.astro';
+import { paginaNascosta } from '#lib/pagineNascoste';
+
+export async function getStaticPaths() {
+  return (await paginaNascosta('trasparenza')) ? [] : [{ params: { radice: undefined } }];
+}
+
+if (Astro.params.radice) return new Response(null, { status: 404 });
+const entry = await getEntry('pagine', 'trasparenza');
+if (!entry || entry.data.type !== 'trasparenza') {
+  throw new Error('Contenuto pagina "trasparenza" mancante o non valido (collezione pagine).');
+}
+const c = entry.data;
+---
+
+<BaseLayout title={c.metaTitle} description={c.metaDescription}>
+  <article class="trasparenza">
+    <div class="prose prose-full">
+      <h1>{c.pageTitle}</h1>
+      <p><em>Ultimo aggiornamento: {c.updatedDate}.</em></p>
+      <LegalText value={c.body} />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .trasparenza {
+    max-width: var(--measure-3xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    padding-block: var(--space-16);
+  }
+  @media (min-width: 768px) {
+    .trasparenza {
+      padding-block: var(--space-24);
+    }
+  }
+</style>

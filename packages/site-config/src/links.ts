@@ -8,7 +8,7 @@
  * sito fallisce se l'elenco non corrisponde alle pagine vere
  * (apps/web/src/lib/pagineGuard.ts).
  */
-export const PAGINE_STATICHE = ['/', '/chi-siamo', '/servizi', '/progetti', '/sostienici', '/contatti', '/partners', '/privacy', '/termini'] as const;
+export const PAGINE_STATICHE = ['/', '/chi-siamo', '/servizi', '/progetti', '/sostienici', '/contatti', '/partners', '/privacy', '/termini', '/trasparenza'] as const;
 
 /** Sezioni con una scheda per documento: /servizi/<slug>, /progetti/<slug>. */
 export const SEZIONI_CON_SCHEDE = ['servizi', 'progetti'] as const;

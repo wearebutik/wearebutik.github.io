@@ -319,6 +319,16 @@ const paginaPartners = z.object({
   })),
 });
 
+const paginaTrasparenza = z.object({
+  type: z.literal('trasparenza'),
+  nascosta: z.boolean().optional().default(false),
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  pageTitle: z.string(),
+  updatedDate: z.string(),
+  body: portableText,
+});
+
 const paginaTermini = z.object({
   type: z.literal('termini'),
   metaTitle: z.string(),
@@ -424,6 +434,7 @@ const pagineCollection = defineCollection({
     paginaBannerCookie,
     paginaTestimonials,
     paginaTermini,
+    paginaTrasparenza,
     paginaPrivacy,
     paginaFooter,
   ]),

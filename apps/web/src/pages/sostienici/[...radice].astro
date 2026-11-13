@@ -9,11 +9,10 @@
 import { getEntry } from 'astro:content';
 import BaseLayout from '#layouts/BaseLayout.astro';
 import Sezioni from '#components/sezioni/Sezioni.astro';
+import { paginaNascosta } from '#lib/pagineNascoste';
 
 export async function getStaticPaths() {
-  const entry = await getEntry('pagine', 'sostienici');
-  const nascosta = entry?.data.type === 'sostienici' && entry.data.nascosta;
-  return nascosta && !__BUTIK_ANTEPRIMA__ ? [] : [{ params: { radice: undefined } }];
+  return (await paginaNascosta('sostienici')) ? [] : [{ params: { radice: undefined } }];
 }
 
 if (Astro.params.radice) return new Response(null, { status: 404 });
