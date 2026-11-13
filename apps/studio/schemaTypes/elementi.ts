@@ -1,6 +1,7 @@
 // Elementi del sito: i contenuti che non sono pagine ma compaiono in tutte, o
-// in più d'una. Header, footer, banner dei cookie e testimonianze (un blocco
-// che le pagine mostrano con la sezione «Testimonianze»). Come le pagine sono
+// in più d'una. Header, footer, banner dei cookie, testimonianze (un blocco
+// che le pagine mostrano con la sezione «Testimonianze») e la pagina non
+// trovata (404), che risponde a ogni indirizzo che non esiste. Come le pagine sono
 // documenti fissi, uno per tipo (_id in ELEMENTI), senza "crea" né "elimina"
 // (structure.ts, sanity.config.ts). Ogni tipo rispecchia il ramo
 // corrispondente dello schema Zod `elementi` in apps/web/src/content.config.ts.
@@ -182,12 +183,48 @@ export const testimonials = defineType({
   preview: { prepare: () => ({ title: 'Testimonianze' }) },
 });
 
+// Pagina non trovata (404): i testi della pagina che il sito mostra per un
+// indirizzo che non esiste. Il disegno (il giradischi, la scaletta) e il suono
+// restano nel codice (apps/web/src/pages/404.astro); qui le parole e le
+// tracce, cioè i link per tornare nel sito.
+export const paginaNonTrovata = defineType({
+  name: 'paginaNonTrovata',
+  title: 'Pagina non trovata (404)',
+  type: 'document',
+  groups: [
+    { name: 'testo', title: 'Testo', default: true },
+    { name: 'giradischi', title: 'Giradischi' },
+  ],
+  fields: [
+    str('metaTitle', 'Titolo nella scheda del browser', 'testo'),
+    str('occhiello', 'Occhiello', 'testo'),
+    str('titolo', 'Titolo', 'testo'),
+    txt('testo', 'Testo', 'testo'),
+    str('tracceTitolo', 'Titolo della scaletta', 'testo'),
+    defineField({
+      name: 'tracce',
+      title: 'Scaletta',
+      description: 'Le pagine da cui ripartire, una traccia per link. Un link a una pagina che non esiste non compare.',
+      type: 'array',
+      group: 'testo',
+      of: [defineArrayMember({ type: 'link' })],
+      validation: (r) => r.required().min(1),
+    }),
+    str('play', 'Pulsante: fa girare il disco', 'giradischi'),
+    str('stop', 'Pulsante: ferma il disco', 'giradischi'),
+    str('suonoAcceso', 'Interruttore del suono, acceso', 'giradischi'),
+    str('suonoSpento', 'Interruttore del suono, spento', 'giradischi'),
+  ],
+  preview: { prepare: () => ({ title: 'Pagina non trovata (404)' }) },
+});
+
 // tipo Sanity → _id del documento, che è anche l'id dell'entry `elementi` sul sito.
 export const ELEMENTI = {
   header: 'header',
   footer: 'footer',
   bannerCookie: 'banner-cookie',
   testimonials: 'testimonials',
+  paginaNonTrovata: 'pagina-non-trovata',
 } as const;
 
-export const elementiTypes = [header, footer, bannerCookie, testimonials];
+export const elementiTypes = [header, footer, bannerCookie, testimonials, paginaNonTrovata];

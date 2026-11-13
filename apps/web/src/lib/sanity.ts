@@ -236,14 +236,15 @@ export const pagineLoader = () =>
     }),
   }));
 
-// Elementi del sito (header, footer, banner dei cookie, testimonianze): un
-// documento fisso per tipo, con _id uguale all'id dell'entry e al
+// Elementi del sito (header, footer, banner dei cookie, testimonianze, pagina
+// non trovata): un documento fisso per tipo, con _id uguale all'id dell'entry e al
 // discriminante `type` dello schema Zod `elementi`.
 const ELEMENTI_TYPE: Record<string, string> = {
   header: 'header',
   footer: 'footer',
   bannerCookie: 'banner-cookie',
   testimonials: 'testimonials',
+  paginaNonTrovata: 'pagina-non-trovata',
 };
 
 const ELEMENTI_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(ELEMENTI_TYPE))} && _id in ${JSON.stringify(Object.values(ELEMENTI_TYPE))}]{

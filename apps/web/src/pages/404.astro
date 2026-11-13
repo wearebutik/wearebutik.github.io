@@ -1,0 +1,312 @@
+---
+// Pagina non trovata: risponde a ogni indirizzo che non esiste (Cloudflare,
+// `not_found_handling: "404-page"` in wrangler.jsonc). Un giradischi con il
+// disco che salta sulla «traccia 404» e una scaletta di pagine da cui
+// ripartire. Interazione:
+//   - «Rimetti il disco» lo fa girare (e lo ferma); il braccio si appoggia;
+//   - l'interruttore del suono è spento all'inizio: acceso, il disco che
+//     riparte suona una frase breve e ogni traccia della scaletta la sua nota
+//     al passaggio del puntatore o del fuoco (lib/giradischi);
+//   - con prefers-reduced-motion niente rotazione né salti.
+// I testi stanno su Sanity (elemento del sito «Pagina non trovata»).
+import { getEntry } from 'astro:content';
+import BaseLayout from '#layouts/BaseLayout.astro';
+import Eyebrow from '@butik/ui/Eyebrow';
+import Button from '@butik/ui/Button';
+import { soloLinkValidi } from '#lib/links';
+
+const entry = await getEntry('elementi', 'pagina-non-trovata');
+if (!entry || entry.data.type !== 'pagina-non-trovata') {
+  throw new Error('Contenuto "Pagina non trovata" mancante o non valido (collezione elementi).');
+}
+const c = entry.data;
+const tracce = await soloLinkValidi(c.tracce);
+---
+
+<BaseLayout title={c.metaTitle} description={c.testo} noindex reveal={false}>
+  <section
+    class="nf"
+    data-giradischi
+    data-play={c.play}
+    data-stop={c.stop}
+    data-suono-acceso={c.suonoAcceso}
+    data-suono-spento={c.suonoSpento}
+  >
+    <div class="nf-piatto" aria-hidden="true">
+      <div class="nf-disco" data-disco>
+        <span class="nf-etichetta">404</span>
+      </div>
+      <span class="nf-braccio" data-braccio></span>
+    </div>
+
+    <div class="nf-testo">
+      <Eyebrow>{c.occhiello}</Eyebrow>
+      <h1 class="nf-titolo">{c.titolo}</h1>
+      <p class="nf-lead">{c.testo}</p>
+
+      <div class="nf-comandi">
+        <Button type="button" tone="dark" className="nf-play">{c.play}</Button>
+        <Button type="button" variant="ghost" className="nf-suono">{c.suonoSpento}</Button>
+      </div>
+
+      <h2 class="nf-scaletta-titolo">{c.tracceTitolo}</h2>
+      <ol class="nf-scaletta">
+        {tracce.map((t, i) => (
+          <li>
+            <a class="nf-traccia" href={t.href} data-traccia={i}>
+              <span class="nf-numero" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+              <span class="nf-nome">{t.label}</span>
+              <span class="nf-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  import { notaDellaTraccia } from '#lib/giradischi/note';
+  import { creaSuono, type Suono } from '#lib/giradischi/suono.client';
+
+  // ClientRouter: la pagina può tornare senza ricaricare lo script, quindi
+  // l'aggancio si rifà a ogni astro:page-load sui nodi nuovi
+  // (docs/guidances/client-scripts.md). Il suono si chiude lasciando la pagina.
+  let suono: Suono | undefined;
+
+  function initGiradischi() {
+    const root = document.querySelector<HTMLElement>('[data-giradischi]');
+    if (!root || root.dataset.pronto) return;
+    root.dataset.pronto = '';
+    const play = root.querySelector<HTMLButtonElement>('.nf-play');
+    const interruttore = root.querySelector<HTMLButtonElement>('.nf-suono');
+    if (!play || !interruttore) return;
+
+    let gira = false;
+    let conSuono = false;
+    play.setAttribute('aria-pressed', 'false');
+    interruttore.setAttribute('aria-pressed', 'false');
+
+    play.addEventListener('click', () => {
+      gira = !gira;
+      root.toggleAttribute('data-gira', gira);
+      play.setAttribute('aria-pressed', String(gira));
+      play.textContent = gira ? root.dataset.stop! : root.dataset.play!;
+      if (gira && conSuono) suono?.frase();
+    });
+
+    interruttore.addEventListener('click', () => {
+      conSuono = !conSuono;
+      if (conSuono) suono ??= creaSuono();
+      interruttore.setAttribute('aria-pressed', String(conSuono));
+      interruttore.textContent = conSuono ? root.dataset.suonoAcceso! : root.dataset.suonoSpento!;
+    });
+
+    for (const traccia of root.querySelectorAll<HTMLAnchorElement>('[data-traccia]')) {
+      const suonaTraccia = () => {
+        if (conSuono) suono?.nota(notaDellaTraccia(Number(traccia.dataset.traccia)));
+      };
+      traccia.addEventListener('pointerenter', suonaTraccia);
+      traccia.addEventListener('focus', suonaTraccia);
+    }
+  }
+
+  document.addEventListener('astro:page-load', initGiradischi);
+  document.addEventListener('astro:before-swap', () => {
+    suono?.chiudi();
+    suono = undefined;
+  });
+</script>
+
+<style>
+  .nf {
+    display: grid;
+    gap: var(--space-12);
+    align-items: center;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--space-16) var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .nf {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      padding-block: var(--space-24);
+    }
+  }
+
+  /* ── Il giradischi ─────────────────────────────────────────────────────── */
+  .nf-piatto {
+    position: relative;
+    width: min(100%, 22rem);
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+
+  /* Il disco: solchi concentrici scuri e l'etichetta rossa con «404». */
+  .nf-disco {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-full);
+    background:
+      radial-gradient(circle, transparent 0 31%, color-mix(in oklab, var(--color-white) 14%, transparent) 31.5% 32%, transparent 32.5%),
+      repeating-radial-gradient(circle, var(--color-dark) 0 2px, color-mix(in oklab, var(--color-dark) 82%, var(--color-white)) 2px 3px);
+    box-shadow: 0 var(--space-4) var(--space-12) color-mix(in oklab, var(--color-dark) 25%, transparent);
+    /* Fermo, il disco «salta»: torna indietro di un soffio, sempre sullo stesso punto. */
+    animation: nf-salto 1.6s var(--ease-standard) infinite;
+  }
+  .nf-etichetta {
+    display: grid;
+    place-items: center;
+    width: 34%;
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+    background: var(--color-accent-fill);
+    color: var(--color-fg-invert);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-2xl);
+    font-weight: 800;
+  }
+  .nf[data-gira] .nf-disco {
+    animation: nf-giro 1.8s linear infinite; /* 33 giri e un terzo, più o meno */
+  }
+
+  /* Il braccio: alzato quando il disco salta, appoggiato quando gira. */
+  .nf-braccio {
+    position: absolute;
+    top: -4%;
+    right: -2%;
+    width: 0.5rem;
+    height: 62%;
+    border-radius: var(--radius-full);
+    background: var(--color-fg);
+    transform-origin: 50% 0.25rem;
+    transform: rotate(14deg);
+    transition: transform var(--duration-slow) var(--ease-out);
+  }
+  .nf-braccio::before {
+    content: '';
+    position: absolute;
+    top: -0.5rem;
+    left: 50%;
+    width: 1.5rem;
+    aspect-ratio: 1;
+    border-radius: var(--radius-full);
+    background: var(--color-fg);
+    translate: -50% 0;
+  }
+  .nf[data-gira] .nf-braccio {
+    transform: rotate(28deg);
+  }
+
+  @keyframes nf-salto {
+    0%, 70%, 100% { rotate: 0deg; }
+    76% { rotate: -9deg; }
+    84% { rotate: -3deg; }
+  }
+  @keyframes nf-giro {
+    to { rotate: 360deg; }
+  }
+
+  /* ── Testo e comandi ───────────────────────────────────────────────────── */
+  .nf-titolo {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--font-size-4xl);
+    line-height: 1.05;
+    color: var(--color-fg);
+  }
+  .nf-lead {
+    margin-block: var(--space-4) 0;
+    max-width: var(--measure-xl);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    line-height: 1.5;
+    color: var(--color-fg);
+  }
+  .nf-comandi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-block-start: var(--space-8);
+  }
+
+  /* ── La scaletta ───────────────────────────────────────────────────────── */
+  .nf-scaletta-titolo {
+    margin-block: var(--space-12) var(--space-3);
+    font-family: var(--font-heading);
+    font-size: var(--font-size-xl);
+    color: var(--color-fg);
+  }
+  .nf-scaletta {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: 1px solid color-mix(in oklab, var(--color-fg) 15%, transparent);
+  }
+  .nf-traccia {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-2);
+    border-block-end: 1px solid color-mix(in oklab, var(--color-fg) 15%, transparent);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: var(--font-size-lg);
+    text-decoration: none;
+  }
+  .nf-traccia:hover .nf-nome,
+  .nf-traccia:focus-visible .nf-nome {
+    color: var(--color-accent-text);
+  }
+  .nf-traccia:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+  .nf-numero {
+    font-family: var(--font-heading);
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in oklab, var(--color-fg) 55%, transparent);
+  }
+  .nf-nome {
+    flex: 1;
+  }
+
+  /* L'equalizzatore della traccia: fermo, si muove sulla traccia puntata. */
+  .nf-eq {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 1rem;
+  }
+  .nf-eq i {
+    width: 3px;
+    height: 25%;
+    border-radius: 1px;
+    background: var(--color-accent);
+  }
+  .nf-traccia:hover .nf-eq i,
+  .nf-traccia:focus-visible .nf-eq i {
+    animation: nf-eq 0.8s var(--ease-standard) infinite alternate;
+  }
+  .nf-eq i:nth-child(2) { animation-delay: -0.3s; }
+  .nf-eq i:nth-child(3) { animation-delay: -0.5s; }
+  .nf-eq i:nth-child(4) { animation-delay: -0.15s; }
+  @keyframes nf-eq {
+    from { height: 20%; }
+    to { height: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf-disco,
+    .nf[data-gira] .nf-disco,
+    .nf-traccia:hover .nf-eq i,
+    .nf-traccia:focus-visible .nf-eq i {
+      animation: none;
+    }
+    .nf-braccio {
+      transition: none;
+    }
+  }
+</style>
