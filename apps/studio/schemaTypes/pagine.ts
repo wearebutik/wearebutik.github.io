@@ -187,7 +187,19 @@ export const paginaServizi = pagina(
 
 export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sezioni()]);
 
-export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [sezioni()]);
+// `nascosta`: il sito pubblico non genera la pagina (l'indirizzo non esiste);
+// l'anteprima delle bozze la mostra comunque. Togli anche i link che ci portano.
+export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [
+  defineField({
+    name: 'nascosta',
+    title: 'Pagina nascosta',
+    description:
+      'Se attivo, /sostienici non esiste sul sito pubblico. L’anteprima la mostra comunque. Ricordati di togliere i link che ci portano (es. footer).',
+    type: 'boolean',
+    initialValue: false,
+  }),
+  sezioni(),
+]);
 
 // I testi del banner dei cookie a biglietto, che contiene anche le
 // preferenze (ADR-0006, PDR-0006). Le categorie e l'elenco tecnico dei cookie

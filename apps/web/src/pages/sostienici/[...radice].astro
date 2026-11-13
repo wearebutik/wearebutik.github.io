@@ -1,0 +1,29 @@
+---
+// Le sezioni della pagina su Sanity, nell'ordine scelto nello Studio
+// (ADR-0004, *Pages as sections*).
+//
+// Rotta con un parametro vuoto solo per poter non generare la pagina: con
+// «Pagina nascosta» attivo nello Studio il sito pubblico non ha /sostienici/.
+// L'anteprima delle bozze (build server, BUTIK_ANTEPRIMA) la mostra comunque;
+// lì getStaticPaths non vale, e ogni altro indirizzo sotto /sostienici/ è 404.
+import { getEntry } from 'astro:content';
+import BaseLayout from '#layouts/BaseLayout.astro';
+import Sezioni from '#components/sezioni/Sezioni.astro';
+
+export async function getStaticPaths() {
+  const entry = await getEntry('pagine', 'sostienici');
+  const nascosta = entry?.data.type === 'sostienici' && entry.data.nascosta;
+  return nascosta && !__BUTIK_ANTEPRIMA__ ? [] : [{ params: { radice: undefined } }];
+}
+
+if (Astro.params.radice) return new Response(null, { status: 404 });
+const entry = await getEntry('pagine', 'sostienici');
+if (!entry || entry.data.type !== 'sostienici') {
+  throw new Error('Contenuto pagina "sostienici" mancante o non valido (collezione pagine).');
+}
+const c = entry.data;
+---
+
+<BaseLayout title={c.metaTitle} description={c.metaDescription}>
+  <Sezioni sezioni={c.sezioni} />
+</BaseLayout>
