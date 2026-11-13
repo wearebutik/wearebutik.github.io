@@ -2,6 +2,7 @@
 import BaseLayout from '#layouts/BaseLayout.astro';
 import { getEntry } from 'astro:content';
 import HomePage from '#components/home/HomePage.astro';
+import DatiStrutturati from '#components/seo/DatiStrutturati.astro';
 
 const homeEntry = await getEntry('pagine', 'home');
 if (!homeEntry || homeEntry.data.type !== 'home') {
@@ -11,5 +12,6 @@ const c = homeEntry.data;
 ---
 
 <BaseLayout title={c.metaTitle} description={c.metaDescription}>
+  <DatiStrutturati slot="head" home />
   <HomePage />
 </BaseLayout>

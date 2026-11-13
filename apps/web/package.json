@@ -23,6 +23,7 @@
   "dependencies": {
     "@astrojs/mdx": "^8.1.1",
     "@astrojs/react": "^7.1.1",
+    "@astrojs/sitemap": "3.7.4",
     "@butik/site-config": "workspace:*",
     "@butik/ui": "workspace:*",
     "@butik/ui-tokens": "workspace:*",
