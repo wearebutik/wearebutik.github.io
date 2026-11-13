@@ -41,8 +41,15 @@ addresses (canonical, Open Graph, sitemap, structured data):
 With `SITE` set, the published build writes a sitemap (`@astrojs/sitemap`:
 `/sitemap-index.xml`, without `lab/` and `og/`; unpublished pages are not
 generated, so they are not listed) and `pages/robots.txt.ts` serves a
-`robots.txt` that allows everything and points to it; noindex pages are not
-blocked, so crawlers can read their noindex. The draft preview has neither.
+`robots.txt` that points to it, open to search engines and to AI assistants
+that search and cite, closed to the crawlers that collect text to train
+models (PDR-0007); noindex pages are not blocked, so crawlers can read their
+noindex. `pages/llms.txt.ts` serves `/llms.txt` for AI agents
+(`lib/seo/llms.ts`): the «Descrizione per gli agenti AI» element on Sanity,
+then services, projects, pages and contacts generated from the content. The
+draft preview has none of them. Cloudflare's AI Crawl Control and managed
+`robots.txt` stay off on the zone: the repository's `robots.txt` is the only
+policy.
 Structured data (JSON-LD, `lib/seo/datiStrutturati.ts` through
 `components/seo/DatiStrutturati.astro` in the layout's `head` slot):
 `Organization` and `WebSite` on the home, from the footer element on Sanity,
