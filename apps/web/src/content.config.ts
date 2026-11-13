@@ -314,6 +314,9 @@ const paginaPrivacy = z.object({
   metaDescription: z.string(),
   pageTitle: z.string(),
   updatedDate: z.string(),
+  // Il riquadro «In breve» in cima: compare solo con titolo e punti.
+  inBreveTitolo: z.string().optional(),
+  inBreve: z.array(z.string()).optional().default([]),
   body: portableText,
   cookieTitle: z.string(),
   cookieBody: portableText,
