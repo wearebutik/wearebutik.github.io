@@ -187,17 +187,19 @@ export const paginaServizi = pagina(
 
 export const paginaProgetti = pagina('paginaProgetti', 'Progetti (indice)', [sezioni()]);
 
-// `nascosta`: il sito pubblico non genera la pagina (l'indirizzo non esiste);
-// l'anteprima delle bozze la mostra comunque. Togli anche i link che ci portano.
-export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [
+// `nascosta`: il sito pubblico non genera la pagina (l'indirizzo non esiste) e
+// i link che ci portano spariscono; l'anteprima delle bozze la mostra comunque.
+const nascosta = (percorso: string) =>
   defineField({
     name: 'nascosta',
     title: 'Pagina nascosta',
-    description:
-      'Se attivo, /sostienici non esiste sul sito pubblico. L’anteprima la mostra comunque. Ricordati di togliere i link che ci portano (es. footer).',
+    description: `Se attivo, ${percorso} non esiste sul sito pubblico e i link che ci portano spariscono. L’anteprima la mostra comunque.`,
     type: 'boolean',
     initialValue: false,
-  }),
+  });
+
+export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [
+  nascosta('/sostienici'),
   sezioni(),
 ]);
 
@@ -292,6 +294,15 @@ export const paginaPrivacy = pagina('paginaPrivacy', 'Privacy e cookie', [
   defineField({ name: 'cookieBody', title: 'Cookie Policy', type: 'testoLegale' }),
 ]);
 
+// Trasparenza: le informazioni che un'impresa sociale che riceve fondi
+// pubblici pubblica per legge (L. 112/2013 art. 9; L. 124/2017 art. 1 c. 125).
+export const paginaTrasparenza = pagina('paginaTrasparenza', 'Trasparenza', [
+  nascosta('/trasparenza'),
+  str('pageTitle', 'Titolo'),
+  str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
+  defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
+]);
+
 export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
   str('pageTitle', 'Titolo'),
   str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
@@ -384,6 +395,7 @@ export const PAGINE = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaTrasparenza: 'trasparenza',
   paginaFooter: 'footer',
 } as const;
 
@@ -399,5 +411,6 @@ export const pagineTypes = [
   paginaTestimonials,
   paginaPrivacy,
   paginaTermini,
+  paginaTrasparenza,
   paginaFooter,
 ];

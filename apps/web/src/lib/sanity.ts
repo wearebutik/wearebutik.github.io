@@ -172,6 +172,7 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
+  paginaTrasparenza: 'trasparenza',
   paginaFooter: 'footer',
 };
 
