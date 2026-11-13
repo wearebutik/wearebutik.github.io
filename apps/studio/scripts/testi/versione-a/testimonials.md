@@ -1,5 +1,5 @@
 ---
-_type: paginaTestimonials
+_type: testimonials
 eyebrow: Testimonianze
 sectionTitle: Cosa dicono di noi
 testimonials:

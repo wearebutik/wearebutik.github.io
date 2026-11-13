@@ -1,5 +1,5 @@
 ---
-_type: paginaTestimonials
+_type: testimonials
 eyebrow: Testimonianze
 sectionTitle: La voce di chi ha lavorato con noi
 testimonials:

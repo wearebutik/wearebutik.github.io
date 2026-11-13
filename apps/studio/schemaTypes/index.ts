@@ -5,6 +5,7 @@ import { sezioniServizio } from './sezioniServizio';
 import { sezioniPagina } from './sezioniPagina';
 import { testoFormattato, link, linkSegnaposto } from './testo';
 import { pagineTypes, testoLegale } from './pagine';
+import { elementiTypes } from './elementi';
 
 // ── Avviso sui link segnaposto, su tutto lo schema ──────────────────────────
 // Ogni campo `string` o `text`, a qualsiasi profondità (oggetti, liste,
@@ -44,4 +45,5 @@ export const schemaTypes = [
   testoLegale,
   link,
   ...pagineTypes,
+  ...elementiTypes,
 ].map((t) => conAvvisoSegnaposto(t as Nodo)) as typeof pagineTypes;

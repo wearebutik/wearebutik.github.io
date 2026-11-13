@@ -3,7 +3,7 @@ import { z } from 'astro/zod';
 import { EMAIL } from '@butik/site-config/links';
 import { RETI_SOCIAL } from '@butik/site-config/social';
 import { ICONE_CARD, type IconaCard } from '@butik/site-config/icone';
-import { pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
+import { elementiLoader, pagineLoader, progettiLoader, serviziLoader } from '#lib/sanity';
 
 
 // Servizi da Sanity (ADR-0004). Oltre alla scheda, il documento porta i testi
@@ -363,8 +363,29 @@ const paginaSostienici = z.object({
   sezioni: z.array(sezioneSchema),
 });
 
+const paginaProgetti = z.object({
+  type: z.literal('progetti-index'),
+  metaTitle: z.string(),
+  metaDescription: z.string(),
+  sezioni: z.array(sezioneSchema),
+});
+
+// ── Elementi del sito ──────────────────────────────────────────────────────
+// Contenuti che non sono pagine ma compaiono in tutte o in più d'una: un
+// documento fisso per tipo (_id = id dell'entry, ADR-0004). Rispecchiano
+// apps/studio/schemaTypes/elementi.ts.
+
+// Header: voci del menu e pulsante. Le voci che non portano da nessuna parte
+// non si mostrano (lib/links.ts).
+const header = z.object({
+  type: z.literal('header'),
+  voci: z.array(linkSchema).min(1),
+  ctaLabel: z.string(),
+  ctaHref: z.string(),
+});
+
 // I testi del banner dei cookie (lib/consent/config.client.ts, ADR-0006).
-const paginaBannerCookie = z.object({
+const bannerCookie = z.object({
   type: z.literal('banner-cookie'),
   occhiello: z.string(),
   titolo: z.string(),
@@ -383,14 +404,7 @@ const paginaBannerCookie = z.object({
   informazioniTesto: portableText,
 });
 
-const paginaProgetti = z.object({
-  type: z.literal('progetti-index'),
-  metaTitle: z.string(),
-  metaDescription: z.string(),
-  sezioni: z.array(sezioneSchema),
-});
-
-const paginaTestimonials = z.object({
+const testimonials = z.object({
   type: z.literal('testimonials'),
   eyebrow: z.string(),
   sectionTitle: z.string(),
@@ -406,8 +420,8 @@ const paginaTestimonials = z.object({
   })).optional().default([]),
 });
 
-// Footer (contenuto condiviso da tutte le pagine; i social anche da Contatti).
-const paginaFooter = z.object({
+// Footer (condiviso da tutte le pagine; i social anche da Contatti).
+const footer = z.object({
   type: z.literal('footer'),
   ragioneSociale: z.string(),
   indirizzo: z.string(),
@@ -423,6 +437,11 @@ const paginaFooter = z.object({
   copyright: z.string(),
 });
 
+const elementiCollection = defineCollection({
+  loader: elementiLoader(),
+  schema: z.discriminatedUnion('type', [header, footer, bannerCookie, testimonials]),
+});
+
 const pagineCollection = defineCollection({
   loader: pagineLoader(),
   schema: z.discriminatedUnion('type', [
@@ -433,12 +452,9 @@ const pagineCollection = defineCollection({
     paginaServizi,
     paginaProgetti,
     paginaSostienici,
-    paginaBannerCookie,
-    paginaTestimonials,
     paginaTermini,
     paginaTrasparenza,
     paginaPrivacy,
-    paginaFooter,
   ]),
 });
 
@@ -446,4 +462,5 @@ export const collections = {
   servizi: serviziCollection,
   progetti: progettiCollection,
   pagine: pagineCollection,
+  elementi: elementiCollection,
 };

@@ -133,7 +133,7 @@ export const sezioneMetodo = daAltrove('sezioneMetodo', 'Metodo', 'Dalla pagina 
 
 export const sezioneTestimonianze = daAltrove('sezioneTestimonianze', 'Testimonianze', 'Dal documento Testimonianze', {
   testo: 'Intestazione, titolo e testimonianze si modificano nel documento Testimonianze. Senza testimonianze la sezione non compare. Questo blocco decide solo dove mostrarle.',
-  documento: { id: 'pagina-testimonials', type: 'paginaTestimonials', etichetta: 'Apri le Testimonianze' },
+  documento: { id: 'testimonials', type: 'testimonials', etichetta: 'Apri le Testimonianze' },
 });
 
 export const sezioneProgetti = defineType({

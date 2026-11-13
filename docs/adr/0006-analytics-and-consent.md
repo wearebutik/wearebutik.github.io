@@ -94,8 +94,8 @@ Mode v2** — because we want the tag manager in place now, not later.
   at their `denied` default. A `marketing` category comes back together with
   the first real marketing tag and its real cookies.
 - <a id="banner-copy"></a>**Banner copy and cookie list**: the banner's texts
-  live on Sanity (document *Banner dei cookie*, `pagina-banner-cookie`,
-  ADR-0004) and `BannerCookie.astro` renders them at build time. The
+  live on Sanity (site element *Banner dei cookie*, `banner-cookie`,
+  ADR-0004 `#site-elements`) and `BannerCookie.astro` renders them at build time. The
   categories and the technical cookie list (name, provider, duration, purpose:
   `lib/consent/cookie.ts`) stay in code, because they must match what the site
   actually writes.

@@ -20,9 +20,9 @@ import MetaLabel from '@butik/ui/MetaLabel';
 import { richTextHtml } from '#lib/richText';
 import { COOKIE_ANALISI, COOKIE_NECESSARI, type CookieDichiarato } from '#lib/consent/cookie';
 
-const entry = await getEntry('pagine', 'banner-cookie');
+const entry = await getEntry('elementi', 'banner-cookie');
 if (!entry || entry.data.type !== 'banner-cookie') {
-  throw new Error('Contenuto "Banner dei cookie" mancante o non valido (collezione pagine).');
+  throw new Error('Contenuto "Banner dei cookie" mancante o non valido (collezione elementi).');
 }
 const t = entry.data;
 

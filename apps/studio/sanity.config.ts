@@ -3,8 +3,10 @@ import { structureTool } from 'sanity/structure';
 import { visionTool } from '@sanity/vision';
 import { presentationTool } from 'sanity/presentation';
 import { schemaTypes } from './schemaTypes';
-import { structure, PAGINE_TYPES } from './structure';
+import { structure, PAGINE_TYPES, ELEMENTI_TYPES } from './structure';
 import { ANTEPRIMA_WEB, LayoutAnteprimaWeb } from './anteprimaWeb';
+
+const unico = (schemaType: string) => PAGINE_TYPES.has(schemaType) || ELEMENTI_TYPES.has(schemaType);
 
 export default defineConfig({
   name: 'butik',
@@ -22,13 +24,14 @@ export default defineConfig({
   studio: { components: { layout: LayoutAnteprimaWeb } },
   schema: {
     types: schemaTypes,
-    // Le pagine esistono in un solo esemplare: non si creano dal pulsante "+".
-    templates: (templates) => templates.filter((t) => !PAGINE_TYPES.has(t.schemaType)),
+    // Pagine ed elementi del sito esistono in un solo esemplare: non si creano
+    // dal pulsante "+".
+    templates: (templates) => templates.filter((t) => !unico(t.schemaType)),
   },
   document: {
     // …né si duplicano o eliminano.
     actions: (actions, { schemaType }) =>
-      PAGINE_TYPES.has(schemaType)
+      unico(schemaType)
         ? actions.filter((a) => !['duplicate', 'delete', 'unpublish'].includes(a.action ?? ''))
         : actions,
   },

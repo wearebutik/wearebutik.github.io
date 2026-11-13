@@ -18,7 +18,7 @@ const logoImg = await getImage({ src: logo, width: 72, height: 72 });
 // nello Studio restano, segnalati in giallo. Finché il documento non esiste
 // (es. su un dataset non ancora aggiornato) il footer mostra logo, link legali
 // di base e preferenze cookie.
-const entry = await getEntry('pagine', 'footer');
+const entry = await getEntry('elementi', 'footer');
 const f = entry?.data.type === 'footer' ? entry.data : undefined;
 const socials = conIcone((await soloLinkValidi(f?.social ?? [])));
 const colonna1 = await soloLinkValidi(f?.colonna1 ?? []);
