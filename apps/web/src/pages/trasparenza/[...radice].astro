@@ -3,17 +3,17 @@
 // butik pubblica per legge come impresa sociale che riceve fondi pubblici.
 // Stessa forma dei Termini: titolo, data di aggiornamento, testo legale.
 //
-// Rotta con un parametro vuoto per poter non generare la pagina: con «Pagina
-// nascosta» attivo, o finché il documento esiste solo in bozza, il sito
-// pubblico non ha /trasparenza/ (lib/pagineNascoste.ts). L'anteprima la
+// Rotta con un parametro vuoto per poter non generare la pagina: con
+// «Pubblicata» spento, o finché il documento esiste solo in bozza, il sito
+// pubblico non ha /trasparenza/ (lib/pubblicazione.ts). L'anteprima la
 // mostra; lì ogni altro indirizzo sotto /trasparenza/ è 404.
 import { getEntry } from 'astro:content';
 import LegalText from '#components/testo/LegalText.astro';
 import BaseLayout from '#layouts/BaseLayout.astro';
-import { paginaNascosta } from '#lib/pagineNascoste';
+import { paginaVisibile } from '#lib/pubblicazione';
 
 export async function getStaticPaths() {
-  return (await paginaNascosta('trasparenza')) ? [] : [{ params: { radice: undefined } }];
+  return (await paginaVisibile('trasparenza')) ? [{ params: { radice: undefined } }] : [];
 }
 
 if (Astro.params.radice) return new Response(null, { status: 404 });
@@ -24,7 +24,7 @@ if (!entry || entry.data.type !== 'trasparenza') {
 const c = entry.data;
 ---
 
-<BaseLayout title={c.metaTitle} description={c.metaDescription}>
+<BaseLayout title={c.metaTitle} description={c.metaDescription} nonPubblicata={!c.pubblicata}>
   <article class="trasparenza">
     <div class="prose prose-full">
       <h1>{c.pageTitle}</h1>

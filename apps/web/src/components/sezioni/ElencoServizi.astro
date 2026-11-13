@@ -10,9 +10,11 @@ interface Props {
   servizi: string[];
 }
 
-// Un riferimento a un servizio in bozza o non pubblicato non si mostra.
-const pubblicati = new Map((await getCollection('servizi', (e) => !e.data.draft)).map((e) => [e.id, e]));
-const servizi = Astro.props.servizi.flatMap((slug) => pubblicati.get(slug) ?? []);
+// I servizi si mostrano sempre, anche con la scheda non pubblicata: il blocco
+// porta alla scheda solo se c'è (ServiceExpanded, lib/pubblicazione.ts). Un
+// riferimento a un servizio che non esiste più si salta.
+const tutti = new Map((await getCollection('servizi')).map((e) => [e.id, e]));
+const servizi = Astro.props.servizi.flatMap((slug) => tutti.get(slug) ?? []);
 ---
 
 <section class="svc-main">

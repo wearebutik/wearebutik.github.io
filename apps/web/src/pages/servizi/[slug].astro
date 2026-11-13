@@ -1,5 +1,6 @@
 ---
-import { getCollection, getEntry } from 'astro:content';
+import { getEntry } from 'astro:content';
+import { serviziConScheda } from '#lib/pubblicazione';
 import { getImage } from 'astro:assets';
 import { PortableText } from 'astro-portabletext';
 import BaseLayout from '#layouts/BaseLayout.astro';
@@ -7,7 +8,8 @@ import ServiceHero from '#components/serviziHero/ServiceHero.astro';
 import { servizioComponents } from '#components/portabletext/components';
 
 export async function getStaticPaths() {
-  const servizi = await getCollection('servizi', e => !e.data.draft);
+  // Solo le schede pubblicate (lib/pubblicazione.ts); l'anteprima le mostra tutte.
+  const servizi = await serviziConScheda();
   return servizi.map(entry => ({
     params: { slug: entry.id },
     props: { entry },
@@ -17,7 +19,7 @@ export async function getStaticPaths() {
 // Nell'anteprima delle bozze la pagina si genera a ogni richiesta e
 // getStaticPaths non gira: l'entry si cerca dallo slug.
 const entry = Astro.props.entry ?? (await getEntry('servizi', Astro.params.slug!));
-if (!entry || entry.data.draft) return new Response(null, { status: 404 });
+if (!entry) return new Response(null, { status: 404 });
 
 // Immagine OG da Sanity: passa dalla pipeline di Astro come le altre, mai
 // da cdn.sanity.io (ADR-0004). JPEG 1200×630.
@@ -30,7 +32,7 @@ const ogImage = entry.data.ogImage
   title={entry.data.metaTitle ?? `${entry.data.title} — Butik`}
   description={entry.data.metaDescription ?? entry.data.subtitle}
   ogImage={ogImage}
-  noindex={!entry.data.paginaRaggiungibile}
+  nonPubblicata={!entry.data.pubblicata}
 >
   <ServiceHero
     variant={entry.data.heroVariant}

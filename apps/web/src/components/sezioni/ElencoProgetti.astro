@@ -1,7 +1,7 @@
 ---
 // Sezione "Elenco dei progetti": tutti i progetti pubblicati, nell'ordine
 // dell'elenco Progetti dello Studio. Nata da /progetti.
-import { getCollection } from 'astro:content';
+import { progettiVisibili } from '#lib/pubblicazione';
 import { placeholderStyle } from '#lib/lqip';
 import { stili, vtName } from '#lib/viewTransition';
 import Foto from '#components/Foto.astro';
@@ -9,7 +9,7 @@ import { foto } from '#lib/foto';
 import { perOrdine } from '#lib/ordine';
 import MetaLabel from '@butik/ui/MetaLabel';
 
-const progetti = (await getCollection('progetti', (e) => !e.data.draft)).sort(perOrdine);
+const progetti = (await progettiVisibili()).sort(perOrdine);
 
 const fotoCard = await Promise.all(
   progetti.map((p) =>
