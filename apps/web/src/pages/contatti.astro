@@ -98,7 +98,6 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
             aria-live="polite"
             data-missing-key={c.formMissingKeyMessage}
             data-loading={c.formSubmitLoadingLabel}
-            data-verifica={c.formVerificaMessage}
             data-success={c.formSuccessMessage}
             data-error={c.formErrorMessage}
             data-network-error={c.formNetworkErrorMessage}
@@ -341,7 +340,6 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
 
     const formMissingKeyMessage = result.dataset.missingKey ?? '';
     const formSubmitLoadingLabel = result.dataset.loading ?? '';
-    const formVerificaMessage = result.dataset.verifica ?? '';
     const formSuccessMessage = result.dataset.success ?? '';
     const formErrorMessage = result.dataset.error ?? '';
     const formNetworkErrorMessage = result.dataset.networkError ?? '';
@@ -356,12 +354,18 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
     const sitekey = form.dataset.sitekey ?? '';
     const configurato = Boolean(url && sitekey);
     // Turnstile si scarica solo quando qualcuno inizia a compilare il modulo.
-    // Se Cloudflare chiede la spunta, il form lo dice sotto il pulsante.
+    // Se Cloudflare chiede la spunta, il pulsante resta disabilitato finché
+    // la casella non è spuntata: il widget stesso dice cosa fare.
+    let inviando = false;
+    let attendeSpunta = false;
+    const aggiornaPulsante = () => {
+      submit.disabled = inviando || attendeSpunta;
+    };
     const verifica = configurato
       ? preparaTurnstile(box, sitekey, {
           suInterazione: (chiede) => {
-            if (chiede) showMessage(formVerificaMessage, true);
-            else if (result.textContent === formVerificaMessage) showMessage('', true);
+            attendeSpunta = chiede;
+            aggiornaPulsante();
           },
         })
       : undefined;
@@ -374,12 +378,19 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
         return;
       }
 
-      submit.disabled = true;
+      inviando = true;
+      aggiornaPulsante();
       const originalLabel = submit.textContent;
       submit.textContent = formSubmitLoadingLabel;
-      // L'esito dell'invio precedente non vale per questo; resta solo l'avviso
-      // della spunta, se Cloudflare la sta chiedendo.
-      if (result.textContent !== formVerificaMessage) showMessage('', true);
+      // L'esito dell'invio precedente non vale per questo.
+      showMessage('', true);
+      const fine = () => {
+        // Un token Turnstile vale una volta sola: il prossimo invio ne chiede uno nuovo.
+        verifica.rinnova();
+        inviando = false;
+        aggiornaPulsante();
+        submit.textContent = originalLabel;
+      };
 
       let token: string;
       try {
@@ -388,9 +399,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
         // Verifica fallita o scaduta: non è un problema di rete.
         showMessage(formErrorMessage, false);
         trackEvent('contact_form_error', { error_message: 'turnstile' });
-        verifica.rinnova();
-        submit.disabled = false;
-        submit.textContent = originalLabel;
+        fine();
         return;
       }
 
@@ -416,10 +425,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
         showMessage(formNetworkErrorMessage, false);
         trackEvent('contact_form_error', { error_message: 'network_error' });
       } finally {
-        // Un token Turnstile vale una volta sola: il prossimo invio ne chiede uno nuovo.
-        verifica.rinnova();
-        submit.disabled = false;
-        submit.textContent = originalLabel;
+        fine();
       }
     });
   }

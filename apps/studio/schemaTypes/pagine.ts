@@ -122,7 +122,6 @@ export const paginaContatti = pagina(
     str('formMessagePlaceholder', 'Messaggio: segnaposto', 'form'),
     str('formSubmitLabel', 'Pulsante invio', 'form'),
     str('formSubmitLoadingLabel', 'Pulsante durante l\'invio', 'form'),
-    str('formVerificaMessage', 'Messaggio: serve la spunta anti-spam', 'form'),
     str('formMissingKeyMessage', 'Messaggio: form non configurato', 'form'),
     str('formSuccessMessage', 'Messaggio: inviato', 'form'),
     str('formErrorMessage', 'Messaggio: errore', 'form'),

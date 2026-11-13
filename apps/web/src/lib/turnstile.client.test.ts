@@ -61,12 +61,20 @@ describe('preparaTurnstile', () => {
     await expect(token).resolves.toBe('tok');
   });
 
-  it('una sfida scaduta chiude l\'attesa con un errore', async () => {
-    const { verifica } = await prepara();
+  it('una sfida scaduta chiude l\'attesa con un errore e smette di chiedere la spunta', async () => {
+    const { verifica, suInterazione } = await prepara();
     const token = verifica.token();
     opzioni['before-interactive-callback']!();
     opzioni['timeout-callback']!();
     await expect(token).rejects.toThrow('turnstile');
+    expect(suInterazione).toHaveBeenLastCalledWith(false);
+  });
+
+  it('un errore del widget mentre chiede la spunta smette di chiederla', async () => {
+    const { suInterazione } = await prepara();
+    opzioni['before-interactive-callback']!();
+    opzioni['error-callback']!();
+    expect(suInterazione).toHaveBeenLastCalledWith(false);
   });
 
   it('dopo un invio il token successivo è nuovo', async () => {

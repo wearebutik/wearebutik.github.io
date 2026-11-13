@@ -2,8 +2,9 @@
 // Lo script di Cloudflare si scarica solo quando qualcuno inizia a compilare
 // il modulo (`avvia`), non al caricamento della pagina. Il widget resta
 // invisibile e compare solo se Cloudflare ha dubbi (`interaction-only`): allora
-// chiede una spunta, `suInterazione(true)` lo dice al form e l'attesa del token
-// non scade più, perché si aspetta una persona. Scade invece, dopo
+// chiede una spunta: `suInterazione(true)` lo dice al form, che tiene il
+// pulsante disabilitato finché la spunta non c'è (o il widget non va in
+// errore: allora `suInterazione(false)`), e l'attesa del token non scade. Scade invece, dopo
 // ATTESA_MASSIMA, se lo script non arriva o la verifica invisibile non risponde.
 // `token()` aspetta che la verifica sia pronta; dopo ogni invio `rinnova()`,
 // perché un token vale una volta sola. Il Worker (apps/functions) lo controlla.
@@ -79,6 +80,10 @@ export function preparaTurnstile(box: HTMLElement, sitekey: string, { suInterazi
 
   const fermaScadenze = () => attese.forEach((a) => clearTimeout(a.timer));
   const fallisci = (e: Error) => {
+    if (interattivo) {
+      interattivo = false;
+      suInterazione?.(false);
+    }
     errore = e;
     chiudiAttese((a) => a.reject(e));
   };
