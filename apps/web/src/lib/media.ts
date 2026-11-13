@@ -22,3 +22,11 @@ export function imageSize(
   const [w, h] = [Number(m[1]), Number(m[2])];
   return opts.height ? { width: Math.round((opts.height * w) / h), height: opts.height } : { width: w, height: h };
 }
+
+/**
+ * Formato e qualità dei loghi (partner). In WebP la trasparenza si salva
+ * senza perdita e pesa più del logo stesso; in AVIF lo stesso logo, alla
+ * qualità 50, pesa circa il 45% in meno senza differenze visibili, anche
+ * ingrandito (misurato sul logo del Ministero degli Esteri, il più pesante).
+ */
+export const LOGHI = { format: 'avif', quality: 50 } as const;

@@ -1,5 +1,5 @@
 ---
-import { imageSize } from '#lib/media';
+import { imageSize, LOGHI } from '#lib/media';
 import { Image } from 'astro:assets';
 import { partners as defaultPartners, type Partner } from '../../data/partners';
 
@@ -47,6 +47,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
               {...imageSize(partner.logo, { height: 40 })}
               alt={i >= partners.length ? '' : partner.name}
               densities={[1, 2]}
+                {...LOGHI}
               loading="eager"
               decoding="async"
               draggable={false}
@@ -77,6 +78,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
                 {...imageSize(partner.logo, { height: 36 })}
                 alt=""
                 densities={[1, 2]}
+                {...LOGHI}
                 loading="lazy"
                 decoding="async"
                 draggable={false}
@@ -104,6 +106,7 @@ const trackB = [...mobileRowB, ...mobileRowB];
                 {...imageSize(partner.logo, { height: 36 })}
                 alt=""
                 densities={[1, 2]}
+                {...LOGHI}
                 loading="lazy"
                 decoding="async"
                 draggable={false}
