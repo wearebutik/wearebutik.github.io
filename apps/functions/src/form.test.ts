@@ -1,7 +1,7 @@
 // Il Worker del modulo contatti, con un finto invio e un finto Turnstile:
 // conta cosa arriva a info@ e cosa risponde al browser, non come lo fa.
 import { describe, expect, it, vi } from 'vitest';
-import { gestisci, type Env, type Messaggio } from './modulo';
+import { gestisci, type Env, type Messaggio } from './form';
 
 const ORIGINE = 'https://beta.wearebutik.com';
 
@@ -11,7 +11,7 @@ function ambiente() {
     EMAIL: { send: vi.fn(async (m: Messaggio) => (inviati.push(m), { messageId: 'x' })) },
     TURNSTILE_SECRET: 'segreto',
     DESTINATARIO: 'info@wearebutik.com',
-    MITTENTE: 'sito@modulo.wearebutik.com',
+    MITTENTE: 'sito@form.wearebutik.com',
     ORIGINI: `${ORIGINE},https://wearebutik.com`,
   };
   return { env, inviati };
@@ -29,7 +29,7 @@ const campi = (extra: Record<string, string> = {}) => ({
 function richiesta(dati: Record<string, string>, init: { origine?: string; metodo?: string } = {}) {
   const body = new FormData();
   for (const [k, v] of Object.entries(dati)) body.set(k, v);
-  return new Request('https://modulo.wearebutik.com/', {
+  return new Request('https://form.wearebutik.com/', {
     method: init.metodo ?? 'POST',
     headers: { Origin: init.origine ?? ORIGINE, 'CF-Connecting-IP': '203.0.113.7' },
     body: (init.metodo ?? 'POST') === 'POST' ? body : undefined,
@@ -47,9 +47,9 @@ describe('un messaggio valido', () => {
     expect(inviati).toHaveLength(1);
     const m = inviati[0];
     expect(m.to).toBe('info@wearebutik.com');
-    expect(m.from).toEqual({ email: 'sito@modulo.wearebutik.com', name: 'Sito butik' });
+    expect(m.from).toEqual({ email: 'sito@form.wearebutik.com', name: 'Sito butik' });
     expect(m.replyTo).toEqual({ email: 'ada@example.com', name: 'Ada Rossi' });
-    expect(m.subject).toBe('[modulo-sito] Messaggio da Ada Rossi');
+    expect(m.subject).toBe('[form-sito] Messaggio da Ada Rossi');
     expect(m.text).toContain('Comune di Prova');
     expect(m.text).toContain('Vorremmo un progetto sul patrimonio musicale.');
   });
@@ -70,7 +70,7 @@ describe('un messaggio valido', () => {
   it('un a capo nel nome non entra nell’oggetto della mail', async () => {
     const { env, inviati } = ambiente();
     await gestisci(richiesta(campi({ name: 'Ada\r\nBcc: altri@example.com' })), env, turnstile(true));
-    expect(inviati[0].subject).toBe('[modulo-sito] Messaggio da Ada Bcc: altri@example.com');
+    expect(inviati[0].subject).toBe('[form-sito] Messaggio da Ada Bcc: altri@example.com');
   });
 });
 

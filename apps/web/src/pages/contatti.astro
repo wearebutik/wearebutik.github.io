@@ -18,11 +18,11 @@ if (!entry || entry.data.type !== 'contatti') {
 }
 const c = entry.data;
 
-// Il modulo va al Worker di apps/functions (modulo.wearebutik.com), che
+// Il modulo va al Worker di apps/functions (form.wearebutik.com), che
 // controlla Turnstile e inoltra il messaggio a info@. Indirizzo del Worker e
 // chiave del sito Turnstile sono pubblici per natura: variabili PUBLIC_* del
 // build. Senza una delle due il modulo non invia e mostra un messaggio.
-const MODULO_URL = import.meta.env.PUBLIC_MODULO_URL ?? '';
+const FORM_URL = import.meta.env.PUBLIC_FORM_URL ?? '';
 const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const inputClass = 'field-input';
@@ -50,7 +50,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
     <div class="contact-grid">
       <!-- Form -->
       <div>
-        <form id="contact-form" action={MODULO_URL} method="POST" class="contact-form" data-sitekey={TURNSTILE_SITE_KEY}>
+        <form id="contact-form" action={FORM_URL} method="POST" class="contact-form" data-sitekey={TURNSTILE_SITE_KEY}>
           <!-- Campo trappola: i bot lo compilano, le persone no (il Worker scarta). -->
           <input type="checkbox" name="botcheck" class="hidden" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true" />
 

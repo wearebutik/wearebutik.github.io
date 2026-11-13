@@ -53,7 +53,7 @@ jobs:
           # per design, quindi NON sono segreti → repository *variables*, non
           # secrets. Se una variable manca, la feature relativa è un no-op e il
           # build resta verde. (turbo envMode: loose le lascia passare al build.)
-          PUBLIC_MODULO_URL: ${{ vars.PUBLIC_MODULO_URL }}
+          PUBLIC_FORM_URL: ${{ vars.PUBLIC_FORM_URL }}
           PUBLIC_TURNSTILE_SITE_KEY: ${{ vars.PUBLIC_TURNSTILE_SITE_KEY }}
           PUBLIC_POSTHOG_KEY: ${{ vars.PUBLIC_POSTHOG_KEY }}
           PUBLIC_POSTHOG_HOST: ${{ vars.PUBLIC_POSTHOG_HOST }}

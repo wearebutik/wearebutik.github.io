@@ -1,12 +1,12 @@
 # Il Worker del modulo contatti (apps/functions, docs/guidances/functions.md)
-# su modulo.wearebutik.com. Parte quando cambia apps/functions su main.
+# su form.wearebutik.com. Parte quando cambia apps/functions su main.
 #
 # Prima del primo deploy, nel pannello Cloudflare (zona wearebutik.com):
-# Email Routing attivo sul sottodominio modulo.wearebutik.com e
+# Email Routing attivo sul sottodominio form.wearebutik.com e
 # info@wearebutik.com fra gli indirizzi di destinazione verificati; un widget
 # Turnstile per beta.wearebutik.com e wearebutik.com. Il segreto del widget va
 # nel secret del repo TURNSTILE_SECRET.
-name: Deploy modulo (Cloudflare)
+name: Deploy form (Cloudflare)
 
 on:
   push:
@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: modulo
+  group: form
   cancel-in-progress: true
 
 jobs:

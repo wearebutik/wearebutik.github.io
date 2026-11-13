@@ -34,9 +34,9 @@ endpoints). The repo already has a trial `wrangler.jsonc`.
   the privacy policy.
 - ❌ One more runtime to know; state/persistence needs KV/D1/R2.
 
-In use: the **contact form** (`apps/functions`, `butik-modulo` on
-modulo.wearebutik.com). It checks Cloudflare Turnstile and forwards the message
-to info@wearebutik.com through Email Routing on the `modulo.wearebutik.com`
+In use: the **contact form** (`apps/functions`, `butik-form` on
+form.wearebutik.com). It checks Cloudflare Turnstile and forwards the message
+to info@wearebutik.com through Email Routing on the `form.wearebutik.com`
 subdomain (sending to a verified address is free on every plan; the domain's
 own mail stays on Google). It stores nothing. Deploy:
 `.github/workflows/deploy-functions.yml`.

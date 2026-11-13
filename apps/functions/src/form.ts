@@ -3,7 +3,7 @@
 // messaggio a info@wearebutik.com. Non conserva niente: il messaggio esiste
 // solo nella mail che arriva alla casella (Privacy, «Per quanto tempo»).
 //
-// L'oggetto porta il codice [modulo-sito]: in Gmail un filtro le etichetta, e
+// L'oggetto porta il codice [form-sito]: in Gmail un filtro le etichetta, e
 // la pulizia periodica le trova tutte insieme. Chi scrive è il «Rispondi a»:
 // si risponde dalla casella come a una mail qualsiasi.
 
@@ -108,7 +108,7 @@ export async function gestisci(req: Request, env: Env, verifica: VerificaTurnsti
       to: env.DESTINATARIO,
       from: { email: env.MITTENTE, name: 'Sito butik' },
       replyTo: { email: c.email, name: c.nome },
-      subject: `[modulo-sito] Messaggio da ${c.nome}`,
+      subject: `[form-sito] Messaggio da ${c.nome}`,
       text: [
         `Nome: ${c.nome}`,
         `Email: ${c.email}`,
