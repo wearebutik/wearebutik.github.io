@@ -354,7 +354,21 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
     const sitekey = form.dataset.sitekey ?? '';
     const configurato = Boolean(url && sitekey);
     // Turnstile si scarica solo quando qualcuno inizia a compilare il modulo.
-    const verifica = configurato ? preparaTurnstile(box, sitekey) : undefined;
+    // Se Cloudflare chiede la spunta, il pulsante resta disabilitato finché
+    // la casella non è spuntata: il widget stesso dice cosa fare.
+    let inviando = false;
+    let attendeSpunta = false;
+    const aggiornaPulsante = () => {
+      submit.disabled = inviando || attendeSpunta;
+    };
+    const verifica = configurato
+      ? preparaTurnstile(box, sitekey, {
+          suInterazione: (chiede) => {
+            attendeSpunta = chiede;
+            aggiornaPulsante();
+          },
+        })
+      : undefined;
     form.addEventListener('focusin', () => verifica?.avvia(), { once: true });
 
     form.addEventListener('submit', async (e) => {
@@ -364,13 +378,34 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
         return;
       }
 
-      submit.disabled = true;
+      inviando = true;
+      aggiornaPulsante();
       const originalLabel = submit.textContent;
       submit.textContent = formSubmitLoadingLabel;
+      // L'esito dell'invio precedente non vale per questo.
+      showMessage('', true);
+      const fine = () => {
+        // Un token Turnstile vale una volta sola: il prossimo invio ne chiede uno nuovo.
+        verifica.rinnova();
+        inviando = false;
+        aggiornaPulsante();
+        submit.textContent = originalLabel;
+      };
+
+      let token: string;
+      try {
+        token = await verifica.token();
+      } catch {
+        // Verifica fallita o scaduta: non è un problema di rete.
+        showMessage(formErrorMessage, false);
+        trackEvent('contact_form_error', { error_message: 'turnstile' });
+        fine();
+        return;
+      }
 
       try {
         const formData = new FormData(form);
-        formData.set('cf-turnstile-response', await verifica.token());
+        formData.set('cf-turnstile-response', token);
         const response = await fetch(url, {
           method: 'POST',
           headers: { Accept: 'application/json' },
@@ -390,10 +425,7 @@ const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? f
         showMessage(formNetworkErrorMessage, false);
         trackEvent('contact_form_error', { error_message: 'network_error' });
       } finally {
-        // Un token Turnstile vale una volta sola: il prossimo invio ne chiede uno nuovo.
-        verifica.rinnova();
-        submit.disabled = false;
-        submit.textContent = originalLabel;
+        fine();
       }
     });
   }
