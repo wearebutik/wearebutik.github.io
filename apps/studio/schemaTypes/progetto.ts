@@ -2,6 +2,7 @@
 // (apps/web/src/content.config.ts): i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType } from 'sanity';
 import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list';
+import { campoPubblicata, gruppoPubblicazione } from './pubblicazione';
 
 export const progetto = defineType({
   name: 'progetto',
@@ -10,7 +11,7 @@ export const progetto = defineType({
   groups: [
     { name: 'contenuto', title: 'Contenuto', default: true },
     { name: 'seo', title: 'SEO e condivisione' },
-    { name: 'ordine', title: 'Pubblicazione' },
+    gruppoPubblicazione,
   ],
   fields: [
     // Ordine del portfolio: si trascinano i progetti nell'elenco "Progetti"
@@ -63,7 +64,7 @@ export const progetto = defineType({
     defineField({ name: 'metaDescription', title: 'Meta description', type: 'text', rows: 3, group: 'seo' }),
     defineField({ name: 'ogImage', title: 'Immagine OG', type: 'image', group: 'seo' }),
     defineField({ name: 'ogCta', title: 'CTA della card OG', type: 'string', group: 'seo' }),
-    defineField({ name: 'draft', title: 'Bozza (non pubblicare)', type: 'boolean', group: 'ordine', initialValue: false }),
+    campoPubblicata('Spento: il progetto non ha la sua pagina, non compare negli elenchi e i link che ci portano spariscono.', false),
   ],
   orderings: [orderRankOrdering],
   preview: {

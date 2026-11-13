@@ -1,6 +1,5 @@
-import { getCollection } from 'astro:content';
-import { pagineNascoste } from './pagineNascoste';
-import { PAGINE_STATICHE, SEZIONI_CON_SCHEDE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
+import { pagineNonVisibili, progettiVisibili, serviziConScheda } from './pubblicazione';
+import { PAGINE_STATICHE, isLinkSegnaposto, percorsoInterno } from '@butik/site-config/links';
 
 // Le regole dei link (pagine statiche, segnaposto) sono condivise con lo
 // Studio (@butik/site-config/links): lì un link che non porta da nessuna parte
@@ -11,23 +10,21 @@ export { isLinkSegnaposto };
 
 let pagine: Promise<Set<string>> | undefined;
 
-// Le pagine con l'interruttore «Pagina nascosta» (lib/pagineNascoste.ts).
-
 /**
- * Percorsi interni che esistono: pagine statiche + una scheda per documento
- * pubblicato di ogni sezione (ogni sezione è anche una collection).
+ * Percorsi interni che esistono: le pagine statiche e le schede di progetti e
+ * servizi che il sito genera. Ciò che non è pubblicato (lib/pubblicazione.ts)
+ * non esiste sul sito pubblico, e i link che ci portano spariscono;
+ * l'anteprima delle bozze mostra tutto.
  */
 function pagineEsistenti(): Promise<Set<string>> {
   pagine ??= (async () => {
-    const schede = await Promise.all(
-      SEZIONI_CON_SCHEDE.map(async (s) =>
-        (await getCollection(s, (e) => !e.data.draft)).map((e) => `/${s}/${e.id}`),
-      ),
-    );
-    const esistenti = new Set<string>([...PAGINE_STATICHE, ...schede.flat()]);
-    // Una pagina nascosta dallo Studio non esiste sul sito pubblico, e i link
-    // che ci portano spariscono (l'anteprima delle bozze la mostra).
-    for (const p of await pagineNascoste()) esistenti.delete(p);
+    const [progetti, servizi, nonVisibili] = await Promise.all([progettiVisibili(), serviziConScheda(), pagineNonVisibili()]);
+    const esistenti = new Set<string>([
+      ...PAGINE_STATICHE,
+      ...progetti.map((e) => `/progetti/${e.id}`),
+      ...servizi.map((e) => `/servizi/${e.id}`),
+    ]);
+    for (const p of nonVisibili) esistenti.delete(p);
     return esistenti;
   })();
   return pagine;

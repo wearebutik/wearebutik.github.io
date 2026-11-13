@@ -6,6 +6,7 @@
 import type { CollectionEntry } from 'astro:content';
 import ArrowLink from '@butik/ui/ArrowLink';
 import MetaLabel from '@butik/ui/MetaLabel';
+import { schedaServizio } from '#lib/pubblicazione';
 
 interface Props {
   servizio: CollectionEntry<'servizi'>;
@@ -16,9 +17,9 @@ const { servizio, index } = Astro.props;
 const slug = servizio.id;
 const { hero, card } = servizio.data;
 const title = card.title;
-// Link "Scopri …" solo se la pagina del servizio è raggiungibile (flag Sanity):
-// senza, il blocco è informativo e non porta da nessuna parte.
-const href = servizio.data.paginaRaggiungibile ? `/servizi/${slug}` : undefined;
+// Link "Scopri …" solo se la scheda del servizio è pubblicata
+// (lib/pubblicazione.ts): senza, il blocco è informativo.
+const href = schedaServizio(servizio);
 
 const idx = String(index).padStart(2, '0');
 

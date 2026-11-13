@@ -41,6 +41,19 @@ it.
   documents. The site shows published documents only; whoever reviews the
   copy sees the drafts in the draft preview (*Draft preview*, below). A draft
   reaches the site when its document is published in the Studio.
+- **What exists on the public site: the «Pubblicata» switch.** Progetti,
+  servizi and the pages Sostienici and Trasparenza carry a `pubblicata`
+  boolean in their **Pubblicazione** tab (`apps/studio/schemaTypes/pubblicazione.ts`).
+  It is distinct from Sanity's Publish, which makes edits final.
+  `apps/web/src/lib/pubblicazione.ts` decides what the site shows from it:
+  an unpublished progetto has no page, card or link; an unpublished servizio
+  loses only its page `/servizi/<slug>`, while its cards stay, without a link
+  to the page; an unpublished page (or one that exists only as a draft) is
+  not generated. Links to anything not generated disappear
+  (`apps/web/src/lib/links.ts`). The queries load every document and the site
+  filters, so the draft preview shows everything, with a strip at the top of
+  unpublished pages (`components/anteprima/AvvisoNonPubblicata.astro`). New
+  progetti and servizi start unpublished.
 - **Images never come from Sanity's CDN.** Every image from Sanity goes through
   Astro's image pipeline at build (`image.domains: ['cdn.sanity.io']`,
   `getImage`/`<Image>` with `inferSize`) and is served from `/_astro/` on our

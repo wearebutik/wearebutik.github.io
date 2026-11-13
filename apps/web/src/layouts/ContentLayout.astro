@@ -21,6 +21,8 @@ interface Props {
   clienteEtichetta?: string;
   year?: number;
   category?: string;
+  /** Contenuto non pubblicato: in anteprima la pagina lo dice (BaseLayout). */
+  nonPubblicata?: boolean;
 }
 
 const {
@@ -37,6 +39,7 @@ const {
   clienteEtichetta = 'Cliente',
   year,
   category,
+  nonPubblicata,
 } = Astro.props;
 ---
 
@@ -44,6 +47,7 @@ const {
   title={metaTitle ?? `${title} — Butik`}
   description={metaDescription ?? subtitle}
   ogImage={ogImage}
+  nonPubblicata={nonPubblicata}
 >
   <HeroBanner title={title} subtitle={subtitle} image={heroImage} imageAlt={heroAlt} transitionName={transitionName} placeholder={heroLqip} />
 

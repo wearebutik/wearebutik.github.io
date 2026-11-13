@@ -6,6 +6,7 @@ import { createImageUrlBuilder } from '@sanity/image-url';
 import type { AstroIntegrationLogger } from 'astro';
 import type { Loader } from 'astro/loaders';
 import { lqip } from './lqip';
+import { ricavaPubblicata } from './statoPubblicazione';
 
 // Il projectId non è un segreto: è nell'URL di ogni asset pubblico.
 export const SANITY_PROJECT_ID = process.env.SANITY_PROJECT_ID ?? 'uvzsc0vv';
@@ -127,33 +128,39 @@ async function conSegnaposto(image: unknown, logger: AstroIntegrationLogger) {
   return { heroImage, heroLqip: heroImage ? await lqip(heroImage, logger) : undefined };
 }
 
-const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current) && draft != true]{
+// Tutti i progetti, pubblicati e no: quali si mostrano lo decide il sito
+// (lib/pubblicazione.ts), perché l'anteprima li mostra tutti.
+const PROGETTI_QUERY = /* groq */ `*[_type == "progetto" && defined(slug.current)]{
   "id": slug.current,
   _updatedAt,
   title, subtitle, heroImage, heroAlt, client, clienteEtichetta, year, category,
   metaTitle, metaDescription, ogImage, ogCta,
-  orderRank, draft,
+  orderRank, pubblicata, draft,
   body
 }`;
 
 export const progettiLoader = () =>
-  sanityLoader('progetti', PROGETTI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, ...rest }, logger) => ({
+  sanityLoader('progetti', PROGETTI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, draft, ...rest }, logger) => ({
     ...rest,
+    pubblicata: ricavaPubblicata('progetto', { ...rest, draft }),
     ...(await conSegnaposto(heroImage, logger)),
     ogImage: imageUrl(ogImage),
   }));
 
-const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current) && draft != true]{
+// Tutti i servizi: `pubblicata` comanda solo la scheda /servizi/<slug>, le
+// card li mostrano sempre (lib/pubblicazione.ts).
+const SERVIZI_QUERY = /* groq */ `*[_type == "servizio" && defined(slug.current)]{
   "id": slug.current,
   _updatedAt,
-  title, subtitle, heroImage, heroAlt, heroVariant, paginaRaggiungibile,
+  title, subtitle, heroImage, heroAlt, heroVariant, pubblicata, paginaRaggiungibile,
   metaTitle, metaDescription, ogImage, ogCta,
   draft, hero, card, body
 }`;
 
 export const serviziLoader = () =>
-  sanityLoader('servizi', SERVIZI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, ...rest }, logger) => ({
+  sanityLoader('servizi', SERVIZI_QUERY, async ({ id, _updatedAt, heroImage, ogImage, draft, paginaRaggiungibile, ...rest }, logger) => ({
     ...rest,
+    pubblicata: ricavaPubblicata('servizio', { ...rest, draft, paginaRaggiungibile }),
     ...(await conSegnaposto(heroImage, logger)),
     ogImage: imageUrl(ogImage),
   }));
@@ -219,9 +226,11 @@ async function conImmaginiSezione(s: ConImmagine, logger: Parameters<typeof lqip
 }
 
 export const pagineLoader = () =>
-  sanityLoader('pagine', PAGINE_QUERY, async ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }, logger) => ({
+  sanityLoader('pagine', PAGINE_QUERY, async ({ id, _updatedAt, _id, _type, _rev, _createdAt, nascosta, ...rest }, logger) => ({
     ...rest,
     type: PAGINE_TYPE[_type as string],
+    // Lo schema Zod lo tiene solo per le pagine che si possono non pubblicare.
+    pubblicata: ricavaPubblicata('pagina', { ...rest, nascosta }),
     // Immagini delle pagine: URL dell'originale, che Astro scarica in build.
     ...(Array.isArray(rest.sezioni) && {
       sezioni: await Promise.all((rest.sezioni as ConImmagine[]).map((s) => conImmaginiSezione(s, logger))),

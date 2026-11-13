@@ -28,7 +28,8 @@ const FADE_S = 1.5;
 interface ServizioCard {
   icona?: IconaCard;
   title: string;
-  href: string;
+  /** Senza, la card resta senza link (es. scheda non pubblicata). */
+  href?: string;
   description: string;
 }
 

@@ -6,11 +6,12 @@
 // che la card mostra da tablet in su.
 //
 // I dati sono copy editoriale e arrivano come prop dal chiamante (ADR-0004).
+// Senza `href` la riga resta, senza chevron né hover (vedi ServiceCard).
 // Sta sull'hero della home, su vetro scuro: i colori sono quelli di un fondo
 // scuro.
 export interface ServiceLauncherItem {
   title: string;
-  href: string;
+  href?: string;
   desc: string;
 }
 
@@ -23,13 +24,22 @@ const { items } = Astro.props;
 <ul class="launcher-list">
   {items.map((c) => (
     <li>
-      <a href={c.href} class="row">
-        <span class="row-text">
-          <span class="row-title">{c.title}</span>
-          <span class="row-desc">{c.desc}</span>
-        </span>
-        <span class="row-chev" aria-hidden="true">›</span>
-      </a>
+      {c.href ? (
+        <a href={c.href} class="row">
+          <span class="row-text">
+            <span class="row-title">{c.title}</span>
+            <span class="row-desc">{c.desc}</span>
+          </span>
+          <span class="row-chev" aria-hidden="true">›</span>
+        </a>
+      ) : (
+        <div class="row">
+          <span class="row-text">
+            <span class="row-title">{c.title}</span>
+            <span class="row-desc">{c.desc}</span>
+          </span>
+        </div>
+      )}
     </li>
   ))}
 </ul>
@@ -58,9 +68,9 @@ const { items } = Astro.props;
     color: var(--ink);
     transition: background-color var(--duration-fast) var(--ease-standard);
   }
-  .row:hover,
-  .row:active,
-  .row:focus-visible {
+  a.row:hover,
+  a.row:active,
+  a.row:focus-visible {
     background: var(--row-hover);
   }
   /* Nome sopra, frase sotto: in colonna la frase va a capo senza togliere
@@ -104,7 +114,7 @@ const { items } = Astro.props;
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-  .row:hover .row-title {
+  a.row:hover .row-title {
     color: var(--accent);
   }
 

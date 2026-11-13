@@ -30,11 +30,11 @@ const serviziCollection = defineCollection({
     //   banner = il trattamento comune a progetti e pagine
     //   a/b/c  = split al target · claim tipografico · scheda-offerta
     heroVariant: z.enum(['banner', 'a', 'b', 'c']).optional().default('banner'),
-    // La pagina /servizi/<slug> si genera sempre, ma senza questo flag il sito
-    // non la linka da nessuna parte e la segna noindex: le card portano al
-    // blocco del servizio in /servizi (#slug).
-    paginaRaggiungibile: z.boolean().optional().default(false),
-    draft: z.boolean().optional().default(false),
+    // «Pubblicata» comanda solo la scheda /servizi/<slug>: le card del
+    // servizio si mostrano sempre, e portano alla scheda solo se è pubblicata
+    // (lib/pubblicazione.ts). Il loader lo ricava anche dai documenti non
+    // ancora migrati (lib/statoPubblicazione.ts).
+    pubblicata: z.boolean(),
     // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
     hero: z
       .object({
@@ -83,7 +83,9 @@ const progettiCollection = defineCollection({
     ogCta: z.string().optional(),
     // Posizione nell'elenco riordinabile dello Studio. Vedi lib/ordine.ts.
     orderRank: z.string().optional(),
-    draft: z.boolean().optional().default(false),
+    // Non pubblicato: niente scheda, card o link sul sito pubblico
+    // (lib/pubblicazione.ts); l'anteprima lo mostra.
+    pubblicata: z.boolean(),
     // Corpo in Portable Text, reso da astro-portabletext in progetti/[slug].astro
     body: z.array(z.any()).optional().default([]),
   }),
@@ -321,7 +323,7 @@ const paginaPartners = z.object({
 
 const paginaTrasparenza = z.object({
   type: z.literal('trasparenza'),
-  nascosta: z.boolean().optional().default(false),
+  pubblicata: z.boolean(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   pageTitle: z.string(),
@@ -355,7 +357,7 @@ const paginaServizi = z.object({
 
 const paginaSostienici = z.object({
   type: z.literal('sostienici'),
-  nascosta: z.boolean().optional().default(false),
+  pubblicata: z.boolean(),
   metaTitle: z.string(),
   metaDescription: z.string(),
   sezioni: z.array(sezioneSchema),
