@@ -31,9 +31,7 @@ const serviziCollection = defineCollection({
     //   a/b/c  = split al target · claim tipografico · scheda-offerta
     heroVariant: z.enum(['banner', 'a', 'b', 'c']).optional().default('banner'),
     // «Pubblicata» comanda solo la scheda /servizi/<slug>: le card
-    // dell'Elenco dei servizi sono contenuti a sé (sezioneElencoServizi). Il
-    // loader lo ricava anche dai documenti non ancora migrati
-    // (lib/statoPubblicazione.ts).
+    // dell'Elenco dei servizi sono contenuti a sé (sezioneElencoServizi).
     pubblicata: z.boolean(),
     // Testi degli hero A/B/C. Senza, ServiceHero ricade sul banner.
     hero: z

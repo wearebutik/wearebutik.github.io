@@ -8,8 +8,8 @@
 //   pagina-sostienici,      pubblicata = !nascosta
 //   pagina-trasparenza
 // e toglie i campi vecchi (draft, paginaRaggiungibile, nascosta). Un documento
-// che ha già `pubblicata` lo tiene. È la stessa regola che il sito usa finché
-// i documenti non sono migrati (apps/web/src/lib/statoPubblicazione.ts).
+// che ha già `pubblicata` lo tiene. Eseguito il 2026-11-13: resta come
+// traccia della migrazione.
 //
 //   pnpm --filter @butik/studio pubblicata [--depubblica-servizi] [--prova]
 //

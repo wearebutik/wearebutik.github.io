@@ -1,11 +1,11 @@
 // Che cosa il sito mostra, a partire dall'interruttore «Pubblicata» della tab
-// Pubblicazione dello Studio (lo stato lo leggono i loader, vedi
-// lib/statoPubblicazione.ts).
+// Pubblicazione dello Studio (il campo `pubblicata`, letto dai loader in
+// lib/sanity.ts).
 //
 // - Progetti: non pubblicato → nessuna scheda, nessuna card, nessun link.
 // - Servizi: «Pubblicata» comanda solo la scheda /servizi/<slug>. Le card
-//   del servizio si mostrano sempre e portano alla scheda solo se è
-//   pubblicata.
+//   dell'Elenco dei servizi sono contenuti a sé e decidono da sé il link
+//   (lib/cardServizi.ts), che sparisce se la scheda non esiste.
 // - Pagine Sostienici e Trasparenza: non pubblicata → la pagina non si genera
 //   e i link che ci portano spariscono. Una pagina che esiste solo in bozza
 //   conta come non pubblicata: il sito legge i pubblicati.
@@ -28,11 +28,6 @@ export function progettiVisibili(): Promise<CollectionEntry<'progetti'>[]> {
 /** I servizi che hanno la scheda /servizi/<slug>: in anteprima tutti. */
 export function serviziConScheda(): Promise<CollectionEntry<'servizi'>[]> {
   return getCollection('servizi', (e) => siVede(e.data.pubblicata));
-}
-
-/** Il percorso della scheda del servizio, se il sito la mostra. */
-export function schedaServizio(servizio: CollectionEntry<'servizi'>): string | undefined {
-  return siVede(servizio.data.pubblicata) ? `/servizi/${servizio.id}` : undefined;
 }
 
 /** true se la pagina è pubblicata (lo stato vero, anche in anteprima). */
