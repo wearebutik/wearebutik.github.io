@@ -32,7 +32,7 @@ const daTogliere: { filtro: string; campi: string[] }[] = [
   // Il banner a biglietto (PDR-0006) ha le preferenze dentro di sé: niente
   // titolo, pulsanti e tabella della finestra separata.
   {
-    filtro: '_id in ["pagina-banner-cookie", "drafts.pagina-banner-cookie"]',
+    filtro: '_id in ["banner-cookie", "drafts.banner-cookie"]',
     campi: ['preferenzeTitolo', 'accettaTutti', 'rifiutaTutti', 'colonnaCookie', 'colonnaDurata', 'colonnaDescrizione', 'informazioniTitolo'],
   },
   {

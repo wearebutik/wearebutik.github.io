@@ -4,14 +4,13 @@
 // `pagine` in apps/web/src/content.config.ts: i due vanno tenuti allineati.
 import { defineArrayMember, defineField, defineType, type FieldDefinition } from 'sanity';
 import { EMAIL } from '@butik/site-config/links';
-import { RETI_SOCIAL } from '@butik/site-config/social';
 import { hrefField, urlSicuro } from './testo';
 import { sezioniAmmesse, validaSezioni } from './sezioniPagina';
 
 // ── Mattoni ─────────────────────────────────────────────────────────────────
 // Stringhe e testi sono obbligatori: lo schema Zod del sito li richiede tutti,
 // e Sanity non pubblica un documento con un campo obbligatorio vuoto (ADR-0004).
-const str = (name: string, title: string, group?: string) =>
+export const str = (name: string, title: string, group?: string) =>
   defineField({
     name,
     title,
@@ -26,7 +25,7 @@ const str = (name: string, title: string, group?: string) =>
           ? r.required().regex(EMAIL, { name: 'email', invert: false }).error('Indirizzo email non valido')
           : r.required(),
   });
-const txt = (name: string, title: string, group?: string) =>
+export const txt = (name: string, title: string, group?: string) =>
   defineField({ name, title, type: 'text', rows: 3, group, validation: (r) => r.required() });
 // Liste: il sito le richiede, almeno una voce.
 const lista = { validation: (r: any) => r.required().min(1) };
@@ -203,83 +202,6 @@ export const paginaSostienici = pagina('paginaSostienici', 'Sostienici', [
   sezioni(),
 ]);
 
-// I testi del banner dei cookie a biglietto, che contiene anche le
-// preferenze (ADR-0006, PDR-0006). Le categorie e l'elenco tecnico dei cookie
-// (nome, fornitore, durata) restano nel codice, in
-// apps/web/src/lib/consent/cookie.ts: devono coincidere con quello che il sito
-// scrive davvero, e tools/consent-audit lo verifica.
-export const paginaBannerCookie = defineType({
-  name: 'paginaBannerCookie',
-  title: 'Banner dei cookie',
-  type: 'document',
-  groups: [
-    { name: 'avviso', title: 'Avviso', default: true },
-    { name: 'preferenze', title: 'Preferenze' },
-  ],
-  fields: [
-    str('occhiello', 'Occhiello', 'avviso'),
-    str('titolo', 'Titolo', 'avviso'),
-    defineField({
-      name: 'testo',
-      title: 'Testo',
-      description: 'Deve dire con chiarezza cosa si accetta e cosa si rifiuta, e portare alla Cookie Policy.',
-      type: 'testoFormattato',
-      group: 'avviso',
-      validation: (r) => r.required(),
-    }),
-    str('accetta', 'Pulsante: accetta tutti', 'avviso'),
-    str('rifiuta', 'Pulsante: rifiuta tutti', 'avviso'),
-    str('preferenze', 'Link: apre le preferenze', 'avviso'),
-    str('necessariTitolo', 'Necessari: titolo', 'preferenze'),
-    txt('necessariTesto', 'Necessari: descrizione', 'preferenze'),
-    str('sempreAttivi', 'Necessari: timbro «sempre attivi»', 'preferenze'),
-    str('analisiTitolo', 'Analisi: titolo', 'preferenze'),
-    txt('analisiTesto', 'Analisi: descrizione', 'preferenze'),
-    str('elencoCookie', 'Apre l’elenco dei cookie di ogni categoria', 'preferenze'),
-    str('salva', 'Link: salva le scelte', 'preferenze'),
-    str('chiudi', 'Etichetta del pulsante di chiusura (per i lettori di schermo)', 'preferenze'),
-    defineField({
-      name: 'informazioniTesto',
-      title: 'Testo in fondo alle preferenze',
-      description: 'Con i link a Privacy & Cookie Policy e Termini di utilizzo.',
-      type: 'testoFormattato',
-      group: 'preferenze',
-      validation: (r) => r.required(),
-    }),
-  ],
-  preview: { prepare: () => ({ title: 'Banner dei cookie' }) },
-});
-
-export const paginaTestimonials = defineType({
-  name: 'paginaTestimonials',
-  title: 'Testimonianze',
-  type: 'document',
-  fields: [
-    str('eyebrow', 'Intestazione'),
-    str('sectionTitle', 'Titolo'),
-    defineField({
-      name: 'testimonials',
-      title: 'Testimonianze (home e Chi siamo)',
-      description: 'Facoltative: senza testimonianze la sezione non compare sul sito.',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'testimonianza',
-          fields: [
-            defineField({ name: 'rating', title: 'Stelle', type: 'number', validation: (r) => r.required().min(1).max(5) }),
-            txt('quote', 'Citazione'),
-            str('name', 'Nome'),
-            str('role', 'Ruolo'),
-          ],
-          preview: { select: { title: 'name', subtitle: 'role' } },
-        }),
-      ],
-    }),
-  ],
-  preview: { prepare: () => ({ title: 'Testimonianze' }) },
-});
-
 export const paginaPrivacy = pagina('paginaPrivacy', 'Privacy e cookie', [
   str('pageTitle', 'Titolo'),
   str('updatedDate', 'Ultimo aggiornamento (AAAA-MM-GG)'),
@@ -309,79 +231,6 @@ export const paginaTermini = pagina('paginaTermini', 'Termini di utilizzo', [
   defineField({ name: 'body', title: 'Testo', type: 'testoLegale' }),
 ]);
 
-// Footer: non è una pagina ma un contenuto condiviso da tutte (e i social
-// anche dalla pagina Contatti). Niente SEO. Le icone dei social restano nel
-// codice (apps/web/src/data/socials.ts), qui si sceglie la rete fra quelle
-// che il sito sa mostrare (@butik/site-config/social).
-
-export const paginaFooter = defineType({
-  name: 'paginaFooter',
-  title: 'Footer',
-  type: 'document',
-  groups: [
-    { name: 'azienda', title: 'Dati aziendali', default: true },
-    { name: 'link', title: 'Link' },
-  ],
-  fields: [
-    str('ragioneSociale', 'Ragione sociale', 'azienda'),
-    txt('indirizzo', 'Indirizzo', 'azienda'),
-    str('partitaIva', 'Partita IVA', 'azienda'),
-    str('contattiLabel', 'Etichetta dei contatti (es. "PEC & Email")', 'azienda'),
-    str('pec', 'PEC', 'azienda'),
-    str('email', 'Email', 'azienda'),
-    defineField({
-      name: 'social',
-      title: 'Social',
-      description: 'Anche nella pagina Contatti. Un indirizzo segnaposto (es. "#") non compare sul sito.',
-      type: 'array',
-      group: 'azienda',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          name: 'profiloSocial',
-          fields: [
-            defineField({
-              name: 'rete',
-              title: 'Rete',
-              type: 'string',
-              options: { list: [...RETI_SOCIAL] },
-              validation: (r) => r.required(),
-            }),
-            defineField(hrefField({ title: 'Indirizzo del profilo' })),
-          ],
-          preview: { select: { title: 'rete', subtitle: 'href' } },
-        }),
-      ],
-    }),
-    defineField({
-      name: 'colonna1',
-      title: 'Link, prima colonna',
-      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
-      type: 'array',
-      group: 'link',
-      of: [defineArrayMember({ type: 'link' })],
-    }),
-    defineField({
-      name: 'colonna2',
-      title: 'Link, seconda colonna',
-      description: 'Un link a una pagina che non esiste o segnaposto non compare sul sito.',
-      type: 'array',
-      group: 'link',
-      of: [defineArrayMember({ type: 'link' })],
-    }),
-    defineField({
-      name: 'linkLegali',
-      title: 'Link legali (in fondo)',
-      type: 'array',
-      group: 'link',
-      of: [defineArrayMember({ type: 'link' })],
-    }),
-    str('cookieLabel', 'Pulsante preferenze cookie', 'link'),
-    str('copyright', 'Copyright (l’anno lo aggiunge il sito)', 'link'),
-  ],
-  preview: { prepare: () => ({ title: 'Footer' }) },
-});
-
 // id del documento Sanity → id dell'entry `pagine` sul sito.
 export const PAGINE = {
   paginaHome: 'home',
@@ -391,12 +240,9 @@ export const PAGINE = {
   paginaServizi: 'servizi',
   paginaProgetti: 'progetti',
   paginaSostienici: 'sostienici',
-  paginaBannerCookie: 'banner-cookie',
-  paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
   paginaTrasparenza: 'trasparenza',
-  paginaFooter: 'footer',
 } as const;
 
 export const pagineTypes = [
@@ -407,10 +253,7 @@ export const pagineTypes = [
   paginaServizi,
   paginaProgetti,
   paginaSostienici,
-  paginaBannerCookie,
-  paginaTestimonials,
   paginaPrivacy,
   paginaTermini,
   paginaTrasparenza,
-  paginaFooter,
 ];

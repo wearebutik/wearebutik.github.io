@@ -1,5 +1,5 @@
 ---
-_type: paginaFooter
+_type: footer
 ragioneSociale: Butik s.r.l. Impresa Sociale
 indirizzo: Via Plinio 14, 20129 Milano — Italy
 partitaIva: '10429130965'

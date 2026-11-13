@@ -54,9 +54,15 @@ const metodo = usa('sezioneMetodo') ? await pagina('servizi', 'servizi-index', '
 // Icone per tappa del metodo: config di design, non copy editoriale.
 const metodoIcons: MetodoIconName[] = ['ascolto', 'co-progettazione', 'protagonismo', 'formazione', 'eventi'];
 
-const testimonianze = usa('sezioneTestimonianze')
-  ? await pagina('testimonials', 'testimonials', 'Testimonianze')
-  : undefined;
+// Le testimonianze sono un elemento del sito (collezione elementi), non una pagina.
+async function testimonianzeCondivise() {
+  const entry = await getEntry('elementi', 'testimonials');
+  if (!entry || entry.data.type !== 'testimonials') {
+    throw new Error('Contenuto "testimonials" mancante o non valido (collezione elementi) — richiesto dalla sezione Testimonianze.');
+  }
+  return entry.data;
+}
+const testimonianze = usa('sezioneTestimonianze') ? await testimonianzeCondivise() : undefined;
 
 // Progetti pubblicati per slug: i blocchi "Progetti in evidenza" li scelgono
 // per riferimento, nel loro ordine. Uno in bozza o non pubblicato non si mostra.

@@ -27,7 +27,7 @@ const TURNSTILE_SITE_KEY = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 
 const inputClass = 'field-input';
 // Social dal documento Footer su Sanity (unica fonte con il footer).
-const footer = await getEntry('pagine', 'footer');
+const footer = await getEntry('elementi', 'footer');
 const socials = conIcone(await soloLinkValidi(footer?.data.type === 'footer' ? footer.data.social : []));
 ---
 

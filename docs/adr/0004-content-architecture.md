@@ -148,12 +148,20 @@ it.
   that needs bold, italics or links is a `testoFormattato` field, never HTML in
   a string.
 - **Pages** are one fixed document each (`_id` `pagina-<id>`: home, chi-siamo,
-  contatti, partners, servizi, progetti, sostienici, testimonials, privacy,
-  termini, and
-  `footer` — the footer shared by every page, whose social profiles the
-  contatti page reuses),
-  shown in the Studio as fixed entries that cannot be created, duplicated or
-  deleted. Rich text is rendered inline by `apps/web/src/lib/richText.ts` so
+  contatti, partners, servizi, progetti, sostienici, privacy, termini,
+  trasparenza), read into the `pagine` collection.
+- <a id="site-elements"></a>**Site elements** are the content that is not a
+  page but appears on every page or on several: the `header` (menu items and
+  the button), the `footer` (whose social profiles the contatti page reuses),
+  the cookie banner (`bannerCookie`, `_id` `banner-cookie`) and the
+  `testimonials` the Testimonials section shows. Each has its own Sanity type
+  and one fixed document whose `_id` is the entry id of the `elementi`
+  collection (`apps/studio/schemaTypes/elementi.ts`). The Studio lists them
+  under *Elementi del sito*, apart from *Pagine*. Menu items follow the same
+  link rules as every other link: an item pointing to a page that does not
+  exist or is not published is not shown.
+- Pages and site elements are shown in the Studio as fixed entries that cannot
+  be created, duplicated or deleted. Rich text is rendered inline by `apps/web/src/lib/richText.ts` so
   the containing element keeps the page's scoped styles; legal bodies keep the
   heading ids Markdown used to generate, and the Cookie Policy heading keeps the
   fixed `#cookie` anchor the consent banner links to.
@@ -174,7 +182,7 @@ it.
   the Method section there and on the home. A page header (Hero, Header with
   photo, Header, Title) carries the page's H1: at most one, and first. Hiding a
   section means removing it from the list. Contatti, Partner, the legal pages
-  and the footer keep fixed fields.
+  and the site elements keep fixed fields.
 - **Photos go through `apps/web/src/lib/foto.ts`**:
   - Every photo ships as AVIF with a WebP fallback, in a `<picture>`: `Foto.astro` in pages, and the `sources` prop of the `@butik/ui` components that show photos.
   - Quality comes from the photo's role: hero or thumbnail.

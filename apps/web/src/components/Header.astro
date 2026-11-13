@@ -1,5 +1,7 @@
 ---
 import { getImage } from 'astro:assets';
+import { getEntry } from 'astro:content';
+import { linkValido, soloLinkValidi } from '#lib/links';
 import logo from '../assets/logos/bollo-rosso.svg';
 import Logo from '@butik/ui/Logo';
 import Button from '@butik/ui/Button';
@@ -9,15 +11,16 @@ import Button from '@butik/ui/Button';
 // dentro le isole.
 const logoImg = await getImage({ src: logo, width: 45, height: 45 });
 
-const navLinks = [
-  { href: '/chi-siamo', label: 'Chi siamo' },
-  { href: '/servizi', label: 'Servizi' },
-  { href: '/contatti', label: 'Contatti' },
-  { href: '/progetti', label: 'Portfolio' },
-];
-
-const ctaHref = '/contatti';
-const ctaLabel = 'Lavoriamo insieme';
+// Voci del menu e pulsante da Sanity (elemento «Header», ADR-0004). Le voci
+// che non portano da nessuna parte (segnaposto, pagine che non esistono o non
+// pubblicate) non si mostrano, come ogni altro link (lib/links.ts).
+const entry = await getEntry('elementi', 'header');
+if (!entry || entry.data.type !== 'header') {
+  throw new Error('Contenuto "Header" mancante o non valido (collezione elementi).');
+}
+const navLinks = await soloLinkValidi(entry.data.voci);
+const { ctaHref, ctaLabel } = entry.data;
+const mostraCta = await linkValido(ctaHref);
 
 const currentPath = Astro.url.pathname;
 // Solo la home va in overlay sopra l'hero. Vincolo da rispettare se un giorno
@@ -87,7 +90,7 @@ function isActive(href: string) {
 
     <!-- Right: CTA -->
     <span class="cta-wrap">
-      <Button href={ctaHref} tone="dark" className="header-cta">{ctaLabel}</Button>
+      {mostraCta && <Button href={ctaHref} tone="dark" className="header-cta">{ctaLabel}</Button>}
     </span>
 
     <!-- Mobile menu: <details> nativo, nessun listener -->
@@ -110,7 +113,7 @@ function isActive(href: string) {
               {link.label}
             </a>
           ))}
-          <Button href={ctaHref} tone="invert" className="mobile-cta">{ctaLabel}</Button>
+          {mostraCta && <Button href={ctaHref} tone="invert" className="mobile-cta">{ctaLabel}</Button>}
         </nav>
       </div>
     </details>

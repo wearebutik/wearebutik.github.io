@@ -168,12 +168,9 @@ const PAGINE_TYPE: Record<string, string> = {
   paginaServizi: 'servizi-index',
   paginaProgetti: 'progetti-index',
   paginaSostienici: 'sostienici',
-  paginaBannerCookie: 'banner-cookie',
-  paginaTestimonials: 'testimonials',
   paginaPrivacy: 'privacy',
   paginaTermini: 'termini',
   paginaTrasparenza: 'trasparenza',
-  paginaFooter: 'footer',
 };
 
 // Nelle sezioni, l'Elenco dei servizi e i Progetti in evidenza portano
@@ -229,4 +226,25 @@ export const pagineLoader = () =>
     ...(Array.isArray(rest.partners) && {
       partners: (rest.partners as ConImmagine[]).map((p) => ({ ...p, logo: imageUrl(p.logo) ?? '' })),
     }),
+  }));
+
+// Elementi del sito (header, footer, banner dei cookie, testimonianze): un
+// documento fisso per tipo, con _id uguale all'id dell'entry e al
+// discriminante `type` dello schema Zod `elementi`.
+const ELEMENTI_TYPE: Record<string, string> = {
+  header: 'header',
+  footer: 'footer',
+  bannerCookie: 'banner-cookie',
+  testimonials: 'testimonials',
+};
+
+const ELEMENTI_QUERY = /* groq */ `*[_type in ${JSON.stringify(Object.keys(ELEMENTI_TYPE))} && _id in ${JSON.stringify(Object.values(ELEMENTI_TYPE))}]{
+  ...,
+  "id": _id
+}`;
+
+export const elementiLoader = () =>
+  sanityLoader('elementi', ELEMENTI_QUERY, ({ id, _updatedAt, _id, _type, _rev, _createdAt, ...rest }) => ({
+    ...rest,
+    type: ELEMENTI_TYPE[_type as string],
   }));
