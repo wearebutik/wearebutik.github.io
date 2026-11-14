@@ -204,8 +204,9 @@ const fotoCard = await Promise.all(
     line-height: calc(1 / 0.75); /* line-height che text-xs porta con sé */
     letter-spacing: 0.1em; /* tracking-widest */
     text-transform: uppercase;
-    background-color: var(--color-bg);
-    color: var(--color-fg);
+    /* Chip rossa con testo bianco: 5.68:1, regge AA a 12px. */
+    background-color: var(--color-accent-fill);
+    color: var(--color-fg-invert);
     padding-inline: var(--space-3);
     padding-block: var(--space-1);
     margin-bottom: var(--space-3);
