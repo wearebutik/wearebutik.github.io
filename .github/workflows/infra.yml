@@ -1,0 +1,125 @@
+name: Infrastruttura (OpenTofu)
+
+# La zona wearebutik.com su Cloudflare, dichiarata in infra/cloudflare
+# (ADR-0002, #infrastructure):
+# - su una PR che tocca la cartella: `tofu plan`, pubblicato come commento;
+# - all'unione su main: `tofu apply`, e il nuovo stato salvato nel branch
+#   `stato-infra` (non su main, così il deploy del sito non riparte).
+# Lo stato è cifrato da OpenTofu con TOFU_PASSPHRASE: il repository è
+# pubblico. Copia della passphrase e del token in 1Password, vault butik.
+
+on:
+  pull_request:
+    paths: ['infra/cloudflare/**', '.github/workflows/infra.yml']
+  push:
+    branches: [main]
+    paths: ['infra/cloudflare/**', '.github/workflows/infra.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: write # push dello stato su stato-infra
+  pull-requests: write # commento con il plan
+
+# Un solo plan o apply alla volta, senza interromperne uno a metà: lo stato
+# è un file solo.
+concurrency:
+  group: infra-cloudflare
+  cancel-in-progress: false
+
+env:
+  # Account API token dell'account Butik, solo zona wearebutik.com.
+  CLOUDFLARE_API_TOKEN: ${{ secrets.TOFU_CLOUDFLARE_API_TOKEN }}
+  TF_IN_AUTOMATION: 'true'
+  TF_ENCRYPTION: |
+    key_provider "pbkdf2" "chiave" {
+      passphrase = "${{ secrets.TOFU_PASSPHRASE }}"
+    }
+    method "aes_gcm" "cifra" {
+      keys = key_provider.pbkdf2.chiave
+    }
+    state {
+      method   = method.aes_gcm.cifra
+      enforced = true
+    }
+    plan {
+      method   = method.aes_gcm.cifra
+      enforced = true
+    }
+
+jobs:
+  tofu:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infra/cloudflare
+    steps:
+      - uses: actions/checkout@v7
+
+      # OpenTofu da mise.toml, senza le dipendenze del sito.
+      - uses: ./.github/actions/prepara
+        with:
+          installa: 'false'
+
+      - name: Stato da stato-infra
+        run: |
+          if git fetch --depth=1 origin stato-infra 2>/dev/null \
+            && git cat-file -e FETCH_HEAD:cloudflare.tfstate 2>/dev/null; then
+            git show FETCH_HEAD:cloudflare.tfstate > terraform.tfstate
+          else
+            echo "Nessuno stato salvato: si parte da zero (i blocchi import lo ricostruiscono)."
+          fi
+
+      - run: tofu init -input=false
+
+      - name: Plan
+        id: plan
+        run: |
+          set -o pipefail
+          tofu plan -input=false -no-color -out=piano 2>&1 | tee piano.txt
+
+      - name: Commento sulla PR
+        if: github.event_name == 'pull_request' && always() && steps.plan.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ESITO: ${{ steps.plan.outcome }}
+        run: |
+          {
+            echo "### \`tofu plan\` · infra/cloudflare · ${ESITO}"
+            echo
+            grep -E '^(Plan:|No changes\.|Error:)' piano.txt || true
+            echo
+            echo '<details><summary>Plan completo</summary>'
+            echo
+            echo '```'
+            tail -c 60000 piano.txt
+            echo '```'
+            echo '</details>'
+          } > commento.md
+          gh pr comment "${{ github.event.pull_request.number }}" \
+            --body-file commento.md --edit-last --create-if-none
+
+      - name: Apply
+        id: apply
+        if: github.event_name != 'pull_request'
+        run: tofu apply -input=false -no-color piano
+
+      # Anche se l'apply fallisce a metà: lo stato dice cosa è già cambiato.
+      - name: Salva lo stato su stato-infra
+        if: always() && steps.apply.outcome != 'skipped' && hashFiles('infra/cloudflare/terraform.tfstate') != ''
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if git fetch --depth=1 origin stato-infra 2>/dev/null; then
+            git worktree add "$RUNNER_TEMP/stato" FETCH_HEAD
+          else
+            git worktree add --orphan -b stato-infra "$RUNNER_TEMP/stato"
+          fi
+          cp terraform.tfstate "$RUNNER_TEMP/stato/cloudflare.tfstate"
+          cd "$RUNNER_TEMP/stato"
+          git add cloudflare.tfstate
+          if git diff --cached --quiet; then
+            echo "Stato invariato."
+          else
+            git commit -m "stato: apply di ${GITHUB_SHA::7}"
+            git push origin HEAD:stato-infra
+          fi

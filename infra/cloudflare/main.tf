@@ -1,6 +1,7 @@
 # La zona wearebutik.com su Cloudflare, per la parte che riguarda il sito
-# (ADR-0002, #infrastructure). env0 lancia `tofu plan` su ogni PR che tocca
-# questa cartella e `tofu apply` all'unione su main, e conserva lo stato.
+# (ADR-0002, #infrastructure). .github/workflows/infra.yml lancia `tofu plan`
+# su ogni PR che tocca questa cartella e `tofu apply` all'unione su main. Lo
+# stato, cifrato, sta nel branch `stato-infra`.
 #
 # Qui c'è solo ciò che il sito usa: i record della radice, di www e dei
 # sottodomini dei social, i redirect della zona e le impostazioni HTTPS.
@@ -21,10 +22,15 @@ terraform {
   }
 }
 
-# Il token arriva da env0 nella variabile d'ambiente CLOUDFLARE_API_TOKEN:
-# Account API token dell'account Butik, solo zona wearebutik.com, con DNS
-# Write, Zone Read, Zone Settings Write, Dynamic URL Redirects Write
-# (1Password, vault butik, «Cloudflare – token env0 wearebutik.com»).
+# Il token arriva nella variabile d'ambiente CLOUDFLARE_API_TOKEN (secret
+# TOFU_CLOUDFLARE_API_TOKEN): Account API token dell'account Butik, solo zona
+# wearebutik.com, con DNS Write, Zone Read, Zone Settings Write, Dynamic URL
+# Redirects Write (1Password, vault butik, «Cloudflare – token env0
+# wearebutik.com»).
+#
+# In locale, lo stesso flusso: lo stato da `git show origin/stato-infra:
+# cloudflare.tfstate`, la cifratura in TF_ENCRYPTION come nel workflow, con
+# la passphrase di 1Password («OpenTofu – passphrase stato infra/cloudflare»).
 provider "cloudflare" {}
 
 locals {
