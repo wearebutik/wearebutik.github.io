@@ -33,7 +33,7 @@ Worker runs no code of ours: assets only. Headers live in
 `apps/web/public/_headers` (`/_astro/*` cached as `immutable`, basic security
 headers) and the 301s from the old Squarespace addresses in
 `apps/web/public/_redirects`. `www.wearebutik.com` answers with a 301 to the
-apex through a Redirect Rule of the zone.
+apex through a Redirect Rule of the zone (`#infrastructure`).
 
 <a id="beta"></a>**Beta.** The same site runs on a second Worker,
 `butik-beta` (`apps/web/wrangler.beta.jsonc`), on https://beta.wearebutik.com,
@@ -42,6 +42,22 @@ out of search engines: the workflow appends `X-Robots-Tag: noindex` to the
 headers and replaces `robots.txt` with one that disallows everything. It can
 be switched off without touching the site (`gh workflow disable
 deploy-beta.yml`).
+
+<a id="infrastructure"></a>**Zone configuration as code.** The part of the
+`wearebutik.com` zone the site depends on is declared with OpenTofu in
+`infra/cloudflare/`: the records of `www` and the social subdomains, the
+zone's Single Redirects (one ruleset, so every redirect rule lives there) and
+the HTTPS settings (Full strict, Always Use HTTPS, Rocket Loader off). `.github/workflows/infra.yml` runs
+`tofu plan` on every pull request that touches the folder, posting it as a
+comment, and `tofu apply` on merge to `main`. The state lives in the
+`stato-infra` branch, encrypted by OpenTofu (`TF_ENCRYPTION`, passphrase in
+the `TOFU_PASSPHRASE` secret) because the repository is public; keeping it off
+`main` means an apply does not trigger a site deploy. The token is an Account
+API token scoped to the zone (`TOFU_CLOUDFLARE_API_TOKEN`); token and
+passphrase are also in 1Password, vault `butik`. Mail records (MX, TXT) and the hostnames that
+wrangler binds to Workers (`custom_domain` routes) stay outside: OpenTofu
+does not touch what it does not declare. A change to the zone is a pull
+request, and rolling it back is reverting it.
 
 <a id="seo"></a>**Search engines.** `SITE` gives the build its absolute
 addresses (canonical, Open Graph, sitemap, structured data):
@@ -116,6 +132,16 @@ needed. Still available as a per-feature choice via the guidance.
 
 Rejected: it would force every dynamic function into one provider even when
 another option would be simpler. We prefer to choose per case.
+
+### OpenTofu state in R2, or runs on env0
+
+R2 holds a state file with locking through OpenTofu's `s3` backend, but the
+account has no R2 subscription and adding one needs a payment method on the
+Cloudflare account. env0 would run plan and apply and keep the state with
+less workflow code, but needs an account and access to its free plan. Either
+replaces the `stato-infra` branch without touching `infra/cloudflare/`; the
+branch is enough while a single workflow, serialised by its `concurrency`
+group, is the only writer.
 
 ## Consequences
 
