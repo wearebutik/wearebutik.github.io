@@ -3,8 +3,8 @@
 # su ogni PR che tocca questa cartella e `tofu apply` all'unione su main. Lo
 # stato, cifrato, sta nel branch `stato-infra`.
 #
-# Qui c'è solo ciò che il sito usa: i record della radice, di www e dei
-# sottodomini dei social, i redirect della zona e le impostazioni HTTPS.
+# Qui c'è solo ciò che il sito usa: i record di www e dei sottodomini dei
+# social, i redirect della zona e le impostazioni HTTPS.
 # Restano fuori, e OpenTofu non li tocca perché non li dichiara:
 # - la posta (MX) e le verifiche (TXT, il CNAME di verifica di Squarespace);
 # - i record AAAA 100:: di beta, preview e form, che crea wrangler con i
