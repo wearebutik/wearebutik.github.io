@@ -69,7 +69,7 @@ it.
 - **Publishing.** A publish in the Studio reaches the site through a new build
   and deploy: a Sanity webhook on published documents in `production` calls
   GitHub's `repository_dispatch` (`event_type: sanity-publish`), which runs
-  `deploy-beta.yml`. The webhook authenticates with a fine-grained GitHub token
+  `deploy.yml` (and `deploy-beta.yml` for the beta). The webhook authenticates with a fine-grained GitHub token
   stored only in Sanity's webhook settings.
 - **Draft preview: in the browser.** Whoever writes sees their drafts
   rendered by the site's own code before publishing, with nothing to install.

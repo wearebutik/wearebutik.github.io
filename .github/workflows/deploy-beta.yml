@@ -11,10 +11,15 @@ on:
   repository_dispatch:
     types: [sanity-publish]
 
-# Il sito su Cloudflare Workers, all'indirizzo beta.wearebutik.com (ADR-0002;
-# configurazione in apps/web/wrangler.jsonc). Fuori dai motori di ricerca
-# finché non passa su wearebutik.com (#96): noindex su ogni percorso e un
-# robots.txt che blocca tutto, scritti dopo il build solo qui.
+# La beta: lo stesso sito su un Worker a parte, all'indirizzo
+# beta.wearebutik.com (ADR-0002; configurazione in apps/web/wrangler.beta.jsonc).
+# Fuori dai motori di ricerca: noindex su ogni percorso e un robots.txt che
+# blocca tutto, aggiunti dopo il build solo qui.
+#
+# Si spegne e si riaccende senza toccare il sito:
+#   gh workflow disable deploy-beta.yml   (la beta resta all'ultima versione)
+#   gh workflow enable deploy-beta.yml
+# Per toglierla del tutto da internet: `wrangler delete --config wrangler.beta.jsonc`.
 permissions:
   contents: read
 
@@ -60,12 +65,13 @@ jobs:
           PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
         run: pnpm build
 
-      # Beta fuori dai motori di ricerca, e cache lunga sui file con l'hash nel
-      # nome. Da togliere (noindex e robots) al passaggio su wearebutik.com.
+      # Beta fuori dai motori di ricerca. Il noindex si aggiunge in coda agli
+      # header del sito (public/_headers): Cloudflare applica tutte le regole
+      # che corrispondono a un percorso. Il robots.txt sostituisce quello del sito.
       - name: Intestazioni della beta
         working-directory: apps/web/dist
         run: |
-          printf '/*\n  X-Robots-Tag: noindex\n/_astro/*\n  Cache-Control: public, max-age=31536000, immutable\n' > _headers
+          printf '\n/*\n  X-Robots-Tag: noindex\n' >> _headers
           printf 'User-agent: *\nDisallow: /\n' > robots.txt
 
       - name: Cloudflare Workers
@@ -73,4 +79,4 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
-        run: pnpm dlx wrangler@4.154.0 deploy
+        run: pnpm dlx wrangler@4.154.0 deploy --config wrangler.beta.jsonc

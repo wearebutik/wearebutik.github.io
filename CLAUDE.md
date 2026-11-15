@@ -6,8 +6,8 @@ is the index and the review contract.
 ## What this is
 
 butik's website — **Astro 7**, built **static** (`astro build`) and host-agnostic,
-deployed to Cloudflare Workers static assets (https://beta.wearebutik.com,
-ADR-0002 `#hosting`). Content lives in **Sanity** (read at build time
+deployed to Cloudflare Workers static assets (https://wearebutik.com, with a
+noindex beta on https://beta.wearebutik.com; ADR-0002 `#hosting`). Content lives in **Sanity** (read at build time
 into Astro content collections; Studio in `apps/studio`). Node and Bun versions
 in `mise.toml`.
 

@@ -1,0 +1,66 @@
+# Gli indirizzi del vecchio sito su Squarespace (sitemap del 15/11/2026, 68
+# URL) verso il sito nuovo, con 301: Google trasferisce il posizionamento e
+# chi arriva da un vecchio link trova la pagina giusta (#138). Destinazioni
+# relative, così valgono anche sulla beta; sempre con la barra finale, per non
+# fare un secondo salto (ADR-0002, lib/linkConBarra.ts).
+
+# Pagine principali
+/homepage-butik                 /                  301
+/homepage-old                   /                  301
+/butik-eng                      /                  301
+/old-eng                        /                  301
+/nuova-pagina                   /                  301
+/services                       /servizi/          301
+/butik-servizi                  /servizi/          301
+/cosa-fa-butik-copia            /servizi/          301
+/aboutus                        /chi-siamo/        301
+/butik-chisiamo                 /chi-siamo/        301
+/chi-siamo-copia                /chi-siamo/        301
+/team-old                       /chi-siamo/        301
+/collaboratori-copia            /chi-siamo/        301
+/ourimpact                      /chi-siamo/        301
+/obiettivi-ed-impatto-copia     /chi-siamo/        301
+/manifesto                      /chi-siamo/        301
+/progetti-butik                 /progetti/         301
+/contatti-butik                 /contatti/         301
+/butik-partnership              /partners/         301
+
+# Servizi: le pagine di dettaglio non sono pubblicate, si va alla scheda
+# nella pagina Servizi.
+/butik-turismo-musicale         /servizi/#prodotti-turistico-musicali     301
+/laboratorioformativo           /servizi/#formazione-capacity-building    301
+
+# Progetti
+/turismomusicalefestival        /progetti/tum-festival-turismo-musicale/  301
+/iulm                           /progetti/docenze-e-panel/                301
+
+# Trasparenza e sostegno: pagine non ancora pubblicate sul sito nuovo.
+/trasparenza                    /chi-siamo/        301
+/trasparenza2022                /chi-siamo/        301
+/trasparenza2023                /chi-siamo/        301
+/trasparenza2024                /chi-siamo/        301
+/sostieni-butik                 /contatti/         301
+
+# Progetti ed eventi passati, non più nel portfolio
+/linecheck-2018                 /progetti/         301
+/lincheck-2019-1                /progetti/         301
+/linecheck-2020                 /progetti/         301
+/musicalzoo                     /progetti/         301
+/jzrf-1                         /progetti/         301
+/fatfatfat-1                    /progetti/         301
+/place-to-be                    /progetti/         301
+/partecipazione-giovanile       /progetti/         301
+/italian-music-festivals        /progetti/         301
+/tropea-blu                     /progetti/         301
+/tropea-curami-live             /progetti/         301
+/tropea-owo                     /progetti/         301
+/tropea-release-france          /progetti/         301
+/press-tropea-technicolor-english  /progetti/      301
+/eventi-butik                   /progetti/         301
+/eventi-programma               /progetti/         301
+/eventi-programma/*             /progetti/         301
+
+# News: il sito nuovo non ha una sezione news
+/news-butik                     /progetti/         301
+/ultime-novita-butik            /progetti/         301
+/news-butik/*                   /progetti/         301
