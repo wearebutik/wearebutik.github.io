@@ -20,6 +20,7 @@ apps/functions/      # Cloudflare/serverless functions (@butik/functions) — ad
 packages/ui-tokens/  # @butik/ui-tokens — design tokens (CSS custom properties)
 packages/ui/         # @butik/ui — shared component catalogue (CSS Modules + tokens)
 packages/site-config/ # @butik/site-config — link/social rules shared by site and Studio
+infra/cloudflare/    # OpenTofu: the wearebutik.com zone, plan/apply by infra.yml (ADR-0002 #infrastructure)
 docs/ .claude/ reference/ design/   # repo-wide, at root
 ```
 
