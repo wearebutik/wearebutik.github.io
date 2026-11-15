@@ -4,9 +4,9 @@
 # appartiene a un altro account Google (o a Google Workspace) e non lo
 # gestiamo da qui.
 
-# Search Console, proprietà dominio wearebutik.com dell'account
-# gabriele@wearebutik.com (#100). Se si toglie, la proprietà resta ma perde
-# la verifica di questo account.
+# Search Console, proprietà dominio wearebutik.com verificata dall'account
+# Google di Gabriele (#100). Se si toglie, la proprietà resta ma perde la
+# verifica di questo account.
 resource "cloudflare_dns_record" "search_console" {
   zone_id = local.zone_id
   name    = "wearebutik.com"
