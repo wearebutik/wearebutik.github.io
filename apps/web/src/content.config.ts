@@ -479,6 +479,16 @@ const footer = z.object({
   type: z.literal('footer'),
   ragioneSociale: z.string(),
   indirizzo: z.string(),
+  // Solo per i dati strutturati (lib/seo/datiStrutturati.ts): facoltativa,
+  // senza resta l'indirizzo testuale.
+  sede: z
+    .object({
+      via: z.string(),
+      cap: z.string().regex(/^\d{5}$/),
+      citta: z.string(),
+      paese: z.string().regex(/^[A-Z]{2}$/),
+    })
+    .optional(),
   partitaIva: z.string(),
   contattiLabel: z.string(),
   pec: z.string().regex(EMAIL),

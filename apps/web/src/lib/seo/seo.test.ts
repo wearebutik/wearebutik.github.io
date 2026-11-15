@@ -67,6 +67,17 @@ describe('organizzazione', () => {
     expect(organizzazione({ site, nome: 'Butik', footer: { ...footer, social: [] }, logo: '/l.png' })).not.toHaveProperty('sameAs');
   });
 
+  it('con la sede compilata scrive un PostalAddress con i campi separati', () => {
+    const sede = { via: 'Via Plinio 14', cap: '20129', citta: 'Milano', paese: 'IT' };
+    expect(organizzazione({ site, nome: 'Butik', footer: { ...footer, sede }, logo: '/l.png' }).address).toEqual({
+      '@type': 'PostalAddress',
+      streetAddress: 'Via Plinio 14',
+      postalCode: '20129',
+      addressLocality: 'Milano',
+      addressCountry: 'IT',
+    });
+  });
+
   it('una partita IVA già con il prefisso del paese resta com’è', () => {
     expect(organizzazione({ site, nome: 'Butik', footer: { ...footer, partitaIva: 'IT10429130965' }, logo: '/l.png' }).vatID).toBe('IT10429130965');
   });

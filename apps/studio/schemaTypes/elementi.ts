@@ -48,6 +48,34 @@ export const footer = defineType({
   fields: [
     str('ragioneSociale', 'Ragione sociale', 'azienda'),
     txt('indirizzo', 'Indirizzo', 'azienda'),
+    // Solo per i motori di ricerca (dati strutturati della home): la stessa
+    // sede con i campi separati. Facoltativa sul sito, che senza usa
+    // l'indirizzo qui sopra (apps/web/src/content.config.ts).
+    defineField({
+      name: 'sede',
+      title: 'Sede per i motori di ricerca',
+      description: "La stessa sede dell'indirizzo, divisa nei campi che Google si aspetta. Non compare sul sito.",
+      type: 'object',
+      group: 'azienda',
+      options: { columns: 2 },
+      fields: [
+        defineField({ name: 'via', title: 'Via e numero civico', type: 'string', validation: (r) => r.required() }),
+        defineField({
+          name: 'cap',
+          title: 'CAP',
+          type: 'string',
+          validation: (r) => r.required().regex(/^\d{5}$/, { name: 'CAP di 5 cifre' }),
+        }),
+        defineField({ name: 'citta', title: 'Città', type: 'string', validation: (r) => r.required() }),
+        defineField({
+          name: 'paese',
+          title: 'Paese (codice di 2 lettere, es. IT)',
+          type: 'string',
+          initialValue: 'IT',
+          validation: (r) => r.required().regex(/^[A-Z]{2}$/, { name: 'codice ISO di 2 lettere maiuscole' }),
+        }),
+      ],
+    }),
     str('partitaIva', 'Partita IVA', 'azienda'),
     str('contattiLabel', 'Etichetta dei contatti (es. "PEC & Email")', 'azienda'),
     str('pec', 'PEC', 'azienda'),

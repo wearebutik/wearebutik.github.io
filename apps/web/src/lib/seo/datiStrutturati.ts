@@ -10,9 +10,19 @@ type Oggetto = Record<string, unknown>;
 const CONTESTO = 'https://schema.org';
 const idOrganizzazione = (site: URL) => new URL('#organizzazione', site).href;
 
+/** La sede con i campi separati (footer su Sanity, «Sede per i motori di ricerca»). */
+export interface Sede {
+  via: string;
+  cap: string;
+  citta: string;
+  /** Codice del paese ISO 3166-1, es. `IT`. */
+  paese: string;
+}
+
 interface DatiFooter {
   ragioneSociale: string;
   indirizzo: string;
+  sede?: Sede;
   partitaIva: string;
   email: string;
   social: { href: string }[];
@@ -32,8 +42,17 @@ export function organizzazione({ site, nome, footer, logo }: { site: URL; nome: 
     email: footer.email,
     // Partita IVA italiana nel formato europeo, con il prefisso del paese.
     vatID: /^[A-Z]{2}/.test(footer.partitaIva) ? footer.partitaIva : `IT${footer.partitaIva}`,
-    // L'indirizzo è un testo unico nello Studio: schema.org accetta Text.
-    address: footer.indirizzo,
+    // Con la sede compilata, l'indirizzo con i campi che Google si aspetta;
+    // senza, il testo unico del footer (schema.org accetta Text).
+    address: footer.sede
+      ? {
+          '@type': 'PostalAddress',
+          streetAddress: footer.sede.via,
+          postalCode: footer.sede.cap,
+          addressLocality: footer.sede.citta,
+          addressCountry: footer.sede.paese,
+        }
+      : footer.indirizzo,
     ...(sameAs.length > 0 && { sameAs }),
   };
 }
