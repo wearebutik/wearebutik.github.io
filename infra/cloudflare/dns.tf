@@ -1,33 +1,18 @@
-# I record del sito. Oggi la radice e www puntano a Squarespace; il passaggio
-# al sito nuovo (#96) li toglie da qui, e `wearebutik.com` lo prende il
-# Worker. Per tornare indietro basta ripristinare questo file.
+# I record del sito. La radice `wearebutik.com` non sta qui: è il dominio
+# personalizzato del Worker `butik`, e il suo record lo crea wrangler
+# (apps/web/wrangler.jsonc, deploy.yml).
+#
+# Fino al passaggio (#96) radice e www puntavano a Squarespace, con i record A
+# 198.185.159.144, 198.185.159.145, 198.49.23.144, 198.49.23.145 e il CNAME
+# www → ext-sq.squarespace.com: per tornare indietro si ripristinano da git.
 
-locals {
-  # IP di Squarespace → ID del record su Cloudflare (per l'import).
-  squarespace_a = {
-    "198.185.159.144" = "a737c53140b551787567b131ecf9420d"
-    "198.185.159.145" = "c048748fe09a1819498b2638afa265d3"
-    "198.49.23.144"   = "fce4eecfe616ad48ab06bf6965709608"
-    "198.49.23.145"   = "a6ce0919346d9e665b4a3f71ec5e91cd"
-  }
-}
-
-resource "cloudflare_dns_record" "radice_squarespace" {
-  for_each = local.squarespace_a
-
-  zone_id = local.zone_id
-  name    = "wearebutik.com"
-  type    = "A"
-  content = each.key
-  ttl     = 1
-  proxied = false
-}
-
+# www risponde solo con un 301 verso la radice (redirect.tf): il record serve
+# ad avere il proxy di Cloudflare, dove scatta il redirect (#136).
 resource "cloudflare_dns_record" "www" {
   zone_id = local.zone_id
   name    = "www.wearebutik.com"
   type    = "CNAME"
-  content = "ext-sq.squarespace.com"
+  content = "wearebutik.com"
   ttl     = 1
-  proxied = false
+  proxied = true
 }
