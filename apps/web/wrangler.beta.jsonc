@@ -1,0 +1,16 @@
+// La beta: lo stesso sito di wrangler.jsonc, su un Worker a parte e su
+// beta.wearebutik.com, fuori dai motori di ricerca. Pubblicata da
+// .github/workflows/deploy-beta.yml, che si spegne e si riaccende senza
+// toccare il sito (`gh workflow disable deploy-beta.yml`).
+{
+  "name": "butik-beta",
+  "compatibility_date": "2026-04-10",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page"
+  },
+  "routes": [{ "pattern": "beta.wearebutik.com", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false
+}

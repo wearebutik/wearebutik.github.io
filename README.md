@@ -1,7 +1,7 @@
 # butik — sito
 
 Sito di butik: Astro statico, contenuti su Sanity, pubblicato su Cloudflare
-(https://beta.wearebutik.com).
+(https://wearebutik.com; beta su https://beta.wearebutik.com).
 Monorepo pnpm + turbo (`apps/web` il sito, `apps/studio` lo Studio Sanity,
 `packages/*` token e componenti). Le decisioni stanno in [`docs/adr/`](docs/adr/README.md);
 le regole di lavoro in [`CLAUDE.md`](CLAUDE.md).

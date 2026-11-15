@@ -23,21 +23,29 @@ host — Cloudflare, GitHub Pages, Netlify or others — without changing the bu
 model.
 
 <a id="hosting"></a>**Hosting: Cloudflare Workers static assets.** The built
-`apps/web/dist` is served as static assets by the Worker `butik-beta`
-(`apps/web/wrangler.jsonc`) on https://beta.wearebutik.com, in butik's
-Cloudflare account, the one that holds the `wearebutik.com` zone.
-`.github/workflows/deploy-beta.yml` builds and deploys it on every push to
-`main` and on every Sanity publish (`repository_dispatch` `sanity-publish`),
-with `CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (variable).
-The Worker runs no code of ours: assets only. The beta stays out of search
-engines (`X-Robots-Tag: noindex` and a `robots.txt` that disallows everything,
-written by the workflow after the build over the one the site generates)
-until the site moves to `wearebutik.com` (#96). `/_astro/*` is cached as
-`immutable`.
+`apps/web/dist` is served as static assets by the Worker `butik`
+(`apps/web/wrangler.jsonc`) on https://wearebutik.com, in butik's Cloudflare
+account, the one that holds the `wearebutik.com` zone.
+`.github/workflows/deploy.yml` builds and deploys it on every push to `main`
+and on every Sanity publish (`repository_dispatch` `sanity-publish`), with
+`CLOUDFLARE_API_TOKEN` (secret) and `CLOUDFLARE_ACCOUNT_ID` (variable). The
+Worker runs no code of ours: assets only. Headers live in
+`apps/web/public/_headers` (`/_astro/*` cached as `immutable`, basic security
+headers) and the 301s from the old Squarespace addresses in
+`apps/web/public/_redirects`. `www.wearebutik.com` answers with a 301 to the
+apex through a Redirect Rule of the zone.
+
+<a id="beta"></a>**Beta.** The same site runs on a second Worker,
+`butik-beta` (`apps/web/wrangler.beta.jsonc`), on https://beta.wearebutik.com,
+deployed by `.github/workflows/deploy-beta.yml` on the same triggers. It stays
+out of search engines: the workflow appends `X-Robots-Tag: noindex` to the
+headers and replaces `robots.txt` with one that disallows everything. It can
+be switched off without touching the site (`gh workflow disable
+deploy-beta.yml`).
 
 <a id="seo"></a>**Search engines.** `SITE` gives the build its absolute
 addresses (canonical, Open Graph, sitemap, structured data):
-`https://beta.wearebutik.com` today, `https://wearebutik.com` after #96.
+`https://wearebutik.com` (`https://beta.wearebutik.com` on the beta).
 With `SITE` set, the published build writes a sitemap (`@astrojs/sitemap`:
 `/sitemap-index.xml`, without `lab/` and `og/`; unpublished pages are not
 generated, so they are not listed) and `pages/robots.txt.ts` serves a
