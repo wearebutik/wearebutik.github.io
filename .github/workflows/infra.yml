@@ -98,9 +98,10 @@ jobs:
           gh pr comment "${{ github.event.pull_request.number }}" \
             --body-file commento.md --edit-last --create-if-none
 
+      # Solo su main: un lancio manuale da un altro branch si ferma al plan.
       - name: Apply
         id: apply
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: tofu apply -input=false -no-color piano
 
       # Anche se l'apply fallisce a metà: lo stato dice cosa è già cambiato.
