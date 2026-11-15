@@ -35,6 +35,18 @@ written by the workflow after the build over the one the site generates)
 until the site moves to `wearebutik.com` (#96). `/_astro/*` is cached as
 `immutable`.
 
+<a id="infrastructure"></a>**Zone configuration as code.** The part of the
+`wearebutik.com` zone the site depends on is declared with OpenTofu in
+`infra/cloudflare/`: the records of the apex, `www` and the social
+subdomains, the zone's Single Redirects (one ruleset, so every redirect rule
+lives there) and the HTTPS settings. env0 runs `tofu plan` on every pull
+request that touches the folder and `tofu apply` on merge to `main`, and keeps
+the state; the token is an Account API token scoped to the zone, stored in
+env0 as `CLOUDFLARE_API_TOKEN`. Mail records (MX, TXT) and the hostnames that
+wrangler binds to Workers (`custom_domain` routes) stay outside: OpenTofu
+does not touch what it does not declare. A change to the zone is a pull
+request, and rolling it back is reverting it.
+
 <a id="seo"></a>**Search engines.** `SITE` gives the build its absolute
 addresses (canonical, Open Graph, sitemap, structured data):
 `https://beta.wearebutik.com` today, `https://wearebutik.com` after #96.
@@ -108,6 +120,13 @@ needed. Still available as a per-feature choice via the guidance.
 
 Rejected: it would force every dynamic function into one provider even when
 another option would be simpler. We prefer to choose per case.
+
+### Running OpenTofu from GitHub Actions, with the state in R2
+
+Plan on the pull request and apply on merge, as with env0, at no extra
+service. Rejected while env0 is available: the plan comment, the apply job,
+the state bucket and its locking would be workflow code of our own to
+maintain. It stays the fallback, with `infra/cloudflare/` unchanged.
 
 ## Consequences
 

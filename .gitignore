@@ -20,3 +20,8 @@ dist-preview/
 
 # Ombra del controllo dei tipi (tools/type-check)
 .tipi/
+
+# OpenTofu (infra/): provider scaricati in locale; lo stato sta su env0.
+.terraform/
+*.tfstate
+*.tfstate.*
