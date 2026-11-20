@@ -13,7 +13,8 @@ on:
 
 # Il sito su Cloudflare Workers, all'indirizzo wearebutik.com (ADR-0002;
 # configurazione in apps/web/wrangler.jsonc). Intestazioni e redirect stanno
-# in apps/web/public (_headers, _redirects). La beta ha il suo workflow
+# in apps/web/public (_headers, _redirects). Dopo il deploy, IndexNow avvisa
+# Bing delle pagine cambiate (tools/indexnow). La beta ha il suo workflow
 # (deploy-beta.yml).
 permissions:
   contents: read
@@ -60,9 +61,20 @@ jobs:
           PUBLIC_GTM_ID: ${{ vars.PUBLIC_GTM_ID }}
         run: pnpm build
 
+      # IndexNow (#188, tools/indexnow): prima del deploy le pagine della
+      # sitemap diverse da quelle online, dopo il deploy l'avviso a Bing e agli
+      # altri motori che aderiscono. Non fa mai fallire il deploy.
+      - name: Pagine cambiate (IndexNow)
+        continue-on-error: true
+        run: tools/indexnow/indexnow.sh cambiate apps/web/dist https://wearebutik.com > "$RUNNER_TEMP/cambiate.txt"
+
       - name: Cloudflare Workers
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
         run: pnpm dlx wrangler@4.154.0 deploy
+
+      - name: IndexNow
+        continue-on-error: true
+        run: tools/indexnow/indexnow.sh invia apps/web/dist https://wearebutik.com < "$RUNNER_TEMP/cambiate.txt"
