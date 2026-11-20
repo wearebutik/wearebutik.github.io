@@ -26,15 +26,18 @@
 /progetti-butik                 /progetti/         301
 /contatti-butik                 /contatti/         301
 /butik-partnership              /partners/         301
+/search                         /                  301
 
 # Servizi: le pagine di dettaglio non sono pubblicate, si va alla scheda
 # nella pagina Servizi.
 /butik-turismo-musicale         /servizi/#prodotti-turistico-musicali     301
 /laboratorioformativo           /servizi/#formazione-capacity-building    301
+/butik-work                     /servizi/#prodotti-turistico-musicali     301
 
 # Progetti
 /turismomusicalefestival        /progetti/tum-festival-turismo-musicale/  301
 /iulm                           /progetti/docenze-e-panel/                301
+/panel-turismo-musicale         /progetti/docenze-e-panel/                301
 
 # Trasparenza e sostegno: pagine non ancora pubblicate sul sito nuovo.
 /trasparenza                    /chi-siamo/        301
