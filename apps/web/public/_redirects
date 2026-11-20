@@ -1,5 +1,6 @@
 # Gli indirizzi del vecchio sito su Squarespace (sitemap del 15/11/2026, 68
-# URL) verso il sito nuovo, con 301: Google trasferisce il posizionamento e
+# URL, più quelli che Search Console trova ancora nell'indice di Google) verso
+# il sito nuovo, con 301: Google trasferisce il posizionamento e
 # chi arriva da un vecchio link trova la pagina giusta (#138). Destinazioni
 # relative, così valgono anche sulla beta; sempre con la barra finale, per non
 # fare un secondo salto (ADR-0002, lib/linkConBarra.ts).
@@ -17,6 +18,7 @@
 /butik-chisiamo                 /chi-siamo/        301
 /chi-siamo-copia                /chi-siamo/        301
 /team-old                       /chi-siamo/        301
+/team                           /chi-siamo/        301
 /collaboratori-copia            /chi-siamo/        301
 /ourimpact                      /chi-siamo/        301
 /obiettivi-ed-impatto-copia     /chi-siamo/        301
@@ -36,6 +38,7 @@
 
 # Trasparenza e sostegno: pagine non ancora pubblicate sul sito nuovo.
 /trasparenza                    /chi-siamo/        301
+/trasparenza/                   /chi-siamo/        301
 /trasparenza2022                /chi-siamo/        301
 /trasparenza2023                /chi-siamo/        301
 /trasparenza2024                /chi-siamo/        301
