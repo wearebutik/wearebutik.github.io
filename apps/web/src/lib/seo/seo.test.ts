@@ -95,6 +95,14 @@ describe('sitoWeb', () => {
       publisher: { '@id': 'https://wearebutik.com/#organizzazione' },
     });
   });
+
+  it('dà a Google i nomi alternativi, da usare prima del dominio', () => {
+    expect(sitoWeb({ site, nome: 'Butik', nomiAlternativi: ['Butik Impresa Sociale'] }).alternateName).toEqual(['Butik Impresa Sociale']);
+  });
+
+  it('senza nomi alternativi non scrive il campo', () => {
+    expect(sitoWeb({ site, nome: 'Butik' })).not.toHaveProperty('alternateName');
+  });
 });
 
 describe('briciole', () => {

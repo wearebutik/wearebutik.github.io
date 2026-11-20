@@ -22,6 +22,8 @@ interface Props {
 
 const { home = false, briciole } = Astro.props;
 const NOME = 'Butik';
+// Il nome del sito nei risultati di Google, se non usa NOME (WebSite.alternateName).
+const NOMI_ALTERNATIVI = ['Butik Impresa Sociale'];
 const site = new URL(Astro.site ?? Astro.url.origin);
 const dati: unknown[] = [];
 
@@ -32,7 +34,7 @@ if (home) {
     // Il logo in PNG quadrato: i motori di ricerca non leggono l'SVG.
     const png = await getImage({ src: logo, width: 512, height: 512, format: 'png' });
     const social = await soloLinkValidi(f.social);
-    dati.push(organizzazione({ site, nome: NOME, footer: { ...f, social }, logo: png.src }), sitoWeb({ site, nome: NOME }));
+    dati.push(organizzazione({ site, nome: NOME, footer: { ...f, social }, logo: png.src }), sitoWeb({ site, nome: NOME, nomiAlternativi: NOMI_ALTERNATIVI }));
   }
 }
 
