@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Temporanea: i vecchi indirizzi di Squarespace, che oggi rispondono con un
+     301 (public/_redirects). Inviata a Search Console e a Bing perché i motori
+     riscansionino i redirect e passino il posizionamento alle pagine nuove.
+     Non è in robots.txt né in sitemap-index.xml. Da togliere, insieme
+     all'invio nei due strumenti, quando Search Console non ha più vecchi URL
+     tra le pagine indicizzate (#138). -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://wearebutik.com/aboutus</loc></url>
+  <url><loc>https://wearebutik.com/butik-chisiamo</loc></url>
+  <url><loc>https://wearebutik.com/butik-eng</loc></url>
+  <url><loc>https://wearebutik.com/butik-partnership</loc></url>
+  <url><loc>https://wearebutik.com/butik-servizi</loc></url>
+  <url><loc>https://wearebutik.com/butik-turismo-musicale</loc></url>
+  <url><loc>https://wearebutik.com/chi-siamo-copia</loc></url>
+  <url><loc>https://wearebutik.com/collaboratori-copia</loc></url>
+  <url><loc>https://wearebutik.com/contatti-butik</loc></url>
+  <url><loc>https://wearebutik.com/cosa-fa-butik-copia</loc></url>
+  <url><loc>https://wearebutik.com/eventi-butik</loc></url>
+  <url><loc>https://wearebutik.com/eventi-programma</loc></url>
+  <url><loc>https://wearebutik.com/eventi-programma/2022/11/23/matchmaking-session-butik</loc></url>
+  <url><loc>https://wearebutik.com/eventi-programma/2022/11/24/weekend-commuters-butik</loc></url>
+  <url><loc>https://wearebutik.com/eventi-programma/2022/11/25/musica-muove-europa-butik</loc></url>
+  <url><loc>https://wearebutik.com/fatfatfat-1</loc></url>
+  <url><loc>https://wearebutik.com/homepage-butik</loc></url>
+  <url><loc>https://wearebutik.com/homepage-old</loc></url>
+  <url><loc>https://wearebutik.com/italian-music-festivals</loc></url>
+  <url><loc>https://wearebutik.com/iulm</loc></url>
+  <url><loc>https://wearebutik.com/jzrf-1</loc></url>
+  <url><loc>https://wearebutik.com/laboratorioformativo</loc></url>
+  <url><loc>https://wearebutik.com/lincheck-2019-1</loc></url>
+  <url><loc>https://wearebutik.com/linecheck-2018</loc></url>
+  <url><loc>https://wearebutik.com/linecheck-2020</loc></url>
+  <url><loc>https://wearebutik.com/manifesto</loc></url>
+  <url><loc>https://wearebutik.com/musicalzoo</loc></url>
+  <url><loc>https://wearebutik.com/news-butik</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/artist+feature</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/free+downloads</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/inspiration</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/matchmaking</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/music</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/musictourism</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/networking</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/new+release</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/panel</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/tour+dates</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/category/video</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/matchmakingsession</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/panelbutiklinecheck</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/conference</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/matchmaking</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/music</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/musictourism</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/networking</loc></url>
+  <url><loc>https://wearebutik.com/news-butik/tag/panel</loc></url>
+  <url><loc>https://wearebutik.com/nuova-pagina</loc></url>
+  <url><loc>https://wearebutik.com/obiettivi-ed-impatto-copia</loc></url>
+  <url><loc>https://wearebutik.com/old-eng</loc></url>
+  <url><loc>https://wearebutik.com/ourimpact</loc></url>
+  <url><loc>https://wearebutik.com/partecipazione-giovanile</loc></url>
+  <url><loc>https://wearebutik.com/place-to-be</loc></url>
+  <url><loc>https://wearebutik.com/press-tropea-technicolor-english</loc></url>
+  <url><loc>https://wearebutik.com/progetti-butik</loc></url>
+  <url><loc>https://wearebutik.com/services</loc></url>
+  <url><loc>https://wearebutik.com/sostieni-butik</loc></url>
+  <url><loc>https://wearebutik.com/team</loc></url>
+  <url><loc>https://wearebutik.com/team-old</loc></url>
+  <url><loc>https://wearebutik.com/trasparenza</loc></url>
+  <url><loc>https://wearebutik.com/trasparenza/</loc></url>
+  <url><loc>https://wearebutik.com/trasparenza2022</loc></url>
+  <url><loc>https://wearebutik.com/trasparenza2023</loc></url>
+  <url><loc>https://wearebutik.com/trasparenza2024</loc></url>
+  <url><loc>https://wearebutik.com/tropea-blu</loc></url>
+  <url><loc>https://wearebutik.com/tropea-curami-live</loc></url>
+  <url><loc>https://wearebutik.com/tropea-owo</loc></url>
+  <url><loc>https://wearebutik.com/tropea-release-france</loc></url>
+  <url><loc>https://wearebutik.com/turismomusicalefestival</loc></url>
+  <url><loc>https://wearebutik.com/ultime-novita-butik</loc></url>
+</urlset>
