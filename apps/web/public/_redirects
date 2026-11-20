@@ -64,3 +64,19 @@
 /news-butik                     /progetti/         301
 /ultime-novita-butik            /progetti/         301
 /news-butik/*                   /progetti/         301
+
+# Percorsi brevi dei social (#138), con 302: il browser non li memorizza, e se
+# cambia un profilo basta cambiare la destinazione. La riga con `/*` copre
+# anche la barra finale (`/instagram/`). Le destinazioni sono quelle dei
+# sottodomini instagram.wearebutik.com e degli altri (infra/cloudflare/
+# social.tf): vanno cambiate insieme.
+/instagram   https://www.instagram.com/wearebutik/                       302
+/instagram/* https://www.instagram.com/wearebutik/                       302
+/facebook    https://www.facebook.com/wearebutikcom/                     302
+/facebook/*  https://www.facebook.com/wearebutikcom/                     302
+/linkedin    https://www.linkedin.com/company/butik-s-r-l                302
+/linkedin/*  https://www.linkedin.com/company/butik-s-r-l                302
+/youtube     https://www.youtube.com/channel/UCn0tOGnc1FWyDa1qbOX_nHQ    302
+/youtube/*   https://www.youtube.com/channel/UCn0tOGnc1FWyDa1qbOX_nHQ    302
+/spotify     https://open.spotify.com/user/4ncb22q3pfbs8xlzuwuiwqbyq     302
+/spotify/*   https://open.spotify.com/user/4ncb22q3pfbs8xlzuwuiwqbyq     302
