@@ -57,13 +57,18 @@ export function organizzazione({ site, nome, footer, logo }: { site: URL; nome: 
   };
 }
 
-/** Il sito, pubblicato da butik. */
-export function sitoWeb({ site, nome }: { site: URL; nome: string }): Oggetto {
+/**
+ * Il sito, pubblicato da butik. `nomiAlternativi` sono i nomi che Google può
+ * mostrare sopra l'indirizzo quando non usa `name`, prima di ripiegare sul
+ * dominio.
+ */
+export function sitoWeb({ site, nome, nomiAlternativi = [] }: { site: URL; nome: string; nomiAlternativi?: string[] }): Oggetto {
   return {
     '@context': CONTESTO,
     '@type': 'WebSite',
     '@id': new URL('#sito', site).href,
     name: nome,
+    ...(nomiAlternativi.length > 0 && { alternateName: nomiAlternativi }),
     url: new URL('/', site).href,
     inLanguage: 'it-IT',
     publisher: { '@id': idOrganizzazione(site) },
