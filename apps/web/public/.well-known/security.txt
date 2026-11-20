@@ -1,0 +1,6 @@
+# Dove segnalare un problema di sicurezza di wearebutik.com (RFC 9116).
+# Expires va rinnovato prima della scadenza, al più un anno avanti.
+Contact: mailto:gabriele@wearebutik.com
+Expires: 2027-11-20T00:00:00.000Z
+Preferred-Languages: it, en
+Canonical: https://wearebutik.com/.well-known/security.txt
