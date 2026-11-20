@@ -48,12 +48,20 @@ case "$comando" in
       echo "IndexNow: nessuna pagina cambiata."
       exit 0
     fi
-    chiave_file=$(find "$dist" -maxdepth 1 -regex '.*/[0-9a-f]\{32\}\.txt' | head -n 1)
-    if [[ -z "$chiave_file" ]]; then
+    # Con un ciclo e non con `find -regex`, che ha sintassi diverse su GNU
+    # (il runner) e BSD (macOS).
+    chiave=
+    for f in "$dist"/*.txt; do
+      nome=$(basename "$f" .txt)
+      if [[ "$nome" =~ ^[0-9a-f]{32}$ ]]; then
+        chiave=$nome
+        break
+      fi
+    done
+    if [[ -z "$chiave" ]]; then
       echo "::warning::IndexNow: nessun file della chiave in $dist"
       exit 0
     fi
-    chiave=$(basename "$chiave_file" .txt)
     corpo=$(jq -n --arg host "${sito#https://}" --arg key "$chiave" \
       --arg loc "$sito/$chiave.txt" '{host: $host, key: $key, keyLocation: $loc, urlList: $ARGS.positional}' \
       --args "${urls[@]}")
