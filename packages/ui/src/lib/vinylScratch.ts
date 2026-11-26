@@ -12,6 +12,12 @@
 // gira indisturbato finché non lo si prende in mano, e il gesto funziona identico
 // da touch. Con `prefers-reduced-motion` i dischi restano fermi.
 //
+// Il loop chiede un frame solo mentre c'è un disco da far girare: collegato
+// alla pagina e visibile (IntersectionObserver). Fuori schermo il disco resta
+// dov'è e riprende quando rientra; i dischi delle pagine lasciate con il
+// ClientRouter escono dal registro. Senza IntersectionObserver ogni disco conta
+// come visibile.
+//
 // Un disco può anche partire fermo (`fermo`, la 404 del sito) e girare solo
 // quando lo si accende con `impostaGiro`: da fermo la velocità di regime è
 // zero, quindi una spinta lo fa girare e l'attrito lo riporta a fermarsi.
@@ -66,6 +72,9 @@ interface Vinile {
   lastPointerAngle: number; // ultimo angolo puntatore visto
   lastT: number; // timestamp ultimo movimento
   flingVel: number; // velocità misurata dell'ultimo gesto
+  tau: number; // costante di tempo dell'attrito (s)
+  node: HTMLElement; // area osservata per sapere se il disco è a schermo
+  visibile: boolean;
 }
 
 const toDeg = (rad: number) => (rad * 180) / Math.PI;
@@ -74,9 +83,62 @@ const angleDiff = (a: number, b: number) => ((a - b + 540) % 360) - 180;
 const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
 
 // Registro e loop unici per pagina: init può essere richiamata a ogni
-// navigazione, ma il requestAnimationFrame parte una volta sola.
+// navigazione, ma il requestAnimationFrame gira una volta sola.
 const vinili: Vinile[] = [];
 let looping = false;
+let last = -1;
+// Con `prefers-reduced-motion` il loop non parte mai: i dischi restano fermi.
+let movimento = true;
+
+// Dischi di pagine già sostituite dalle view transitions: escono dal registro.
+const pota = () => {
+  for (let i = vinili.length - 1; i >= 0; i--) {
+    if (vinili[i].disc.isConnected) continue;
+    osservatore?.unobserve(vinili[i].node);
+    vinili.splice(i, 1);
+  }
+};
+
+let osservatore: IntersectionObserver | undefined;
+const osserva = (v: Vinile) => {
+  if (typeof IntersectionObserver === 'undefined') return;
+  osservatore ??= new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      const x = vinili.find((w) => w.node === e.target);
+      if (x) x.visibile = e.isIntersecting;
+    }
+    avvia();
+  });
+  v.visibile = false; // fino alla prima risposta dell'osservatore
+  osservatore.observe(v.node);
+};
+
+// Fa girare i dischi e applica l'attrito che riporta la velocità lanciata a
+// quella di regime (effetto inerzia del giradischi). Si ferma quando non resta
+// un disco collegato e a schermo.
+const tick = (now: number) => {
+  if (last < 0) last = now;
+  const dt = Math.min((now - last) / 1000, 0.05);
+  last = now;
+  pota();
+  for (const v of vinili) {
+    if (!v.visibile || v.scratching) continue;
+    // avvicinamento esponenziale alla velocità base
+    v.vel = v.baseVel + (v.vel - v.baseVel) * Math.exp(-dt / v.tau);
+    v.angle += v.vel * dt;
+    v.disc.style.transform = `rotate(${v.angle}deg)`;
+  }
+  if (vinili.some((v) => v.visibile)) requestAnimationFrame(tick);
+  else looping = false;
+};
+
+function avvia() {
+  pota();
+  if (!movimento || looping || !vinili.some((v) => v.visibile)) return;
+  looping = true;
+  last = -1;
+  requestAnimationFrame(tick);
+}
 
 export function initVinylScratch(opts: VinylScratchOptions): void {
   const {
@@ -117,8 +179,12 @@ export function initVinylScratch(opts: VinylScratchOptions): void {
       lastPointerAngle: 0,
       lastT: 0,
       flingVel: 0,
+      tau,
+      node,
+      visibile: true,
     };
     vinili.push(v);
+    osserva(v);
 
     // angolo del puntatore rispetto al centro del disco
     const pointerAngle = (e: PointerEvent) => {
@@ -163,27 +229,8 @@ export function initVinylScratch(opts: VinylScratchOptions): void {
     node.addEventListener('pointercancel', release);
   });
 
-  // loop unico: fa girare i dischi e applica l'attrito che riporta la velocità
-  // lanciata a quella di regime (effetto inerzia del giradischi)
-  if (!reduce && vinili.length && !looping) {
-    looping = true;
-    let last = -1;
-    const tick = (now: number) => {
-      if (last < 0) last = now;
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-      for (const v of vinili) {
-        // dischi di pagine già sostituite dalle view transitions: si scartano
-        if (!v.disc.isConnected || v.scratching) continue;
-        // avvicinamento esponenziale alla velocità base
-        v.vel = v.baseVel + (v.vel - v.baseVel) * Math.exp(-dt / tau);
-        v.angle += v.vel * dt;
-        v.disc.style.transform = `rotate(${v.angle}deg)`;
-      }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
+  movimento = !reduce;
+  avvia();
 }
 
 /**
